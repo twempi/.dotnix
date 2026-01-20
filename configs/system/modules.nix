@@ -23,5 +23,6 @@
     ./modules/localsend.nix
     ./modules/minecraft.nix
     ./modules/dns-over-tls.nix
+    ./modules/uv.nix
   ];
 }
