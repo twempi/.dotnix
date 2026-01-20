@@ -94,6 +94,7 @@
     wlsunset
     blueman
     inputs.ltspice.packages.${pkgs.system}.default
+    pipx
 
     # Python
     (python313.withPackages (ps: [
