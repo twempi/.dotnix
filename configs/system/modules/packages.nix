@@ -43,6 +43,7 @@
     zoom-us
     seahorse
     gnome-clocks
+    zathura
 
     # CLI
     brightnessctl
