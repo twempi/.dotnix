@@ -95,6 +95,7 @@
     blueman
     inputs.ltspice.packages.${pkgs.system}.default
     pipx
+    gearlever
 
     # Python
     (python313.withPackages (ps: [
