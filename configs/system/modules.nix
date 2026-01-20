@@ -22,5 +22,6 @@
     ./modules/seahorse.nix
     ./modules/localsend.nix
     ./modules/minecraft.nix
+    ./modules/dns-over-tls.nix
   ];
 }

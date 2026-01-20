@@ -36,7 +36,11 @@
       "Mod+B".action.spawn = "${pkgs.brave}/bin/brave";
 
       # $mod, E, exec, $explorer1
-      "Mod+E".action.spawn = "${pkgs.ghostty}/bin/ghostty -e ${pkgs.yazi}/bin/yazi";
+      "Mod+E".action.spawn = [
+        "${pkgs.ghostty}/bin/ghostty"
+        "-e"
+        "${pkgs.yazi}/bin/yazi"
+      ];
 
       # $mod SHIFT, E, exec, $explorer2
       "Mod+Shift+E".action.spawn = "${pkgs.nautilus}/bin/nautilus";
@@ -48,10 +52,18 @@
       "Mod+O".action.spawn = "${pkgs.obsidian}/bin/obsidian";
 
       # $mod, N, exec, $editor
-      "Mod+N".action.spawn = "${pkgs.ghostty}/bin/ghostty -e nvim";
+      "Mod+N".action.spawn = [
+        "${pkgs.ghostty}/bin/ghostty"
+        "-e"
+        "nvim"
+      ];
 
       # $mod SHIFT, B, exec, $bluetooth
-      "Mod+Shift+B".action.spawn = "${pkgs.ghostty}/bin/ghostty -e ${pkgs.bluetui}/bin/bluetui";
+      "Mod+Shift+B".action.spawn = [
+        "${pkgs.ghostty}/bin/ghostty"
+        "-e"
+        "${pkgs.bluetui}/bin/bluetui"
+      ];
 
       # $mod SHIFT, N, exec, $noti-center
       "Mod+Shift+N".action.spawn = [

@@ -102,11 +102,6 @@
     layout = {
       gaps = 5;
 
-      # focus-ring = {
-      #   enable = true;
-      #   width = 3;
-      # };
-
       default-column-width = {
         proportion = 0.5;
       };
@@ -114,8 +109,6 @@
       border = {
         enable = true;
         width = 2.0;
-        # active = "#${config.stylix.base16Scheme.base0A}";
-        # inactive = "#${config.stylix.base16Scheme.base01}";
       };
 
       shadow = {
