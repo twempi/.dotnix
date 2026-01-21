@@ -24,5 +24,6 @@
     ./modules/minecraft.nix
     ./modules/dns-over-tls.nix
     ./modules/usbmuxd.nix
+    ./modules/nh.nix
   ];
 }
