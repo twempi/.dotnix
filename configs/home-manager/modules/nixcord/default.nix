@@ -29,7 +29,7 @@
         pictureInPicture.enable = true;
         whoReacted.enable = true;
         biggerStreamPreview.enable = true;
-        clearUrLs.enable = true;
+        ClearURLs.enable = true;
         fixImagesQuality.enable = true;
         fixSpotifyEmbeds = {
           enable = true;
