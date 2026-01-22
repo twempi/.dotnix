@@ -25,5 +25,6 @@
     ./modules/dns-over-tls.nix
     ./modules/usbmuxd.nix
     ./modules/nh.nix
+    ./modules/syncthing.nix
   ];
 }

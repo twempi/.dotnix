@@ -3,29 +3,29 @@
     # workspace = "1, monitor:DP-6";
 
     windowrule = [
-      # Picture-in-Picture PART 1
-      "pin, title:^(Picture-in-Picture)$"
-      "keepaspectratio, title:^(Picture-in-Picture)$"
-      "float, title:^(Picture-in-Picture)$"
+      # PiP windows
+      "match:title ^(Picture-in-Picture)$, pin on"
+      "match:title ^(Picture-in-Picture)$, keep_aspect_ratio on"
+      "match:title ^(Picture-in-Picture)$, float on"
 
-      # Calculator PART 1
-      "float, class:^(org.gnome.Calculator)$"
+      # GNOME Calculator
+      "match:class ^(org.gnome.Calculator)$, float on"
 
       # Waypaper
-      "float, class:^(waypaper)$"
+      "match:class ^(waypaper)$, float on"
 
       # XWayland video bridge fix
-      "opacity 0.0 override, class:^(xwaylandvideobridge)$"
-      "noanim, class:^(xwaylandvideobridge)$"
-      "noinitialfocus, class:^(xwaylandvideobridge)$"
-      "maxsize 1 1, class:^(xwaylandvideobridge)$"
-      "noblur, class:^(xwaylandvideobridge)$"
-      "nofocus, class:^(xwaylandvideobridge)$"
+      "match:class ^(xwaylandvideobridge)$, opacity 0.0 override"
+      "match:class ^(xwaylandvideobridge)$, no_initial_focus on"
+      "match:class ^(xwaylandvideobridge)$, max_size 1 1"
+      "match:class ^(xwaylandvideobridge)$, no_blur on"
+      "match:class ^(xwaylandvideobridge)$, no_focus on"
 
       # Ignore maximize requests from apps
-      "suppressevent maximize, class:.*"
+      "match:class .*, suppress_event maximize"
+
       # Fix some dragging issues with XWayland
-      "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
+      "match:class ^$, match:title ^$, match:xwayland true, match:float true, match:fullscreen false, match:pin false, no_focus on"
     ];
 
     windowrulev2 = [
@@ -71,11 +71,11 @@
     ];
 
     layerrule = [
-      "animation slide, rofi"
-      "dimaround, rofi"
+      "animation on, match:namespace rofi"
+      "dim_around on, match:namespace rofi"
 
-      "blur, logout_dialog"
-      "xray 0, logout_dialog"
+      "blur on, match:namespace logout_dialog"
+      "xray on, match:namespace logout_dialog"
     ];
   };
 }

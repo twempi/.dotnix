@@ -122,7 +122,7 @@ return {
 				},
 
 				attachments = {
-					img_folder = "999 Images/",
+					folder = "999 Images/",
 					img_text_func = function(path)
 						return string.format("![[%s]]", path.name)
 					end,
