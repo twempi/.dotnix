@@ -49,6 +49,6 @@
     ./modules/chromium
     ./modules/zen-browser
     ./modules/matugen
-    ./modules/walker
+    # ./modules/walker
   ];
 }

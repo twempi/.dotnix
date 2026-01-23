@@ -1,16 +1,24 @@
-{
+{inputs, ...}: {
+  imports = [
+  inputs.nixcord.homeModules.nixcord
+  ./theme.nix
+  ];
+
+  # stylix.targets.nixcord.enable = true;
   programs.nixcord = {
     enable = true;
     vesktop.enable = true;
-    discord.enable = false;
+    discord.vencord.enable = true;
 
     config = {
       frameless = true;
-      # themeLinks = [
-      # 	"https://raw.githubusercontent.com/mafien0/system24/refs/heads/main/theme/flavors/system24-rose-pine.theme.css"
-      # ];
+      autoUpdate = true;
+      autoUpdateNotification = true;
+      themeLinks = [
+        "https://raw.githubusercontent.com/mafien0/system24/refs/heads/main/theme/flavors/system24-rose-pine.theme.css"
+      ];
       # enabledThemes = ["matugen.css"];
-      enabledThemes = ["discord-colors.css"];
+      # enabledThemes = ["discord-colors.css"];
 
       plugins = {
         experiments.enable = true;

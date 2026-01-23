@@ -21,7 +21,7 @@
     };
 
     nixcord = {
-      url = "github:kaylorben/nixcord";
+      url = "github:FlameFlag/nixcord";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -45,12 +45,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    elephant.url = "github:abenz1267/elephant";
-
-    walker = {
-      url = "github:abenz1267/walker";
-      inputs.elephant.follows = "elephant";
-    };
+    # elephant.url = "github:abenz1267/elephant";
+    #
+    # walker = {
+    #   url = "github:abenz1267/walker";
+    #   inputs.elephant.follows = "elephant";
+    # };
 
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
@@ -70,7 +70,7 @@
     bunny-yazi,
     zen-browser,
     niri,
-    walker,
+    # walker,
     nix-minecraft,
     ltspice,
     ...
@@ -121,7 +121,6 @@
         modules = [
           ./configs/home-manager/home.nix
           stylix.homeModules.stylix
-          nixcord.homeModules.nixcord
           inputs.spicetify-nix.homeManagerModules.default
           niri.homeModules.config
           niri.homeModules.stylix

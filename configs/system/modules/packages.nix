@@ -44,6 +44,7 @@
     seahorse
     gnome-clocks
     zathura
+    gearlever
 
     # CLI
     brightnessctl
@@ -95,7 +96,7 @@
     blueman
     inputs.ltspice.packages.${pkgs.system}.default
     pipx
-    gearlever
+    trash-cli
 
     # Python
     (python313.withPackages (ps: [

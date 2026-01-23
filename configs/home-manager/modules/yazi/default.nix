@@ -6,9 +6,17 @@
   pref-by-location-plugin = pkgs.fetchFromGitHub {
     owner = "boydaihungst";
     repo = "pref-by-location.yazi";
-    rev = "882e75297a2a07cd892e383800d493ad484f7eec";
-    sha256 = "17k4w0k9s40g1mkz887lj2c1dvz4q2rlflnsrsxb618r5dqd48z0";
+    rev = "a2fbb054c0e1adc1099833c93a31855b119fbbba";
+    sha256 = "1d9gadn2mmq5xjx4jh03d7nqy871wcgcwk2z6ak349mslnc93cr1";
   };
+
+  convert-plugin = pkgs.fetchFromGitHub {
+    owner = "atareao";
+    repo = "convert.yazi";
+    rev = "ce060d9d17e4466d7956213d68a7a74d24ecfdc5";
+    sha256 = "0p52nqbrg19di5gnnj3bv9qw2p4sq6d80krgz729ch8fsz1f69ch";
+  };
+
 in {
   stylix.targets.yazi.enable = true;
 
@@ -191,6 +199,28 @@ in {
           run = ["sort random --reverse=no" "plugin pref-by-location -- save"];
           desc = "Sort randomly";
         }
+        {
+          on = ["R" "b"];
+          run = ["plugin recycle-bin"];
+          desc = "Open Recycle Bin menu";
+        }
+        {
+          on = ["c" "p"];
+          run = "plugin convert -- --extension='png'";
+          desc = "Convert selected files to PNG";
+        }
+
+        {
+          on = ["c" "j"];
+          run = "plugin convert -- --extension='jpg'";
+          desc = "Convert selected files to JPG";
+        }
+
+        {
+          on = ["c" "w"];
+          run = "plugin convert -- --extension='webp'";
+          desc = "Convert selected files to WebP";
+        }
       ];
     };
 
@@ -198,11 +228,14 @@ in {
       "full-border" = pkgs.yaziPlugins.full-border;
       "bunny" = "${inputs.bunny-yazi}";
       "pref-by-location" = pref-by-location-plugin;
+      "recycle-bin" = pkgs.yaziPlugins.recycle-bin;
+      "convert" = convert-plugin;
     };
 
     initLua = ''
       require("full-border"):setup()
       require("pref-by-location"):setup({})
+      require("recycle-bin"):setup()
 
       require("bunny"):setup({
         hops = {
