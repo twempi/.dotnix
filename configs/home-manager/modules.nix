@@ -50,5 +50,6 @@
     ./modules/zen-browser
     ./modules/matugen
     # ./modules/walker
+    ./modules/upscayl
   ];
 }

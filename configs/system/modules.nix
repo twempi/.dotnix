@@ -27,6 +27,5 @@
     ./modules/nh.nix
     ./modules/syncthing.nix
     ./modules/login-manager.nix
-    ./modules/upscayl.nix
   ];
 }
