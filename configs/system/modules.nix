@@ -26,5 +26,6 @@
     ./modules/usbmuxd.nix
     ./modules/nh.nix
     ./modules/syncthing.nix
+    ./modules/login-manager.nix
   ];
 }

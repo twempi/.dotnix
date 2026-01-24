@@ -1,7 +1,6 @@
 {inputs, ...}: {
   imports = [
   inputs.nixcord.homeModules.nixcord
-  ./theme.nix
   ];
 
   # stylix.targets.nixcord.enable = true;
@@ -15,10 +14,10 @@
       autoUpdate = true;
       autoUpdateNotification = true;
       themeLinks = [
-        "https://raw.githubusercontent.com/mafien0/system24/refs/heads/main/theme/flavors/system24-rose-pine.theme.css"
+        "https://raw.githubusercontent.com/refact0r/system24/refs/heads/main/theme/flavors/system24-catppuccin-mocha.theme.css"
       ];
       # enabledThemes = ["matugen.css"];
-      # enabledThemes = ["discord-colors.css"];
+      # enabledThemes = ["stylix.css"];
 
       plugins = {
         experiments.enable = true;

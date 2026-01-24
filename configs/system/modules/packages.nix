@@ -45,6 +45,7 @@
     gnome-clocks
     zathura
     gearlever
+    upscayl
 
     # CLI
     brightnessctl
