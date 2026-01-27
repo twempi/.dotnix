@@ -101,10 +101,18 @@ return {
 			on_attach = on_attach,
 		})
 
-		-- ❌ No formatting here — conform owns it
 		vim.lsp.config("nil_ls", {
 			capabilities = capabilities,
 			on_attach = on_attach,
+			settings = {
+				["nil"] = {
+					nix = {
+						flake = {
+							autoArchive = true,
+						},
+					},
+				},
+			},
 		})
 
 		vim.lsp.config("tinymist", {
