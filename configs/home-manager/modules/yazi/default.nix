@@ -251,6 +251,7 @@ in {
           { key = { "l", "b" }, path = "~/.local/bin", desc = "Local bin" },
           { key = { "l", "t" }, path = "~/.local/state", desc = "Local state" },
           { key = { "s", "p" }, path = "/mnt/Storage/Pictures", desc = "Storage Pictures" },
+          { key = "s", path = "/mnt/Storage", desc = "Storage" },
         },
         desc_strategy = "path",
         ephemeral = true,
