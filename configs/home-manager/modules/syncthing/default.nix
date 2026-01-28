@@ -10,9 +10,9 @@
           id = "ZMFIETG-MG7WV4P-2V6RHY4-JKDNXHB-X3INDKM-TSRFAVX-DARM2ZJ-XEBPQAZ";
         };
 
-        # t480s = {
-        #   id =
-        # }
+        t480s = {
+          id = "QN7LOTX-BA4PZHR-CXZ47JH-POMXASY-6T4JPEW-3XEXAMH-77K4ACA-DONSCAX";
+        };
       };
 
       options = {
@@ -26,7 +26,7 @@
       folders = {
         notes = {
           id = "notes";
-          devices = ["desktop"];
+          devices = ["desktop" "t480s"];
           path = "/home/edward/Documents/notes";
         };
       };
