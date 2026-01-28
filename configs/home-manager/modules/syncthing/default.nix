@@ -1,7 +1,6 @@
 {
-  pkgs,
-  lib,
   config,
+  pkgs,
   ...
 }: {
   services.syncthing = {
@@ -13,7 +12,7 @@
       options = {
         localAnnounceEnabled = false; # eduroam blocks this anyway
         natEnabled = true;
-        relaysEnabled = true; # THIS is the important one
+        relaysEnabled = true; # important one
         globalAnnounceEnabled = true;
         startBrowser = false;
       };

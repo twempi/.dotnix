@@ -51,5 +51,6 @@
     ./modules/matugen
     # ./modules/walker
     ./modules/upscayl
+    ./modules/syncthing
   ];
 }
