@@ -39,7 +39,6 @@
     networkmanagerapplet
     switcheroo
     localsend
-    openrgb
     zoom-us
     seahorse
     gnome-clocks

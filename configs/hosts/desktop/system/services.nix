@@ -2,8 +2,8 @@
   # OpenRGB
   services.hardware.openrgb = {
     enable = true; 
-    package = pkgs.openrgb; 
     motherboard = "amd"; 
+    startupProfile = "black";
   };
 
   systemd.user.services.openrgb-profile = {
@@ -16,10 +16,10 @@
     serviceConfig = {
       Type = "simple";
       ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
-      ExecStart = "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/white.orp";
+      ExecStart = "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp";
       Restart = "on-failure";
       RestartSec = 2;
-      ConditionPathExists = "%h/.config/OpenRGB/white.orp";
+      ConditionPathExists = "%h/.config/OpenRGB/black.orp";
     };
   };
 }
