@@ -29,6 +29,11 @@
           devices = ["desktop" "t480s"];
           path = "/home/edward/Documents/notes";
         };
+        school = {
+          id = "school";
+          devices = ["desktop" "t480s"];
+          path = "/home/edward/Documents/school";
+        };
       };
     };
   };
