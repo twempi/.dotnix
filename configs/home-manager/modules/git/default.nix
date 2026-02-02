@@ -37,10 +37,17 @@
       };
 
       safe = {
-        # one or more explicit paths
         directory = [
           "/mnt/Storage/Documents/notes"
         ];
+      };
+
+      pull = {
+        rebase = true;
+      };
+
+      rebase = {
+        autoStash = true; # optional but nice: stashes local changes during rebase
       };
 
       commit = {
