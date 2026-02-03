@@ -1,8 +1,12 @@
 {
   services.resolved = {
     enable = true;
-    dnssec = "false";
-    fallbackDns = ["1.1.1.1" "8.8.8.8"];
+    settings = {
+      Resolve = {
+        DNSSEC = false;
+        FallbackDNS = ["1.1.1.1" "8.8.8.8"]; 
+      };
+    };
     # extraConfig = ''
     #   DNSOverTLS=yes
     # '';

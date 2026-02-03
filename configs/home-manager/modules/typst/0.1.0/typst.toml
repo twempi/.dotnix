@@ -1,0 +1,15 @@
+[package]
+name = "personal"
+version = "0.1.0"
+entrypoint = "lib.typ"
+authors = ["edward"]
+license = "MIT-0"
+description = "personal template for labs and homework"
+repository = "https://github.com/twempi/typst-hand-in"
+keywords = ["assignment", "homework", "problem set"]
+categories = ["report"]
+compiler = "0.13.1"
+
+[template]
+path = "template"
+entrypoint = "main.typ"

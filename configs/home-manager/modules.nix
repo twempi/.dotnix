@@ -52,5 +52,6 @@
     # ./modules/walker
     ./modules/upscayl
     ./modules/syncthing
+    ./modules/typst
   ];
 }
