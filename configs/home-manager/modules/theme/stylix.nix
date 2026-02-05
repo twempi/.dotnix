@@ -43,25 +43,25 @@
     # 	base0F = "524f67";
     # };
 
-    # Catpuccin-mocha
-    base16Scheme = {
-      base00 = "1e1e2e"; # base
-      base01 = "181825"; # mantle
-      base02 = "313244"; # surface0
-      base03 = "45475a"; # surface1
-      base04 = "585b70"; # surface2
-      base05 = "cdd6f4"; # text
-      base06 = "f5e0dc"; # rosewater
-      base07 = "b4befe"; # lavender
-      base08 = "f38ba8"; # red
-      base09 = "fab387"; # peach
-      base0A = "f9e2af"; # yellow
-      base0B = "a6e3a1"; # green
-      base0C = "94e2d5"; # teal
-      base0D = "89b4fa"; # blue
-      base0E = "cba6f7"; # mauve
-      base0F = "f2cdcd"; # flamingo
-    };
+    # # Catpuccin-mocha
+    # base16Scheme = {
+    #   base00 = "1e1e2e"; # base
+    #   base01 = "181825"; # mantle
+    #   base02 = "313244"; # surface0
+    #   base03 = "45475a"; # surface1
+    #   base04 = "585b70"; # surface2
+    #   base05 = "cdd6f4"; # text
+    #   base06 = "f5e0dc"; # rosewater
+    #   base07 = "b4befe"; # lavender
+    #   base08 = "f38ba8"; # red
+    #   base09 = "fab387"; # peach
+    #   base0A = "f9e2af"; # yellow
+    #   base0B = "a6e3a1"; # green
+    #   base0C = "94e2d5"; # teal
+    #   base0D = "89b4fa"; # blue
+    #   base0E = "cba6f7"; # mauve
+    #   base0F = "f2cdcd"; # flamingo
+    # };
 
     # # Stella
     # base16Scheme = {
@@ -83,25 +83,25 @@
     #   base0F = "C7AB87";
     # };
 
-    # # Material Darker
-    # base16Scheme = {
-    #   base00 = "212121";
-    #   base01 = "303030";
-    #   base02 = "353535";
-    #   base03 = "4A4A4A";
-    #   base04 = "B2CCD6";
-    #   base05 = "EEFFFF";
-    #   base06 = "EEFFFF";
-    #   base07 = "FFFFFF";
-    #   base08 = "F07178";
-    #   base09 = "F78C6C";
-    #   base0A = "FFCB6B";
-    #   base0B = "C3E88D";
-    #   base0C = "89DDFF";
-    #   base0D = "82AAFF";
-    #   base0E = "C792EA";
-    #   base0F = "FF5370";
-    # };
+    # Material Darker
+    base16Scheme = {
+      base00 = "212121";
+      base01 = "303030";
+      base02 = "353535";
+      base03 = "4A4A4A";
+      base04 = "B2CCD6";
+      base05 = "EEFFFF";
+      base06 = "EEFFFF";
+      base07 = "FFFFFF";
+      base08 = "F07178";
+      base09 = "F78C6C";
+      base0A = "FFCB6B";
+      base0B = "C3E88D";
+      base0C = "89DDFF";
+      base0D = "82AAFF";
+      base0E = "C792EA";
+      base0F = "FF5370";
+    };
 
     # # Greyscale
     # base16Scheme = {
