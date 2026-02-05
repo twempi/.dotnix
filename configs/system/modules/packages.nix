@@ -97,6 +97,7 @@
     inputs.ltspice.packages.${pkgs.system}.default
     pipx
     trash-cli
+    arduino-ide
 
     # Python
     (python313.withPackages (ps: [
