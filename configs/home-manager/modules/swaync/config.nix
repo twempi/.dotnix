@@ -108,16 +108,19 @@
         button-text = " 󰆴 ";
       };
 
-      # Buttons grid widget – 4 actions from your JSON config
       buttons-grid = {
         actions = [
-          # Wi-Fi toggle
+          # wlsunset toggle (replaces Wi-Fi)
           {
-            label = "󰤨"; # or "直" etc
+            label = "󰖔"; # pick any icon you like
             type = "toggle";
             active = true;
-            command = "sh -c '[[ $SWAYNC_TOGGLE_STATE == true ]] && nmcli radio wifi on || nmcli radio wifi off'";
-            update-command = "sh -c '[[ $(nmcli radio wifi) == \"enabled\" ]] && echo true || echo false'";
+
+            # Run your toggle script (recommended) OR inline command below
+            command = "sh -c '[[ $SWAYNC_TOGGLE_STATE == true ]] && wlsunset -T 4001 || killall wlsunset 2>/dev/null || true'";
+
+            # Reflect current state in UI
+            update-command = "sh -c 'pidof wlsunset >/dev/null && echo true || echo false'";
           }
 
           # Bluetooth toggle
