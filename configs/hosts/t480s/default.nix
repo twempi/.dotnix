@@ -1,13 +1,11 @@
-
-{ config, pkgs, lib, ... }:
-
 {
   imports = [
     ../../system/configuration.nix
     # ../../system/modules.nix
 
     ./hardware-configuration.nix
-    ./system
+    ./system/battery.nix
+    ./system/undervolt.nix
 
     ./programs/fish
   ];
