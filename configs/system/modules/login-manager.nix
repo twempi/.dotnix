@@ -1,12 +1,9 @@
 {
-  pkgs,
-  lib,
-  config,
-  ...
-}: {
   services.displayManager.ly = {
     enable = true;
-    # settings = {
-    # };
+    settings = {
+      save = true;
+      load = true;
+    };
   };
 }
