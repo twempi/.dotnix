@@ -58,6 +58,11 @@
     };
 
     ltspice.url = "git+https://codeberg.org/pilonsi/flake-ltspice";
+
+    plugins-sigil = {
+      url = "github:Prgebish/sigil.nvim";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {

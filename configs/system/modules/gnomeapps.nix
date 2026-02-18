@@ -13,8 +13,4 @@
   ];
   services.gvfs.enable = true;
   programs.gnome-disks.enable = true;
-  programs.nautilus-open-any-terminal = {
-    enable = true;
-    terminal = "ghostty";
-  };
 }
