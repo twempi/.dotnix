@@ -16,7 +16,6 @@
     rev = "ce060d9d17e4466d7956213d68a7a74d24ecfdc5";
     sha256 = "0p52nqbrg19di5gnnj3bv9qw2p4sq6d80krgz729ch8fsz1f69ch";
   };
-
 in {
   stylix.targets.yazi.enable = true;
 
@@ -26,6 +25,8 @@ in {
     enableZshIntegration = true;
     enableBashIntegration = true;
     enableFishIntegration = true;
+
+    shellWrapperName = "y";
 
     settings = {
       mgr = {
