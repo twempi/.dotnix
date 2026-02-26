@@ -3,77 +3,54 @@
     # workspace = "1, monitor:DP-6";
 
     windowrule = [
-      # PiP windows
-      "match:title ^(Picture-in-Picture)$, pin on"
-      "match:title ^(Picture-in-Picture)$, keep_aspect_ratio on"
-      "match:title ^(Picture-in-Picture)$, float on"
+      # --- keep everything you already had in windowrule ---
 
-      # GNOME Calculator
-      "match:class ^(org.gnome.Calculator)$, float on"
+      # Picture-in-Picture (was windowrulev2)
+      "rounding 0, match:title ^(Picture-in-Picture)$"
+      # "noborder" doesn't exist in the new list; use border_size 0 instead
+      "border_size 0, match:title ^(Picture-in-Picture)$"
+      # "noshadow" -> no_shadow on
+      "no_shadow on, match:title ^(Picture-in-Picture)$"
 
-      # Waypaper
-      "match:class ^(waypaper)$, float on"
+      # Calculator (was windowrulev2)
+      "size 400 600, match:class ^(org.gnome.Calculator)$"
 
-      # XWayland video bridge fix
-      "match:class ^(xwaylandvideobridge)$, opacity 0.0 override"
-      "match:class ^(xwaylandvideobridge)$, no_initial_focus on"
-      "match:class ^(xwaylandvideobridge)$, max_size 1 1"
-      "match:class ^(xwaylandvideobridge)$, no_blur on"
-      "match:class ^(xwaylandvideobridge)$, no_focus on"
+      # Float/center popups & dialogs (was windowrulev2)
+      "float on, match:title ^(Authentication Required)$"
+      "center on, match:title ^(Authentication Required)$"
 
-      # Ignore maximize requests from apps
-      "match:class .*, suppress_event maximize"
+      "center on, match:title ^(Open File)(.*)$"
+      "center on, match:title ^(Select a File)(.*)$"
+      "center on, match:title ^(Choose wallpaper)(.*)$"
+      "center on, match:title ^(Open Folder)(.*)$"
+      "center on, match:title ^(Save As)(.*)$"
+      "center on, match:title ^(Library)(.*)$"
+      "center on, match:title ^(File Upload)(.*)$"
 
-      # Fix some dragging issues with XWayland
-      "match:class ^$, match:title ^$, match:xwayland true, match:float true, match:fullscreen false, match:pin false, no_focus on"
+      "float on, match:title ^(Open File)(.*)$"
+      "float on, match:title ^(Select a File)(.*)$"
+      "float on, match:title ^(Choose wallpaper)(.*)$"
+      "float on, match:title ^(Open Folder)(.*)$"
+      "float on, match:title ^(Save As)(.*)$"
+      "float on, match:title ^(Library)(.*)$"
+      "float on, match:title ^(File Upload)(.*)$"
+
+      # Always-float apps (was windowrulev2)
+      "float on, center on, match:class ^(waypaper)$"
+      "float on, center on, match:class ^(steam|Steam)$"
+      "float on, center on, match:class ^(io.github.kaii_lb.Overskride)$"
+      "float on, center on, match:class ^(nm-connection-editor)$"
+      "float on, center on, match:class ^(org.gnome.Calculator)$"
+      "float on, center on, match:class ^(openrgb)$"
+      "float on, center on, match:class ^(heroic)$"
+      "float on, center on, match:class ^(nwg-look)$"
+      "float on, center on, match:class ^(org.pulseaudio.pavucontrol)$"
     ];
 
-    windowrulev2 = [
-      # Picture-in-Picture PART 2
-      "rounding 0, title:^(Picture-in-Picture)$"
-      "noborder, title:^(Picture-in-Picture)$"
-      "noshadow, title:^(Picture-in-Picture)$"
-
-      # Calculator PART 2
-      "size 400 600, class:^(org.gnome.Calculator)$"
-
-      # windowrule - float popups and dialogue
-      "float, title:^(Authentication Required)$"
-      "center, title:^(Authentication Required)$"
-      "center, title:^(Open File)(.*)$"
-      "center, title:^(Select a File)(.*)$"
-      "center, title:^(Choose wallpaper)(.*)$"
-      "center, title:^(Open Folder)(.*)$"
-      "center, title:^(Save As)(.*)$"
-      "center, title:^(Library)(.*)$"
-      "center, title:^(File Upload)(.*)$"
-      "float, title:^(Open File)(.*)$"
-      "float, title:^(Select a File)(.*)$"
-      "float, title:^(Choose wallpaper)(.*)$"
-      "float, title:^(Open Folder)(.*)$"
-      "float, title:^(Save As)(.*)$"
-      "float, title:^(Library)(.*)$"
-      "float, title:^(File Upload)(.*)$"
-
-      # Always float
-      "float, center, class:^(waypaper)$"
-      "float, center, class:^(steam|Steam)$"
-      "float, center, class:^(io.github.kaii_lb.Overskride)$"
-      "float, center, class:^(nm-connection-editor)$"
-      "float, center, class:^(org.gnome.Calculator)$"
-      "float, center, class:^(openrgb)$"
-      "float, center, class:^(heroic)$"
-      "float, center, class:^(nwg-look)$"
-      "float, center, class:^(org.pulseaudio.pavucontrol)$"
-
-      # Opacity
-      # "opacity 0.9 0.8, class:^(org.pwmt.zathura)$"
-    ];
-
+    # keep layerrule as-is
     layerrule = [
       "animation on, match:namespace rofi"
       "dim_around on, match:namespace rofi"
-
       "blur on, match:namespace logout_dialog"
       "xray on, match:namespace logout_dialog"
     ];
