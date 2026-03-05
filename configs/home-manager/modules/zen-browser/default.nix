@@ -25,15 +25,16 @@
       mkExtensionEntry = {
         id,
         pinned ? false,
-      }: let
-        base = {
-          install_url = mkPluginUrl id;
-          installation_mode = "force_installed";
-        };
-      in
-        if pinned
-        then base // {default_area = "navbar";}
-        else base;
+      }: {
+        install_url = mkPluginUrl id;
+        installation_mode = "force_installed";
+
+        # Only uBO goes on the toolbar; everything else stays unpinned in the menu.
+        default_area =
+          if pinned
+          then "navbar"
+          else "menupanel";
+      };
 
       mkExtensionSettings = lib.mapAttrs (_: entry:
         if lib.isAttrs entry
@@ -66,7 +67,7 @@
       ExtensionSettings = mkExtensionSettings {
         "wappalyzer@crunchlabz.com" = mkExtensionEntry {
           id = "wappalyzer";
-          pinned = true;
+          pinned = false;
         };
         "uBlock0@raymondhill.net" = mkExtensionEntry {
           id = "ublock-origin";
@@ -84,6 +85,9 @@
         "trackmenot@mrl.nyu.edu" = "trackmenot";
         "{861a3982-bb3b-49c6-bc17-4f50de104da1}" = "custom-user-agent-revived";
         "{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}" = "chameleon-ext";
+        "newtaboverride@agenedia.com" = "new-tab-override";
+        "{00000f2a-7cde-4f20-83ed-434fcb420d71}" = "imagus";
+        "{3c6bf0cc-3ae2-42fb-9993-0d33104fdcaf}" = "improved-youtube";
       };
 
       Preferences = mkLockedAttrs {
@@ -93,6 +97,7 @@
 
         "browser.newtabpage.activity-stream.feeds.topsites" = false;
         "browser.topsites.contile.enabled" = false;
+        "browser.toolbars.bookmarks.visibility" = "always";
 
         "browser.gesture.swipe.left" = "";
         "browser.gesture.swipe.right" = "";
@@ -112,6 +117,12 @@
         "network.http.http3.enabled" = true;
         "network.socket.ip_addr_any.disabled" = true;
       };
+
+      Homepage = {
+        URL = "http://127.0.0.1:8000/index.html";
+        Locked = true;
+        StartPage = "homepage";
+      };
     };
 
     profiles.edward = rec {
@@ -122,8 +133,19 @@
         "zen.view.compact.hide-toolbar" = true;
         "zen.view.compact.animate-sidebar" = false;
         "zen.welcome-screen.seen" = true;
-        "zen.urlbar.behavior" = "float";
+        "zen.urlbar.behavior" = "default";
+        "zen.urlbar.replace-newtab" = false;
+        "zen.view.sidebar-expanded" = false;
+        "zen.view.sidebar-expanded.on-hover" = false;
       };
+
+      mods = [
+        "1b88a6d1-d931-45e8-b6c3-bfdca2c7e9d6" # Remove Tab X
+        # "a5f6a231-e3c8-4ce8-8a8e-3e93efd6adec" # Cleaner URL Bar
+        "d8b79d4a-6cba-4495-9ff6-d6d30b0e94fe" # Better Active Tab
+        "72f8f48d-86b9-4487-acea-eb4977b18f21" # Better Ctrl Tab Panel
+        "253a3a74-0cc4-47b7-8b82-996a64f030d5" # Floating History
+      ];
 
       containersForce = true;
       containers = {
