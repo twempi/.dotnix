@@ -14,6 +14,8 @@
   programs.zen-browser = {
     enable = true;
 
+    suppressXdgMigrationWarning = true;
+
     policies = let
       mkLockedAttrs = lib.mapAttrs (_: value: {
         Value = value;
@@ -74,17 +76,8 @@
           pinned = true;
         };
         "{a4c4eda4-fb84-4a84-b4a1-f7c1cbf2a1ad}" = "refined-github-";
-        "{85860b32-02a8-431a-b2b1-40fbd64c9c69}" = "github-file-icons";
         "{762f9885-5a13-4abd-9c77-433dcd38b8fd}" = "return-youtube-dislikes";
         "{74145f27-f039-47ce-a470-a662b129930a}" = "clearurls";
-        "github-no-more@ihatereality.space" = "github-no-more";
-        "github-repository-size@pranavmangal" = "gh-repo-size";
-        "firefox-extension@steamdb.info" = "steam-database";
-        "@searchengineadremover" = "searchengineadremover";
-        "jid1-BoFifL9Vbdl2zQ@jetpack" = "decentraleyes";
-        "trackmenot@mrl.nyu.edu" = "trackmenot";
-        "{861a3982-bb3b-49c6-bc17-4f50de104da1}" = "custom-user-agent-revived";
-        "{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}" = "chameleon-ext";
         "newtaboverride@agenedia.com" = "new-tab-override";
         "{00000f2a-7cde-4f20-83ed-434fcb420d71}" = "imagus";
         "{3c6bf0cc-3ae2-42fb-9993-0d33104fdcaf}" = "improved-youtube";
@@ -137,6 +130,7 @@
         "zen.urlbar.replace-newtab" = false;
         "zen.view.sidebar-expanded" = false;
         "zen.view.sidebar-expanded.on-hover" = false;
+        "zen.window-sync.enabled" = true;
       };
 
       mods = [

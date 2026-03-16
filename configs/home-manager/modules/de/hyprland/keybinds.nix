@@ -9,6 +9,7 @@
     "$terminal" = "${pkgs.ghostty}/bin/ghostty";
     # "$terminal" = "${pkgs.kitty}/bin/kitty";
     "$browser" = "${pkgs.brave}/bin/brave";
+    # "$browser" = "zen-beta";
     "$explorer1" = "$terminal -e ${pkgs.yazi}/bin/yazi";
     "$explorer2" = "${pkgs.nautilus}/bin/nautilus";
     "$notes" = "${pkgs.obsidian}/bin/obsidian";

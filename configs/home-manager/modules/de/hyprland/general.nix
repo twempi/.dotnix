@@ -5,7 +5,6 @@
   ...
 }: {
   wayland.windowManager.hyprland.settings = {
-
     monitor = [
       ",highrr,0x0,1"
       "HDMI-A-2,1920x1080@70,1920x0,1"
@@ -15,6 +14,8 @@
       "swww-daemon"
       "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp"
       "${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css"
+
+      "sleep 2 && ${pkgs.hyprland}/bin/hyprctl dispatch exec '[workspace 9 silent] ${pkgs.spotify}/bin/spotify'"
 
       # Set volume to #100%
       "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1"
