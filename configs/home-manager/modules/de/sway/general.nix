@@ -40,6 +40,15 @@
         # Clipboard history
         {command = "${pkgs.cliphist}/bin/cliphist wipe";}
         {command = "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store";}
+
+        {
+          command = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_DATA_DIRS PATH";
+          always = true;
+        }
+        {
+          command = "systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_DATA_DIRS PATH";
+          always = true;
+        }
       ];
 
       window = {

@@ -30,11 +30,11 @@
     enable = true;
     xdgOpenUsePortal = true;
     config = {
-      sway.default = ["gtk" "wlr"];
+      sway.default = ["wlr" "gtk"];
     };
     extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
       xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
     ];
   };
 }

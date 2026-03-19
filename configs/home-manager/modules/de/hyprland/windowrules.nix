@@ -3,8 +3,6 @@
     # workspace = "1, monitor:DP-6";
 
     windowrule = [
-      # --- keep everything you already had in windowrule ---
-
       # Picture-in-Picture (was windowrulev2)
       "rounding 0, match:title ^(Picture-in-Picture)$"
       # "noborder" doesn't exist in the new list; use border_size 0 instead
@@ -45,6 +43,9 @@
       "float on, center on, match:class ^(heroic)$"
       "float on, center on, match:class ^(nwg-look)$"
       "float on, center on, match:class ^(org.pulseaudio.pavucontrol)$"
+
+      "match:class ^(Spotify)$, workspace 9 silent"
+      "match:class ^(Obsidian)$, workspace 10 silent"
     ];
 
     # keep layerrule as-is

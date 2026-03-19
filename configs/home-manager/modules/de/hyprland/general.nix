@@ -15,7 +15,9 @@
       "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp"
       "${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css"
 
-      "sleep 2 && ${pkgs.hyprland}/bin/hyprctl dispatch exec '[workspace 9 silent] ${pkgs.spotify}/bin/spotify'"
+      # Start Spotify and Obsidian on login without switching to workspace 9
+      "[workspace 9 silent] spotify"
+      "[workspace 10 silent] obsidian"
 
       # Set volume to #100%
       "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1"
