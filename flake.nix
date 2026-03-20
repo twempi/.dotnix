@@ -115,6 +115,20 @@
           inherit inputs system;
         };
       };
+
+      g14 = nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./configs/hosts/g14/default.nix
+          home-manager.nixosModules.home-manager
+          stylix.nixosModules.stylix
+          # inputs.mango.nixosModules.mango
+        ];
+
+        specialArgs = {
+          inherit inputs system;
+        };
+      };
     };
 
     homeConfigurations = {
