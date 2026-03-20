@@ -8,6 +8,8 @@
     ./system/undervolt.nix
 
     ./programs/fish
+
+    ./minecraft
   ];
 
   networking = {

@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 
 wallpapers_dir="$HOME/Pictures/wallpapers/"
-
 theme="$HOME/.config/rofi/themes/wallpaper.rasi"
 
 rofi_cmd=(
-rofi -dmenu -i -show-icons \
-  -theme ~/.config/rofi/themes/wallpaper.rasi
+  rofi -dmenu -i -show-icons \
+    -theme "$theme"
 )
 
 choice=$(
-  find "$wallpapers_dir" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) |
-    sort |
-    while read -r A; do
-      filename=$(basename "$A")
-      printf "%s\x00icon\x1f%s\n" "$filename" "$A"
+  find "$wallpapers_dir" -maxdepth 1 -type f \
+    \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) \
+    -printf '%f\0' |
+    sort -zV |
+    while IFS= read -r -d '' filename; do
+      printf "%s\x00icon\x1f%s/%s\n" "$filename" "$wallpapers_dir" "$filename"
     done |
     "${rofi_cmd[@]}"
 )
