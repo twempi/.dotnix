@@ -8,6 +8,7 @@
   #  ./system/undervolt.nix
 
     ./programs/fish
+    ./programs/asus
   ];
 
   networking = {
