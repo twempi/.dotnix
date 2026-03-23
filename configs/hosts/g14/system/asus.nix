@@ -10,6 +10,9 @@
       enableUserService = true;
     };
 
-    supergfxd.path = [pkgs.pciutils];
+    supergfxd = {
+      enable = true;
+      # path = [pkgs.pciutils];
+    };
   };
 }
