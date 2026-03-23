@@ -4,9 +4,8 @@
     # ../../system/modules.nix
 
     ./hardware-configuration.nix
-    #  ./system/battery.nix
-    #  ./system/undervolt.nix
     ./system/asus.nix
+    ./system/graphics.nix
 
     ./programs/fish
   ];
