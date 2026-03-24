@@ -131,30 +131,26 @@ in {
           lua = with pkgs.vimPlugins; [
             lazydev-nvim
           ];
-          general =
-            (with pkgs.vimPlugins; [
-              nvim-lspconfig
-              vim-startuptime
-              blink-cmp
-              nvim-treesitter.withAllGrammars
-              nvim-treesitter-textobjects
-              lualine-nvim
-              lualine-lsp-progress
-              gitsigns-nvim
-              which-key-nvim
-              nvim-lint
-              conform-nvim
-              nvim-dap
-              nvim-dap-ui
-              nvim-dap-virtual-text
-              yazi-nvim
-              luasnip
-              friendly-snippets
-              auto-pairs
-            ])
-            ++ [
-              pkgs.neovimPlugins.sigil
-            ];
+          general = with pkgs.vimPlugins; [
+            nvim-lspconfig
+            vim-startuptime
+            blink-cmp
+            nvim-treesitter.withAllGrammars
+            nvim-treesitter-textobjects
+            lualine-nvim
+            lualine-lsp-progress
+            gitsigns-nvim
+            which-key-nvim
+            nvim-lint
+            conform-nvim
+            nvim-dap
+            nvim-dap-ui
+            nvim-dap-virtual-text
+            yazi-nvim
+            luasnip
+            friendly-snippets
+            auto-pairs
+          ];
           markdown = with pkgs.vimPlugins; [
             obsidian-nvim
             render-markdown-nvim

@@ -6,7 +6,7 @@
 	];
 
 	virtualisation.docker = {
-		enable = true;
+		enable = false;
 		rootless = {
 			enable = true;
 			setSocketVariable = true;
@@ -14,7 +14,7 @@
 	};
 
 	# Tailscale
-	services.tailscale.enable = true;
+	services.tailscale.enable = false;
 
 	# SSH
 	services.openssh = {
