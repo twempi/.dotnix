@@ -10,9 +10,7 @@
       enableUserService = true;
     };
 
-    supergfxd = {
-      enable = true;
-      # path = [pkgs.pciutils];
-    };
+    supergfxd.enable = true;
   };
+  systemd.services.supergfxd.path = [pkgs.pciutils];
 }
