@@ -6,7 +6,7 @@
 }: {
   nixpkgs.overlays = [
     (final: prev: {
-      iloader = prev.callPackage ~/../pkgs/iloader/default.nix {};
+      iloader = prev.callPackage ../pkgs/iloader/default.nix {};
     })
   ];
 

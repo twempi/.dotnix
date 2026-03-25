@@ -19,10 +19,20 @@
   webkitgtk_4_1,
   libsoup_3,
   librsvg,
-  xorg,
   libGL,
   mesa,
   alsa-lib,
+  libx11,
+  libxcursor,
+  libxi,
+  libxrandr,
+  libxext,
+  libxfixes,
+  libxcomposite,
+  libxdamage,
+  libxrender,
+  libxtst,
+  libxcb,
 }:
 stdenvNoCC.mkDerivation rec {
   pname = "iloader";
@@ -30,8 +40,7 @@ stdenvNoCC.mkDerivation rec {
 
   src = fetchurl {
     url = "https://github.com/nab138/iloader/releases/download/v${version}/iloader-linux-amd64.deb";
-    # replace after first build attempt with the real hash from nix
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash = "sha256-m/1M8IfC3e6mAIZ0z7kKfnTgSsO75YSwdHh2kVJov7s=";
   };
 
   nativeBuildInputs = [
@@ -57,17 +66,17 @@ stdenvNoCC.mkDerivation rec {
     libGL
     mesa
     alsa-lib
-    xorg.libX11
-    xorg.libXcursor
-    xorg.libXi
-    xorg.libXrandr
-    xorg.libXext
-    xorg.libXfixes
-    xorg.libXcomposite
-    xorg.libXdamage
-    xorg.libXrender
-    xorg.libXtst
-    xorg.libxcb
+    libx11
+    libxcursor
+    libxi
+    libxrandr
+    libxext
+    libxfixes
+    libxcomposite
+    libxdamage
+    libxrender
+    libxtst
+    libxcb
   ];
 
   unpackPhase = ''
@@ -77,26 +86,26 @@ stdenvNoCC.mkDerivation rec {
   '';
 
   installPhase = ''
-    runHook preInstall
+        runHook preInstall
 
-    mkdir -p $out
-    cp -r usr/* $out/
+        mkdir -p $out
+        cp -r usr/* $out/
 
-    if [ -f "$out/bin/iloader" ]; then
-      chmod +x "$out/bin/iloader"
-    fi
+        if [ -f "$out/bin/iloader" ]; then
+          chmod +x "$out/bin/iloader"
+        fi
 
     if [ -f "$out/share/applications/iloader.desktop" ]; then
-      substituteInPlace "$out/share/applications/iloader.desktop" \
-        --replace-fail "/usr/bin/iloader" "$out/bin/iloader"
+      sed -i "s|^Exec=.*|Exec=$out/bin/iloader|" \
+        "$out/share/applications/iloader.desktop"
     fi
 
-    wrapProgram "$out/bin/iloader" \
-      --set WEBKIT_DISABLE_DMABUF_RENDERER 1 \
-      --prefix XDG_DATA_DIRS : "${gtk3}/share/gsettings-schemas/${gtk3.name}" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [libGL mesa]}"
+        wrapProgram "$out/bin/iloader" \
+          --set WEBKIT_DISABLE_DMABUF_RENDERER 1 \
+          --prefix XDG_DATA_DIRS : "${gtk3}/share/gsettings-schemas/${gtk3.name}" \
+          --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [libGL mesa]}"
 
-    runHook postInstall
+        runHook postInstall
   '';
 
   desktopItems = [
@@ -114,7 +123,7 @@ stdenvNoCC.mkDerivation rec {
     homepage = "https://iloader.app/";
     license = licenses.mit;
     sourceProvenance = with sourceTypes; [binaryNativeCode];
-    platforms = ["x86_64-linux"];
+    platforms = [stdenvNoCC.hostPlatform.system];
     mainProgram = "iloader";
   };
 }
