@@ -1,9 +1,4 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}: {
+{lib, ...}: {
   stylix.targets.foot.enable = true;
 
   programs.foot = {
@@ -25,7 +20,7 @@
       bell = {
         system = "no";
       };
-      colors = {
+      colors-dark = {
         alpha = lib.mkForce "1.0";
       };
       csd = {

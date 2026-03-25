@@ -1,11 +1,7 @@
-{
-  lib,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   stylix.targets.anki.enable = true;
 
-  programs.anki = {
+  programs.anki.profiles.edward = {
     enable = true;
     sync = {
       autoSync = true;

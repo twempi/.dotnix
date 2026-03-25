@@ -1,12 +1,12 @@
-{ pkgs, ... }: {
+{pkgs, config, ...}: {
+  stylix.targets.gtk.enable = true;
 
-	# GOT REPLACED BY STYLIX!!!!
-	stylix.targets.gtk.enable = true;
+  gtk.iconTheme = {
+    name = "Papirus-Dark";
+    package = pkgs.papirus-icon-theme.override {
+      color = "black";
+    };
+  };
 
-	gtk.iconTheme = {
-		name = "Papirus-Dark";
-		package = pkgs.papirus-icon-theme.override {
-			color = "black";
-		};
-	};
+  gtk.gtk4.theme = config.gtk.theme;
 }

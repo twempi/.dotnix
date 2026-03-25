@@ -45,7 +45,6 @@
     zathura
     gearlever
     upscayl
-    winboat
 
     # CLI
     brightnessctl

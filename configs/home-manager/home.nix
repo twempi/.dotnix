@@ -15,5 +15,8 @@
   xdg.userDirs = {
     enable = true;
     createDirectories = true;
+    setSessionVariables = true;
   };
+
+  news.display = "silent";
 }

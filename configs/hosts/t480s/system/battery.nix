@@ -45,8 +45,10 @@
   };
   boot.kernelParams = ["mem_sleep_default=deep"];
 
-  systemd.sleep.extraConfig = ''
-    HibernateDelaySec=30m
-    SuspendState=mem
-  '';
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = true;
+    AllowHibernation = true;
+    AllowHybridSleep = true;
+    AllowSuspendThenHibernate = true;
+  };
 }
