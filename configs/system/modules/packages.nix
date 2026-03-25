@@ -4,6 +4,12 @@
   inputs,
   ...
 }: {
+  nixpkgs.overlays = [
+    (final: prev: {
+      iloader = prev.callPackage ~/../pkgs/iloader/default.nix {};
+    })
+  ];
+
   environment.systemPackages = with pkgs; [
     # Wayland
     hyprpicker
@@ -45,6 +51,7 @@
     zathura
     gearlever
     upscayl
+    iloader
 
     # CLI
     brightnessctl
