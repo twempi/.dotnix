@@ -6,7 +6,7 @@
     ./hardware-configuration.nix
     # ./system/asus.nix
     ./system/graphics.nix
-    ./system/g14-autogpu.nix
+    # ./system/g14-autogpu.nix
     ./system/g14-base.nix
 
     ./programs/fish
