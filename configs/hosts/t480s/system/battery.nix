@@ -19,13 +19,16 @@
 
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
         CPU_ENERGY_PERF_POLICY_ON_BAT = "default";
-        CPU_BOOST_ON_BAT = 1;
+        CPU_BOOST_ON_BAT = 0;
 
         CPU_SCALING_GOVERNOR_ON_SAV = "powersave";
         CPU_ENERGY_PERF_POLICY_ON_SAV = "balance_performance";
 
-        CPU_MAX_PERF_ON_BAT = 80;
+        CPU_MAX_PERF_ON_BAT = 70;
         CPU_MIN_PERF_ON_BAT = 0;
+
+        CPU_MAX_PERF_ON_AC = 100;
+        CPU_MIN_PERF_ON_AC = 0;
 
         STOP_CHARGE_THRESH_BAT0 = 95;
         START_CHARGE_THRESH_BAT0 = 80;
