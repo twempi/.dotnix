@@ -1,9 +1,4 @@
-{
-  pkgs,
-  config,
-  lib,
-  ...
-}: {
+{pkgs, ...}: {
   wayland.windowManager.sway = {
     config = {
       bars = [];
@@ -20,6 +15,12 @@
           mode = "1920x1080@60.031Hz";
           pos = "0 0";
           scale = "1";
+        };
+
+        "eDP-2" = {
+          mode = "2650x1600@120.000Hz";
+          pos = "0 0";
+          scale = "1.5";
         };
         "HDMI-A-2" = {
           mode = "1920x1080@60Hz";

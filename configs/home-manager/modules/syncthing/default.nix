@@ -13,6 +13,10 @@
         t480s = {
           id = "QN7LOTX-BA4PZHR-CXZ47JH-POMXASY-6T4JPEW-3XEXAMH-77K4ACA-DONSCAX";
         };
+
+        g14 = {
+          id = "AN7LFNP-RPK5BQO-77CE7SD-QQNPBQF-CLXRNSG-INK6UB5-QTZUPEY-AVKNAAC";
+        };
       };
 
       options = {
@@ -26,12 +30,12 @@
       folders = {
         notes = {
           id = "notes";
-          devices = ["desktop" "t480s"];
+          devices = ["desktop" "t480s" "g14"];
           path = "/home/edward/Documents/notes";
         };
         school = {
           id = "school";
-          devices = ["desktop" "t480s"];
+          devices = ["desktop" "t480s" "g14"];
           path = "/home/edward/Documents/school";
         };
       };

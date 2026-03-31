@@ -11,10 +11,7 @@
   ];
 
   services = {
-    asusd = {
-      enable = true;
-      enableUserService = true;
-    };
+    asusd.enable = true;
     supergfxd.enable = true;
 
     tlp = {
