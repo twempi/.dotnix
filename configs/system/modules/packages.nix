@@ -52,6 +52,7 @@
     gearlever
     upscayl
     iloader
+    vscodium
 
     # CLI
     brightnessctl

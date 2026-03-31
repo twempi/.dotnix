@@ -6,6 +6,7 @@
     ./hardware-configuration.nix
     ./system/battery.nix
     ./system/undervolt.nix
+    ./system/playit.nix
 
     ./programs/fish
 
