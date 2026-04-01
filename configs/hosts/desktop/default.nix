@@ -1,13 +1,22 @@
 {
   imports = [
     ../../system/configuration.nix
-    # ../../system/modules.nix
 
     ./hardware-configuration.nix
-    ./system
+
+    ./system/desktop/boot.nix
+    ./system/desktop/drives.nix
+    ./system/desktop/graphics.nix
+    ./system/desktop/optimizations.nix
+    ./system/desktop/polkit.nix
+    ./system/desktop/services.nix
+    ./system/desktop/aoc-q27g3xmn.nix
+    ./system/desktop/packages.nix
+
+
     ./minecraft
 
-    ./programs/fish
+    ./system/fish/fish.nix
   ];
 
   networking = {

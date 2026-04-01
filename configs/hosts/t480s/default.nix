@@ -1,14 +1,14 @@
 {
   imports = [
     ../../system/configuration.nix
-    # ../../system/modules.nix
 
     ./hardware-configuration.nix
-    ./system/battery.nix
-    ./system/undervolt.nix
-    ./system/playit.nix
 
-    ./programs/fish
+    ./system/t480s/battery.nix
+    ./system/t480s/undervolt.nix
+    ./system/t480s/graphics.nix
+
+    ./system/fish/fish.nix
 
     ./minecraft
   ];
