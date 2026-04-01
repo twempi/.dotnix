@@ -4,11 +4,11 @@
 
     ./hardware-configuration.nix
 
-    ./system/t480s/battery.nix
-    ./system/t480s/undervolt.nix
-    ./system/t480s/graphics.nix
+    ./system/battery.nix
+    ./system/undervolt.nix
+    ./system/graphics.nix
 
-    ./system/fish/fish.nix
+    ./home/fish/fish.nix
 
     ./minecraft
   ];

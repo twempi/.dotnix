@@ -4,19 +4,18 @@
 
     ./hardware-configuration.nix
 
-    ./system/desktop/boot.nix
-    ./system/desktop/drives.nix
-    ./system/desktop/graphics.nix
-    ./system/desktop/optimizations.nix
-    ./system/desktop/polkit.nix
-    ./system/desktop/services.nix
-    ./system/desktop/aoc-q27g3xmn.nix
-    ./system/desktop/packages.nix
+    ./system/boot.nix
+    ./system/drives.nix
+    ./system/graphics.nix
+    ./system/optimizations.nix
+    ./system/polkit.nix
+    ./system/services.nix
+    ./system/aoc-q27g3xmn.nix
+    ./system/packages.nix
 
+    ./home/fish/fish.nix
 
     ./minecraft
-
-    ./system/fish/fish.nix
   ];
 
   networking = {

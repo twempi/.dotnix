@@ -4,12 +4,13 @@
     # ../../system/modules.nix
 
     ./hardware-configuration.nix
-    ./system/g14/asus.nix
-    ./system/g14/autogpu.nix
-    ./system/g14/battery.nix
-    ./system/g14/graphics.nix
 
-    ./system/fish/fish.nix
+    ./system/asus.nix
+    ./system/autogpu.nix
+    ./system/battery.nix
+    ./system/graphics.nix
+
+    ./home/fish/fish.nix
   ];
 
   networking = {
