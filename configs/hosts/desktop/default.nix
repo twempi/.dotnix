@@ -14,8 +14,6 @@
     ./system/packages.nix
 
     ./home/fish/fish.nix
-
-    ./minecraft
   ];
 
   networking = {
