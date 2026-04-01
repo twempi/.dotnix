@@ -23,53 +23,69 @@ let
 
     ac_path=""
     for d in /sys/class/power_supply/*; do
-      if [ -f "$d/type" ] && [ "$(cat "$d/type")" = "Mains" ]; then
+      if [ -f "$d/type" ] && [ "$(${pkgs.coreutils}/bin/cat "$d/type")" = "Mains" ]; then
         ac_path="$d"
         break
       fi
     done
 
     if [ -z "$ac_path" ]; then
-      echo "No Mains power_supply device found"
+      logger -t gfx-auto-switch "No Mains power_supply device found"
       exit 1
     fi
 
-    online="$(cat "$ac_path/online")"
+    online="$(${pkgs.coreutils}/bin/cat "$ac_path/online")"
     current="$(${pkgs.supergfxctl}/bin/supergfxctl --get 2>/dev/null || true)"
+    pending="$(${pkgs.supergfxctl}/bin/supergfxctl --pend-mode 2>/dev/null || true)"
+    action="$(${pkgs.supergfxctl}/bin/supergfxctl --pend-action 2>/dev/null || true)"
 
-    if [ "$online" = "1" ]; then
-      target="Hybrid"
-      power_text="AC connected"
-    else
-      target="Integrated"
-      power_text="Running on battery"
+    if [ "$online" = "0" ]; then
+      if [ "$current" = "Integrated" ]; then
+        logger -t gfx-auto-switch "Running on battery, GPU mode already Integrated"
+        exit 0
+      fi
+
+      if ${pkgs.supergfxctl}/bin/supergfxctl --mode Integrated; then
+        new_current="$(${pkgs.supergfxctl}/bin/supergfxctl --get 2>/dev/null || true)"
+        new_pending="$(${pkgs.supergfxctl}/bin/supergfxctl --pend-mode 2>/dev/null || true)"
+        new_action="$(${pkgs.supergfxctl}/bin/supergfxctl --pend-action 2>/dev/null || true)"
+
+        logger -t gfx-auto-switch "Battery power, requested GPU mode change '$current' -> 'Integrated'"
+
+        if [ "$new_current" = "Integrated" ]; then
+          notify_user \
+            "GPU mode switched" \
+            "Running on battery. Graphics mode changed to Integrated."
+        else
+          notify_user \
+            "GPU mode change requested" \
+            "Running on battery. Requested Integrated. Pending mode: $new_pending. Action: $new_action."
+        fi
+
+        exit 0
+      fi
+
+      logger -t gfx-auto-switch "Failed to switch GPU mode to Integrated"
+      exit 1
     fi
 
-    if [ "$current" = "$target" ]; then
-      logger -t gfx-auto-switch "$power_text, GPU mode already '$current'"
+    if [ "$current" = "Hybrid" ]; then
+      logger -t gfx-auto-switch "AC connected, GPU mode already Hybrid"
       exit 0
     fi
 
-    if ${pkgs.supergfxctl}/bin/supergfxctl --mode "$target"; then
-      pending_mode="$(${pkgs.supergfxctl}/bin/supergfxctl --pend-mode 2>/dev/null || true)"
-      pending_action="$(${pkgs.supergfxctl}/bin/supergfxctl --pend-action 2>/dev/null || true)"
-      new_current="$(${pkgs.supergfxctl}/bin/supergfxctl --get 2>/dev/null || true)"
-
-      logger -t gfx-auto-switch "$power_text, requested GPU mode change '$current' -> '$target'"
-
-      if [ "$new_current" = "$target" ]; then
-        notify_user \
-          "GPU mode switched" \
-          "$power_text. Graphics mode changed to $target."
-      else
-        notify_user \
-          "GPU mode change requested" \
-          "$power_text. Requested $target. Pending mode: $pending_mode. Action: $pending_action."
-      fi
-    else
-      logger -t gfx-auto-switch "Failed to switch GPU mode '$current' -> '$target'"
-      exit 1
+    if [ "$pending" = "Hybrid" ]; then
+      notify_user \
+        "Hybrid mode pending" \
+        "AC connected. Hybrid mode is already pending. Log out to apply."
+      logger -t gfx-auto-switch "AC connected, Hybrid already pending; action: $action"
+      exit 0
     fi
+
+    notify_user \
+      "AC connected" \
+      "Hybrid mode is recommended on AC. Run 'supergfxctl --mode Hybrid' and log out to apply."
+    logger -t gfx-auto-switch "AC connected; notifying user instead of auto-switching to Hybrid"
   '';
 in
 {

@@ -89,7 +89,6 @@
           ./configs/hosts/desktop/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
-          # inputs.mango.nixosModules.mango
         ];
 
         specialArgs = {
@@ -103,7 +102,6 @@
           ./configs/hosts/t480s/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
-          # inputs.mango.nixosModules.mango
         ];
 
         specialArgs = {
@@ -117,7 +115,6 @@
           ./configs/hosts/g14/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
-          # inputs.mango.nixosModules.mango
         ];
 
         specialArgs = {
@@ -138,8 +135,6 @@
           inputs.spicetify-nix.homeManagerModules.default
           niri.homeModules.config
           niri.homeModules.stylix
-
-          # inputs.mango.hmModules.mango
         ];
       };
     };

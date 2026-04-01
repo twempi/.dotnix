@@ -25,7 +25,7 @@
         relaysEnabled = true; # important one
         globalAnnounceEnabled = true;
         startBrowser = false;
-        urAccepted = false;
+        urAccepted = -1;
       };
 
       folders = {
