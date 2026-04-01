@@ -2,10 +2,6 @@
 {
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  environment.systemPackages = with pkgs; [
-    power-profiles-daemon
-  ];
-
   powerManagement.enable = true;
 
   services = {

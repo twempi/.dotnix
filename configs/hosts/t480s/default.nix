@@ -10,7 +10,7 @@
 
     ./home/fish/fish.nix
 
-    ./minecraft
+    ./system/minecraft.nix
   ];
 
   networking = {

@@ -5,7 +5,7 @@
     ./modules/defaults
     ./modules/gnome-keyring
     ./modules/latex
-    ./modules/hyprlock
+    # ./modules/hyprlock
     # ./modules/swayidle
     ./modules/rars
 
@@ -53,5 +53,6 @@
     ./modules/upscayl
     ./modules/syncthing
     ./modules/typst
+    ./modules/quickshell
   ];
 }
