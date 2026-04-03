@@ -7,10 +7,10 @@
     ./system/battery.nix
     ./system/undervolt.nix
     ./system/graphics.nix
-
-    ./home/fish/fish.nix
-
     ./system/minecraft.nix
+
+    ./home/fish
+
   ];
 
   networking = {
