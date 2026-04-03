@@ -6,7 +6,11 @@
 
     ./system/battery.nix
     ./system/undervolt.nix
+<<<<<<< Updated upstream
     ./system/graphics.nix
+=======
+    # ./system/playit.nix
+>>>>>>> Stashed changes
 
     ./home/fish/fish.nix
 
