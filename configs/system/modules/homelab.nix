@@ -14,7 +14,7 @@
 	};
 
 	# Tailscale
-	services.tailscale.enable = false;
+	services.tailscale.enable = true;
 
 	# SSH
 	services.openssh = {

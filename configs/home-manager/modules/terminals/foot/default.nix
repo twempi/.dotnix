@@ -1,5 +1,8 @@
 {lib, ...}: {
-  stylix.targets.foot.enable = false;
+  stylix.targets.foot = {
+    enable = true;
+    colors.enable = true;
+  };
 
   programs.foot = {
     enable = true;
@@ -22,10 +25,6 @@
 
       bell = {
         system = "no";
-      };
-
-      colors-dark = {
-        alpha = lib.mkForce "1.0";
       };
 
       csd = {

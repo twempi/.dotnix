@@ -67,6 +67,7 @@
 
         "type:touchpad" = {
           natural_scroll = "disabled";
+          dwt = "disabled";
         };
       };
 

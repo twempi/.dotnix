@@ -49,11 +49,11 @@
         package = pkgs.vanillaServers.vanilla-1_21_10;
 
         operators = {
-          blangebob = "4a3ae14d-62aa-4b6e-b381-0ebb0708569a";
-        };
-
-        symlinks = {
-          # "world/datapacks" = ./datapacks;
+          blangebob = {
+            uuid = "4a3ae14d-62aa-4b6e-b381-0ebb0708569a";
+            level = 3;
+            bypassesPlayerLimit = true;
+          };
         };
 
         serverProperties = {
@@ -62,7 +62,6 @@
           gamemode = 1;
           max-players = 20;
           motd = "vanilla new";
-          # level-name = "world";
         };
       };
     };
