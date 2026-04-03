@@ -45,7 +45,7 @@
         enable = true;
         autoStart = true;
         openFirewall = true;
-        jvmOpts = "-Xmx4G -Xms2G";
+        jvmOpts = "-Xmx6G -Xms2G";
         package = pkgs.vanillaServers.vanilla-1_21_10;
 
         operators = {
@@ -61,7 +61,16 @@
           difficulty = 3;
           gamemode = 1;
           max-players = 20;
-          motd = "vanilla new";
+          motd = "NASA Server";
+          spawn-protection = 0;
+          level-name = "world";
+        };
+
+        files = {
+          "world/datapacks/double_shulker.zip" = "./minecraft/datapacks/double shulker shells v1.3.15 (MC 1.21-1.21.11).zip";
+          "world/datapacks/multiplayer_sleep.zip" = "./minecraft/datapacks/multiplayer sleep v2.6.15 (MC 1.21-1.21.11).zip";
+          "world/datapacks/player_head_drop.zip" = "./minecraft/datapacks/player head drops v1.1.15 (MC 1.21-1.21.11).zip";
+          "world/datapacks/unlock_all_recipie.zip" = "./minecraft/datapacks/unlock all recipes v2.0.16 (MC 1.21-1.21.11).zip";
         };
       };
     };
