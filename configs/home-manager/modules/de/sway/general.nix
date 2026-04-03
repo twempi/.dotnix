@@ -5,29 +5,29 @@
 
       defaultWorkspace = "workspace 1";
 
-      output = {
-        # "*" = {
-        #   mode = "2560x1440@180.002Hz";
-        #   pos = "0 0";
-        #   scale = "1";
-        # };
-        "eDP-1" = {
-          mode = "2650x1600@120.000Hz";
-          pos = "0 0";
-          scale = "1.5";
-        };
-
-        "eDP-2" = {
-          mode = "2650x1600@120.000Hz";
-          pos = "0 0";
-          scale = "1.5";
-        };
-        "HDMI-A-2" = {
-          mode = "1920x1080@60Hz";
-          pos = "0 -1080";
-          scale = "1";
-        };
-      };
+      # output = {
+      #   # "*" = {
+      #   #   mode = "2560x1440@180.002Hz";
+      #   #   pos = "0 0";
+      #   #   scale = "1";
+      #   # };
+      #   "eDP-1" = {
+      #     mode = "2650x1600@120.000Hz";
+      #     pos = "0 0";
+      #     scale = "1.5";
+      #   };
+      #
+      #   "eDP-2" = {
+      #     mode = "2650x1600@120.000Hz";
+      #     pos = "0 0";
+      #     scale = "1.5";
+      #   };
+      #   "HDMI-A-2" = {
+      #     mode = "1920x1080@60Hz";
+      #     pos = "0 -1080";
+      #     scale = "1";
+      #   };
+      # };
 
       startup = [
         {command = "swww-daemon";}
