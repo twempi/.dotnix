@@ -67,17 +67,15 @@
         };
 
         files = {
-          "world/datapacks/double_shulker.zip" =
-            ./. + "/minecraft/datapacks/double shulker shells v1.3.15 (MC 1.21-1.21.11).zip";
+          "world/datapacks/double_shulker.zip" = ./. + "/minecraft/datapacks/double shulker shells v1.3.15 (MC 1.21-1.21.11).zip";
 
-          "world/datapacks/multiplayer_sleep.zip" =
-            ./. + "/minecraft/datapacks/multiplayer sleep v2.6.15 (MC 1.21-1.21.11).zip";
+          "world/datapacks/multiplayer_sleep.zip" = ./. + "/minecraft/datapacks/multiplayer sleep v2.6.15 (MC 1.21-1.21.11).zip";
 
-          "world/datapacks/player_head_drop.zip" =
-            ./. + "/minecraft/datapacks/player head drops v1.1.15 (MC 1.21-1.21.11).zip";
+          "world/datapacks/player_head_drop.zip" = ./. + "/minecraft/datapacks/player head drops v1.1.15 (MC 1.21-1.21.11).zip";
 
-          "world/datapacks/unlock_all_recipe.zip" =
-            ./. + "/minecraft/datapacks/unlock all recipes v2.0.16 (MC 1.21-1.21.11).zip";
+          "world/datapacks/unlock_all_recipe.zip" = ./. + "/minecraft/datapacks/unlock all recipes v2.0.16 (MC 1.21-1.21.11).zip";
+
+          "server-icon.png" = ./. + "/minecraft/server-icon.png";
         };
       };
     };
