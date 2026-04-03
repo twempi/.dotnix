@@ -131,6 +131,7 @@
         };
         modules = [
           ./configs/home-manager/home.nix
+          ./configs/hosts/g14/home/modules.nix
           stylix.homeModules.stylix
           inputs.spicetify-nix.homeManagerModules.default
           niri.homeModules.config

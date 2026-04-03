@@ -1,16 +1,9 @@
 {
   imports = [
     ../../system/configuration.nix
-    # ../../system/modules.nix
-
     ./hardware-configuration.nix
 
-    ./system/asus.nix
-    ./system/autogpu.nix
-    ./system/battery.nix
-    ./system/graphics.nix
-
-    ./home/fish/fish.nix
+    ./system/modules.nix
   ];
 
   networking = {
