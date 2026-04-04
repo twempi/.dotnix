@@ -23,12 +23,12 @@ choice=$(
 
 WALLPAPER="$wallpapers_dir/$choice"
 
-swww img "$WALLPAPER" \
+awww img "$WALLPAPER" \
   --transition-type any \
   --transition-duration 2 \
   --transition-step 255 \
   --transition-fps 60 &&
-  notify-send "Wallpaper Changed" -i "$WALLPAPER" --app-name=swww
+  notify-send "Wallpaper Changed" -i "$WALLPAPER" --app-name=awww
 
 # matugen image "$WALLPAPER"
 

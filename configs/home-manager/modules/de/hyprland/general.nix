@@ -11,7 +11,7 @@
     ];
 
     exec-once = [
-      "swww-daemon"
+      "awww-daemon"
       "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp"
       "${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css"
 

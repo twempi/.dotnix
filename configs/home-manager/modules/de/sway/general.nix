@@ -34,7 +34,7 @@
       };
 
       startup = [
-        {command = "swww-daemon";}
+        {command = "awww-daemon";}
         {command = "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp";}
         {command = "${pkgs.waybar}/bin/waybar -c ~/.config/waybar/sway.jsonc -s ~/.config/waybar/sway.css";}
 

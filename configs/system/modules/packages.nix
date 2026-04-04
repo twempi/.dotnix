@@ -19,7 +19,7 @@
     hyprlock
     swaynotificationcenter
     waybar
-    swww
+    awww
 
     gnome-keyring
     cliphist

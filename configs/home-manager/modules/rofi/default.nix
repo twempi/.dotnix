@@ -76,7 +76,7 @@
       # Add whatever your script uses:
       runtimeInputs = with pkgs; [
         rofi # or rofi-wayland on Wayland
-        swww
+        awww
         libnotify # for notify-send
         findutils
         coreutils

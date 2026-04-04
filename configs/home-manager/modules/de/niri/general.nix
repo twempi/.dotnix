@@ -52,7 +52,7 @@
     };
 
     spawn-at-startup = [
-      {argv = ["swww-daemon"];}
+      {argv = ["awww-daemon"];}
       {
         argv = [
           "${pkgs.waybar}/bin/waybar"
