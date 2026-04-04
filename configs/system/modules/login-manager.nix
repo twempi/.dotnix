@@ -1,9 +1,13 @@
 {
   services.displayManager.ly = {
-    enable = true;
+    enable = false;
     settings = {
-      save = false;
-      load = false;
+      save = true;
+      load = true;
     };
+  };
+
+  services.greetd = {
+    enable = true;
   };
 }

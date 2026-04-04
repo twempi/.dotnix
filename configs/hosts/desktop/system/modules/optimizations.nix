@@ -1,10 +1,11 @@
 { config, pkgs, ... }: {
   # Optimizations
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages;
   boot.initrd.kernelModules = [ "ntsync" ];
   boot.kernelParams = [
-    "mitigations=off"     
-    "amd_pstate=active"   
+    "nvidia-drm.modeset=1"
+    "mitigations=off"
+    "amd_pstate=active"
   ];
   powerManagement.cpuFreqGovernor = "performance";
 }
