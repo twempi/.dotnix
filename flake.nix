@@ -45,13 +45,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # elephant.url = "github:abenz1267/elephant";
-    #
-    # walker = {
-    #   url = "github:abenz1267/walker";
-    #   inputs.elephant.follows = "elephant";
-    # };
-
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -70,7 +63,6 @@
     bunny-yazi,
     zen-browser,
     niri,
-    # walker,
     nix-minecraft,
     ltspice,
     ...
