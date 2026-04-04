@@ -9,7 +9,7 @@
     CLUTTER_BACKEND = "wayland";
     QT_QPA_PLATFORMTHEME = "qt5ct";
     ELECTRON_OZONE_PLATFORM_HINT = "wayland";
-    XDG_SESSION_TYPE = "wayland";
+    # XDG_SESSION_TYPE = "wayland";
     NIXOS_OZONE_WL = "1";
   };
 

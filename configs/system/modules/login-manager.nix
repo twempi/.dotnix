@@ -2,8 +2,8 @@
   services.displayManager.ly = {
     enable = true;
     settings = {
-      save = true;
-      load = true;
+      save = false;
+      load = false;
     };
   };
 }
