@@ -3,5 +3,5 @@
     enable = true;
   };
 
-  xdg.configFile."hypr/scripts".source = ./scripts;
+  # xdg.configFile."hypr/scripts".source = ./scripts;
 }

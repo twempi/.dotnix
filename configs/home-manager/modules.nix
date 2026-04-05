@@ -54,5 +54,6 @@
     ./modules/syncthing
     ./modules/typst
     ./modules/quickshell
+    ./modules/dms
   ];
 }
