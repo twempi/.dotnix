@@ -1,5 +1,6 @@
 {
   imports = [
-    ./modules/de/sway/default.nix
+    ./modules/de/sway
+    ./modules/syncthing
   ];
 }
