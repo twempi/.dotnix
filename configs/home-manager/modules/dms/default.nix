@@ -22,7 +22,10 @@
     settings = {
       theme = "dark";
       dynamicTheming = false;
-      # Add any other settings here
+
+      barConfigs = {
+        squareCorners = true;
+      };
     };
   };
 }

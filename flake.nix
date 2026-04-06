@@ -51,6 +51,11 @@
     };
 
     ltspice.url = "git+https://codeberg.org/pilonsi/flake-ltspice";
+
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -65,6 +70,7 @@
     niri,
     nix-minecraft,
     ltspice,
+    dms,
     ...
   }: let
     system = "x86_64-linux";

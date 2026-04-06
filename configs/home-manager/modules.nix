@@ -5,7 +5,6 @@
     ./modules/defaults
     ./modules/gnome-keyring
     ./modules/latex
-    # ./modules/hyprlock
     # ./modules/swayidle
     ./modules/rars
 
@@ -49,11 +48,10 @@
     ./modules/chromium
     ./modules/zen-browser
     ./modules/matugen
-    # ./modules/walker
     ./modules/upscayl
     ./modules/syncthing
     ./modules/typst
-    ./modules/quickshell
-    ./modules/dms
+    # ./modules/quickshell
+    # ./modules/dms
   ];
 }

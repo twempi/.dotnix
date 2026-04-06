@@ -106,27 +106,6 @@
     pipx
     trash-cli
 
-    quickshell
-    alsa-utils
-    fortune
-    networkmanager_dmenu
-    fd
-    qt6.qtmultimedia
-    qt6.qt5compat
-    qt6.qtwebsockets
-    cava
-    jq
-    socat
-    pamixer
-    acpi
-    iw
-    networkmanager
-    lm_sensors
-    bc
-    pulseaudio
-    ladspaPlugins
-    ladspa-sdk
-
     # Python
     (python313.withPackages (ps: [
       ps.pywal
