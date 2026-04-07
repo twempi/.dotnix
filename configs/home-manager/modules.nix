@@ -23,7 +23,7 @@
     # Shell
     ./modules/tmux
     ./modules/fish
-    ./modules/zsh
+    # ./modules/zsh
     ./modules/cli
     ./modules/ssh
 
