@@ -13,8 +13,10 @@
       EDITOR = "nvim";
       VISUAL = "nvim";
 
-      BROWSER = "${pkgs.brave}/bin/brave";
-      DEFAULT_BROWSER = "${pkgs.brave}/bin/brave";
+      # BROWSER = "${pkgs.brave}/bin/brave";
+      # DEFAULT_BROWSER = "${pkgs.brave}/bin/brave";
+      BROWSER = "zen-beta";
+      DEFAULT_BROWSER = "zen-beta";
     };
   };
 }

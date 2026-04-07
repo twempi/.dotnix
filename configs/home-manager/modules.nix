@@ -51,7 +51,7 @@
     ./modules/upscayl
     ./modules/syncthing
     ./modules/typst
-    # ./modules/quickshell
+    ./modules/quickshell
     # ./modules/dms
   ];
 }

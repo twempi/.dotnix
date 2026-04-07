@@ -6,8 +6,10 @@
     EDITOR = "nvim";
     VISUAL = "nvim";
 
-    BROWSER = "${pkgs.brave}/bin/brave";
-    DEFAULT_BROWSER = "${pkgs.brave}/bin/brave";
+    # BROWSER = "${pkgs.brave}/bin/brave";
+    # DEFAULT_BROWSER = "${pkgs.brave}/bin/brave";
+    BROWSER = "zen-beta";
+    DEFAULT_BROWSER = "zen-beta";
   };
 
   ############################
@@ -18,10 +20,10 @@
 
     defaultApplications = {
       # Web / URLs
-      "text/html" = ["brave-browser.desktop"];
-      "application/xhtml+xml" = ["brave-browser.desktop"];
-      "x-scheme-handler/http" = ["brave-browser.desktop"];
-      "x-scheme-handler/https" = ["brave-browser.desktop"];
+      # "text/html" = ["brave-browser.desktop"];
+      # "application/xhtml+xml" = ["brave-browser.desktop"];
+      # "x-scheme-handler/http" = ["brave-browser.desktop"];
+      # "x-scheme-handler/https" = ["brave-browser.desktop"];
 
       # Images (EOG)
       "image/png" = ["org.gnome.eog.desktop"];

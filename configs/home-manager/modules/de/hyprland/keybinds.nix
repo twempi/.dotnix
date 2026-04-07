@@ -6,10 +6,10 @@
     "$colorPicker" = "${pkgs.hyprpicker}/bin/hyprpicker -a";
     "$noti-center" = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
 
-    "$terminal" = "${pkgs.ghostty}/bin/ghostty";
-    # "$terminal" = "${pkgs.kitty}/bin/kitty";
-    "$browser" = "${pkgs.brave}/bin/brave";
-    # "$browser" = "zen-beta";
+    # "$terminal" = "${pkgs.ghostty}/bin/ghostty";
+    "$terminal" = "${pkgs.kitty}/bin/kitty";
+    # "$browser" = "${pkgs.brave}/bin/brave";
+    "$browser" = "zen-beta";
     "$explorer1" = "$terminal -e ${pkgs.yazi}/bin/yazi";
     "$explorer2" = "${pkgs.nautilus}/bin/nautilus";
     "$notes" = "${pkgs.obsidian}/bin/obsidian";
@@ -18,6 +18,7 @@
     "$editor" = "$terminal -e nvim";
 
     "$mod" = "SUPER";
+    "$qs" = "bash ~/.config/hypr/scripts/qs_manager.sh";
 
     bind =
       [
@@ -32,7 +33,6 @@
         "$mod, B, exec, $browser"
         "$mod, E, exec, $explorer1"
         "$mod SHIFT, E, exec, $explorer2"
-        # "$mod, M, exec, $terminal -e spotify_player"
         "$mod, M, exec, spotify"
         "$mod, O, exec, $notes"
         "$mod, N, exec, $editor"
@@ -77,7 +77,7 @@
         "$mod, 9, workspace, 9"
         "$mod, 0, workspace, 10"
 
-        # Mode active window to workspace #
+        # Move active window to workspace #
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"
         "$mod SHIFT, 3, movetoworkspace, 3"
@@ -88,6 +88,18 @@
         "$mod SHIFT, 8, movetoworkspace, 8"
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
+
+        # QuickShell toggles (merged from ilyamiro, remapped to avoid conflicts)
+        "$mod ALT, M, exec, $qs toggle monitors"
+        "$mod ALT, S, exec, $qs toggle stewart"
+        "$mod ALT, Q, exec, $qs toggle music"
+        "$mod ALT, B, exec, $qs toggle battery"
+        "$mod ALT, W, exec, $qs toggle wallpaper"
+        "$mod ALT, C, exec, $qs toggle calendar"
+        "$mod ALT, N, exec, $qs toggle network"
+        "$mod ALT, T, exec, $qs toggle focustime"
+        "$mod ALT, V, exec, $qs toggle volume"
+        "$mod ALT, G, exec, $qs toggle guide"
       ]
       ++ (
         # workspaces 1-9
@@ -108,6 +120,7 @@
       # Resize windows with mouse
       "$mod, mouse:273, resizewindow"
     ];
+
     binde = [
       # Resize windows with $mod + Shift + HJKL(vim keys)
       "$mod SHIFT, H, resizeactive,-50 0"
@@ -115,6 +128,7 @@
       "$mod SHIFT, J, resizeactive,0 -50"
       "$mod SHIFT, K, resizeactive,0 50"
     ];
+
     bindel = [
       # Laptop multimedia keys for volume and LCD brightness
       ",XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
@@ -124,6 +138,7 @@
       ",XF86MonBrightnessUp, exec, brightnessctl set 5%+"
       ",XF86MonBrightnessDown, exec, brightnessctl set 5%-"
     ];
+
     bindl = [
       # Requires playerctl
       ",XF86AudioNext, exec, playerctl next"
