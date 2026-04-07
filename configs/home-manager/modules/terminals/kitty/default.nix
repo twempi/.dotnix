@@ -1,10 +1,16 @@
 {
-  config,
-  pkgs,
-  lib,
-  ...
-}: {
-  stylix.targets.kitty.enable = true;
+  stylix.targets.kitty = {
+    enable = true;
+    fonts = {
+      enable = true;
+      # override = "Geist Mono";
+    };
+    opacity = {
+      enable = true;
+      override = 0.8;
+    };
+    variant256Colors = true;
+  };
 
   programs.kitty = {
     enable = true;
