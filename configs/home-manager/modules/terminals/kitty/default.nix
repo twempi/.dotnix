@@ -7,7 +7,9 @@
     };
     opacity = {
       enable = true;
-      override = 0.8;
+      override = {
+        terminal = 0.8;
+      };
     };
     variant256Colors = true;
   };
