@@ -5,4 +5,7 @@ Personal Nix config
 ---
 
 ## TODOs
-none rn
+- [ ] clean up flakes.nix so its more minimal
+  - [ ] 
+
+## DONE

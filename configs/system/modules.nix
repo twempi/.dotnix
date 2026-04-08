@@ -1,8 +1,5 @@
 {
   imports = [
-    # ./desktop
-    # ./laptop
-
     ./de/niri.nix
     ./de/sway.nix
     ./de/hyprland.nix
