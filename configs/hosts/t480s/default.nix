@@ -9,8 +9,6 @@
     ./system/graphics.nix
     ./system/minecraft.nix
 
-    ./home/fish
-
   ];
 
   networking = {
