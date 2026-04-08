@@ -4,6 +4,6 @@
     ./modules/autogpu.nix
     ./modules/battery.nix
     ./modules/graphics.nix
-    ./modules/fish.nix
+    # ./modules/fish.nix
   ];
 }

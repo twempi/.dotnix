@@ -8,6 +8,6 @@
     ./modules/packages.nix
     ./modules/polkit.nix
     ./modules/services.nix
-    ./modules/fish.nix
+    # ./modules/fish.nix
   ];
 }

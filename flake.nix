@@ -123,15 +123,47 @@
     };
 
     homeConfigurations = {
-      edward = home-manager.lib.homeManagerConfiguration {
+      edward-desktop = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = {
           inherit inputs system;
+          hostname = "desktop";
+        };
+        modules = [
+          ./configs/home-manager/home.nix
+          ./configs/hosts/desktop/home/modules.nix
+          stylix.homeModules.stylix
+          inputs.spicetify-nix.homeManagerModules.default
+          niri.homeModules.config
+          niri.homeModules.stylix
+        ];
+      };
+
+      edward-g14 = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = {
+          inherit inputs system;
+          hostname = "g14";
         };
         modules = [
           ./configs/home-manager/home.nix
           ./configs/hosts/g14/home/modules.nix
-          ./configs/hosts/desktop/home/modules.nix
+          stylix.homeModules.stylix
+          inputs.spicetify-nix.homeManagerModules.default
+          niri.homeModules.config
+          niri.homeModules.stylix
+        ];
+      };
+
+      edward-t480s = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = {
+          inherit inputs system;
+          hostname = "t480s";
+        };
+        modules = [
+          ./configs/home-manager/home.nix
+          ./configs/hosts/t480s/home/modules.nix
           stylix.homeModules.stylix
           inputs.spicetify-nix.homeManagerModules.default
           niri.homeModules.config
