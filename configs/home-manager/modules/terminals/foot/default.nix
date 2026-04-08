@@ -1,7 +1,16 @@
-{lib, ...}: {
+{pkgs, ...}: {
   stylix.targets.foot = {
     enable = true;
     colors.enable = true;
+    fonts = {
+      enable = true;
+      override = {
+        monospace = {
+          name = "Geist Mono";
+          package = pkgs.geist-font;
+        };
+      };
+    };
   };
 
   programs.foot = {
@@ -9,7 +18,6 @@
 
     settings = {
       main = {
-        font = lib.mkForce "Fira Code:size=12";
         pad = "10x10";
       };
 

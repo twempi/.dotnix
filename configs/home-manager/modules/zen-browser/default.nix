@@ -8,7 +8,10 @@
     inputs.zen-browser.homeModules.beta
   ];
 
-  stylix.targets.zen-browser.profileNames = ["edward"];
+  stylix.targets.zen-browser = {
+    enable = true;
+    profileNames = ["edward"];
+  };
 
   programs.zen-browser = {
     enable = true;
@@ -228,13 +231,13 @@
               "tabbrowser-tabs"
             ];
 
-            "vertical-tabs" = [ ];
+            "vertical-tabs" = [];
 
             "PersonalToolbar" = [
               "personal-bookmarks"
             ];
 
-            "zen-sidebar-top-buttons" = [ ];
+            "zen-sidebar-top-buttons" = [];
 
             "zen-sidebar-foot-buttons" = [
               "downloads-button"
