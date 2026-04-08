@@ -8,7 +8,7 @@ in {
 
   services.caddy = {
     enable = true;
-    virtualHosts."t480s.your-tailnet.ts.net".extraConfig = ''
+    virtualHosts."t480s.tailae03d0.ts.net".extraConfig = ''
       root * ${siteRoot}
       file_server
     '';
