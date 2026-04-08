@@ -4,10 +4,7 @@
 
     ./hardware-configuration.nix
 
-    ./system/battery.nix
-    ./system/undervolt.nix
-    ./system/graphics.nix
-    ./system/minecraft.nix
+    ./system/modules.nix
 
   ];
 

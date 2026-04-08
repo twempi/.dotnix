@@ -38,7 +38,7 @@
     ./modules/spicetify
     ./modules/yazi
 
-    ./modules/startpage
+    # ./modules/startpage
     ./modules/mpv
     ./modules/ohmyposh
     ./modules/fastfetch
