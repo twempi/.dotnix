@@ -1,7 +1,6 @@
 {
   pkgs,
   lib,
-  config,
   inputs,
   ...
 }: {
@@ -14,6 +13,7 @@
   programs.zen-browser = {
     enable = true;
     setAsDefaultBrowser = true;
+    nativeMessagingHosts = [pkgs.firefoxpwa];
 
     policies = let
       mkLockedAttrs = lib.mapAttrs (_: value: {
@@ -30,7 +30,6 @@
         install_url = mkPluginUrl id;
         installation_mode = "force_installed";
 
-        # Only uBO goes on the toolbar; everything else stays unpinned in the menu.
         default_area =
           if pinned
           then "navbar"
@@ -74,12 +73,62 @@
           id = "ublock-origin";
           pinned = true;
         };
-        "{a4c4eda4-fb84-4a84-b4a1-f7c1cbf2a1ad}" = "refined-github-";
-        "{762f9885-5a13-4abd-9c77-433dcd38b8fd}" = "return-youtube-dislikes";
-        "{74145f27-f039-47ce-a470-a662b129930a}" = "clearurls";
-        "newtaboverride@agenedia.com" = "new-tab-override";
-        "{00000f2a-7cde-4f20-83ed-434fcb420d71}" = "imagus";
-        "{3c6bf0cc-3ae2-42fb-9993-0d33104fdcaf}" = "improved-youtube";
+        "custom-new-tab-page@mint.as" = mkExtensionEntry {
+          id = "custom-new-tab-page";
+          pinned = false;
+        };
+        "languagetool-webextension@languagetool.org" = mkExtensionEntry {
+          id = "languagetool";
+          pinned = false;
+        };
+        "jid1-BoFifL9Vbdl2zQ@jetpack" = mkExtensionEntry {
+          id = "decentraleyes";
+          pinned = false;
+        };
+        "{85860b32-02a8-431a-b2b1-40fbd64c9c69}" = mkExtensionEntry {
+          id = "file-icons-for-github-and-gitlab";
+          pinned = false;
+        };
+        "github-no-more@ihatereality.space" = mkExtensionEntry {
+          id = "github-no-more";
+          pinned = false;
+        };
+        "jid1-MnnxcxisBPnSXQ@jetpack" = mkExtensionEntry {
+          id = "privacy-badger";
+          pinned = false;
+        };
+        "@searchengineadremover" = mkExtensionEntry {
+          id = "search-engine-ad-remover";
+          pinned = false;
+        };
+        "sponsorBlocker@ajay.app" = mkExtensionEntry {
+          id = "sponsorblock";
+          pinned = false;
+        };
+        "trackmenot@mrl.nyu.edu" = mkExtensionEntry {
+          id = "trackmenot";
+          pinned = false;
+        };
+        "{a4c4eda4-fb84-4a84-b4a1-f7c1cbf2a1ad}" = mkExtensionEntry {
+          id = "refined-github-";
+          pinned = false;
+        };
+        "{762f9885-5a13-4abd-9c77-433dcd38b8fd}" = mkExtensionEntry {
+          id = "return-youtube-dislikes";
+          pinned = false;
+        };
+        "{74145f27-f039-47ce-a470-a662b129930a}" = mkExtensionEntry {
+          id = "clearurls";
+          pinned = false;
+        };
+        "{00000f2a-7cde-4f20-83ed-434fcb420d71}" = mkExtensionEntry {
+          id = "imagus";
+          pinned = false;
+        };
+        "{3c6bf0cc-3ae2-42fb-9993-0d33104fdcaf}" = mkExtensionEntry {
+          id = "improved-youtube";
+          pinned = false;
+        };
       };
 
       Preferences = mkLockedAttrs {
@@ -113,7 +162,7 @@
       Homepage = {
         URL = "http://127.0.0.1:8000/index.html";
         Locked = true;
-        StartPage = "homepage";
+        StartPage = "previous-session";
       };
     };
 
@@ -129,7 +178,112 @@
         "zen.urlbar.replace-newtab" = false;
         "zen.view.sidebar-expanded" = false;
         "zen.view.sidebar-expanded.on-hover" = false;
-        "zen.window-sync.enabled" = true;
+        "zen.window-sync.enabled" = false;
+        "zen.window-sync.prefer-unsynced-windows" = false;
+
+        "browser.uiCustomization.state" = {
+          placements = {
+            "widget-overflow-fixed-list" = [
+              "screenshot-button"
+            ];
+
+            "unified-extensions-area" = [
+              "wappalyzer_crunchlabz_com-browser-action"
+              "_3c6bf0cc-3ae2-42fb-9993-0d33104fdcaf_-browser-action"
+              "jid1-mnnxcxisbpnsxq_jetpack-browser-action"
+              "trackmenot_mrl_nyu_edu-browser-action"
+              "github-repository-size_pranavmangal-browser-action"
+              "_85860b32-02a8-431a-b2b1-40fbd64c9c69_-browser-action"
+              "_a4c4eda4-fb84-4a84-b4a1-f7c1cbf2a1ad_-browser-action"
+              "_861a3982-bb3b-49c6-bc17-4f50de104da1_-browser-action"
+              "_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action"
+              "_74145f27-f039-47ce-a470-a662b129930a_-browser-action"
+              "_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action"
+              "firefox-extension_steamdb_info-browser-action"
+              "jid1-bofifl9vbdl2zq_jetpack-browser-action"
+              "languagetool-webextension_languagetool_org-browser-action"
+              "myallychou_gmail_com-browser-action"
+              "addon_darkreader_org-browser-action"
+              "ogobell3_icloud_com-browser-action"
+              "fashionreps-link-converter_example_com-browser-action"
+              "newtaboverride_agenedia_com-browser-action"
+              "sponsorblocker_ajay_app-browser-action"
+            ];
+
+            "nav-bar" = [
+              "back-button"
+              "forward-button"
+              "stop-reload-button"
+              "vertical-spacer"
+              "urlbar-container"
+              "unified-extensions-button"
+              "ublock0_raymondhill_net-browser-action"
+            ];
+
+            "toolbar-menubar" = [
+              "menubar-items"
+            ];
+
+            "TabsToolbar" = [
+              "tabbrowser-tabs"
+            ];
+
+            "vertical-tabs" = [ ];
+
+            "PersonalToolbar" = [
+              "personal-bookmarks"
+            ];
+
+            "zen-sidebar-top-buttons" = [ ];
+
+            "zen-sidebar-foot-buttons" = [
+              "downloads-button"
+              "zen-workspaces-button"
+              "zen-create-new-button"
+            ];
+          };
+
+          seen = [
+            "developer-button"
+            "trackmenot_mrl_nyu_edu-browser-action"
+            "github-repository-size_pranavmangal-browser-action"
+            "_85860b32-02a8-431a-b2b1-40fbd64c9c69_-browser-action"
+            "_a4c4eda4-fb84-4a84-b4a1-f7c1cbf2a1ad_-browser-action"
+            "_861a3982-bb3b-49c6-bc17-4f50de104da1_-browser-action"
+            "_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action"
+            "_74145f27-f039-47ce-a470-a662b129930a_-browser-action"
+            "_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action"
+            "ublock0_raymondhill_net-browser-action"
+            "firefox-extension_steamdb_info-browser-action"
+            "jid1-bofifl9vbdl2zq_jetpack-browser-action"
+            "screenshot-button"
+            "wappalyzer_crunchlabz_com-browser-action"
+            "sponsorblocker_ajay_app-browser-action"
+            "languagetool-webextension_languagetool_org-browser-action"
+            "_3c6bf0cc-3ae2-42fb-9993-0d33104fdcaf_-browser-action"
+            "jid1-mnnxcxisbpnsxq_jetpack-browser-action"
+            "myallychou_gmail_com-browser-action"
+            "addon_darkreader_org-browser-action"
+            "ogobell3_icloud_com-browser-action"
+            "fashionreps-link-converter_example_com-browser-action"
+            "newtaboverride_agenedia_com-browser-action"
+          ];
+
+          dirtyAreaCache = [
+            "nav-bar"
+            "vertical-tabs"
+            "zen-sidebar-foot-buttons"
+            "unified-extensions-area"
+            "PersonalToolbar"
+            "toolbar-menubar"
+            "TabsToolbar"
+            "zen-sidebar-top-buttons"
+            "widget-overflow-fixed-list"
+          ];
+
+          currentVersion = 23;
+          newElementCount = 4;
+        };
       };
 
       mods = [

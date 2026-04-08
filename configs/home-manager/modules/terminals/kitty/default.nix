@@ -1,35 +1,38 @@
-{
+{pkgs, ...}: {
   stylix.targets.kitty = {
     enable = true;
+
     fonts = {
       enable = true;
-      # override = "Geist Mono";
+      override = {
+        monospace = {
+          package = pkgs.geist-font;
+          name = "Geist Mono";
+        };
+        sizes = {
+          terminal = 12;
+        };
+      };
     };
+
     opacity = {
       enable = true;
       override = {
         terminal = 0.8;
       };
     };
+
     variant256Colors = true;
   };
 
   programs.kitty = {
     enable = true;
 
-    # extraConfig = ''
-    #   include matugen.conf
-    # '';
-
-    # font = {
-    #   name = lib.mkForce "Geist Mono";
-    #   size = 11;
-    # };
-
     settings = {
-      bold_font = "false";
+      bold_font = "auto";
       italic_font = "auto";
       bold_italic_font = "auto";
+
       remember_window_size = "no";
       initial_window_width = "950";
       initial_window_height = "500";
@@ -40,12 +43,22 @@
       enable_audio_bell = "no";
       window_padding_width = "10";
       hide_window_decorations = "yes";
-      # background_opacity = lib.mkForce "0.8";
       dynamic_background_opacity = "yes";
       confirm_os_window_close = "0";
       selection_foreground = "none";
       selection_background = "none";
       allow_remote_control = "yes";
+
+      # Main rendering knob in kitty.
+      # Start here for a thin/crisp look, then try:
+      # "1.0 5", "1.0 8", or go back to "platform".
+      text_composition_strategy = "1.0 0";
     };
+
+    extraConfig = ''
+      # Optional tiny tweaks if needed:
+      modify_font baseline 1
+      modify_font cell_width 98%
+    '';
   };
 }
