@@ -1,5 +1,5 @@
-{pkgs, ...}: {
-  wayland.windowManager.sway = {
+{
+  wayland.windowManager.sway.config = {
     output = {
       "eDP-1" = {
         mode = "1920x1080@60.031Hz";
