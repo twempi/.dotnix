@@ -2,7 +2,7 @@
   services.displayManager.ly = {
     enable = true;
     settings = {
-      save = false;
+      save = true;
       load = true;
     };
   };

@@ -13,11 +13,11 @@
     exec-once = [
       "awww-daemon"
       "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp"
-      # "${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css"
+      "${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css"
 
-      "quickshell -p ~/.config/hypr/scripts/quickshell/Main.qml"
-      "quickshell -p ~/.config/hypr/scripts/quickshell/TopBar.qml"
-      "python3 ~/.config/hypr/scripts/quickshell/focustime/focus_daemon.py &"
+      # "quickshell -p ~/.config/hypr/scripts/quickshell/Main.qml"
+      # "quickshell -p ~/.config/hypr/scripts/quickshell/TopBar.qml"
+      # "python3 ~/.config/hypr/scripts/quickshell/focustime/focus_daemon.py &"
 
       # "dms run"
 
