@@ -16,8 +16,16 @@
     rev = "ce060d9d17e4466d7956213d68a7a74d24ecfdc5";
     sha256 = "0p52nqbrg19di5gnnj3bv9qw2p4sq6d80krgz729ch8fsz1f69ch";
   };
+
+  pdfViewer = "${pkgs.zathura}/bin/zathura";
+  videoPlayer = "${pkgs.mpv}/bin/mpv";
 in {
   stylix.targets.yazi.enable = true;
+
+  home.packages = [
+    pkgs.sioyek
+    pkgs.mpv
+  ];
 
   programs.yazi = {
     enable = true;
@@ -66,6 +74,37 @@ in {
             for = "unix";
           }
         ];
+
+        pdf = [
+          {
+            run = ''${pdfViewer} %s'';
+            orphan = true;
+            desc = "Open PDF";
+            for = "linux";
+          }
+        ];
+
+        play = [
+          {
+            run = ''${videoPlayer} %s'';
+            orphan = true;
+            desc = "Play video";
+            for = "linux";
+          }
+        ];
+      };
+
+      open = {
+        prepend_rules = [
+          {
+            mime = "application/pdf";
+            use = "pdf";
+          }
+          {
+            mime = "video/*";
+            use = "play";
+          }
+        ];
       };
     };
 
@@ -83,7 +122,6 @@ in {
           desc = "Toggle the visibility of hidden files";
         }
 
-        # Linemode
         {
           on = ["m" "s"];
           run = ["linemode size" "plugin pref-by-location -- save"];
@@ -114,10 +152,7 @@ in {
           run = ["linemode none" "plugin pref-by-location -- save"];
           desc = "Linemode: none";
         }
-        # Custom size_and_mtime linemode
-        # { on = [ "u" "S" ]; run = [ "linemode size_and_mtime" "plugin pref-by-location -- save" ]; desc = "Show Size and Modified time"; }
 
-        # Sorting / pref-by-location controls
         {
           on = ["," "t"];
           run = "plugin pref-by-location -- toggle";
@@ -183,8 +218,6 @@ in {
           run = ["sort natural --reverse" "plugin pref-by-location -- save"];
           desc = "Sort naturally (reverse)";
         }
-        # --sensitive=no or --sensitive
-        # { on = [ "," "N" ]; run = [ "sort natural --reverse=no --sensitive" "plugin pref-by-location -- save" ];    desc = "Sort naturally"; }
         {
           on = ["," "s"];
           run = ["sort size --reverse=no" "linemode size" "plugin pref-by-location -- save"];
@@ -210,13 +243,11 @@ in {
           run = "plugin convert -- --extension='png'";
           desc = "Convert selected files to PNG";
         }
-
         {
           on = ["c" "j"];
           run = "plugin convert -- --extension='jpg'";
           desc = "Convert selected files to JPG";
         }
-
         {
           on = ["c" "w"];
           run = "plugin convert -- --extension='webp'";

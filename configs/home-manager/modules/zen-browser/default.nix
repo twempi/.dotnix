@@ -163,7 +163,7 @@
       };
 
       Homepage = {
-        URL = "http://127.0.0.1:8000/index.html";
+        URL = "https://t480s.tailae03d0.ts.net/";
         Locked = true;
         StartPage = "previous-session";
       };
