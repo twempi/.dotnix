@@ -3,5 +3,6 @@
     prismlauncher
     jdk8
     jdk21
+    lunar-client
   ];
 }

@@ -2,9 +2,9 @@
   stylix.targets.zathura = {
     enable = true;
     opacity = {
-      enable = true;
+      enable = false;
       override = {
-        applications = 0.85;
+        applications = 0.9;
       };
     };
   };
@@ -23,7 +23,9 @@
       recolor = true;
       recolor-images = false;
 
-      recolor-lightcolor = lib.mkForce "rgba(0,0,0,0)";
+      # recolor-lightcolor = lib.mkForce "rgba(0,0,0,0)";
+      recolor-lightcolor = lib.mkForce "#0f111a";
+      render-loading = false;
     };
 
     mappings = {

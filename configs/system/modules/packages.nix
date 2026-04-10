@@ -49,6 +49,7 @@
     seahorse
     gnome-clocks
     zathura
+    sioyek
     gearlever
     upscayl
     iloader
