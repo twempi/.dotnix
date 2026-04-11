@@ -7,7 +7,7 @@
   programs.nixcord = {
     enable = true;
     vesktop.enable = true;
-    discord.vencord.enable = true;
+    discord.vencord.enable = false;
 
     config = {
       frameless = true;
@@ -16,8 +16,6 @@
       themeLinks = [
         "https://raw.githubusercontent.com/refact0r/system24/refs/heads/main/theme/flavors/system24-catppuccin-mocha.theme.css"
       ];
-      # enabledThemes = ["matugen.css"];
-      # enabledThemes = ["stylix.css"];
 
       plugins = {
         experiments.enable = true;
