@@ -53,6 +53,11 @@
 
     ltspice.url = "git+https://codeberg.org/pilonsi/flake-ltspice";
 
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/quickshell/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     dms = {
       url = "github:AvengeMedia/DankMaterialShell";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -72,6 +77,7 @@
     nix-minecraft,
     ltspice,
     dms,
+    quickshell,
     ...
   }: let
     system = "x86_64-linux";

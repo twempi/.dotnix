@@ -1,6 +1,6 @@
 {
-	stylix.targets.qt = {
-		enable = true;
-		platform = "qtct";
-	};
+  stylix.targets.qt = {
+    enable = true;
+    platform = "qtct";
+  };
 }
