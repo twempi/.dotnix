@@ -1,7 +1,7 @@
-{pkgs, ...}: {
+{ pkgs, ... }: {
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  environment.systemPackages = with pkgs; [ryzenadj];
+  environment.systemPackages = with pkgs; [ ryzenadj ];
 
   powerManagement.enable = true;
 
@@ -12,30 +12,36 @@
 
   hardware.amdgpu.initrd.enable = true;
   programs.corectrl.enable = true;
-  users.users.edward.extraGroups = ["corectrl"];
 
-  systemd.services.ryzenadj-limits = {
-    description = "Apply Ryzen power limits";
-    wantedBy = ["multi-user.target"];
-    after = ["multi-user.target"];
+  users.users.edward.extraGroups = [ "corectrl" ];
+
+  systemd.services.ryzenadj-battery-limits = {
+    description = "Apply Ryzen power limits on battery only";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "multi-user.target" ];
+
+    unitConfig = {
+      ConditionACPower = false;
+    };
+
     serviceConfig = {
       Type = "oneshot";
       ExecStart = ''
         ${pkgs.ryzenadj}/bin/ryzenadj \
-          --stapm-limit=25000 \
-          --fast-limit=30000 \
-          --slow-limit=28000 \
-          --tctl-temp=85
+          --stapm-limit=20000 \
+          --fast-limit=24000 \
+          --slow-limit=22000 \
+          --tctl-temp=80
       '';
     };
   };
 
-  systemd.timers.ryzenadj-limits = {
-    wantedBy = ["timers.target"];
+  systemd.timers.ryzenadj-battery-limits = {
+    wantedBy = [ "timers.target" ];
     timerConfig = {
       OnBootSec = "2min";
       OnUnitActiveSec = "1min";
-      Unit = "ryzenadj-limits.service";
+      Unit = "ryzenadj-battery-limits.service";
     };
   };
 }

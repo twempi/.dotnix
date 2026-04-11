@@ -23,7 +23,6 @@
     # Shell
     ./modules/tmux
     ./modules/fish
-    # ./modules/zsh
     ./modules/cli
     ./modules/ssh
 
@@ -44,15 +43,16 @@
     ./modules/fastfetch
     ./modules/zathura
     ./modules/anki
-    ./modules/wlogout
     ./modules/chromium
     ./modules/zen-browser
     ./modules/matugen
     ./modules/upscayl
     ./modules/syncthing
     ./modules/typst
-    ./modules/quickshell
+    # ./modules/quickshell
     ./modules/sioyek
     # ./modules/dms
+    ./modules/wlsunset
+    ./modules/fontconfig
   ];
 }
