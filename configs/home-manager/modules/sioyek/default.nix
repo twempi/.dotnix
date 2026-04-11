@@ -1,18 +1,14 @@
 {
-  pkgs,
-  lib,
-  config,
-  ...
-}: {
-  sylix.targets.sioyek = {
+  stylix.targets.sioyek = {
     enable = true;
+    colors.enable = true;
   };
 
   programs.sioyek = {
     enable = true;
-    # startup_commands = {
-    # };
     # config = {
+      # startup_commands = {
+      # };
     # };
     # keybinds = {
     # };
