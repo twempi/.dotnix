@@ -10,6 +10,7 @@ return {
   keys = {
     { "<leader>t", "<Nop>", desc = "[t]ypst" },
     { "<leader>tp", "<cmd>TypstPreview<CR>", desc = "Preview (browser)" },
+    -- { "<leader>tP", "<cmd>OpenPdf<CR>", desc = "Preview PDF (Sioyek)" },
     { "<leader>tP", "<cmd>OpenPdf<CR>", desc = "Preview PDF (Zathura)" },
   },
 
@@ -19,6 +20,7 @@ return {
 
       if filepath:match("%.typ$") then
         local pdf_path = filepath:gsub("%.typ$", ".pdf")
+        -- vim.system({ "sioyek", pdf_path }, { detach = true })
         vim.system({ "zathura", pdf_path }, { detach = true })
       else
         vim.notify("Not a Typst file", vim.log.levels.WARN)

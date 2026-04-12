@@ -2,7 +2,7 @@
   stylix.targets.zathura = {
     enable = true;
     opacity = {
-      enable = false;
+      enable = true;
       override = {
         applications = 0.9;
       };
@@ -19,13 +19,12 @@
       font = "FiraCode Nerd Font 11";
       guioptions = "none";
 
-      # Theming
       recolor = true;
       recolor-images = false;
 
-      # recolor-lightcolor = lib.mkForce "rgba(0,0,0,0)";
-      recolor-lightcolor = lib.mkForce "#0f111a";
-      render-loading = false;
+      recolor-lightcolor = lib.mkForce "rgba(0,0,0,0)";
+      # recolor-lightcolor = lib.mkForce "#0f111a";
+      # render-loading = false;
     };
 
     mappings = {
@@ -56,7 +55,6 @@
       "[fullscreen] H" = "adjust_window best-fit";
       "[fullscreen] W" = "adjust_window width";
 
-      # Optional: keep toggle
       "[normal] i" = "set recolor";
       "[fullscreen] i" = "set recolor";
     };
