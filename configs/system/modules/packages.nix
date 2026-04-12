@@ -105,6 +105,7 @@
     inputs.ltspice.packages.${pkgs.system}.default
     pipx
     trash-cli
+    gowall
 
     # Python
     (python313.withPackages (ps: [
