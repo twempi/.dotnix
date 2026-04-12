@@ -91,7 +91,6 @@
     chntpw
     spotdl
     nix-prefetch-git
-    yt-dlp
     usbmuxd
     upower
     tlp
