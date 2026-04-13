@@ -1,7 +1,7 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  environment.systemPackages = with pkgs; [ ryzenadj ];
+  environment.systemPackages = with pkgs; [ryzenadj];
 
   powerManagement.enable = true;
 
@@ -13,12 +13,12 @@
   hardware.amdgpu.initrd.enable = true;
   programs.corectrl.enable = true;
 
-  users.users.edward.extraGroups = [ "corectrl" ];
+  users.users.edward.extraGroups = ["corectrl"];
 
   systemd.services.ryzenadj-battery-limits = {
     description = "Apply Ryzen power limits on battery only";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "multi-user.target" ];
+    wantedBy = ["multi-user.target"];
+    after = ["multi-user.target"];
 
     unitConfig = {
       ConditionACPower = false;
@@ -37,11 +37,18 @@
   };
 
   systemd.timers.ryzenadj-battery-limits = {
-    wantedBy = [ "timers.target" ];
+    wantedBy = ["timers.target"];
     timerConfig = {
       OnBootSec = "2min";
       OnUnitActiveSec = "1min";
       Unit = "ryzenadj-battery-limits.service";
     };
+  };
+
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend-then-hibernate";
+    HandleLidSwitchDocked = "ignore";
+    HandlePowerKey = "suspend";
+    HandlePowerKeyLongPress = "poweroff";
   };
 }
