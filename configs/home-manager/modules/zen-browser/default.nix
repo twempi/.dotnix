@@ -320,6 +320,7 @@
         default = "google";
         engines = let
           nixIcon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+          chatgptIcon = "https://chatgpt.com/favicon.ico";
         in {
           "Nix Packages" = {
             urls = [
@@ -363,6 +364,16 @@
             ];
             icon = nixIcon;
             definedAliases = ["nop"];
+          };
+
+          "ChatGPT" = {
+            urls = [
+              {
+                template = "https://chatgpt.com/";
+              }
+            ];
+            icon = chatgptIcon;
+            definedAliases = ["gpt"];
           };
 
           bing.metaData.hidden = "true";
