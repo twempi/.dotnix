@@ -1,6 +1,6 @@
 {inputs, ...}: {
   imports = [
-    inputs.mango.hmModules.mango
+    inputs.mangowm.hmModules.mango
   ];
   wayland.windowManager.mango = {
     enable = true;
