@@ -3,7 +3,7 @@
     ./de/niri.nix
     ./de/sway.nix
     ./de/hyprland.nix
-    # ./de/mango.nix
+    ./de/mango.nix
 
     ./modules/packages.nix
     ./modules/bootloader.nix

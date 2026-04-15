@@ -46,6 +46,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    mango = {
+      url = "github:mangowm/mango";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -78,6 +83,7 @@
     ltspice,
     dms,
     quickshell,
+    mango,
     ...
   }: let
     system = "x86_64-linux";
@@ -94,6 +100,7 @@
           ./configs/hosts/desktop/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
+          inputs.mango.nixosModules.mango
         ];
 
         specialArgs = {
@@ -120,6 +127,7 @@
           ./configs/hosts/g14/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
+          inputs.mango.nixosModules.mango
         ];
 
         specialArgs = {
