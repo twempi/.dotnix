@@ -100,7 +100,6 @@
           ./configs/hosts/desktop/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
-          inputs.mango.nixosModules.mango
         ];
 
         specialArgs = {
@@ -127,7 +126,6 @@
           ./configs/hosts/g14/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
-          inputs.mango.nixosModules.mango
         ];
 
         specialArgs = {
