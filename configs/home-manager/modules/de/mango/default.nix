@@ -1,6 +1,10 @@
 {inputs, ...}: {
   imports = [
     inputs.mangowm.hmModules.mango
+    ./general.nix
+    ./env.nix
+    ./windowrules.nix
+    ./keybinds.nix
   ];
 
   xdg.configFile."mango/conf.d/general.conf".text = ''
