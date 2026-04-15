@@ -46,7 +46,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    mango = {
+    mangowm = {
       url = "github:mangowm/mango";
       inputs.nixpkgs.follows = "nixpkgs";
     };
