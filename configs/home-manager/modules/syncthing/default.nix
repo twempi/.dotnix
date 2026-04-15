@@ -1,5 +1,28 @@
 {hostname, ...}: let
   isDesktop = hostname == "desktop";
+  isServer = hostname == "t480s";
+
+  sharedDevices = ["desktop" "t480s" "g14"];
+
+  mkFolder = name: {
+    id = name;
+    devices = sharedDevices;
+
+    path =
+      if isDesktop
+      then "/mnt/Storage/Documents/${name}"
+      else "/home/edward/Documents/${name}";
+
+    versioning =
+      if isServer
+      then {
+        type = "staggered";
+        params = {
+          maxAge = "2592000"; # 30 days
+        };
+      }
+      else null;
+  };
 in {
   services.syncthing = {
     enable = true;
@@ -34,23 +57,8 @@ in {
       };
 
       folders = {
-        notes = {
-          id = "notes";
-          devices = ["desktop" "t480s" "g14"];
-          path =
-            if isDesktop
-            then "/mnt/Storage/Documents/notes"
-            else "/home/edward/Documents/notes";
-        };
-
-        school = {
-          id = "school";
-          devices = ["desktop" "t480s" "g14"];
-          path =
-            if isDesktop
-            then "/mnt/Storage/Documents/school"
-            else "/home/edward/Documents/school";
-        };
+        notes = mkFolder "notes";
+        school = mkFolder "school";
       };
     };
   };
