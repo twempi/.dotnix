@@ -2,11 +2,9 @@
   isDesktop = hostname == "desktop";
   isServer = hostname == "t480s";
 
-  sharedDevices = ["desktop" "t480s" "g14"];
-
-  mkFolder = name: {
+  mkFolder = name: devices: {
     id = name;
-    devices = sharedDevices;
+    inherit devices;
 
     path =
       if isDesktop
@@ -18,7 +16,7 @@
       then {
         type = "staggered";
         params = {
-          maxAge = "2592000"; # 30 days
+          maxAge = "2592000"; # 30 days in seconds
         };
       }
       else null;
@@ -34,17 +32,10 @@ in {
 
     settings = {
       devices = {
-        desktop = {
-          id = "ZMFIETG-MG7WV4P-2V6RHY4-JKDNXHB-X3INDKM-TSRFAVX-DARM2ZJ-XEBPQAZ";
-        };
-
-        t480s = {
-          id = "QN7LOTX-BA4PZHR-CXZ47JH-POMXASY-6T4JPEW-3XEXAMH-77K4ACA-DONSCAX";
-        };
-
-        g14 = {
-          id = "AN7LFNP-RPK5BQO-77CE7SD-QQNPBQF-CLXRNSG-INK6UB5-QTZUPEY-AVKNAAC";
-        };
+        desktop.id = "ZMFIETG-MG7WV4P-2V6RHY4-JKDNXHB-X3INDKM-TSRFAVX-DARM2ZJ-XEBPQAZ";
+        t480s.id = "QN7LOTX-BA4PZHR-CXZ47JH-POMXASY-6T4JPEW-3XEXAMH-77K4ACA-DONSCAX";
+        g14.id = "AN7LFNP-RPK5BQO-77CE7SD-QQNPBQF-CLXRNSG-INK6UB5-QTZUPEY-AVKNAAC";
+        ipad.id = "QONGDX6-P66XI6N-6O5HMZW-HYP52S6-YFLAMBD-ZIDVAIE-DYFIFGF-7FULZQG";
       };
 
       options = {
@@ -57,8 +48,8 @@ in {
       };
 
       folders = {
-        notes = mkFolder "notes";
-        school = mkFolder "school";
+        notes = mkFolder "notes" ["desktop" "t480s" "g14" "ipad"];
+        school = mkFolder "school" ["desktop" "t480s" "g14"];
       };
     };
   };
