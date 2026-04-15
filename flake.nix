@@ -83,7 +83,7 @@
     ltspice,
     dms,
     quickshell,
-    mango,
+    mangowm,
     ...
   }: let
     system = "x86_64-linux";
