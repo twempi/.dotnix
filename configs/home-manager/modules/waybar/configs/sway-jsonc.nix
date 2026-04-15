@@ -1,8 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}: {
+{config, ...}: {
   xdg.configFile."waybar/sway.jsonc".text = ''
     {
       "name": "sway",
@@ -51,12 +47,12 @@
       },
 
       "disk": {
-        "format": "<span color='#${config.stylix.base16Scheme.base08}'>[]</span> {free}",
+        "format": "<span color='#${config.lib.stylix.colors.base08}'>[]</span> {free}",
         "interval": 20
       },
 
       "cpu": {
-        "format": "<span color='#${config.stylix.base16Scheme.base09}'>[]</span> {usage}%",
+        "format": "<span color='#${config.lib.stylix.colors.base09}'>[]</span> {usage}%",
         "tooltip": false,
         "interval": 1
       },
@@ -71,7 +67,7 @@
 
       "backlight": {
         // "device": "acpi_video1",
-        "format": "<span color='#${config.stylix.base16Scheme.base0A}'>[󰞏]</span> {percent}%",
+        "format": "<span color='#${config.lib.stylix.colors.base0A}'>[󰞏]</span> {percent}%",
         "tooltip": false,
         "on-click-right": "~/.config/waybar/scripts/wlsunset.sh"
       },
@@ -80,15 +76,15 @@
         "exec": "~/.config/waybar/scripts/memory_usage.sh",
         "interval": 2,
         "return-type": "json",
-        "format": "<span color='#${config.stylix.base16Scheme.base0C}'>[]</span> {}"
+        "format": "<span color='#${config.lib.stylix.colors.base0C}'>[]</span> {}"
       },
 
       "pulseaudio": {
         // "scroll-step": 1, // %, can be a float
-        "format": "<span color='#${config.stylix.base16Scheme.base0D}'>[]</span> {volume}%",
-        "format-muted": "<span color='#${config.stylix.base16Scheme.base08}'>[]</span> {volume}%",
-        "format-bluetooth": "<span color='#${config.stylix.base16Scheme.base0D}'>[󰂰]</span> {volume}%",
-        "format-bluetooth-muted": "<span color='#${config.stylix.base16Scheme.base08}'>[󰂲]</span> {volume}%",
+        "format": "<span color='#${config.lib.stylix.colors.base0D}'>[]</span> {volume}%",
+        "format-muted": "<span color='#${config.lib.stylix.colors.base08}'>[]</span> {volume}%",
+        "format-bluetooth": "<span color='#${config.lib.stylix.colors.base0D}'>[󰂰]</span> {volume}%",
+        "format-bluetooth-muted": "<span color='#${config.lib.stylix.colors.base08}'>[󰂲]</span> {volume}%",
         "format-source": "{volume}% ",
         "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "on-click-right": "pulseaudio",
@@ -120,24 +116,24 @@
           "󰁹"
         ],
 
-        "format": "<span color='#${config.stylix.base16Scheme.base0B}'>[{icon}]</span> {capacity}%",
-        "format-full": "<span color='#${config.stylix.base16Scheme.base0B}'>[{icon}]</span> {capacity}%",
-        "format-plugged": "<span color='#${config.stylix.base16Scheme.base0B}'>[󰂅]</span> {capacity}%",
+        "format": "<span color='#${config.lib.stylix.colors.base0B}'>[{icon}]</span> {capacity}%",
+        "format-full": "<span color='#${config.lib.stylix.colors.base0B}'>[{icon}]</span> {capacity}%",
+        "format-plugged": "<span color='#${config.lib.stylix.colors.base0B}'>[󰂅]</span> {capacity}%",
 
-        "format-charging": "<span color='#${config.stylix.base16Scheme.base0B}'>[󰂅]</span> {capacity}%",
-        "format-charging-warning": "<span color='#${config.stylix.base16Scheme.base09}'>[󰢝]</span> {capacity}%",
-        "format-charging-critical": "<span color='#${config.stylix.base16Scheme.base08}'>[󰢜]</span> {capacity}%",
+        "format-charging": "<span color='#${config.lib.stylix.colors.base0B}'>[󰂅]</span> {capacity}%",
+        "format-charging-warning": "<span color='#${config.lib.stylix.colors.base09}'>[󰢝]</span> {capacity}%",
+        "format-charging-critical": "<span color='#${config.lib.stylix.colors.base08}'>[󰢜]</span> {capacity}%",
 
-        "format-warning": "<span color='#${config.stylix.base16Scheme.base09}'>[{icon}]</span> {capacity}%",
-        "format-critical": "<span color='#${config.stylix.base16Scheme.base08}'>[{icon}]</span> {capacity}%!!",
+        "format-warning": "<span color='#${config.lib.stylix.colors.base09}'>[{icon}]</span> {capacity}%",
+        "format-critical": "<span color='#${config.lib.stylix.colors.base08}'>[{icon}]</span> {capacity}%!!",
 
-        "format-alt": "<span color='#${config.stylix.base16Scheme.base0B}'>[󱧥]</span> {time}",
+        "format-alt": "<span color='#${config.lib.stylix.colors.base0B}'>[󱧥]</span> {time}",
 
         "tooltip": false
       },
 
       "clock": {
-        "format": "<span color='#${config.stylix.base16Scheme.base0A}'>[]</span> {:%a %d | %I:%M %p}",
+        "format": "<span color='#${config.lib.stylix.colors.base0A}'>[]</span> {:%a %d | %I:%M %p}",
         "tooltip": false,
         "on-click": "swaync-client -t -sw",
         "escape": true,
@@ -146,9 +142,9 @@
 
       "network": {
         "interval": 2,
-        "format": "<span color='#${config.stylix.base16Scheme.base0E}'>[󱘖]</span> {bandwidthDownBits}",
-        "format-wifi": "<span color='#${config.stylix.base16Scheme.base0E}'>[{icon}]</span> {bandwidthDownBits}",
-        "format-ethernet": "<span color='#${config.stylix.base16Scheme.base0E}'>[󰈀]</span> {bandwidthDownBits}",
+        "format": "<span color='#${config.lib.stylix.colors.base0E}'>[󱘖]</span> {bandwidthDownBits}",
+        "format-wifi": "<span color='#${config.lib.stylix.colors.base0E}'>[{icon}]</span> {bandwidthDownBits}",
+        "format-ethernet": "<span color='#${config.lib.stylix.colors.base0E}'>[󰈀]</span> {bandwidthDownBits}",
         "format-icons": [
           "󰤫",
           "󰤟",

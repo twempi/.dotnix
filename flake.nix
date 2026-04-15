@@ -67,6 +67,11 @@
       url = "github:AvengeMedia/DankMaterialShell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    tt-schemes = {
+      url = "github:tinted-theming/schemes";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {
@@ -84,6 +89,7 @@
     dms,
     quickshell,
     mangowm,
+    tt-schemes,
     ...
   }: let
     system = "x86_64-linux";

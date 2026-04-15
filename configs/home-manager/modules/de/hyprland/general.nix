@@ -41,8 +41,8 @@
 
       "border_size" = 2;
 
-      "col.active_border" = lib.mkForce "rgb(${config.stylix.base16Scheme.base0A})";
-      "col.inactive_border" = lib.mkForce "rgb(${config.stylix.base16Scheme.base01})";
+      "col.active_border" = lib.mkForce "rgb(${config.lib.stylix.colors.base0A})";
+      "col.inactive_border" = lib.mkForce "rgb(${config.lib.stylix.colors.base01})";
 
       "layout" = "dwindle";
     };

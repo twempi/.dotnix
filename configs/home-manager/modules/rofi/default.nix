@@ -23,16 +23,14 @@
     * {
       font: "JetBrainsMono Nerd Font 11";
 
-      /* Base colors from Stylix/base16 */
-      background:        #${config.stylix.base16Scheme.base00};
-      background-alt:    #${config.stylix.base16Scheme.base01};
-      foreground:        #${config.stylix.base16Scheme.base05};
-      foreground-alt:    #${config.stylix.base16Scheme.base06};
-      border:            #${config.stylix.base16Scheme.base03};
-      active:            #${config.stylix.base16Scheme.base0A};
-      urgent:            #${config.stylix.base16Scheme.base08};
+      background:        #${config.lib.stylix.colors.base00};
+      background-alt:    #${config.lib.stylix.colors.base01};
+      foreground:        #${config.lib.stylix.colors.base05};
+      foreground-alt:    #${config.lib.stylix.colors.base06};
+      border:            #${config.lib.stylix.colors.base03};
+      active:            #${config.lib.stylix.colors.base0A};
+      urgent:            #${config.lib.stylix.colors.base08};
 
-      /* Convenience vars matching adi1090x expectations */
       selected:          @active;
 
       border-colour:               @selected;
