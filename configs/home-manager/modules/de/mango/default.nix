@@ -1,8 +1,39 @@
 {inputs, ...}: {
   imports = [
     inputs.mangowm.hmModules.mango
+    ./general.nix
+    ./env.nix
+    ./windowrules.nix
+    ./keybinds.nix
   ];
+
   wayland.windowManager.mango = {
     enable = true;
+    settings = ''
+      source=~/.config/mango/conf.d/general.conf
+      source=~/.config/mango/conf.d/env.conf
+      source=~/.config/mango/conf.d/rules.conf
+      source=~/.config/mango/conf.d/keybinds.conf
+    '';
+    autostart_sh = ''
+      awww-daemon
+      openrgb --profile ~/.config/OpenRGB/black.orp
+      waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css
+
+      wpctl set-volume @DEFAULT_SINK@ 1
+
+      cliphist wipe
+      wl-paste --type text --watch cliphist store
+      spotify
+      obsidian
+    '';
+  };
+
+  home.sessionVariables = {
+    NIXOS_OZONE_WL = 1;
+    MOZ_ENABLE_WAYLAND = 1;
+    XDG_SESSION_TYPE = "wayland";
+    GDK_BACKEND = "wayland,x11";
+    QT_QPA_PLATFORM = "wayland;xcb";
   };
 }
