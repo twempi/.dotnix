@@ -9,8 +9,8 @@
 
     # base16Scheme = inputs.tt-schemes + "/base16/catppuccin-mocha .yaml";
     # base16Scheme = inputs.tt-schemes + "/base16/everforest-dark-hard.yaml";
-    base16Scheme = inputs.tt-schemes + "/base16/gruvbox-material-dark-medium.yaml";
-    # base16Scheme = inputs.tt-schemes + "/base16/rose-pine.yaml";
+    # base16Scheme = inputs.tt-schemes + "/base16/gruvbox-material-dark-medium.yaml";
+    base16Scheme = inputs.tt-schemes + "/base16/rose-pine.yaml";
     # base16Scheme = inputs.tt-schemes + "/base16/stella.yaml";
     # base16Scheme = inputs.tt-schemes + "/base16/tokyo-night-moon.yaml";
     # base16Scheme = inputs.tt-schemes + "/base16/ocean.yaml";
