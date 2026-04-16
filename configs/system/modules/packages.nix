@@ -106,6 +106,7 @@
     pipx
     trash-cli
     gowall
+    geogebra
 
     # Python
     (python313.withPackages (ps: [
