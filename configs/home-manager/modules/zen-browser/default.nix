@@ -136,6 +136,10 @@
           id = "vimium";
           pinned = false;
         };
+        "{8927f234-4dd9-48b1-bf76-44a9e153eee0}" = mkExtensionEntry {
+          id = "better-canvas";
+          pinned = false;
+        };
       };
 
       Preferences = mkLockedAttrs {
