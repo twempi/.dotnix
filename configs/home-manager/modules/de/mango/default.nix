@@ -13,12 +13,7 @@
 
   wayland.windowManager.mango = {
     enable = true;
-    settings = ''
-      source=~/.config/mango/conf.d/general.conf
-      source=~/.config/mango/conf.d/env.conf
-      source=~/.config/mango/conf.d/rules.conf
-      source=~/.config/mango/conf.d/keybinds.conf
-    '';
+
     autostart_sh = ''
       awww-daemon
       openrgb --profile ~/.config/OpenRGB/black.orp

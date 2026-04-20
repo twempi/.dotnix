@@ -140,6 +140,10 @@
           id = "better-canvas";
           pinned = false;
         };
+        "tasksforcanvas@jtchengdev.com" = mkExtensionEntry {
+          id = "tasks-for-canvas";
+          pinned = false;
+        };
       };
 
       Preferences = mkLockedAttrs {
