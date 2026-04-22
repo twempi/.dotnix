@@ -26,5 +26,12 @@
         "nofail"
       ];
     };
+
+    "/home/edward/Documents/notes" = {
+      device = "/mnt/Storage/Documents/notes";
+      fsType = "none";
+      options = [ "bind" ];
+      depends = [ "/mnt/Storage" ];
+    };
   };
 }
