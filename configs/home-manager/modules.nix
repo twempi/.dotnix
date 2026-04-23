@@ -54,6 +54,6 @@
     # ./modules/dms
     ./modules/wlsunset
     ./modules/fontconfig
-    ./modules/obsidian
+    # ./modules/obsidian
   ];
 }
