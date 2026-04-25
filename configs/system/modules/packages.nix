@@ -52,7 +52,6 @@
     iloader
     vscodium
     geogebra
-    teams
 
     # CLI
     brightnessctl
