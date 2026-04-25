@@ -48,6 +48,9 @@
       selection_foreground = "none";
       selection_background = "none";
       allow_remote_control = "yes";
+      cursor_trail = "1";
+      cursor_trail_decay = "0.1 0.25";
+      sync_to_monitor = "no";
 
       # Main rendering knob in kitty.
       # Start here for a thin/crisp look, then try:
