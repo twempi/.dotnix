@@ -52,7 +52,7 @@
     # ./modules/quickshell
     ./modules/sioyek
     # ./modules/dms
-    ./modules/wlsunset
+    ./modules/sunsetr
     ./modules/fontconfig
     # ./modules/obsidian
   ];

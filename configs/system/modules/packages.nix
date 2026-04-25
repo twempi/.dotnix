@@ -26,9 +26,6 @@
     wl-clipboard
 
     xdg-utils
-    xdg-desktop-portal
-    xdg-desktop-portal-gtk
-    xdg-desktop-portal-hyprland
 
     # Desktop apps
     obs-studio
@@ -54,6 +51,7 @@
     upscayl
     iloader
     vscodium
+    geogebra
 
     # CLI
     brightnessctl
@@ -100,13 +98,11 @@
     ghostscript
     mermaid-cli
     ventoy-full-gtk
-    wlsunset
     blueman
     inputs.ltspice.packages.${pkgs.system}.default
     pipx
     trash-cli
     gowall
-    geogebra
 
     # Python
     (python313.withPackages (ps: [

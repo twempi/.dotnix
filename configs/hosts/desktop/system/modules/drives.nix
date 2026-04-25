@@ -33,5 +33,12 @@
       options = [ "bind" ];
       depends = [ "/mnt/Storage" ];
     };
+
+    "/home/edward/Documents/school" = {
+      device = "/mnt/Storage/Documents/school";
+      fsType = "none";
+      options = [ "bind" ];
+      depends = [ "/mnt/Storage" ];
+    };
   };
 }
