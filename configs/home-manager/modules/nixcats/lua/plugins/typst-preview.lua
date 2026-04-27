@@ -8,10 +8,10 @@ return {
   },
 
   keys = {
-    { "<leader>t", "<Nop>", desc = "[t]ypst" },
-    { "<leader>tp", "<cmd>TypstPreview<CR>", desc = "Preview (browser)" },
-    -- { "<leader>tP", "<cmd>OpenPdf<CR>", desc = "Preview PDF (Sioyek)" },
-    { "<leader>tP", "<cmd>OpenPdf<CR>", desc = "Preview PDF (Zathura)" },
+    { "<leader>t", "<nop>", desc = "[t]ypst" },
+    { "<leader>tp", "<cmd>typstpreview<cr>", desc = "preview (browser)" },
+    -- { "<leader>tp", "<cmd>openpdf<cr>", desc = "preview pdf (sioyek)" },
+    { "<leader>tp", "<cmd>openpdf<cr>", desc = "preview pdf (zathura)" },
   },
 
   config = function()

@@ -1,6 +1,7 @@
 return {
 	"lervag/vimtex",
 	enabled = true,
+	ft = "latex",
 	lazy = false,
 	init = function()
 		vim.g.vimtex_view_method = "zathura"
@@ -11,4 +12,8 @@ return {
 			aux_dir = "build",
 		}
 	end,
+
+	keys = {
+		{ "<leader>l", "<nop>", desc = "[l]atex" },
+	}
 }

@@ -51,7 +51,11 @@
     upscayl
     iloader
     vscodium
+<<<<<<< Updated upstream
     geogebra
+=======
+    telegram-desktop
+>>>>>>> Stashed changes
 
     # CLI
     brightnessctl
