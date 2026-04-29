@@ -18,14 +18,9 @@
   };
 
   pdfViewer = "${pkgs.zathura}/bin/zathura";
-  videoPlayer = "${pkgs.mpv}/bin/mpv";
+  videoPlayer = "${pkgs.mpv-unwrapped}/bin/mpv";
 in {
   stylix.targets.yazi.enable = true;
-
-  home.packages = [
-    pkgs.sioyek
-    pkgs.mpv
-  ];
 
   programs.yazi = {
     enable = true;

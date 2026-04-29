@@ -54,6 +54,7 @@
     # ./modules/dms
     ./modules/sunsetr
     ./modules/fontconfig
+    ./modules/yt-dlp
     # ./modules/obsidian
   ];
 }

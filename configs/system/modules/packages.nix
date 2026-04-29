@@ -34,7 +34,6 @@
     bleachbit
     gimp
     obsidian
-    mpv
     qbittorrent
     brave
     rofi
@@ -56,7 +55,6 @@
 
     # CLI
     brightnessctl
-    ani-cli
     bluetui
     oh-my-posh
     eza
@@ -88,7 +86,6 @@
     gh
     sl
     chntpw
-    spotdl
     nix-prefetch-git
     usbmuxd
     upower
@@ -98,7 +95,6 @@
     tectonic-unwrapped
     ghostscript
     mermaid-cli
-    ventoy-full-gtk
     blueman
     inputs.ltspice.packages.${pkgs.system}.default
     pipx
@@ -122,10 +118,6 @@
     zig
     typst
     home-manager
-  ];
-
-  nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-gtk3-1.1.10"
   ];
 
   fonts.packages =

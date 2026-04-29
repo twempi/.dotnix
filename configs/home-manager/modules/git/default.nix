@@ -1,7 +1,11 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  gitWithLibsecret = (pkgs.git.override {withLibsecret = true;}).overrideAttrs (_: {
+    doInstallCheck = false;
+  });
+in {
   programs.git = {
     enable = true;
-    package = pkgs.git.override {withLibsecret = true;};
+    package = gitWithLibsecret;
 
     settings = {
       user = {
@@ -9,7 +13,7 @@
         email = "edwarddan72@gmail.com";
       };
 
-      credential.helper = "${pkgs.git.override {withLibsecret = true;}}/bin/git-credential-libsecret";
+      credential.helper = "${gitWithLibsecret}/bin/git-credential-libsecret";
 
       core = {
         compression = 9;
@@ -42,17 +46,9 @@
         ];
       };
 
-      pull = {
-        rebase = true;
-      };
-
-      rebase = {
-        autoStash = true; # optional but nice: stashes local changes during rebase
-      };
-
-      commit = {
-        template = "${./template}";
-      };
+      pull.rebase = true;
+      rebase.autoStash = true;
+      commit.template = "${./template}";
     };
   };
 
