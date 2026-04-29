@@ -8,15 +8,12 @@
   swapDevices = [
     {
       device = "/var/lib/swapfile";
-      size = 32 * 1024; # 32 GiB, size is in MiB
+      size = 32 * 1024;
     }
   ];
 
-  # Device containing the swapfile
   boot.resumeDevice = "/dev/disk/by-uuid/dc1a523c-a254-4179-8ae0-09eea89e2694";
-
-  # Add this only after you calculate the real offset
-  # boot.kernelParams = [ "resume_offset=PUT_REAL_OFFSET_HERE" ];
+  boot.kernelParams = ["resume_offset=36864"];
 
   services = {
     power-profiles-daemon.enable = true;
