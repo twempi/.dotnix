@@ -18,7 +18,7 @@
   };
 
   pdfViewer = "${pkgs.zathura}/bin/zathura";
-  videoPlayer = "${pkgs.mpv-unwrapped}/bin/mpv";
+  videoPlayer = "${pkgs.mpv}/bin/mpv";
 in {
   stylix.targets.yazi.enable = true;
 
