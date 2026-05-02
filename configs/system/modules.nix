@@ -24,5 +24,6 @@
     ./modules/nh.nix
     ./modules/login-manager.nix
     ./modules/appimage.nix
+    ./modules/helium.nix
   ];
 }
