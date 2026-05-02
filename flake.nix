@@ -77,6 +77,16 @@
       url = "gitlab:ntgn/helium-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    codex-cli-nix = {
+      url = "github:sadjow/codex-cli-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    t3code = {
+      url = "github:rodeyseijkens/t3code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -95,6 +105,7 @@
     quickshell,
     mangowm,
     tt-schemes,
+    t3code,
     ...
   }: let
     system = "x86_64-linux";
@@ -112,6 +123,7 @@
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
           inputs.helium.nixosModules.helium
+          t3code.nixosModules.default
         ];
 
         specialArgs = {

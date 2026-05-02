@@ -1,32 +1,30 @@
-{ config, inputs, ... }:
-
-{
+{inputs, ...}: {
   imports = [
     inputs.helium.nixosModules.helium
   ];
 
-  home-manager.users.edward = {
-    imports = [
-      inputs.helium.homeModules.helium
-    ];
+  home-manager.sharedModules = [
+    inputs.helium.homeModules.helium
 
-    programs.helium = {
-      enable = true;
-      defaultBrowser = false;
+    ({...}: {
+      programs.helium = {
+        enable = true;
+        defaultBrowser = false;
 
-      extraPolicies = {
-        HomepageLocation = "file:///home/edward/.config/startpage/index.html";
-        HomepageIsNewTabPage = false;
-        ShowHomeButton = true;
-        NewTabPageLocation = "file:///home/edward/.config/startpage/index.html";
+        extraPolicies = {
+          HomepageLocation = "file:///home/edward/.config/startpage/index.html";
+          HomepageIsNewTabPage = false;
+          ShowHomeButton = true;
+          NewTabPageLocation = "file:///home/edward/.config/startpage/index.html";
 
-        SpellcheckEnabled = true;
-        SpellcheckLanguage = [ "en-US" ];
+          SpellcheckEnabled = true;
+          SpellcheckLanguage = ["en-US"];
+        };
+
+        preferences = {
+          browser.show_home_button = true;
+        };
       };
-
-      preferences = {
-        browser.show_home_button = true;
-      };
-    };
-  };
+    })
+  ];
 }
