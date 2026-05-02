@@ -26,5 +26,6 @@
     ./modules/login-manager.nix
     ./modules/appimage.nix
     ./modules/helium.nix
+    ./modules/suwayomi.nix
   ];
 }
