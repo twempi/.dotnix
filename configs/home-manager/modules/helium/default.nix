@@ -6,19 +6,18 @@
     defaultBrowser = false;
 
     extraPolicies = {
-      HomepageLocation = "https://t480s.tailae03d0.ts.net/";
-      HomepageIsNewTabPage = true;
-      ShowHomeButton = false;
+      HomepageLocation = "file:///home/edward/.config/startpage/index.html";
+      HomepageIsNewTabPage = false;
+      ShowHomeButton = true;
 
-      NewTabPageLocation = "https://www.chromium.org";
+      NewTabPageLocation = "file:///home/edward/.config/startpage/index.html";
 
       SpellcheckEnabled = true;
       SpellcheckLanguage = ["en-US"];
     };
 
     preferences = {
-      browser.show_home_button = false;
-      bookmark_bar.show_on_all_tabs = true;
+      browser.show_home_button = true;
     };
   };
 }

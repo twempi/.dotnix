@@ -6,6 +6,7 @@
     ./de/mango.nix
 
     ./modules/packages.nix
+    ./modules/home-manager.nix
     ./modules/bootloader.nix
     ./modules/wayland.nix
     ./modules/audio.nix

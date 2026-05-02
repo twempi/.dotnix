@@ -122,12 +122,12 @@
           ./configs/hosts/desktop/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
-          inputs.helium.nixosModules.helium
           t3code.nixosModules.default
         ];
 
         specialArgs = {
           inherit inputs system;
+          hostname = "desktop";
         };
       };
 
@@ -137,11 +137,11 @@
           ./configs/hosts/t480s/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
-          inputs.helium.nixosModules.helium
         ];
 
         specialArgs = {
           inherit inputs system;
+          hostname = "t480s";
         };
       };
 
@@ -151,11 +151,11 @@
           ./configs/hosts/g14/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
-          inputs.helium.nixosModules.helium
         ];
 
         specialArgs = {
           inherit inputs system;
+          hostname = "g14";
         };
       };
     };
