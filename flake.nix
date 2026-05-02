@@ -58,19 +58,24 @@
 
     ltspice.url = "git+https://codeberg.org/pilonsi/flake-ltspice";
 
-    # quickshell = {
-    #   url = "git+https://git.outfoxxed.me/quickshell/quickshell";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-    #
-    # dms = {
-    #   url = "github:AvengeMedia/DankMaterialShell";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/quickshell/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     tt-schemes = {
       url = "github:tinted-theming/schemes";
       flake = false;
+    };
+
+    helium = {
+      url = "gitlab:ntgn/helium-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -86,8 +91,8 @@
     niri,
     nix-minecraft,
     ltspice,
-    # dms,
-    # quickshell,
+    dms,
+    quickshell,
     mangowm,
     tt-schemes,
     ...
@@ -106,6 +111,7 @@
           ./configs/hosts/desktop/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
+          inputs.helium.nixosModules.helium
         ];
 
         specialArgs = {
@@ -119,6 +125,7 @@
           ./configs/hosts/t480s/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
+          inputs.helium.nixosModules.helium
         ];
 
         specialArgs = {
@@ -132,6 +139,7 @@
           ./configs/hosts/g14/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
+          inputs.helium.nixosModules.helium
         ];
 
         specialArgs = {

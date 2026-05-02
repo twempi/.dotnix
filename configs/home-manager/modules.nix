@@ -55,6 +55,7 @@
     ./modules/sunsetr
     ./modules/fontconfig
     ./modules/yt-dlp
+    ./modules/helium
     # ./modules/obsidian
   ];
 }

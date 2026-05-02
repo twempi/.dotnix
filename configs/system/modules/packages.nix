@@ -52,6 +52,7 @@
     vscodium
     geogebra
     telegram-desktop
+    blueman
 
     # CLI
     brightnessctl
@@ -88,6 +89,7 @@
     chntpw
     nix-prefetch-git
     usbmuxd
+    ani-cli
     upower
     tlp
     libnotify
@@ -95,7 +97,6 @@
     tectonic-unwrapped
     ghostscript
     mermaid-cli
-    blueman
     inputs.ltspice.packages.${pkgs.system}.default
     pipx
     trash-cli
