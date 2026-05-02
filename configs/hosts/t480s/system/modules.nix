@@ -5,5 +5,6 @@
     ./modules/graphics.nix
     ./modules/minecraft.nix
     ./modules/caddy
+    ./modules/suwayomi.nix
   ];
 }
