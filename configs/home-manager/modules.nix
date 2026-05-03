@@ -31,7 +31,7 @@
     ./modules/cli/git
     ./modules/cli/yazi
     ./modules/cli/fastfetch
-    ./modules/cli/brop
+    ./modules/cli/btop
     ./modules/cli/bat
 
     # Shell

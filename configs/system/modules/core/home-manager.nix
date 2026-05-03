@@ -23,7 +23,6 @@
             else ../../../home-manager/profiles/desktop.nix
           )
           (../../../hosts + "/${hostname}/home/modules.nix")
-          inputs.stylix.homeModules.stylix
         ]
         ++ lib.optionals (hostname != "t480s") [
           inputs.spicetify-nix.homeManagerModules.default

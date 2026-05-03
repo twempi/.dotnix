@@ -1,6 +1,7 @@
 {
   imports = [
     ../../system/base.nix
+    ../../system/profiles/theming.nix
     ../../system/profiles/server.nix
     ../../system/profiles/laptop.nix
     ../../system/modules/core/bootloader.nix
