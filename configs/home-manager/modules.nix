@@ -2,11 +2,14 @@
   imports = [
     # Other
     ./modules/theme
-    ./modules/desktop/defaults
-    ./modules/desktop/gnome-keyring
     ./modules/editors/latex
-    # ./modules/desktop/swayidle
-    ./modules/apps/rars
+    ./modules/editors/typst
+    ./modules/editors/nixcats
+
+    # Themes
+    ./modules/theme/matugen
+    ./modules/theme/fontconfig
+    ./modules/theme/ohmyposh
 
     # DE
     ./modules/desktop/de/hyprland
@@ -20,42 +23,43 @@
     ./modules/terminals/alacritty
     ./modules/terminals/foot
 
-    # Shell
+    # Cli
     ./modules/cli/tmux
     ./modules/cli/fish
-    ./modules/cli
     ./modules/cli/ssh
+    ./modules/cli/yt-dlp
+    ./modules/cli/git
+    ./modules/cli/yazi
+    ./modules/cli/fastfetch
+    ./modules/cli/brop
+    ./modules/cli/bat
 
-    # Programs
+    # Shell
     ./modules/desktop/waybar
     ./modules/desktop/swaync
     ./modules/desktop/rofi
-    ./modules/cli/git
+    ./modules/desktop/defaults
+    ./modules/desktop/gnome-keyring
+    # ./modules/desktop/dms
+    # ./modules/desktop/quickshell
+    # ./modules/desktop/swayidle
+
+    # Programs
     # ./modules/apps/firefox
-    ./modules/editors/nixcats
     ./modules/apps/nixcord
     ./modules/apps/spicetify
-    ./modules/cli/yazi
-
     # ./modules/apps/startpage
     ./modules/apps/mpv
-    ./modules/theme/ohmyposh
-    ./modules/cli/fastfetch
     ./modules/apps/zathura
     ./modules/apps/anki
     ./modules/apps/chromium
     ./modules/apps/zen-browser
-    ./modules/theme/matugen
     ./modules/apps/upscayl
     ./modules/apps/syncthing
-    ./modules/editors/typst
-    # ./modules/desktop/quickshell
     ./modules/apps/sioyek
-    # ./modules/desktop/dms
     ./modules/apps/sunsetr
-    ./modules/theme/fontconfig
-    ./modules/cli/yt-dlp
     ./modules/apps/helium
     # ./modules/apps/obsidian
+    ./modules/apps/rars
   ];
 }
