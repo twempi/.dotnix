@@ -6,5 +6,6 @@
     ./modules/minecraft.nix
     ./modules/caddy
     ./modules/suwayomi.nix
+    ./modules/vaultwarden.nix
   ];
 }

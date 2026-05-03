@@ -1,6 +1,6 @@
 {
   imports = [
     ../modules/apps/games.nix
-    ../modules/services/minecraft.nix
+    ../modules/apps/minecraft.nix
   ];
 }
