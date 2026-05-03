@@ -1,10 +1,7 @@
 {pkgs, ...}: let
   siteRoot = pkgs.lib.cleanSource ./startpage;
 in {
-  services.tailscale = {
-    enable = true;
-    permitCertUid = "caddy";
-  };
+  services.tailscale.permitCertUid = "caddy";
 
   services.caddy = {
     enable = true;

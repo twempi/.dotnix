@@ -168,7 +168,7 @@
           hostname = "desktop";
         };
         modules = [
-          ./configs/home-manager/home.nix
+          ./configs/home-manager/profiles/desktop.nix
           ./configs/hosts/desktop/home/modules.nix
           stylix.homeModules.stylix
           inputs.spicetify-nix.homeManagerModules.default
@@ -184,7 +184,7 @@
           hostname = "g14";
         };
         modules = [
-          ./configs/home-manager/home.nix
+          ./configs/home-manager/profiles/desktop.nix
           ./configs/hosts/g14/home/modules.nix
           stylix.homeModules.stylix
           inputs.spicetify-nix.homeManagerModules.default
@@ -200,12 +200,9 @@
           hostname = "t480s";
         };
         modules = [
-          ./configs/home-manager/home.nix
+          ./configs/home-manager/profiles/server.nix
           ./configs/hosts/t480s/home/modules.nix
           stylix.homeModules.stylix
-          inputs.spicetify-nix.homeManagerModules.default
-          niri.homeModules.config
-          niri.homeModules.stylix
         ];
       };
     };

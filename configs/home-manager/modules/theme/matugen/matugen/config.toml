@@ -9,12 +9,12 @@ post_hook = 'bat cache --build'
 # Spicetify Comfy
 [templates.spicetify-comfy]
 input_path = '~/.config/matugen/templates/matugen-spotify-comfy.ini'
-output_path = '~/.dotnix/home-manager/modules/spicetify/themes/Comfy/color.ini'
+output_path = '~/.dotnix/configs/home-manager/modules/apps/spicetify/themes/Comfy/color.ini'
 
 # Spicetify Text 
 [templates.spicetify-text]
 input_path = '~/.config/matugen/templates/matugen-spotify-text.ini'
-output_path = '~/.dotnix/home-manager/modules/spicetify/themes/text/color.ini'
+output_path = '~/.dotnix/configs/home-manager/modules/apps/spicetify/themes/text/color.ini'
 
 # # Rofi
 [templates.rofi]

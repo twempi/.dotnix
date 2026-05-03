@@ -2,17 +2,17 @@
   imports = [
     # Other
     ./modules/theme
-    ./modules/defaults
-    ./modules/gnome-keyring
-    ./modules/latex
-    # ./modules/swayidle
-    ./modules/rars
+    ./modules/desktop/defaults
+    ./modules/desktop/gnome-keyring
+    ./modules/editors/latex
+    # ./modules/desktop/swayidle
+    ./modules/apps/rars
 
-    #DE
-    ./modules/de/hyprland
-    ./modules/de/sway
-    ./modules/de/mango
-    ./modules/de/niri
+    # DE
+    ./modules/desktop/de/hyprland
+    ./modules/desktop/de/sway
+    ./modules/desktop/de/mango
+    ./modules/desktop/de/niri
 
     # Terminal
     ./modules/terminals/ghostty
@@ -21,41 +21,41 @@
     ./modules/terminals/foot
 
     # Shell
-    ./modules/tmux
-    ./modules/fish
+    ./modules/cli/tmux
+    ./modules/cli/fish
     ./modules/cli
-    ./modules/ssh
+    ./modules/cli/ssh
 
     # Programs
-    ./modules/waybar
-    ./modules/swaync
-    ./modules/rofi
-    ./modules/git
-    # ./modules/firefox
-    ./modules/nixcats
-    ./modules/nixcord
-    ./modules/spicetify
-    ./modules/yazi
+    ./modules/desktop/waybar
+    ./modules/desktop/swaync
+    ./modules/desktop/rofi
+    ./modules/cli/git
+    # ./modules/apps/firefox
+    ./modules/editors/nixcats
+    ./modules/apps/nixcord
+    ./modules/apps/spicetify
+    ./modules/cli/yazi
 
-    # ./modules/startpage
-    ./modules/mpv
-    ./modules/ohmyposh
-    ./modules/fastfetch
-    ./modules/zathura
-    ./modules/anki
-    ./modules/chromium
-    ./modules/zen-browser
-    ./modules/matugen
-    ./modules/upscayl
-    ./modules/syncthing
-    ./modules/typst
-    # ./modules/quickshell
-    ./modules/sioyek
-    # ./modules/dms
-    ./modules/sunsetr
-    ./modules/fontconfig
-    ./modules/yt-dlp
-    ./modules/helium
-    # ./modules/obsidian
+    # ./modules/apps/startpage
+    ./modules/apps/mpv
+    ./modules/theme/ohmyposh
+    ./modules/cli/fastfetch
+    ./modules/apps/zathura
+    ./modules/apps/anki
+    ./modules/apps/chromium
+    ./modules/apps/zen-browser
+    ./modules/theme/matugen
+    ./modules/apps/upscayl
+    ./modules/apps/syncthing
+    ./modules/editors/typst
+    # ./modules/desktop/quickshell
+    ./modules/apps/sioyek
+    # ./modules/desktop/dms
+    ./modules/apps/sunsetr
+    ./modules/theme/fontconfig
+    ./modules/cli/yt-dlp
+    ./modules/apps/helium
+    # ./modules/apps/obsidian
   ];
 }

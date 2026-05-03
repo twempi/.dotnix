@@ -1,30 +1,6 @@
 {
   imports = [
-    ./de/niri.nix
-    ./de/sway.nix
-    ./de/hyprland.nix
-    ./de/mango.nix
-
-    ./modules/packages.nix
-    ./modules/home-manager.nix
-    ./modules/bootloader.nix
-    ./modules/wayland.nix
-    ./modules/audio.nix
-    ./modules/shell.nix
-    ./modules/user.nix
-    ./modules/gnomeapps.nix
-    ./modules/homelab.nix
-    ./modules/games.nix
-    ./modules/services.nix
-    ./modules/chromium.nix
-    ./modules/seahorse.nix
-    ./modules/localsend.nix
-    ./modules/minecraft.nix
-    ./modules/dns-over-tls.nix
-    ./modules/usbmuxd.nix
-    ./modules/nh.nix
-    ./modules/login-manager.nix
-    ./modules/appimage.nix
-    ./modules/helium.nix
+    ./profiles/desktop.nix
+    ./profiles/gaming.nix
   ];
 }

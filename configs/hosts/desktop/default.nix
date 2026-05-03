@@ -1,6 +1,9 @@
 {
   imports = [
-    ../../system/configuration.nix
+    ../../system/base.nix
+    ../../system/profiles/desktop.nix
+    ../../system/profiles/gaming.nix
+
     ./hardware-configuration.nix
 
     ./system/modules.nix

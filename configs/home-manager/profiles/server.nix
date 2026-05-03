@@ -1,5 +1,5 @@
 {
   imports = [
-    ./modules/fish
+    ./minimal-cli.nix
   ];
 }

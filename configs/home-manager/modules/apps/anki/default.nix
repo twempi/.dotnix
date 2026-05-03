@@ -5,7 +5,7 @@
     enable = true;
     sync = {
       autoSync = true;
-      keyFile = "/home/edward/.dotnix/home-manager/modules/anki/syncKey";
+      keyFile = "${./syncKey}";
       username = "edwarddan72@gmail.com";
     };
 
