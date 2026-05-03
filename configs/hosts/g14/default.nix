@@ -1,10 +1,9 @@
 {
   imports = [
     ../../system/base.nix
-    ../../system/profiles/theming.nix
+    ../../system/modules/theme/stylix.nix
     ../../system/profiles/desktop.nix
     ../../system/profiles/gaming.nix
-    ../../system/profiles/laptop.nix
 
     ./hardware-configuration.nix
 

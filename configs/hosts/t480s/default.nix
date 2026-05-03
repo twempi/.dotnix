@@ -1,9 +1,8 @@
 {
   imports = [
     ../../system/base.nix
-    ../../system/profiles/theming.nix
-    ../../system/profiles/server.nix
-    ../../system/profiles/laptop.nix
+    ../../system/modules/theme/stylix.nix
+    ../../system/modules/networking/remote-access.nix
     ../../system/modules/core/bootloader.nix
     ../../system/modules/core/user.nix
     ../../system/modules/core/shell.nix

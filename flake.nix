@@ -171,7 +171,7 @@
           ./configs/home-manager/profiles/desktop.nix
           ./configs/hosts/desktop/home/modules.nix
           stylix.homeModules.stylix
-          ./configs/stylix/theme.nix
+          ./configs/system/modules/theme/stylix.nix
           inputs.spicetify-nix.homeManagerModules.default
           niri.homeModules.config
           niri.homeModules.stylix
@@ -188,7 +188,7 @@
           ./configs/home-manager/profiles/desktop.nix
           ./configs/hosts/g14/home/modules.nix
           stylix.homeModules.stylix
-          ./configs/stylix/theme.nix
+          ./configs/system/modules/theme/stylix.nix
           inputs.spicetify-nix.homeManagerModules.default
           niri.homeModules.config
           niri.homeModules.stylix
@@ -205,7 +205,7 @@
           ./configs/home-manager/profiles/server.nix
           ./configs/hosts/t480s/home/modules.nix
           stylix.homeModules.stylix
-          ./configs/stylix/theme.nix
+          ./configs/system/modules/theme/stylix.nix
         ];
       };
     };

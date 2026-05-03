@@ -3,7 +3,7 @@
 
   programs.chromium = {
     enable = true;
-    homepageLocation = "file:///home/edward/.config/startpage/index.html";
+    homepageLocation = "https://t480s.tailae03d0.ts.net/";
     extraOpts = {
       "SpellcheckEnabled" = true;
       "SpellcheckLanguage" = ["en-US"];
