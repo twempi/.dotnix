@@ -3,67 +3,68 @@
   pkgs,
   ...
 }: let
-  domain = "vault.example.com"; # CHANGE ME
-  port = 8222;
+  # CHANGE THIS after you know your Tailscale HTTPS name.
+  #
+  # It will look something like:
+  # https://my-laptop.tailabc123.ts.net
+  vaultwardenUrl = "https://t480s.tailae03d0.ts.net";
+
+  vaultwardenPort = 8222;
 in {
   services.vaultwarden = {
     enable = true;
 
-    # Default is sqlite, which is fine for personal/family use.
+    # SQLite is fine for personal/family use.
     dbBackend = "sqlite";
 
-    # Keep secrets out of the Nix store.
+    # Secrets go here so they are not written into the Nix store.
     environmentFile = "/var/lib/vaultwarden/vaultwarden.env";
 
-    # Optional built-in backup location.
+    # NixOS-provided backup location.
     backupDir = "/var/backup/vaultwarden";
 
     config = {
-      DOMAIN = "https://${domain}";
+      DOMAIN = vaultwardenUrl;
 
-      # Safer default:
-      # Temporarily set this to true for first account creation,
-      # then switch it back to false and rebuild.
-      SIGNUPS_ALLOWED = false;
+      # First-time setup:
+      # Set this to true temporarily, create your account,
+      # then change it back to false.
+      SIGNUPS_ALLOWED = true;
 
-      # Allow admin-created invitations.
-      INVITATIONS_ALLOWED = true;
-
-      # Only listen locally; Caddy will expose HTTPS.
+      # Keep Vaultwarden private on localhost.
+      # Tailscale Serve will expose it over HTTPS to your tailnet.
       ROCKET_ADDRESS = "127.0.0.1";
-      ROCKET_PORT = port;
+      ROCKET_PORT = vaultwardenPort;
       ROCKET_LOG = "critical";
 
-      # Basic privacy/security preferences.
+      # Good beginner security defaults.
       SHOW_PASSWORD_HINT = false;
+      INVITATIONS_ALLOWED = true;
 
-      # Optional: enable once SMTP is configured.
-      # SMTP_HOST = "smtp.example.com";
-      # SMTP_PORT = 587;
-      # SMTP_SECURITY = "starttls";
-      # SMTP_FROM = "vaultwarden@example.com";
-      # SMTP_FROM_NAME = "Vaultwarden";
-      # SMTP_USERNAME = "vaultwarden@example.com";
+      # You can configure email later.
+      # Without SMTP, some invite/password-reset email features will not work.
     };
   };
 
-  services.caddy = {
-    enable = true;
-    email = "edwarddan72@gmail.com"; # CHANGE ME
-
-    virtualHosts."${domain}".extraConfig = ''
-      encode zstd gzip
-
-      reverse_proxy 127.0.0.1:${toString port} {
-        header_up X-Real-IP {remote_host}
-      }
-    '';
-  };
-
-  networking.firewall.allowedTCPPorts = [80 443];
+  services.tailscale.enable = true;
 
   systemd.tmpfiles.rules = [
     "d /var/lib/vaultwarden 0750 vaultwarden vaultwarden -"
     "d /var/backup/vaultwarden 0750 vaultwarden vaultwarden -"
   ];
+
+  # Expose Vaultwarden to your private Tailscale network via HTTPS.
+  systemd.services.tailscale-serve-vaultwarden = {
+    description = "Expose Vaultwarden over Tailscale HTTPS";
+    after = ["tailscaled.service" "vaultwarden.service"];
+    wants = ["tailscaled.service" "vaultwarden.service"];
+    wantedBy = ["multi-user.target"];
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --yes --https=443 http://127.0.0.1:${toString vaultwardenPort}";
+      ExecStop = "${pkgs.tailscale}/bin/tailscale serve --https=443 off";
+    };
+  };
 }
