@@ -1,4 +1,4 @@
-{config, ...}: {
+{
   programs.fastfetch = {
     enable = true;
 
@@ -7,13 +7,23 @@
         source = "${./ascii/hello-kitty.txt}";
         type = "file";
 
+        # These are terminal ANSI colors used by ${c1}, ${c2}, etc.
         color = {
-          "1" = "35";
+          "1" = "33"; # yellow
+          "2" = "35"; # magenta
+          "3" = "36"; # cyan
+          "4" = "91"; # bright red
+          "5" = "32"; # green
+          "6" = "34"; # blue
+          "7" = "95"; # bright magenta
+          "8" = "90"; # gray
         };
 
         padding = {
-          top = 2;
-          right = 6;
+          top = 1;
+          bottom = 0;
+          right = 4;
+          left = 1;
         };
       };
 
@@ -24,31 +34,29 @@
       modules = [
         "break"
         "break"
+        "break"
 
         {
           type = "title";
           key = " ";
-          keyWidth = 10;
-          keyColor = "35";
+          keyColor = "33";
 
           color = {
-            user = "35";
+            user = "33";
             at = "90";
-            host = "35";
+            host = "33";
           };
         }
-
-        "break"
 
         {
           type = "os";
           key = " ";
-          keyColor = "35";
+          keyColor = "33";
         }
 
         {
           type = "host";
-          key = "🖥 ";
+          key = "󰌢 ";
           keyColor = "35";
         }
 
@@ -67,7 +75,7 @@
         {
           type = "shell";
           key = ">_";
-          keyColor = "35";
+          keyColor = "33";
         }
 
         {
@@ -79,7 +87,7 @@
         {
           type = "wm";
           key = " ";
-          keyColor = "33";
+          keyColor = "36";
           format = "{} ({3})";
         }
 
@@ -92,12 +100,12 @@
         {
           type = "gpu";
           key = "󰢮 ";
-          keyColor = "91";
+          keyColor = "95";
         }
 
         {
           type = "memory";
-          key = "🎟 ";
+          key = "󰘚 ";
           keyColor = "36";
         }
 
@@ -107,9 +115,6 @@
           type = "colors";
           symbol = "circle";
         }
-
-        "break"
-        "break"
       ];
     };
   };
