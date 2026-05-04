@@ -1,15 +1,19 @@
 {pkgs, ...}: {
   imports = [
     ../base.nix
+    ../modules/cli/bat
+    ../modules/cli/btop
+    ../modules/cli/fastfetch
+    ../modules/cli/fish
     ../modules/cli/ssh
     ../modules/cli/tmux
-    ../modules/cli
     ../modules/cli/git/server.nix
+    ../modules/theme/ohmyposh
+    ../modules/editors/nixcats
   ];
 
   home.packages = with pkgs; [
     home-manager
-    neovim
     curl
     wget
     ripgrep
