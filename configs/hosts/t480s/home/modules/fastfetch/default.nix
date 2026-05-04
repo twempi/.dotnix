@@ -4,7 +4,7 @@
 
     settings = {
       logo = {
-        source = "${./ascii/hello-kitty.txt}";
+        source = "${./ascii/otter.txt}";
         type = "file";
 
         # These are terminal ANSI colors used by ${c1}, ${c2}, etc.
