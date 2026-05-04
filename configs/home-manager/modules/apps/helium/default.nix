@@ -58,6 +58,11 @@
       id = "fnaicdffflnofjppbagibeoednhnbjhg";
       hash = "sha256-+/cyGI5sj6V9OitbBeOl/pkM//Vj/qACXpgkn8TETz0=";
     }
+    {
+      # Imagus Reborn
+      id = "fcjmgeodgobggcppooncdagfkogfffdm";
+      hash = "sha256-ioqkGne9PJUqoNV//PIfQlG3CIfGzhsXpJmS5Pt5bCM=";
+    }
   ];
 
   fetchExtension = {
@@ -182,14 +187,14 @@ in {
       ShowHomeButton = true;
       SyncDisabled = false;
 
-      # Install extensions whose unpacked startup behavior should not run on
-      # every Helium launch as managed Web Store extensions instead.
-      ExtensionInstallForcelist = [
-        "fnaicdffflnofjppbagibeoednhnbjhg;https://clients2.google.com/service/update2/crx"
-        "fcjmgeodgobggcppooncdagfkogfffdm;https://clients2.google.com/service/update2/crx"
-        "cndibmoanboadcifjkjbdpjgfedanolh;https://clients2.google.com/service/update2/crx"
-      ];
-
+      # # Install extensions whose unpacked startup behavior should not run on
+      # # every Helium launch as managed Web Store extensions instead.
+      # ExtensionInstallForcelist = [
+      #   "fnaicdffflnofjppbagibeoednhnbjhg;https://clients2.google.com/service/update2/crx"
+      #   "fcjmgeodgobggcppooncdagfkogfffdm;https://clients2.google.com/service/update2/crx"
+      #   "cndibmoanboadcifjkjbdpjgfedanolh;https://clients2.google.com/service/update2/crx"
+      # ];
+      #
       ExtensionInstallAllowlist = map (ext: ext.id) webStoreExtensions;
 
       # ManagedBookmarks = [

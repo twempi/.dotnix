@@ -9,6 +9,7 @@
     ../modules/cli/git/server.nix
     ../modules/theme/ohmyposh
     ../modules/editors/nixcats
+    ../modules/apps/syncthing
   ];
 
   home.packages = with pkgs; [
