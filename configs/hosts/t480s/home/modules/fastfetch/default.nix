@@ -3,14 +3,12 @@
     enable = true;
 
     settings = {
-      "$schema" = "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json";
-
       logo = {
         source = "${./ascii/hello-kitty.txt}";
+        type = "file";
 
-        # Uses your terminal theme's ANSI colors
         color = {
-          "1" = "magenta";
+          "1" = "35";
         };
 
         padding = {
@@ -20,7 +18,7 @@
       };
 
       display = {
-        separator = " ";
+        separator = " •  ";
       };
 
       modules = [
@@ -29,8 +27,15 @@
 
         {
           type = "title";
+          key = " ";
           keyWidth = 10;
-          color = "bright_magenta";
+          keyColor = "35";
+
+          color = {
+            user = "35";
+            at = "90";
+            host = "35";
+          };
         }
 
         "break"
@@ -38,60 +43,71 @@
         {
           type = "os";
           key = " ";
-          keyColor = "magenta";
-          color = "white";
+          keyColor = "35";
         }
 
         {
           type = "host";
           key = "🖥 ";
-          keyColor = "magenta";
-          color = "white";
+          keyColor = "35";
+        }
+
+        {
+          type = "kernel";
+          key = " ";
+          keyColor = "91";
+        }
+
+        {
+          type = "uptime";
+          key = "󰅐 ";
+          keyColor = "36";
         }
 
         {
           type = "shell";
           key = ">_";
-          keyColor = "magenta";
-          color = "white";
+          keyColor = "35";
         }
 
         {
           type = "terminal";
           key = " ";
-          keyColor = "magenta";
-          color = "white";
+          keyColor = "35";
         }
 
         {
           type = "wm";
           key = " ";
-          keyColor = "magenta";
-          color = "white";
+          keyColor = "33";
+          format = "{} ({3})";
         }
 
         {
           type = "cpu";
           key = "󰍛 ";
-          keyColor = "magenta";
-          color = "white";
+          keyColor = "91";
         }
 
         {
           type = "gpu";
           key = "󰢮 ";
-          keyColor = "magenta";
-          color = "white";
+          keyColor = "91";
         }
 
         {
           type = "memory";
           key = "🎟 ";
-          keyColor = "magenta";
-          color = "white";
+          keyColor = "36";
         }
 
         "break"
+
+        {
+          type = "colors";
+          symbol = "circle";
+        }
+
         "break"
         "break"
       ];
