@@ -63,6 +63,11 @@
       id = "fcjmgeodgobggcppooncdagfkogfffdm";
       hash = "sha256-ioqkGne9PJUqoNV//PIfQlG3CIfGzhsXpJmS5Pt5bCM=";
     }
+    {
+      # Better Campus
+      id = "cndibmoanboadcifjkjbdpjgfedanolh";
+      hash = "sha256-CtVjiDw/pLBH36QYGbKo/Pu+gxQT1iLdHn70ITRh74c=";
+    }
   ];
 
   fetchExtension = {
