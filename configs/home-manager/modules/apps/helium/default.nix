@@ -53,6 +53,11 @@
       id = "nngceckbapebfimnlniiiahkandclblb";
       hash = "sha256-XOVs2Tvay8hQ13SHz+728BDu2mMyQ0JxUuUI6FZ1NaM=";
     }
+    {
+      # Floccus Bookmarks Sync
+      id = "fnaicdffflnofjppbagibeoednhnbjhg";
+      hash = "sha256-+/cyGI5sj6V9OitbBeOl/pkM//Vj/qACXpgkn8TETz0=";
+    }
   ];
 
   fetchExtension = {
