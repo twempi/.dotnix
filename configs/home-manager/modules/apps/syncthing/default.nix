@@ -21,7 +21,47 @@
       }
       else null;
   };
+
+  mkHeliumBookmarksFolder = devices: {
+    id = "helium-bookmarks";
+    label = "Helium Bookmarks";
+    inherit devices;
+
+    # This should be the Helium profile directory that contains:
+    #   Bookmarks
+    #   Bookmarks.bak
+    path = "/home/edward/.config/net.imput.helium/Profile";
+
+    # Keep backup versions on the t480s server.
+    # Syncthing versioning applies per folder and stores replaced/deleted
+    # files received from other devices.
+    versioning =
+      if isServer
+      then {
+        type = "staggered";
+        params = {
+          maxAge = "2592000"; # 30 days in seconds
+        };
+      }
+      else null;
+  };
 in {
+  # Create the .stignore on every NixOS device using this module.
+  # .stignore itself is not synced by Syncthing, so it must exist locally
+  # on desktop, g14, and t480s.
+  system.activationScripts.heliumSyncthingIgnore.text = ''
+        mkdir -p /home/edward/.config/net.imput.helium/Profile
+
+        cat > /home/edward/.config/net.imput.helium/Profile/.stignore <<'EOF'
+    !/Bookmarks
+    !/Bookmarks.bak
+    *
+    EOF
+
+        chown edward:users /home/edward/.config/net.imput.helium/Profile/.stignore
+        chmod 0644 /home/edward/.config/net.imput.helium/Profile/.stignore
+  '';
+
   services.syncthing = {
     enable = true;
 
@@ -50,6 +90,12 @@ in {
       folders = {
         notes = mkFolder "notes" ["desktop" "t480s" "g14" "ipad"];
         school = mkFolder "school" ["desktop" "t480s" "g14"];
+
+        "helium-bookmarks" = mkHeliumBookmarksFolder [
+          "desktop"
+          "t480s"
+          "g14"
+        ];
       };
     };
   };

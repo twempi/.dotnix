@@ -151,6 +151,7 @@
           ./configs/hosts/g14/default.nix
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
+          t3code.nixosModules.default
         ];
 
         specialArgs = {
