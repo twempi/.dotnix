@@ -7,7 +7,8 @@
       "SUPER,F,togglefullscreen"
 
       "SUPER,Return,spawn,kitty"
-      "SUPER,B,spawn,zen-beta"
+      # "SUPER,B,spawn,zen-beta"
+      "SUPER,B,spawn,helium"
       "SUPER,E,spawn,kitty -e yazi"
       "SUPER+SHIFT,E,spawn,nautilus"
       "SUPER,M,spawn,spotify"

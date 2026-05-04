@@ -141,7 +141,7 @@ in {
 
   programs.helium = {
     enable = true;
-    defaultBrowser = false;
+    defaultBrowser = true;
 
     extensions = [];
 

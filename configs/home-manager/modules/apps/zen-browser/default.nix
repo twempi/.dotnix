@@ -15,7 +15,7 @@
 
   programs.zen-browser = {
     enable = true;
-    setAsDefaultBrowser = true;
+    setAsDefaultBrowser = false;
     nativeMessagingHosts = [pkgs.firefoxpwa];
 
     policies = let

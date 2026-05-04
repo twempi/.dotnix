@@ -24,7 +24,8 @@
       # Apps
       "Mod4+Return" = "exec ${pkgs.foot}/bin/foot";
       # "Mod4+B" = "exec ${pkgs.brave}/bin/brave";
-      "Mod4+B" = "exec zen-beta";
+      # "Mod4+B" = "exec zen-beta";
+      "Mod4+B" = "exec helium";
       "Mod4+E" = "exec ${pkgs.foot}/bin/foot -e ${pkgs.yazi}/bin/yazi";
       "Mod4+Shift+E" = "exec ${pkgs.nautilus}/bin/nautilus";
       "Mod4+M" = "exec spotify";
