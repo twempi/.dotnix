@@ -3,7 +3,6 @@
     ../base.nix
     ../modules/cli/bat
     ../modules/cli/btop
-    ../modules/cli/fastfetch
     ../modules/cli/fish
     ../modules/cli/ssh
     ../modules/cli/tmux
