@@ -180,6 +180,7 @@ in {
       # Install extensions whose unpacked startup behavior should not run on
       # every Helium launch as managed Web Store extensions instead.
       ExtensionInstallForcelist = [
+        "fnaicdffflnofjppbagibeoednhnbjhg;https://clients2.google.com/service/update2/crx"
         "fcjmgeodgobggcppooncdagfkogfffdm;https://clients2.google.com/service/update2/crx"
         "cndibmoanboadcifjkjbdpjgfedanolh;https://clients2.google.com/service/update2/crx"
       ];

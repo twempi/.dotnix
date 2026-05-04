@@ -4,6 +4,7 @@
     ./modules/undervolt.nix
     ./modules/graphics.nix
     ./modules/minecraft.nix
+    ./modules/floccus-webdav.nix
     ./modules/caddy
     ./modules/suwayomi.nix
     ./modules/vaultwarden.nix
