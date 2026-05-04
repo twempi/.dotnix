@@ -1,66 +1,3 @@
-# {
-#   programs.fastfetch = {
-#     enable = true;
-#     settings = {
-#       logo = {
-#         source = "${./ascii/hello-kitty.txt}";
-#         # type = "kitty";
-#         type = "file";
-#         height = 10;
-#         padding = {
-#           top = 1;
-#           bottom = 0;
-#           right = 2;
-#           left = 1;
-#         };
-#       };
-#       display = {
-#         separator = " •  ";
-#       };
-#       modules = [
-#         "break"
-#         "break"
-#         "break"
-#         {
-#           type = "title";
-#           color = {
-#             user = "32";
-#             at = "90";
-#             host = "32";
-#           };
-#           key = " ";
-#           keyColor = "32";
-#         }
-#         {
-#           type = "os";
-#           key = " ";
-#           keyColor = "35";
-#         }
-#         {
-#           type = "kernel";
-#           key = " ";
-#           keyColor = "91";
-#         }
-#         {
-#           type = "uptime";
-#           key = "󰅐 ";
-#           keyColor = "36";
-#         }
-#         {
-#           type = "wm";
-#           format = "{} ({3})";
-#           key = " ";
-#           keyColor = "33";
-#         }
-#         "break"
-#         {
-#           type = "colors";
-#           symbol = "circle";
-#         }
-#       ];
-#     };
-#   };
-# }
 {config, ...}: {
   programs.fastfetch = {
     enable = true;
@@ -71,8 +8,9 @@
       logo = {
         source = "${./ascii/hello-kitty.txt}";
 
+        # Uses your terminal theme's ANSI colors
         color = {
-          "1" = "#C6B7FF";
+          "1" = "magenta";
         };
 
         padding = {
@@ -92,72 +30,65 @@
         {
           type = "title";
           keyWidth = 10;
-          color = "#D8CCFF";
+          color = "bright_magenta";
         }
 
         "break"
 
         {
           type = "os";
-          key = " ";
-          keyColor = "#B8A6FF";
-          color = "#E6E0FF";
-          format = "NixOS";
+          key = " ";
+          keyColor = "magenta";
+          color = "white";
         }
 
         {
           type = "host";
           key = "🖥 ";
-          keyColor = "#B8A6FF";
-          color = "#E6E0FF";
-          format = "Zeibook Air";
+          keyColor = "magenta";
+          color = "white";
         }
 
         {
           type = "shell";
-          format = "{}";
           key = ">_";
-          keyColor = "#B8A6FF";
-          color = "#E6E0FF";
+          keyColor = "magenta";
+          color = "white";
         }
 
         {
           type = "terminal";
           key = " ";
-          keyColor = "#B8A6FF";
-          color = "#E6E0FF";
+          keyColor = "magenta";
+          color = "white";
         }
 
         {
           type = "wm";
-          format = "{} (wayland)";
           key = " ";
-          keyColor = "#B8A6FF";
-          color = "#E6E0FF";
+          keyColor = "magenta";
+          color = "white";
         }
 
         {
           type = "cpu";
           key = "󰍛 ";
-          keyColor = "#B8A6FF";
-          color = "#E6E0FF";
-          format = "intel(R) i7-5650U";
+          keyColor = "magenta";
+          color = "white";
         }
 
         {
           type = "gpu";
           key = "󰢮 ";
-          keyColor = "#B8A6FF";
-          color = "#E6E0FF";
-          format = "Intel(R) HD 6000";
+          keyColor = "magenta";
+          color = "white";
         }
 
         {
           type = "memory";
           key = "🎟 ";
-          keyColor = "#B8A6FF";
-          color = "#E6E0FF";
-          format = "{} {}";
+          keyColor = "magenta";
+          color = "white";
         }
 
         "break"
