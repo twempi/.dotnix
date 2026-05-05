@@ -1,11 +1,11 @@
-{
+{lib, ...}: {
   programs.fastfetch = {
     enable = true;
 
     settings = {
       logo = {
-        source = "${./../../../../../home-manager/modules/cli/fastfetch/ascii/mimikyu.txt}";
-        type = "file";
+        source = lib.mkForce "${./../../../../../home-manager/modules/cli/fastfetch/ascii/mimikyu.txt}";
+        type = lib.mkForce "file";
       };
     };
   };
