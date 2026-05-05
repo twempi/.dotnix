@@ -116,7 +116,11 @@
     mkdir -p $out
     cp -r ${startpageSource}/* $out/
     cp ${./new-tab-startpage/manifest.json} $out/manifest.json
-    cp -r ${./new-tab-startpage/icons} $out/icons
+    mkdir -p $out/icons
+    cp ${./new-tab-startpage/icons/16.png} $out/icons/16.png
+    cp ${./new-tab-startpage/icons/32.png} $out/icons/32.png
+    cp ${./new-tab-startpage/icons/48.png} $out/icons/48.png
+    cp ${./new-tab-startpage/icons/128.png} $out/icons/128.png
   '';
 
   allUnpackedExtensionPaths = map toString [localNewTabExtension];
