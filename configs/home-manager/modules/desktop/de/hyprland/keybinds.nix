@@ -42,7 +42,7 @@
         "$mod, ESCAPE, exec, rofi-power"
 
         "$mod, Z, exec, $colorPicker"
-        "$mod SHIFT, W, exec, rofi-wallpaper"
+        "$mod SHIFT, W, exec, qs-wallpaper"
         "$mod SHIFT, R, exec, ${./reload.sh}"
 
         # Screenshot(grim + slurp)

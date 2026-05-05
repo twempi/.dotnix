@@ -32,8 +32,8 @@
     trackpad_natural_scrolling = 0;
 
     # mouse settings
-    accel_profile = 1;
-    accel_speed = 0;
+    mouse_accel_profile = 1;
+    mouse_accel_speed = 0.0;
 
     # trackpad settings
   };

@@ -20,7 +20,7 @@
       "SUPER,Escape,spawn,rofi-power"
 
       "SUPER,Z,spawn,hyprpicker -a"
-      "SUPER+SHIFT,W,spawn,rofi-wallpaper"
+      "SUPER+SHIFT,W,spawn,qs-wallpaper"
 
       "SUPER+SHIFT,S,spawn,bash ${./screenshot.sh}"
       "NONE,Print,spawn_shell,grim - | wl-copy && wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png"

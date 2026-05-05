@@ -34,7 +34,7 @@
       "Mod4+Shift+B" = "exec ${pkgs.foot}/bin/foot -e bluetui";
       "Mod4+Shift+N" = "exec ${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
       "Mod4+Escape" = "exec rofi-power";
-      "Mod4+Shift+W" = "exec rofi-wallpaper";
+      "Mod4+Shift+W" = "exec qs-wallpaper";
       "Mod4+Shift+R" = "exec ${./reload.sh}";
 
       # Screenshots

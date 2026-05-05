@@ -81,8 +81,8 @@
         "-a"
       ];
 
-      # $mod SHIFT, W, exec, rofi-wallpaper
-      "Mod+Shift+W".action.spawn = "rofi-wallpaper";
+      # $mod SHIFT, W, exec, qs-wallpaper
+      "Mod+Shift+W".action.spawn = "qs-wallpaper";
 
       "Mod+Shift+R".action.spawn = "${./reload.sh}";
 

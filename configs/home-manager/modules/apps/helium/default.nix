@@ -66,7 +66,7 @@
     {
       # Better Campus
       id = "cndibmoanboadcifjkjbdpjgfedanolh";
-      hash = "sha256-CtVjiDw/pLBH36QYGbKo/Pu+gxQT1iLdHn70ITRh74c=";
+      hash = "sha256-sJi02k5DgLpwrsrQHqlvXdWu4tNW+WqFiMT0qbsmXvc=";
     }
   ];
 

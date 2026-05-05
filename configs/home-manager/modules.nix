@@ -41,7 +41,7 @@
     ./modules/desktop/defaults
     ./modules/desktop/gnome-keyring
     # ./modules/desktop/dms
-    # ./modules/desktop/quickshell
+    ./modules/desktop/quickshell
     # ./modules/desktop/swayidle
 
     # Programs
