@@ -12,38 +12,46 @@
     };
   };
 in {
-  stylix = {
-    enable = true;
-    autoEnable = false;
+  stylix =
+    {
+      enable = true;
+      autoEnable = false;
 
-    base16Scheme = inputs.tt-schemes + "/base16/rose-pine.yaml";
-    polarity = "dark";
+      # base16Scheme = inputs.tt-schemes + "/base16/rose-pine.yaml";
+      # base16Scheme = inputs.tt-schemes + "/base16/everforest-dark-medium.yaml";
+      # base16Scheme = inputs.tt-schemes + "/base16/catppuccin-mocha.yaml";
+      # base16Scheme = inputs.tt-schemes + "/base16/gruvbox-material-dark-medium.yaml";
+      # base16Scheme = inputs.tt-schemes + "/base16/tokyo-night-moon.yaml";
+      base16Scheme = inputs.tt-schemes + "/base16/ocean.yaml";
 
-    cursor = {
-      package = pkgs.quintom-cursor-theme;
-      name = "Quintom_Ink";
-      size = 24;
-    };
+      polarity = "dark";
 
-    fonts = {
-      monospace = {
-        package = pkgs.fira-code;
-        name = "Fira Code";
+      cursor = {
+        package = pkgs.quintom-cursor-theme;
+        name = "Quintom_Ink";
+        size = 24;
       };
-      sansSerif = {
-        package = pkgs.dejavu_fonts;
-        name = "DejaVu Sans";
+
+      fonts = {
+        monospace = {
+          package = pkgs.fira-code;
+          name = "Fira Code";
+        };
+        sansSerif = {
+          package = pkgs.dejavu_fonts;
+          name = "DejaVu Sans";
+        };
+        serif = {
+          package = pkgs.dejavu_fonts;
+          name = "DejaVu Serif";
+        };
+        sizes = {
+          terminal = 11;
+          applications = 11;
+          desktop = 11;
+          popups = 11;
+        };
       };
-      serif = {
-        package = pkgs.dejavu_fonts;
-        name = "DejaVu Serif";
-      };
-      sizes = {
-        terminal = 11;
-        applications = 11;
-        desktop = 11;
-        popups = 11;
-      };
-    };
-  } // systemIntegration;
+    }
+    // systemIntegration;
 }
