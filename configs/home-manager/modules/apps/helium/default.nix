@@ -93,28 +93,33 @@
       inherit hash;
     };
 
-  unpackExtension = {
+  externalExtensionJson = {
     id,
     hash,
   }:
-    pkgs.runCommand "helium-ext-${id}" {
-      nativeBuildInputs = [pkgs.unzip];
-      src = fetchExtension {inherit id hash;};
+    pkgs.runCommand "helium-external-extension-${id}.json" {
+      nativeBuildInputs = [pkgs.jq pkgs.unzip];
+      crx = fetchExtension {inherit id hash;};
     } ''
-      mkdir -p $out
-      unzip -q $src -d $out || true
-      rm -rf $out/_metadata
-    '';
+      manifest="$(unzip -p "$crx" manifest.json 2>/dev/null || true)"
+      version="$(printf '%s' "$manifest" | jq -r .version)"
+      test -n "$version"
+      test "$version" != "null"
 
-  unpackedWebStoreExtensions = map unpackExtension webStoreExtensions;
+      jq -n \
+        --arg crx "$crx" \
+        --arg version "$version" \
+        '{ external_crx: $crx, external_version: $version }' > "$out"
+    '';
 
   localNewTabExtension = pkgs.runCommand "helium-new-tab-startpage" {} ''
     mkdir -p $out
     cp -r ${startpageSource}/* $out/
     cp ${./new-tab-startpage/manifest.json} $out/manifest.json
+    cp -r ${./new-tab-startpage/icons} $out/icons
   '';
 
-  allUnpackedExtensionPaths = map toString (unpackedWebStoreExtensions ++ [localNewTabExtension]);
+  allUnpackedExtensionPaths = map toString [localNewTabExtension];
 
   profilePreferences = {
     browser = {
@@ -175,10 +180,11 @@ in {
       BrowserSignin = 0;
       DefaultBrowserSettingEnabled = false;
       DefaultSearchProviderEnabled = true;
-      DefaultSearchProviderKeyword = "google.com";
-      DefaultSearchProviderName = "Google";
-      DefaultSearchProviderSearchURL = "https://www.google.com/search?q={searchTerms}";
-      DefaultSearchProviderSuggestURL = "https://www.google.com/complete/search?output=chrome&q={searchTerms}";
+      DefaultSearchProviderName = "Brave Search";
+      DefaultSearchProviderKeyword = "search.brave.com";
+      DefaultSearchProviderSearchURL = "https://search.brave.com/search?q={searchTerms}";
+      DefaultSearchProviderIconURL = "https://cdn.search.brave.com/serp/favicon.ico";
+      DefaultSearchProviderEncodings = ["UTF-8"];
       DeveloperToolsAvailability = 1;
       HomepageLocation = homePage;
       HomepageIsNewTabPage = false;
@@ -192,43 +198,14 @@ in {
       ShowHomeButton = true;
       SyncDisabled = false;
 
-      # # Install extensions whose unpacked startup behavior should not run on
-      # # every Helium launch as managed Web Store extensions instead.
-      # ExtensionInstallForcelist = [
-      #   "fnaicdffflnofjppbagibeoednhnbjhg;https://clients2.google.com/service/update2/crx"
-      #   "fcjmgeodgobggcppooncdagfkogfffdm;https://clients2.google.com/service/update2/crx"
-      #   "cndibmoanboadcifjkjbdpjgfedanolh;https://clients2.google.com/service/update2/crx"
-      # ];
-      #
       ExtensionInstallAllowlist = map (ext: ext.id) webStoreExtensions;
 
-      # ManagedBookmarks = [
-      #   {
-      #     toplevel_name = "Quick Links";
-      #   }
-      #   {
-      #     name = "Startpage";
-      #     url = homePage;
-      #   }
-      #   {
-      #     name = "Nix Packages";
-      #     url = "https://search.nixos.org/packages?channel=unstable";
-      #   }
-      #   {
-      #     name = "Nix Options";
-      #     url = "https://search.nixos.org/options?channel=unstable";
-      #   }
-      #   {
-      #     name = "ChatGPT";
-      #     url = "https://chatgpt.com/";
-      #   }
-      # ];
       SiteSearchSettings = [
         {
           featured = true;
           name = "Nix Packages";
           shortcut = "np";
-          url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
+          url = "https://search.nixos.org/packages?channel=unstable&query=%s";
         }
         {
           featured = true;
@@ -247,6 +224,14 @@ in {
     # activation hook below instead.
     preferences = {};
   };
+
+  xdg.configFile = lib.listToAttrs (
+    map (ext: {
+      name = "net.imput.helium/External Extensions/${ext.id}.json";
+      value.source = externalExtensionJson ext;
+    })
+    webStoreExtensions
+  );
 
   home.activation.heliumProfilePreferences = lib.hm.dag.entryAfter ["writeBoundary"] ''
     prefs_dir="$HOME/.config/net.imput.helium/${heliumProfileDir}"

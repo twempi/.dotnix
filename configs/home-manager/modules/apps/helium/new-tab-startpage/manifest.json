@@ -1,8 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Edward Startpage New Tab",
+  "name": "Startpage",
   "version": "1.0.0",
-  "description": "Local Helium new tab startpage.",
+  "description": "Custom Startpage",
+  "icons": {
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
   "chrome_url_overrides": {
     "newtab": "index.html"
   }
