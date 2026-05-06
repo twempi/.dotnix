@@ -33,9 +33,23 @@ vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = tr
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 
--- Diagnostics
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Diagnostics float' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Diagnostics list' })
+-- -- Diagnostics
+-- vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Diagnostics float' })
+-- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Diagnostics list' })
+
+-- Current buffer diagnostics
+vim.keymap.set("n", "<leader>q", function()
+  vim.diagnostic.setloclist({ open = true })
+end, {
+  desc = "Buffer diagnostics list",
+})
+
+-- All diagnostics from all open buffers
+vim.keymap.set("n", "<leader>Q", function()
+  vim.diagnostic.setqflist({ open = true })
+end, {
+  desc = "All diagnostics quickfix",
+})
 
 
 -- netrw tweaks

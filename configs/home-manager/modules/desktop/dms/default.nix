@@ -2,6 +2,7 @@
   imports = [
     inputs.dms.homeModules.dank-material-shell
   ];
+  stylix.targets.dank-material-shell.enable = true;
 
   programs.dank-material-shell = {
     enable = true;

@@ -68,6 +68,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     tt-schemes = {
       url = "github:tinted-theming/schemes";
       flake = false;
@@ -106,6 +111,7 @@
     mangowm,
     tt-schemes,
     t3code,
+    noctalia,
     ...
   }: let
     system = "x86_64-linux";
