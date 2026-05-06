@@ -21,6 +21,9 @@
       "Mod4+V" = "floating toggle";
       "Mod4+F" = "fullscreen toggle";
 
+      # Force kill
+      "Mod4+Shift+Q" = "exec ${pkgs.sway}/bin/swaymsg -t get_tree | ${pkgs.jq}/bin/jq -r '.. | select(.focused? == true) | .pid // empty' | xargs -r kill";
+
       # Apps
       "Mod4+Return" = "exec ${pkgs.foot}/bin/foot";
       # "Mod4+B" = "exec ${pkgs.brave}/bin/brave";
@@ -81,6 +84,12 @@
       "Mod4+Shift+8" = "move container to workspace 8";
       "Mod4+Shift+9" = "move container to workspace 9";
       "Mod4+Shift+0" = "move container to workspace 10";
+
+      # Resize windows
+      "Mod4+Shift+H" = "resize shrink width 50 px";
+      "Mod4+Shift+L" = "resize grow width 50 px";
+      "Mod4+Shift+J" = "resize shrink height 50 px";
+      "Mod4+Shift+K" = "resize grow height 50 px";
 
       # Multimedia keys
       "XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";

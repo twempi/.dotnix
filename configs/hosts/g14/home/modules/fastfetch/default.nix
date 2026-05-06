@@ -4,7 +4,7 @@
 
     settings = {
       logo = {
-        source = lib.mkForce "${./../../../../../home-manager/modules/cli/fastfetch/ascii/mimikyu.txt}";
+        source = lib.mkForce "${./../../../../../home-manager/modules/cli/fastfetch/ascii/laying-cat.txt}";
         type = lib.mkForce "file";
       };
     };
