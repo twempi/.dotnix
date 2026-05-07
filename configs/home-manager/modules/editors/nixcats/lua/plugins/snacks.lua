@@ -141,7 +141,7 @@ return {
 				},
 
 				math = {
-					enabled = true,
+					enabled = false,
 
 					typst = {
 						tpl = [[
