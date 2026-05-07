@@ -30,28 +30,28 @@
         CPU_MAX_PERF_ON_AC = 100;
         CPU_MIN_PERF_ON_AC = 0;
 
-        STOP_CHARGE_THRESH_BAT0 = 95;
+        STOP_CHARGE_THRESH_BAT0 = 85;
         START_CHARGE_THRESH_BAT0 = 80;
       };
     };
 
     power-profiles-daemon.enable = false;
-    logind = {
-      settings = {
-        Login = {
-          HandleLidSwitch = "suspend-then-hibernate";
-          HandlePowerKeyLongPress = "hibernate";
-          HandlePowerKey = "poweroff";
-        };
-      };
-    };
+    # logind = {
+    #   settings = {
+    #     Login = {
+    #       HandleLidSwitch = "suspend-then-hibernate";
+    #       HandlePowerKeyLongPress = "hibernate";
+    #       HandlePowerKey = "poweroff";
+    #     };
+    #   };
+    # };
   };
-  boot.kernelParams = ["mem_sleep_default=deep"];
-
-  systemd.sleep.settings.Sleep = {
-    AllowSuspend = true;
-    AllowHibernation = true;
-    AllowHybridSleep = true;
-    AllowSuspendThenHibernate = true;
-  };
+  # boot.kernelParams = ["mem_sleep_default=deep"];
+  #
+  # systemd.sleep.settings.Sleep = {
+  #   AllowSuspend = true;
+  #   AllowHibernation = true;
+  #   AllowHybridSleep = true;
+  #   AllowSuspendThenHibernate = true;
+  # };
 }
