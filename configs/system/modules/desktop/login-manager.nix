@@ -5,9 +5,9 @@
       save = true;
       load = true;
 
-      # Animation
-      animation = "matrix";
-      animation_timeout_sec = 0;
+      # # Animation
+      # animation = "matrix";
+      # animation_timeout_sec = 0;
     };
   };
 }
