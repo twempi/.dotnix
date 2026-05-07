@@ -1,6 +1,4 @@
 {pkgs, ...}: {
-  stylix.targets.eog.enable = true;
-
   environment.systemPackages = with pkgs; [
     nautilus
     eog
