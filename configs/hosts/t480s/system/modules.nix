@@ -8,5 +8,6 @@
     ./modules/caddy
     ./modules/suwayomi.nix
     ./modules/vaultwarden.nix
+    ./modules/headless.nix
   ];
 }
