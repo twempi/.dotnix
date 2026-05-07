@@ -68,6 +68,11 @@
       id = "cndibmoanboadcifjkjbdpjgfedanolh";
       hash = "sha256-sJi02k5DgLpwrsrQHqlvXdWu4tNW+WqFiMT0qbsmXvc=";
     }
+    # Live Stream Downloader
+    {
+      id = "looepbdllpjgdmkpdcdffhdbmpbcfekj";
+      hash = "sha256-lAf4bNDPW3w/EvNLX28BmVKV6iudehcxzOOQzxK3m+A=";
+    }
   ];
 
   fetchExtension = {

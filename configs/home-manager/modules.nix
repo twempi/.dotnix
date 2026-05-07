@@ -33,6 +33,7 @@
     ./modules/cli/fastfetch
     ./modules/cli/btop
     ./modules/cli/bat
+    ./modules/cli/lazygit
 
     # Shell
     ./modules/desktop/waybar
