@@ -43,13 +43,10 @@
     # ./modules/desktop/dms
     ./modules/desktop/noctalia
     ./modules/desktop/quickshell
-    # ./modules/desktop/swayidle
 
     # Programs
-    # ./modules/apps/firefox
     ./modules/apps/nixcord
     ./modules/apps/spicetify
-    # ./modules/apps/startpage
     ./modules/apps/mpv
     ./modules/apps/zathura
     ./modules/apps/anki

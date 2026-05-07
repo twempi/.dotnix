@@ -1,71 +1,53 @@
 {
-	stylix.targets.tmux.enable = true;
+  stylix.targets.tmux.enable = true;
 
-	programs.tmux = {
-		enable = true;
+  programs.tmux = {
+    enable = true;
 
-		extraConfig = ''
-# Fixes
-set -as terminal-overrides ",*:RGB"
-set -sg escape-time 0
-set -g focus-events on
+    # Core behavior
+    prefix = "C-a";
+    baseIndex = 1;
+    keyMode = "vi";
+    escapeTime = 0;
+    focusEvents = true;
+    mouse = true;
+    historyLimit = 10000;
 
-# Start windows and panes at 1, not 0
-set -g base-index 1
-set -g pane-base-index 1
+    # Better TERM inside tmux
+    terminal = "tmux-256color";
 
-# Status bar
-set-option -g status-position top
+    # Home Manager can generate these vi-style pane binds:
+    # prefix + h/j/k/l to move panes
+    # prefix + H/J/K/L to resize panes
+    customPaneNavigationAndResize = true;
+    resizeAmount = 1;
 
-# Vim keys
-set -g status-keys vi
-setw -g mode-keys vi
+    extraConfig = ''
+      set -as terminal-features ",*:RGB"
 
-# Binds
-set -g prefix C-a
-bind q killp
-bind v copy-mode
+      # Status bar
+      set-option -g status-position top
 
-# Renames
-bind-key r command-prompt -I "#W" "rename-window -- '%%'"
-bind-key R command-prompt -I "#S" "rename-session -- '%%'"
+      # Simple binds
+      bind-key q kill-pane
+      bind-key v copy-mode
 
-# Vim pane switching
-setw -g mode-keys vi
-bind-key h select-pane -L
-bind-key j select-pane -D
-bind-key k select-pane -U
-bind-key l select-pane -R
+      # Rename window/session
+      bind-key r command-prompt -I "#W" "rename-window -- '%%'"
+      bind-key R command-prompt -I "#S" "rename-session -- '%%'"
 
-bind -n C-h select-pane -L
-bind -n C-j select-pane -D
-bind -n C-k select-pane -U
-bind -n C-l select-pane -R
+      # Optional: switch panes without prefix.
+      # Comment these out if they interfere with shell/editor shortcuts.
+      bind-key -n C-h select-pane -L
+      bind-key -n C-j select-pane -D
+      bind-key -n C-k select-pane -U
+      bind-key -n C-l select-pane -R
 
-# Vim resize panes
-bind-key -r H resize-pane -L 1
-bind-key -r J resize-pane -D 1
-bind-key -r K resize-pane -U 1
-bind-key -r L resize-pane -R 1
-
-# Switch windows with alt + number
-bind-key -n M-1 select-window -t 1
-bind-key -n M-2 select-window -t 2
-bind-key -n M-3 select-window -t 3
-bind-key -n M-4 select-window -t 4
-bind-key -n M-5 select-window -t 5
-bind-key -n M-6 select-window -t 6
-bind-key -n M-7 select-window -t 7
-bind-key -n M-8 select-window -t 8
-bind-key -n M-9 select-window -t 9
-bind-key -n M-0 select-window -t 10
-
-# Pane splits
-unbind '"'
-unbind %
-
-bind i split-window -h
-bind o split-window -v
-		'';
-	};
+      # Split panes with prefix + i/o
+      unbind-key '"'
+      unbind-key %
+      bind-key i split-window -h
+      bind-key o split-window -v
+    '';
+  };
 }
