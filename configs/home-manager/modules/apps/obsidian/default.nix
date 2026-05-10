@@ -79,9 +79,9 @@
       --scrollbar-thumb-bg: #${colors.base03};
       --scrollbar-active-thumb-bg: #${colors.base04};
 
-      --font-interface: "${fonts.sansSerif.name}";
-      --font-text: "${fonts.serif.name}";
-      --font-monospace: "${fonts.monospace.name}";
+      # --font-interface: "${fonts.sansSerif.name}";
+      # --font-text: "${fonts.serif.name}";
+      # --font-monospace: "${fonts.monospace.name}";
     }
   '';
 in {

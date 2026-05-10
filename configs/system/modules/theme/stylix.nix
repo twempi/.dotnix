@@ -17,8 +17,8 @@ in {
       enable = true;
       autoEnable = false;
 
-      base16Scheme = inputs.tt-schemes + "/base16/rose-pine.yaml";
-      # base16Scheme = inputs.tt-schemes + "/base16/everforest-dark-medium.yaml";
+      # base16Scheme = inputs.tt-schemes + "/base16/rose-pine.yaml";
+      base16Scheme = inputs.tt-schemes + "/base16/everforest-dark-medium.yaml";
       # base16Scheme = inputs.tt-schemes + "/base16/catppuccin-mocha.yaml";
       # base16Scheme = inputs.tt-schemes + "/base16/gruvbox-material-dark-medium.yaml";
       # base16Scheme = inputs.tt-schemes + "/base16/tokyo-night-moon.yaml";
