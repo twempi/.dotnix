@@ -30,15 +30,15 @@
     "/home/edward/Documents/notes" = {
       device = "/mnt/Storage/Documents/notes";
       fsType = "none";
-      options = [ "bind" ];
-      depends = [ "/mnt/Storage" ];
+      options = ["bind" "rw"];
+      depends = ["/mnt/Storage"];
     };
 
     "/home/edward/Documents/school" = {
       device = "/mnt/Storage/Documents/school";
       fsType = "none";
-      options = [ "bind" ];
-      depends = [ "/mnt/Storage" ];
+      options = ["bind" "rw"];
+      depends = ["/mnt/Storage"];
     };
   };
 }

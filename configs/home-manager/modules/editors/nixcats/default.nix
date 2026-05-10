@@ -242,6 +242,10 @@ in {
           # anything else to pass and grab in lua with `nixCats.extra`
           extra = {
             nixdExtras.nixpkgs = ''import ${pkgs.path} {}'';
+            stylix = {
+              colors = config.lib.stylix.colors.withHashtag;
+              polarity = config.stylix.polarity;
+            };
           };
         };
       };

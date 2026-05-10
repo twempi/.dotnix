@@ -1,60 +1,86 @@
-{...}: {
-  stylix.targets.obsidian = {
-    enable = true;
-    vaultNames = ["notes"];
-    fonts.enable = false;
-  };
+{
+  config,
+  lib,
+  pkgs,
+  hostname,
+  ...
+}: let
+  colors = config.lib.stylix.colors.withHashtag;
+  fonts = config.stylix.fonts;
 
-  programs.obsidian = {
-    enable = true;
+  notesDir =
+    if hostname == "desktop"
+    then "/mnt/Storage/Documents/notes"
+    else "${config.home.homeDirectory}/Documents/notes";
 
-    vaults.notes = {
-      target = "Documents/notes";
+  stylixSnippet = pkgs.writeText "Stylix.css" ''
+    .theme-dark,
+    .theme-light {
+      --color-base-00: ${colors.base00};
+      --color-base-05: ${colors.base00};
+      --color-base-10: ${colors.base00};
+      --color-base-20: ${colors.base01};
+      --color-base-25: ${colors.base01};
+      --color-base-30: ${colors.base02};
+      --color-base-35: ${colors.base02};
+      --color-base-40: ${colors.base03};
+      --color-base-50: ${colors.base03};
+      --color-base-60: ${colors.base04};
+      --color-base-70: ${colors.base04};
+      --color-base-100: ${colors.base05};
 
-      settings = {
-        app = {
-          promptDelete = false;
-          vimMode = true;
-          showLineNumber = true;
-          readableLineLength = false;
-          attachmentFolderPath = "999 Images";
-          newFileLocation = "folder";
-          alwaysUpdateLinks = true;
-          strictLineBreaks = false;
-          newFileFolderPath = "000 Index";
-          showInlineTitle = true;
+      --color-accent: ${colors.base0E};
+      --color-accent-1: ${colors.base0E};
+      --color-accent-2: ${colors.base0D};
 
-          pdfExportSettings = {
-            includeName = false;
-            pageSize = "Letter";
-            landscape = false;
-            margin = "0";
-            downscalePercent = 100;
-          };
+      --background-primary: ${colors.base00};
+      --background-primary-alt: ${colors.base01};
+      --background-secondary: ${colors.base01};
+      --background-secondary-alt: ${colors.base02};
+      --background-modifier-border: ${colors.base03};
+      --background-modifier-hover: ${colors.base02};
+      --background-modifier-active-hover: ${colors.base03};
 
-          openBehavior = "";
-          spellcheck = true;
-          focusNewTab = false;
-        };
+      --text-normal: ${colors.base05};
+      --text-muted: ${colors.base04};
+      --text-faint: ${colors.base03};
+      --text-accent: ${colors.base0D};
+      --text-accent-hover: ${colors.base0E};
+      --text-error: ${colors.base08};
+      --text-warning: ${colors.base0A};
+      --link-color: ${colors.base0D};
+      --link-color-hover: ${colors.base0E};
+      --link-external-color: ${colors.base0C};
+      --link-external-color-hover: ${colors.base0E};
 
-        appearance = {
-          theme = "obsidian";
-          cssTheme = "";
-          accentColor = "";
-          nativeMenus = false;
-          interfaceFontFamily = "Source Code Pro";
-          textFontFamily = "Source Code Pro";
-          monospaceFontFamily = "Source Code Pro";
-          showViewHeader = true;
-        };
+      --code-background: ${colors.base01};
+      --code-normal: ${colors.base05};
+      --code-comment: ${colors.base04};
+      --code-function: ${colors.base0D};
+      --code-important: ${colors.base0E};
+      --code-keyword: ${colors.base0E};
+      --code-operator: ${colors.base0C};
+      --code-property: ${colors.base0A};
+      --code-punctuation: ${colors.base04};
+      --code-string: ${colors.base0B};
+      --code-tag: ${colors.base08};
+      --code-value: ${colors.base09};
 
-        cssSnippets = [
-          ./snippets/DV-Button.css
-          ./snippets/Hide-Properties-Class.css
-          ./snippets/mathjax-font.css
-          ./snippets/Tags-Edit.css
-        ];
-      };
-    };
-  };
+      --blockquote-border-color: ${colors.base0E};
+      --interactive-accent: ${colors.base0E};
+      --interactive-accent-hover: ${colors.base0D};
+      --scrollbar-thumb-bg: ${colors.base03};
+      --scrollbar-active-thumb-bg: ${colors.base04};
+
+      --font-interface: "${fonts.sansSerif.name}";
+      --font-text: "${fonts.serif.name}";
+      --font-monospace: "${fonts.monospace.name}";
+    }
+  '';
+in {
+  home.activation.obsidianStylixSnippet = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    target=${lib.escapeShellArg "${notesDir}/.obsidian/snippets/Stylix.css"}
+    verboseEcho "Installing Obsidian Stylix snippet to $target"
+    run install -D -m644 ${lib.escapeShellArg "${stylixSnippet}"} "$target"
+  '';
 }

@@ -58,7 +58,7 @@
     ./modules/apps/sioyek
     ./modules/apps/sunsetr
     ./modules/apps/helium
-    # ./modules/apps/obsidian
+    ./modules/apps/obsidian
     ./modules/apps/rars
   ];
 }
