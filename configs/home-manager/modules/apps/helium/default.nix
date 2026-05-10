@@ -1,4 +1,5 @@
 {
+  config,
   inputs,
   lib,
   pkgs,
@@ -10,7 +11,13 @@
   # as http://0.0.0.1/.
   heliumProfileDir = "Profile";
 
-  startpageSource = ../../../../hosts/t480s/system/modules/caddy/startpage;
+  mkStylixStartpage = import ../../../../lib/mkStylixStartpage.nix;
+  stylixStartpage = mkStylixStartpage {
+    inherit pkgs;
+    source = ../../../../hosts/t480s/system/modules/caddy/startpage;
+    colors = config.lib.stylix.colors;
+    fontFamily = config.stylix.fonts.monospace.name;
+  };
 
   webStoreExtensions = [
     {
@@ -119,7 +126,7 @@
 
   localNewTabExtension = pkgs.runCommand "helium-new-tab-startpage" {} ''
     mkdir -p $out
-    cp -r ${startpageSource}/* $out/
+    cp -r ${stylixStartpage}/* $out/
     cp ${./new-tab-startpage/manifest.json} $out/manifest.json
     mkdir -p $out/icons
     cp ${./new-tab-startpage/icons/16.png} $out/icons/16.png

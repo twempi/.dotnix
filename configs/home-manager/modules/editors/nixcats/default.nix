@@ -5,6 +5,30 @@
   ...
 }: let
   utils = inputs.nixCats.utils;
+  stylixBase16Names = [
+    "base00"
+    "base01"
+    "base02"
+    "base03"
+    "base04"
+    "base05"
+    "base06"
+    "base07"
+    "base08"
+    "base09"
+    "base0A"
+    "base0B"
+    "base0C"
+    "base0D"
+    "base0E"
+    "base0F"
+  ];
+  stylixBase16 = lib.genAttrs stylixBase16Names (
+    name: "#${config.lib.stylix.colors.${name}}"
+  );
+  stylixCacheKey = builtins.substring 0 12 (
+    builtins.hashString "sha256" (builtins.toJSON stylixBase16)
+  );
 in {
   imports = [
     inputs.nixCats.homeModule
@@ -243,8 +267,9 @@ in {
           extra = {
             nixdExtras.nixpkgs = ''import ${pkgs.path} {}'';
             stylix = {
-              colors = config.lib.stylix.colors.withHashtag;
+              colors = stylixBase16;
               polarity = config.stylix.polarity;
+              cacheKey = stylixCacheKey;
             };
           };
         };

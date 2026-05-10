@@ -1,6 +1,9 @@
+local nixCats = require("nixCats")
+local stylix_cache_key = nixCats.extra("stylix.cacheKey") or "default"
+
 -- put this in your main init.lua file ( before lazy setup )
-vim.g.base46_cache = vim.fn.stdpath("data") .. "/base46_cache/"
-vim.fn.mkdir(vim.g.base46_cache, "p")  -- ensure directory exists
+vim.g.base46_cache = vim.fn.stdpath("cache") .. "/base46_cache/" .. stylix_cache_key .. "/"
+vim.fn.mkdir(vim.g.base46_cache, "p") -- ensure directory exists
 
 require("nixCatsUtils").setup({
   non_nix_value = true,
@@ -15,9 +18,6 @@ vim.opt.termguicolors = true
 require("config.options")
 require("config.autocmds")
 require("config.keymaps")
-
--- nixCats + lazy.nvim wrapper
-local nixCats = require("nixCats")
 
 local lazy_spec = {
   { import = "plugins" },
@@ -42,4 +42,3 @@ require("nixCatsUtils.lazyCat").setup(
 for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
   dofile(vim.g.base46_cache .. v)
 end
-

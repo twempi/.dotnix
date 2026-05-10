@@ -1,7 +1,8 @@
 local M = {}
 
 local nixCats = require("nixCats")
-local colors = nixCats.extra("stylix.colors") or {}
+local raw_colors = nixCats.extra("stylix.colors")
+local colors = type(raw_colors) == "table" and raw_colors or {}
 local polarity = nixCats.extra("stylix.polarity") or "dark"
 local lighten = require("base46.colors").change_hex_lightness
 
