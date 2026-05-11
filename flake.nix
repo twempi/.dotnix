@@ -92,6 +92,11 @@
       url = "github:rodeyseijkens/t3code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    corecycler = {
+      url = "github:Daaboulex/linux-corecycler";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
