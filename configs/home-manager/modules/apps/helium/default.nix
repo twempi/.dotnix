@@ -78,6 +78,11 @@
       id = "lmjnegcaeklhafolokijcfjliaokphfk";
       hash = "sha256-7nJNCJ4qvjzuUIgljdaPo7UnQZf9YNCyy2xBmq87e/w=";
     }
+    # ChatGPT Exporter
+    {
+      id = "ilmdofdhpnhffldihboadndccenlnfll";
+      hash = "sha256-InqXKKEblfVEehgnEjFYCjrzVnbr90djmzyROKH/NCA=";
+    }
   ];
 
   fetchExtension = {

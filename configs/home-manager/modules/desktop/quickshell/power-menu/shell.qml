@@ -1,6 +1,7 @@
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import Quickshell.Widgets
 import QtQuick
 
 ShellRoot {
@@ -11,11 +12,11 @@ ShellRoot {
   property string uptime: "unknown"
   readonly property string targetScreenName: Quickshell.env("QS_TARGET_SCREEN") || ""
   readonly property var actions: [
-    {"name": "Lock", "label": "Lock", "icon": "Lock", "action": "lock", "shortcut": ""},
-    {"name": "Suspend", "label": "Suspend", "icon": "Suspend", "action": "suspend", "shortcut": "S"},
-    {"name": "Logout", "label": "Logout", "icon": "Logout", "action": "logout", "shortcut": "L"},
-    {"name": "Reboot", "label": "Reboot", "icon": "Reboot", "action": "reboot", "shortcut": "R"},
-    {"name": "Shutdown", "label": "Shutdown", "icon": "Shutdown", "action": "shutdown", "shortcut": "P"},
+    {"name": "Lock", "label": "Lock", "icon": "./icons/lock.svg", "action": "lock", "shortcut": ""},
+    {"name": "Suspend", "label": "Suspend", "icon": "./icons/suspend.svg", "action": "suspend", "shortcut": "S"},
+    {"name": "Logout", "label": "Logout", "icon": "./icons/logout.svg", "action": "logout", "shortcut": "L"},
+    {"name": "Reboot", "label": "Reboot", "icon": "./icons/reboot.svg", "action": "reboot", "shortcut": "R"},
+    {"name": "Shutdown", "label": "Shutdown", "icon": "./icons/shutdown.svg", "action": "shutdown", "shortcut": "P"},
   ]
 
   function targetScreen() {
@@ -242,18 +243,35 @@ ShellRoot {
                 border.width: index === root.selectedIndex || actionMouse.containsMouse ? 1 : 0
               }
 
-              Text {
+              // Text {
+              //   id: actionIcon
+              //
+              //   anchors.left: parent.left
+              //   anchors.leftMargin: 12
+              //   anchors.verticalCenter: parent.verticalCenter
+              //   width: 74
+              //   text: modelData.icon
+              //   color: index === root.selectedIndex ? theme.selectedForeground : theme.foreground
+              //   font.family: theme.fontFamily
+              //   font.pixelSize: 12
+              //   elide: Text.ElideRight
+              // }
+
+              Item {
                 id: actionIcon
 
                 anchors.left: parent.left
                 anchors.leftMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
                 width: 74
-                text: modelData.icon
-                color: index === root.selectedIndex ? theme.selectedForeground : theme.foreground
-                font.family: theme.fontFamily
-                font.pixelSize: 12
-                elide: Text.ElideRight
+                height: parent.height
+
+                IconImage {
+                  anchors.left: parent.left
+                  anchors.verticalCenter: parent.verticalCenter
+                  implicitSize: 18
+                  source: modelData.icon
+                }
               }
 
               Text {
