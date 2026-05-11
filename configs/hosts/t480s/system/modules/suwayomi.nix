@@ -14,6 +14,13 @@
       flareSolverrSessionTtl = 15;
       flareSolverrAsResponseFallback = true;
 
+      webUIEnabled = true;
+      initialOpenInBrowserEnabled = true;
+      webUIInterface = "browser"; # "browser" or "electron"
+      webUIFlavor = "WebUI"; # "WebUI" or "Custom"
+      webUIChannel = "stable"; # "BUNDLED" or "STABLE" or "PREVIEW"
+      webUIUpdateCheckInterval = 23;
+
       extensionRepos = [
         "https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json"
       ];

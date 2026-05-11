@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: let
-  mkStylixStartpage = import ../../../../../lib/mkStylixStartpage.nix;
+  mkStylixStartpage = import ./startpage/lib/mkStylixStartpage.nix;
   siteRoot = mkStylixStartpage {
     inherit pkgs;
     source = ./startpage;

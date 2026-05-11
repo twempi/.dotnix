@@ -124,16 +124,16 @@
         send_notify "G14 power profile" "AC performance profile applied."
       fi
     else
-      ${pkgs.power-profiles-daemon}/bin/powerprofilesctl set power-saver >/dev/null 2>&1 || true
+      ${pkgs.power-profiles-daemon}/bin/powerprofilesctl set balanced >/dev/null 2>&1 || true
       ${pkgs.asusctl}/bin/asusctl profile set quiet >/dev/null 2>&1 \
         || ${pkgs.asusctl}/bin/asusctl profile set lowpower >/dev/null 2>&1 \
         || true
       set_epp power
       ${pkgs.ryzenadj}/bin/ryzenadj \
-        --stapm-limit=18000 \
+        --stapm-limit=20000 \
         --fast-limit=25000 \
-        --slow-limit=18000 \
-        --tctl-temp=78 \
+        --slow-limit=22000 \
+        --tctl-temp=80 \
         >/dev/null 2>&1 || true
 
       if [ "$gpu" -eq 1 ]; then
