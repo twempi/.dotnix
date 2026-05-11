@@ -45,7 +45,7 @@
     # ./modules/desktop/noctalia
     ./modules/desktop/quickshell
 
-    # Programs
+    # Apps
     ./modules/apps/nixcord
     ./modules/apps/spicetify
     ./modules/apps/mpv
@@ -55,7 +55,7 @@
     ./modules/apps/zen-browser
     ./modules/apps/upscayl
     ./modules/apps/syncthing
-    ./modules/apps/sioyek
+    # ./modules/apps/sioyek
     ./modules/apps/sunsetr
     ./modules/apps/helium
     ./modules/apps/obsidian

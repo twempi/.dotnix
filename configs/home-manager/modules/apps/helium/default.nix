@@ -6,9 +6,7 @@
   ...
 }: let
   homePage = "https://t480s.tailae03d0.ts.net/";
-  # Local State shows Helium is using Profile. Profile 1 made the wrapper emit
-  # a space-containing flag, leaving a stray `1` argument that Chromium opened
-  # as http://0.0.0.1/.
+
   heliumProfileDir = "Profile";
 
   mkStylixStartpage = import ../../../../lib/mkStylixStartpage.nix;
@@ -75,10 +73,10 @@
       id = "cndibmoanboadcifjkjbdpjgfedanolh";
       hash = "sha256-sJi02k5DgLpwrsrQHqlvXdWu4tNW+WqFiMT0qbsmXvc=";
     }
-    # Live Stream Downloader
+    # Video DownloadHelper
     {
-      id = "looepbdllpjgdmkpdcdffhdbmpbcfekj";
-      hash = "sha256-lAf4bNDPW3w/EvNLX28BmVKV6iudehcxzOOQzxK3m+A=";
+      id = "lmjnegcaeklhafolokijcfjliaokphfk";
+      hash = "sha256-7nJNCJ4qvjzuUIgljdaPo7UnQZf9YNCyy2xBmq87e/w=";
     }
   ];
 
@@ -139,7 +137,7 @@
 
   profilePreferences = {
     browser = {
-      show_home_button = true;
+      show_home_button = false;
     };
 
     bookmark_bar = {
@@ -163,13 +161,13 @@
 
     autofill = {
       credit_card_enabled = false;
-      profile_enabled = true;
+      profile_enabled = false;
     };
 
     credentials_enable_service = true;
 
     profile = {
-      password_manager_enabled = true;
+      password_manager_enabled = false;
     };
   };
 in {
@@ -211,7 +209,7 @@ in {
       RestoreOnStartup = 5;
 
       SearchSuggestEnabled = true;
-      ShowHomeButton = true;
+      ShowHomeButton = false;
       SyncDisabled = false;
 
       ExtensionInstallAllowlist = map (ext: ext.id) webStoreExtensions;
@@ -221,13 +219,19 @@ in {
           featured = true;
           name = "Nix Packages";
           shortcut = "np";
-          url = "https://search.nixos.org/packages?channel=unstable&query=%s";
+          url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
         }
         {
           featured = true;
           name = "Nix Options";
           shortcut = "nop";
           url = "https://search.nixos.org/options?channel=unstable&query={searchTerms}";
+        }
+        {
+          featured = true;
+          name = "ChatGPT";
+          shortcut = "gpt";
+          url = "https://chatgpt.com/?q={searchTerms}";
         }
       ];
 
