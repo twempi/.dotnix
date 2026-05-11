@@ -2,7 +2,7 @@
   programs = {
     hyprland = {
       enable = true;
-      withUWSM = false;
+      withUWSM = true;
       xwayland.enable = true;
       portalPackage = pkgs.xdg-desktop-portal-hyprland;
     };

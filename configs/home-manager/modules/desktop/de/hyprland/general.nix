@@ -11,9 +11,9 @@
     ];
 
     exec-once = [
-      "awww-daemon"
-      "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp"
-      "${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css"
+      "uwsm app -- awww-daemon"
+      "uwsm app -- ${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp"
+      "uwsm app -- ${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css"
 
       # "quickshell -p ~/.config/hypr/scripts/quickshell/Main.qml"
       # "quickshell -p ~/.config/hypr/scripts/quickshell/TopBar.qml"
@@ -22,8 +22,8 @@
       # "dms run"
 
       # Start Spotify and Obsidian on login without switching to workspace 9
-      "[workspace 9 silent] spotify"
-      "[workspace 10 silent] obsidian"
+      "[workspace 9 silent] uwsm app -- spotify"
+      "[workspace 10 silent] uwsm app -- obsidian"
 
       # Set volume to #100%
       "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1"
@@ -31,7 +31,7 @@
 
       # Clipboard history
       "${pkgs.cliphist}/bin/cliphist wipe"
-      "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store"
+      "uwsm app -- ${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store"
     ];
 
     general = {

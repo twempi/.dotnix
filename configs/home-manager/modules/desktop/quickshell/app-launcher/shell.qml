@@ -8,6 +8,7 @@ ShellRoot {
   property string query: ""
   property int selectedIndex: 0
   readonly property string targetScreenName: Quickshell.env("QS_TARGET_SCREEN") || ""
+  readonly property string appLaunchPrefix: Quickshell.env("QS_APP_LAUNCH_PREFIX") || ""
   readonly property var apps: DesktopEntries.applications.values
   readonly property var filteredApps: [...apps].filter(function(app) {
     var text = appSearchText(app);
@@ -78,12 +79,31 @@ ShellRoot {
     list.positionViewAtIndex(selectedIndex, ListView.Contain);
   }
 
+  function appLaunchPrefixArgs() {
+    if (root.appLaunchPrefix.length === 0) {
+      return [];
+    }
+
+    return root.appLaunchPrefix.trim().split(/\s+/).filter(function(part) {
+      return part.length > 0;
+    });
+  }
+
   function launchApp(index) {
     if (index < 0 || index >= filteredApps.length) {
       return;
     }
 
-    filteredApps[index].execute();
+    var app = filteredApps[index];
+    var desktopId = app.id ? String(app.id) : "";
+    var prefixArgs = appLaunchPrefixArgs();
+
+    if (prefixArgs.length > 0 && desktopId.length > 0) {
+      Quickshell.execDetached(prefixArgs.concat([desktopId]));
+    } else {
+      app.execute();
+    }
+
     Qt.quit();
   }
 

@@ -1,20 +1,22 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  uwsmApp = "uwsm app --";
+in {
   wayland.windowManager.hyprland.settings = {
     # Apps
     # "$wallpaper" = "${pkgs.waypaper}/bin/waypaper";
     "$menu" = "${pkgs.rofi}/bin/rofi";
-    "$colorPicker" = "${pkgs.hyprpicker}/bin/hyprpicker -a";
+    "$colorPicker" = "${uwsmApp} ${pkgs.hyprpicker}/bin/hyprpicker -a";
     "$noti-center" = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
 
     # "$terminal" = "${pkgs.ghostty}/bin/ghostty";
-    "$terminal" = "${pkgs.kitty}/bin/kitty";
+    "$terminal" = "${uwsmApp} ${pkgs.kitty}/bin/kitty";
     # "$browser" = "${pkgs.brave}/bin/brave";
     # "$browser" = "zen-beta";
-    "$browser" = "helium";
+    "$browser" = "${uwsmApp} helium";
     "$explorer1" = "$terminal -e ${pkgs.yazi}/bin/yazi";
-    "$explorer2" = "${pkgs.nautilus}/bin/nautilus";
-    "$notes" = "${pkgs.obsidian}/bin/obsidian";
-    "$emoji" = "${pkgs.bemoji}/bin/bemoji";
+    "$explorer2" = "${uwsmApp} ${pkgs.nautilus}/bin/nautilus";
+    "$notes" = "${uwsmApp} ${pkgs.obsidian}/bin/obsidian";
+    "$emoji" = "${uwsmApp} ${pkgs.bemoji}/bin/bemoji";
     "$bluetooth" = "$terminal -e ${pkgs.bluetui}/bin/bluetui";
     "$editor" = "$terminal -e nvim";
 
@@ -34,15 +36,15 @@
         "$mod, B, exec, $browser"
         "$mod, E, exec, $explorer1"
         "$mod SHIFT, E, exec, $explorer2"
-        "$mod, M, exec, spotify"
+        "$mod, M, exec, ${uwsmApp} spotify"
         "$mod, O, exec, $notes"
         "$mod, N, exec, $editor"
         "$mod SHIFT, B, exec, $bluetooth"
         "$mod SHIFT, N, exec, $noti-center"
-        "$mod, ESCAPE, exec, qs-power"
+        "$mod, ESCAPE, exec, ${uwsmApp} qs-power"
 
         "$mod, Z, exec, $colorPicker"
-        "$mod SHIFT, W, exec, qs-wallpaper"
+        "$mod SHIFT, W, exec, ${uwsmApp} qs-wallpaper"
         "$mod SHIFT, R, exec, ${./reload.sh}"
 
         # Screenshot(grim + slurp)
@@ -50,7 +52,7 @@
         ", Print, exec, ${pkgs.grim}/bin/grim - | ${pkgs.wl-clipboard}/bin/wl-copy && ${pkgs.wl-clipboard}/bin/wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png"
 
         # Launcher / emoji / clipboard
-        "$mod, Space, exec, qs-launcher"
+        "$mod, Space, exec, ${uwsmApp} qs-launcher"
         "$mod, U, exec, $emoji"
         "$mod, Y, exec, cliphist list | $menu -dmenu | cliphist decode | wl-copy"
 
