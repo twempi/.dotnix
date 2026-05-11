@@ -9,7 +9,7 @@
 
   heliumProfileDir = "Profile";
 
-  mkStylixStartpage = import ../../../../lib/mkStylixStartpage.nix;
+  mkStylixStartpage = import ../../../../hosts/t480s/system/modules/caddy/startpage/lib/mkStylixStartpage.nix;
   stylixStartpage = mkStylixStartpage {
     inherit pkgs;
     source = ../../../../hosts/t480s/system/modules/caddy/startpage;
