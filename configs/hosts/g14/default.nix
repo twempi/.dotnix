@@ -1,5 +1,7 @@
-{
+{inputs, ...}: {
   imports = [
+    inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402
+
     ../../system/base.nix
     ../../system/modules/theme/stylix.nix
     ../../system/profiles/desktop.nix

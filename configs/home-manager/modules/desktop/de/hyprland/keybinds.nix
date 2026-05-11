@@ -39,7 +39,7 @@
         "$mod, N, exec, $editor"
         "$mod SHIFT, B, exec, $bluetooth"
         "$mod SHIFT, N, exec, $noti-center"
-        "$mod, ESCAPE, exec, rofi-power"
+        "$mod, ESCAPE, exec, qs-power"
 
         "$mod, Z, exec, $colorPicker"
         "$mod SHIFT, W, exec, qs-wallpaper"
@@ -49,8 +49,8 @@
         "$mod SHIFT, S, exec, ${./screenshot.sh}"
         ", Print, exec, ${pkgs.grim}/bin/grim - | ${pkgs.wl-clipboard}/bin/wl-copy && ${pkgs.wl-clipboard}/bin/wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png"
 
-        # Rofi thing
-        "$mod, Space, exec, $menu -show drun"
+        # Launcher / emoji / clipboard
+        "$mod, Space, exec, qs-launcher"
         "$mod, U, exec, $emoji"
         "$mod, Y, exec, cliphist list | $menu -dmenu | cliphist decode | wl-copy"
 

@@ -36,7 +36,7 @@
       "Mod4+N" = "exec ${pkgs.foot}/bin/foot -e nvim";
       "Mod4+Shift+B" = "exec ${pkgs.foot}/bin/foot -e bluetui";
       "Mod4+Shift+N" = "exec ${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
-      "Mod4+Escape" = "exec rofi-power";
+      "Mod4+Escape" = "exec qs-power";
       "Mod4+Shift+W" = "exec qs-wallpaper";
       "Mod4+Shift+R" = "exec ${./reload.sh}";
 
@@ -44,8 +44,8 @@
       "Mod4+Shift+S" = "exec ${./screenshot.sh}";
       "Print" = "exec ${pkgs.grim}/bin/grim - | ${pkgs.wl-clipboard}/bin/wl-copy && ${pkgs.wl-clipboard}/bin/wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png";
 
-      # Rofi things
-      "Mod4+Space" = "exec ${pkgs.rofi}/bin/rofi -show drun";
+      # Launcher / emoji / clipboard
+      "Mod4+Space" = "exec qs-launcher";
       "Mod4+U" = "exec ${pkgs.bemoji}/bin/bemoji";
       "Mod4+Y" = "exec cliphist list | $menu -dmenu | cliphist decode | wl-copy";
 

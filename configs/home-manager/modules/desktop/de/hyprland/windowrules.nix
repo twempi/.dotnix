@@ -19,7 +19,6 @@
 
       "center on, match:title ^(Open File)(.*)$"
       "center on, match:title ^(Select a File)(.*)$"
-      "center on, match:title ^(Choose wallpaper)(.*)$"
       "center on, match:title ^(Open Folder)(.*)$"
       "center on, match:title ^(Save As)(.*)$"
       "center on, match:title ^(Library)(.*)$"
@@ -27,7 +26,6 @@
 
       "float on, match:title ^(Open File)(.*)$"
       "float on, match:title ^(Select a File)(.*)$"
-      "float on, match:title ^(Choose wallpaper)(.*)$"
       "float on, match:title ^(Open Folder)(.*)$"
       "float on, match:title ^(Save As)(.*)$"
       "float on, match:title ^(Library)(.*)$"

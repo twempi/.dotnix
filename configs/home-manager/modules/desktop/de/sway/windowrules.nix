@@ -11,7 +11,6 @@
     "^(Authentication Required)$"
     "^(Open File)(.*)$"
     "^(Select a File)(.*)$"
-    "^(Choose wallpaper)(.*)$"
     "^(Open Folder)(.*)$"
     "^(Save As)(.*)$"
     "^(Library)(.*)$"

@@ -17,7 +17,7 @@
       "SUPER+SHIFT,B,spawn,kitty -e bluetui"
       "SUPER+SHIFT,N,spawn,swaync-client -t -sw"
       "SUPER+SHIFT,R,spawn,bash ${./reload.sh}"
-      "SUPER,Escape,spawn,rofi-power"
+      "SUPER,Escape,spawn,qs-power"
 
       "SUPER,Z,spawn,hyprpicker -a"
       "SUPER+SHIFT,W,spawn,qs-wallpaper"
@@ -25,7 +25,7 @@
       "SUPER+SHIFT,S,spawn,bash ${./screenshot.sh}"
       "NONE,Print,spawn_shell,grim - | wl-copy && wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png"
 
-      "SUPER,Space,spawn,rofi -show drun"
+      "SUPER,Space,spawn,qs-launcher"
       "SUPER,U,spawn,bemoji"
       "SUPER,Y,spawn_shell,cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 

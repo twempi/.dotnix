@@ -72,8 +72,8 @@
         "-sw"
       ];
 
-      # $mod, ESCAPE, exec, wlogout
-      "Mod+Escape".action.spawn = "rofi-power";
+      # $mod, ESCAPE, exec, qs-power
+      "Mod+Escape".action.spawn = "qs-power";
 
       # $mod, Z, exec, $colorPicker
       "Mod+Z".action.spawn = [
@@ -100,15 +100,11 @@
       "Shift+Print".action.screenshot-window = [];
 
       ################################
-      ## Rofi / emoji / clipboard
+      ## Launcher / emoji / clipboard
       ################################
 
-      # $mod, Space, exec, $menu -show drun
-      "Mod+Space".action.spawn = [
-        "${pkgs.rofi}/bin/rofi"
-        "-show"
-        "drun"
-      ];
+      # $mod, Space, exec, qs-launcher
+      "Mod+Space".action.spawn = "qs-launcher";
 
       # $mod, U, exec, $emoji
       "Mod+U".action.spawn = "${pkgs.bemoji}/bin/bemoji";
