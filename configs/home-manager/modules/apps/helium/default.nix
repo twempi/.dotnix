@@ -151,8 +151,8 @@
     homepage_is_newtabpage = false;
 
     session = {
-      restore_on_startup = 5;
-      startup_urls = [];
+      restore_on_startup = 6;
+      startup_urls = [homePage];
     };
 
     vertical_tabs = {
@@ -206,7 +206,10 @@ in {
       PasswordManagerEnabled = true;
 
       # Open a new tab at startup; the local extension provides the startpage.
-      RestoreOnStartup = 5;
+      RestoreOnStartup = 6;
+      RestoreOnStartupURLs = [
+        homePage
+      ];
 
       SearchSuggestEnabled = true;
       ShowHomeButton = false;
