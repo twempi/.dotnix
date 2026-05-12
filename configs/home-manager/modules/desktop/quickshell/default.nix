@@ -39,6 +39,7 @@
     mkdir -p "$out"
     cp ${./power-menu/shell.qml} "$out/shell.qml"
     cp ${styleQml} "$out/Style.qml"
+    cp -r ${./power-menu/icons} "$out/icons"
   '';
   qsWallpaperCache = pkgs.writeShellApplication {
     name = "qs-wallpaper-cache";

@@ -3,6 +3,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Widgets
 import QtQuick
+import QtQuick.Effects
 
 ShellRoot {
   id: root
@@ -12,11 +13,11 @@ ShellRoot {
   property string uptime: "unknown"
   readonly property string targetScreenName: Quickshell.env("QS_TARGET_SCREEN") || ""
   readonly property var actions: [
-    {"name": "Lock", "label": "Lock", "icon": "./icons/lock.svg", "action": "lock", "shortcut": ""},
-    {"name": "Suspend", "label": "Suspend", "icon": "./icons/suspend.svg", "action": "suspend", "shortcut": "S"},
-    {"name": "Logout", "label": "Logout", "icon": "./icons/logout.svg", "action": "logout", "shortcut": "L"},
-    {"name": "Reboot", "label": "Reboot", "icon": "./icons/reboot.svg", "action": "reboot", "shortcut": "R"},
-    {"name": "Shutdown", "label": "Shutdown", "icon": "./icons/shutdown.svg", "action": "shutdown", "shortcut": "P"},
+    {"name": "Lock", "label": "Lock", "icon": Qt.resolvedUrl("icons/lock.svg"), "action": "lock", "shortcut": ""},
+    {"name": "Suspend", "label": "Suspend", "icon": Qt.resolvedUrl("icons/suspend.svg"), "action": "suspend", "shortcut": "S"},
+    {"name": "Logout", "label": "Logout", "icon": Qt.resolvedUrl("icons/logout.svg"), "action": "logout", "shortcut": "L"},
+    {"name": "Reboot", "label": "Reboot", "icon": Qt.resolvedUrl("icons/reboot.svg"), "action": "reboot", "shortcut": "R"},
+    {"name": "Shutdown", "label": "Shutdown", "icon": Qt.resolvedUrl("icons/shutdown.svg"), "action": "shutdown", "shortcut": "P"},
   ]
 
   function targetScreen() {
@@ -257,6 +258,24 @@ ShellRoot {
               //   elide: Text.ElideRight
               // }
 
+              // Item {
+              //   id: actionIcon
+              //
+              //   anchors.left: parent.left
+              //   anchors.leftMargin: 12
+              //   anchors.verticalCenter: parent.verticalCenter
+              //   width: 74
+              //   height: parent.height
+              //
+              //   IconImage {
+              //     anchors.left: parent.left
+              //     anchors.verticalCenter: parent.verticalCenter
+              //     width: 18
+              //     height: 18
+              //     source: modelData.icon
+              //   }
+              // }
+
               Item {
                 id: actionIcon
 
@@ -266,11 +285,27 @@ ShellRoot {
                 width: 74
                 height: parent.height
 
-                IconImage {
+                Image {
+                  id: iconSource
+
                   anchors.left: parent.left
                   anchors.verticalCenter: parent.verticalCenter
-                  implicitSize: 18
+                  width: 18
+                  height: 18
+                  sourceSize.width: 18
+                  sourceSize.height: 18
+                  fillMode: Image.PreserveAspectFit
                   source: modelData.icon
+                  visible: false
+                }
+
+                MultiEffect {
+                  anchors.fill: iconSource
+                  source: iconSource
+                  colorization: 1.0
+                  colorizationColor: index === root.selectedIndex || actionMouse.containsMouse
+                    ? theme.selectedForeground
+                    : theme.foreground
                 }
               }
 
