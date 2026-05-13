@@ -23,7 +23,8 @@ in {
     autostart_sh = ''
       awww-daemon
       openrgb --profile ~/.config/OpenRGB/black.orp
-      systemctl --user start qs-top-bar.service qs-quick-actions.service
+      qs-top-bar daemon
+      systemctl --user start qs-quick-actions.service
 
       wpctl set-volume @DEFAULT_AUDIO_SINK@ 1
 

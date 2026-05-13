@@ -7,7 +7,7 @@ in {
   wayland.windowManager.mango.settings = {
     monitorrule = [
       "name:^eDP-1$,width:1920,height:1080,refresh:60,x:0,y:0,scale:1"
-      "name:^DP-3$,width:2560,height:1440,refresh:180,x:0,y:0,scale:1"
+      "name:^DP-1$,width:2560,height:1440,refresh:180,x:0,y:0,scale:1"
       "name:^HDMI-A-2$,width:1920,height:1080,refresh:70,x:1920,y:0,scale:1"
     ];
 

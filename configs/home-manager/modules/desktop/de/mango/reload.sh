@@ -5,8 +5,9 @@ pkill rofi 2>/dev/null || true
 
 mmsg -d reload_config
 
-systemctl --user restart qs-top-bar.service qs-quick-actions.service 2>/dev/null || {
-  systemctl --user start qs-top-bar.service qs-quick-actions.service 2>/dev/null || true
+qs-top-bar restart 2>/dev/null || true
+systemctl --user restart qs-quick-actions.service 2>/dev/null || {
+  systemctl --user start qs-quick-actions.service 2>/dev/null || true
 }
 
 systemctl --user restart swaync.service 2>/dev/null || {
