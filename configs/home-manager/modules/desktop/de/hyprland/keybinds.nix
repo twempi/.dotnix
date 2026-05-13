@@ -3,7 +3,6 @@
 in {
   wayland.windowManager.hyprland.settings = {
     # Apps
-    # "$wallpaper" = "${pkgs.waypaper}/bin/waypaper";
     "$menu" = "${pkgs.rofi}/bin/rofi";
     "$colorPicker" = "${uwsmApp} ${pkgs.hyprpicker}/bin/hyprpicker -a";
     "$noti-center" = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";

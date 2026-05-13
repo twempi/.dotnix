@@ -27,5 +27,6 @@
 
     ../modules/apps/appimage.nix
     ../modules/apps/helium.nix
+    ../modules/apps/librepods.nix
   ];
 }

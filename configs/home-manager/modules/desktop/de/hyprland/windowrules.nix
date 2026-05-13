@@ -1,19 +1,16 @@
 {
   wayland.windowManager.hyprland.settings = {
-    # workspace = "1, monitor:DP-6";
 
     windowrule = [
-      # Picture-in-Picture (was windowrulev2)
+      # Picture-in-Picture
       "rounding 0, match:title ^(Picture-in-Picture)$"
-      # "noborder" doesn't exist in the new list; use border_size 0 instead
       "border_size 0, match:title ^(Picture-in-Picture)$"
-      # "noshadow" -> no_shadow on
       "no_shadow on, match:title ^(Picture-in-Picture)$"
 
-      # Calculator (was windowrulev2)
+      # Calculator
       "size 400 600, match:class ^(org.gnome.Calculator)$"
 
-      # Float/center popups & dialogs (was windowrulev2)
+      # Float/center popups & dialogs
       "float on, match:title ^(Authentication Required)$"
       "center on, match:title ^(Authentication Required)$"
 
@@ -31,7 +28,7 @@
       "float on, match:title ^(Library)(.*)$"
       "float on, match:title ^(File Upload)(.*)$"
 
-      # Always-float apps (was windowrulev2)
+      # Always-float apps
       "float on, center on, match:class ^(waypaper)$"
       "float on, center on, match:class ^(steam|Steam)$"
       "float on, center on, match:class ^(io.github.kaii_lb.Overskride)$"

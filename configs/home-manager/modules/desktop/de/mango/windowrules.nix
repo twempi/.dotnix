@@ -5,7 +5,6 @@
       "isfloating:1,isnoborder:1,title:^(Picture-in-Picture)$"
       "isfloating:1,title:^(Open File|Save File|Save As|Choose File|File Upload)$"
 
-      "isfloating:1,appid:^(waypaper)$"
       "isfloating:1,appid:^(steam|Steam)$"
       "isfloating:1,appid:^(io.github.kaii_lb.Overskride)$"
       "isfloating:1,appid:^(nm-connection-editor)$"

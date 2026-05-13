@@ -5,11 +5,11 @@
     10;
 in {
   wayland.windowManager.mango.settings = {
-    monitorrule = [
-      "name:^eDP-1$,width:1920,height:1080,refresh:60,x:0,y:0,scale:1"
-      "name:^DP-1$,width:2560,height:1440,refresh:180,x:0,y:0,scale:1"
-      "name:^HDMI-A-2$,width:1920,height:1080,refresh:70,x:1920,y:0,scale:1"
-    ];
+    # monitorrule = [
+    #   "name:^eDP-1$,width:1920,height:1080,refresh:60,x:0,y:0,scale:1"
+    #   "name:^DP-1$,width:2560,height:1440,refresh:180,x:0,y:0,scale:1"
+    #   "name:^HDMI-A-2$,width:1920,height:1080,refresh:70,x:1920,y:0,scale:1"
+    # ];
 
     gappih = 3;
     gappiv = 3;
@@ -39,6 +39,11 @@ in {
     # mouse settings
     mouse_accel_profile = 1;
     mouse_accel_speed = 0.0;
+
+    # trackpad settings
+    trackpad_accel_profile = 0;
+    trackpad_accel_speed = 0.5;
+    disable_while_typing = 0;
 
     # trackpad settings
     tagrule = tagRules;

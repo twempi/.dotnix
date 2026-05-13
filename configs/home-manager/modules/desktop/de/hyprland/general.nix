@@ -15,10 +15,6 @@
       "uwsm app -- ${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp"
       "uwsm app -- ${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css"
 
-      # "quickshell -p ~/.config/hypr/scripts/quickshell/Main.qml"
-      # "quickshell -p ~/.config/hypr/scripts/quickshell/TopBar.qml"
-      # "python3 ~/.config/hypr/scripts/quickshell/focustime/focus_daemon.py &"
-
       # "dms run"
 
       # Start Spotify and Obsidian on login without switching to workspace 9
@@ -110,7 +106,7 @@
 
     misc = {
       "force_default_wallpaper" = 0;
-      "disable_hyprland_logo" = false;
+      "disable_hyprland_logo" = true;
       "disable_splash_rendering" = true;
       "initial_workspace_tracking" = 1;
     };

@@ -1,5 +1,5 @@
 {
-  import = [
+  imports = [
     ./general.nix
   ];
 }
