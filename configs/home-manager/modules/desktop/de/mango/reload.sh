@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# Kill and restart Waybar and SwayNC
-pkill waybar
-pkill swaync
+pkill rofi 2>/dev/null || true
 
-# Optional: Kill any currently running Rofi instances
-pkill rofi
-
-# Reload Hyprland configuration
 mmsg -d reload_config
 
-# Restart SwayNC and Waybar
-swaync &
-waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css&
+systemctl --user restart qs-top-bar.service qs-quick-actions.service 2>/dev/null || {
+  systemctl --user start qs-top-bar.service qs-quick-actions.service 2>/dev/null || true
+}
+
+systemctl --user restart swaync.service 2>/dev/null || {
+  pkill swaync 2>/dev/null || true
+  swaync >/dev/null 2>&1 &
+}

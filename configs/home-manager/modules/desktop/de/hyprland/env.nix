@@ -5,7 +5,6 @@
     export GDK_BACKEND=wayland,x11
     export QT_QPA_PLATFORM='wayland;xcb'
     export XCURSOR_SIZE=24
-    export QS_APP_LAUNCH_PREFIX='uwsm app --'
   '';
 
   xdg.configFile."uwsm/env-hyprland".text = ''

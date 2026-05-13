@@ -1,8 +1,13 @@
 {
   inputs,
   pkgs,
+  system,
   ...
-}: {
+}: let
+  mangoPackage = import ./mango-patched.nix {
+    inherit inputs pkgs system;
+  };
+in {
   imports = [
     inputs.mangowm.hmModules.mango
     ./general.nix
@@ -13,13 +18,14 @@
 
   wayland.windowManager.mango = {
     enable = true;
+    package = mangoPackage;
 
     autostart_sh = ''
       awww-daemon
       openrgb --profile ~/.config/OpenRGB/black.orp
-      waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css
+      systemctl --user start qs-top-bar.service qs-quick-actions.service
 
-      wpctl set-volume @DEFAULT_SINK@ 1
+      wpctl set-volume @DEFAULT_AUDIO_SINK@ 1
 
       cliphist wipe
       wl-paste --type text --watch cliphist store

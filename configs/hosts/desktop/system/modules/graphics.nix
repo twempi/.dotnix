@@ -1,15 +1,20 @@
-{config, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   # Graphic Settings
   hardware = {
     nvidia = {
       modesetting.enable = true;
+      nvidiaPersistenced = true;
       powerManagement = {
         enable = false;
         finegrained = false;
       };
       nvidiaSettings = true;
-      open = false;
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
+      open = true;
+      package = config.boot.kernelPackages.nvidiaPackages.latest;
     };
 
     graphics = {
@@ -20,7 +25,22 @@
 
   services.xserver = {
     enable = true;
+    deviceSection = lib.mkAfter ''
+      Option "Coolbits" "12"
+    '';
     videoDrivers = ["nvidia"];
+  };
+
+  services.lact.enable = true;
+
+  systemd.user.services.nvidia-powermizer-max = {
+    description = "Prefer maximum NVIDIA performance mode";
+    after = ["graphical-session.target"];
+    wantedBy = ["graphical-session.target"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${config.hardware.nvidia.package.settings}/bin/nvidia-settings -a [gpu:0]/GPUPowerMizerMode=1";
+    };
   };
 
   environment.sessionVariables = {

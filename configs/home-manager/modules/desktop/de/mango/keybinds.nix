@@ -1,75 +1,114 @@
-{...}: {
+{pkgs, ...}: let
+  terminal = "${pkgs.kitty}/bin/kitty";
+  menu = "${pkgs.rofi}/bin/rofi";
+  colorPicker = "${pkgs.hyprpicker}/bin/hyprpicker -a";
+  notiCenter = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
+
+  browser = "helium";
+  explorer1 = "${terminal} -e ${pkgs.yazi}/bin/yazi";
+  explorer2 = "${pkgs.nautilus}/bin/nautilus";
+  notes = "${pkgs.obsidian}/bin/obsidian";
+  emoji = "${pkgs.bemoji}/bin/bemoji";
+  bluetooth = "${terminal} -e ${pkgs.bluetui}/bin/bluetui";
+  editor = "${terminal} -e nvim";
+
+  tagNumbers = builtins.genList (i: i + 1) 10;
+  numberKeyFor = tag:
+    if tag == 10
+    then "0"
+    else toString tag;
+  tagBind = tag: let
+    key = numberKeyFor tag;
+    tagString = toString tag;
+  in [
+    "SUPER,${key},view,${tagString}"
+    "SUPER+SHIFT,${key},tagsilent,${tagString}"
+  ];
+  keycodeTagBinds = builtins.concatLists (builtins.genList (i: let
+    tag = i + 1;
+    code = i + 10;
+    tagString = toString tag;
+    codeString = toString code;
+  in [
+    "SUPER,code:${codeString},view,${tagString}"
+    "SUPER+SHIFT,code:${codeString},tagsilent,${tagString}"
+  ]) 9);
+in {
   wayland.windowManager.mango.settings = {
-    bind = [
-      "SUPER,Q,killclient"
-      "SUPER+SHIFT,Q,killclient"
-      "SUPER,V,togglefloating"
-      "SUPER,F,togglefullscreen"
+    bind =
+      [
+        "SUPER,Q,killclient"
+        "SUPER+SHIFT,Q,forcekillclient"
+        "SUPER,V,togglefloating"
+        "SUPER,F,togglemaximizescreen"
+        "SUPER+SHIFT,F,togglefullscreen"
 
-      "SUPER,Return,spawn,kitty"
-      # "SUPER,B,spawn,zen-beta"
-      "SUPER,B,spawn,helium"
-      "SUPER,E,spawn,kitty -e yazi"
-      "SUPER+SHIFT,E,spawn,nautilus"
-      "SUPER,M,spawn,spotify"
-      "SUPER,O,spawn,obsidian"
-      "SUPER,N,spawn,kitty -e nvim"
-      "SUPER+SHIFT,B,spawn,kitty -e bluetui"
-      "SUPER+SHIFT,N,spawn,swaync-client -t -sw"
-      "SUPER+SHIFT,R,spawn,bash ${./reload.sh}"
-      "SUPER,Escape,spawn,qs-power"
+        "SUPER,Return,spawn,${terminal}"
+        "SUPER,B,spawn,${browser}"
+        "SUPER,E,spawn,${explorer1}"
+        "SUPER+SHIFT,E,spawn,${explorer2}"
+        "SUPER,M,spawn,spotify"
+        "SUPER,O,spawn,${notes}"
+        "SUPER,N,spawn,${editor}"
+        "SUPER+SHIFT,B,spawn,${bluetooth}"
+        "SUPER+SHIFT,N,spawn,${notiCenter}"
+        "SUPER,Escape,spawn,qs-power"
 
-      "SUPER,Z,spawn,hyprpicker -a"
-      "SUPER+SHIFT,W,spawn,qs-wallpaper"
+        "SUPER,Z,spawn,${colorPicker}"
+        "SUPER+SHIFT,W,spawn,qs-wallpaper"
+        "SUPER+SHIFT,R,spawn,bash ${./reload.sh}"
 
-      "SUPER+SHIFT,S,spawn,bash ${./screenshot.sh}"
-      "NONE,Print,spawn_shell,grim - | wl-copy && wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png"
+        "SUPER+SHIFT,S,spawn,bash ${./screenshot.sh}"
+        "NONE,Print,spawn_shell,${pkgs.grim}/bin/grim - | ${pkgs.wl-clipboard}/bin/wl-copy && ${pkgs.wl-clipboard}/bin/wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png"
 
-      "SUPER,Space,spawn,qs-launcher"
-      "SUPER,U,spawn,bemoji"
-      "SUPER,Y,spawn_shell,cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+        "SUPER,Space,spawn,qs-launcher"
+        "SUPER,U,spawn,${emoji}"
+        "SUPER,Y,spawn_shell,${pkgs.cliphist}/bin/cliphist list | ${menu} -dmenu | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy"
 
-      "SUPER,H,focusdir,left"
-      "SUPER,L,focusdir,right"
-      "SUPER,J,focusdir,down"
-      "SUPER,K,focusdir,up"
+        "SUPER,H,focusdir,left"
+        "SUPER,L,focusdir,right"
+        "SUPER,J,focusdir,down"
+        "SUPER,K,focusdir,up"
 
-      "SUPER+CTRL,H,exchange_client,left"
-      "SUPER+CTRL,L,exchange_client,right"
-      "SUPER+CTRL,J,exchange_client,down"
-      "SUPER+CTRL,K,exchange_client,up"
+        "SUPER+CTRL,H,exchange_client,left"
+        "SUPER+CTRL,L,exchange_client,right"
+        "SUPER+CTRL,J,exchange_client,down"
+        "SUPER+CTRL,K,exchange_client,up"
 
-      "SUPER,1,view,1"
-      "SUPER,2,view,2"
-      "SUPER,3,view,3"
-      "SUPER,4,view,4"
-      "SUPER,5,view,5"
-      "SUPER,6,view,6"
-      "SUPER,7,view,7"
-      "SUPER,8,view,8"
-      "SUPER,9,view,9"
+        "SUPER+SHIFT,H,resizewin,-50,0"
+        "SUPER+SHIFT,L,resizewin,+50,0"
+        "SUPER+SHIFT,J,resizewin,0,-50"
+        "SUPER+SHIFT,K,resizewin,0,+50"
 
-      "SUPER+SHIFT,1,tag,1"
-      "SUPER+SHIFT,2,tag,2"
-      "SUPER+SHIFT,3,tag,3"
-      "SUPER+SHIFT,4,tag,4"
-      "SUPER+SHIFT,5,tag,5"
-      "SUPER+SHIFT,6,tag,6"
-      "SUPER+SHIFT,7,tag,7"
-      "SUPER+SHIFT,8,tag,8"
-      "SUPER+SHIFT,9,tag,9"
+        "SUPER+ALT,M,spawn,qs-manager toggle monitors"
+        "SUPER+ALT,S,spawn,qs-manager toggle stewart"
+        "SUPER+ALT,Q,spawn,qs-manager toggle music"
+        "SUPER+ALT,B,spawn,qs-manager toggle battery"
+        "SUPER+ALT,W,spawn,qs-manager toggle wallpaper"
+        "SUPER+ALT,C,spawn,qs-manager toggle calendar"
+        "SUPER+ALT,N,spawn,qs-manager toggle network"
+        "SUPER+ALT,T,spawn,qs-manager toggle focustime"
+        "SUPER+ALT,V,spawn,qs-manager toggle volume"
+        "SUPER+ALT,G,spawn,qs-manager toggle guide"
 
-      "NONE,XF86AudioLowerVolume,spawn,wpctl set-volume @DEFAULT_SINK@ 5%-"
-      "NONE,XF86AudioRaiseVolume,spawn,wpctl set-volume @DEFAULT_SINK@ 5%+"
-      "NONE,XF86AudioMute,spawn,wpctl set-mute @DEFAULT_SINK@ toggle"
-      "NONE,XF86AudioMicMute,spawn,wpctl set-mute @DEFAULT_SOURCE@ toggle"
-      "NONE,XF86MonBrightnessUp,spawn,brightnessctl set 5%+"
-      "NONE,XF86MonBrightnessDown,spawn,brightnessctl set 5%-"
+        "NONE,XF86AudioLowerVolume,spawn,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+        "NONE,XF86AudioRaiseVolume,spawn,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+        "NONE,XF86AudioMute,spawn,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+        "NONE,XF86AudioMicMute,spawn,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+        "NONE,XF86MonBrightnessUp,spawn,${pkgs.brightnessctl}/bin/brightnessctl set 5%+"
+        "NONE,XF86MonBrightnessDown,spawn,${pkgs.brightnessctl}/bin/brightnessctl set 5%-"
 
-      "NONE,XF86AudioNext,spawn,playerctl next"
-      "NONE,XF86AudioPause,spawn,playerctl play-pause"
-      "NONE,XF86AudioPlay,spawn,playerctl play-pause"
-      "NONE,XF86AudioPrev,spawn,playerctl previous"
+        "NONE,XF86AudioNext,spawn,${pkgs.playerctl}/bin/playerctl next"
+        "NONE,XF86AudioPause,spawn,${pkgs.playerctl}/bin/playerctl play-pause"
+        "NONE,XF86AudioPlay,spawn,${pkgs.playerctl}/bin/playerctl play-pause"
+        "NONE,XF86AudioPrev,spawn,${pkgs.playerctl}/bin/playerctl previous"
+      ]
+      ++ builtins.concatLists (map tagBind tagNumbers)
+      ++ keycodeTagBinds;
+
+    mousebind = [
+      "SUPER,btn_left,moveresize,curmove"
+      "SUPER,btn_right,moveresize,curresize"
     ];
   };
 }

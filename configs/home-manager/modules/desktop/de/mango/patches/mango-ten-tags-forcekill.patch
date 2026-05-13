@@ -1,0 +1,102 @@
+diff --git a/mmsg/mmsg.c b/mmsg/mmsg.c
+index 1dcdcef..13aee2c 100644
+--- a/mmsg/mmsg.c
++++ b/mmsg/mmsg.c
+@@ -85,12 +85,17 @@ static void noop_scale(void *data, struct wl_output *wl_output,
+ static void noop_description(void *data, struct wl_output *wl_output,
+ 							 const char *description) {}
+ 
+-// 将 n 转换为 9 位二进制字符串，结果存入 buf（至少长度 10）
+-void bin_str_9bits(char *buf, uint32_t n) {
+-	for (int32_t i = 8; i >= 0; i--) {
++// Convert n to a fixed-width binary string, clamped to the uint32 tag mask.
++void bin_str_9bits(char *buf, uint32_t n) {
++	int32_t bits = tagcount > 0 ? tagcount : 9;
++	if (bits < 1)
++		bits = 9;
++	if (bits > 32)
++		bits = 32;
++	for (int32_t i = bits - 1; i >= 0; i--) {
+ 		*buf++ = ((n >> i) & 1) ? '1' : '0';
+ 	}
+-	*buf = '\0'; // 字符串结尾
++	*buf = '\0';
+ }
+ 
+ static void dwl_ipc_tags(void *data,
+@@ -396,7 +401,7 @@ static void dwl_ipc_output_frame(void *data,
+ 
+ 			printf("%s clients %u\n", output_name, total_clients);
+ 
+-			char occ_str[10], seltags_str[10], urg_str[10];
++			char occ_str[33], seltags_str[33], urg_str[33];
+ 
+ 			bin_str_9bits(occ_str, occ);
+ 			bin_str_9bits(seltags_str, seltags);
+			bin_str_9bits(urg_str, urg);
+diff --git a/src/config/parse_config.h b/src/config/parse_config.h
+index 04080f7..4f1d743 100644
+--- a/src/config/parse_config.h
++++ b/src/config/parse_config.h
+@@ -1000,6 +1000,8 @@ void config_parse_bind(const char *bind, KeyBinding *keybinding) {
+ 		func = tagtoright;
+ 		(*arg).i = atoi(arg_value);
+ 	} else if (strcmp(func_name, "killclient") == 0) {
+ 		func = killclient;
++	} else if (strcmp(func_name, "forcekillclient") == 0) {
++		func = forcekillclient;
+ 	} else if (strcmp(func_name, "centerwin") == 0) {
+ 		func = centerwin;
+ 	} else if (strcmp(func_name, "focuslast") == 0) {
+diff --git a/src/config/preset.h b/src/config/preset.h
+index ec2e4ce..39d5d9a 100644
+--- a/src/config/preset.h
++++ b/src/config/preset.h
+@@ -2,7 +2,7 @@
+ #define MODKEY WLR_MODIFIER_ALT
+ 
+ static const char *tags[] = {
+-	"1", "2", "3", "4", "5", "6", "7", "8", "9",
++	"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+ };
+ 
+ static const struct xkb_rule_names xkb_fallback_rules = {
+diff --git a/src/dispatch/bind_declare.h b/src/dispatch/bind_declare.h
+index 67195d3..3e53fce 100644
+--- a/src/dispatch/bind_declare.h
++++ b/src/dispatch/bind_declare.h
+@@ -31,8 +31,9 @@ int32_t setmfact(const Arg *arg);
+ int32_t quit(const Arg *arg);
+ int32_t moveresize(const Arg *arg);
+ int32_t exchange_client(const Arg *arg);
+ int32_t exchange_stack_client(const Arg *arg);
+ int32_t killclient(const Arg *arg);
++int32_t forcekillclient(const Arg *arg);
+ int32_t toggleglobal(const Arg *arg);
+ int32_t incnmaster(const Arg *arg);
+ int32_t focusmon(const Arg *arg);
+diff --git a/src/dispatch/bind_define.h b/src/dispatch/bind_define.h
+index 6d9ba8a..9f48990 100644
+--- a/src/dispatch/bind_define.h
++++ b/src/dispatch/bind_define.h
+@@ -366,6 +366,20 @@ int32_t killclient(const Arg *arg) {
+ 	return 0;
+ }
+ 
++int32_t forcekillclient(const Arg *arg) {
++	Client *c = NULL;
++	if (!selmon)
++		return 0;
++	c = selmon->sel;
++	if (!c)
++		return 0;
++	if (c->pid > 1 && kill(c->pid, SIGKILL) == 0) {
++		return 0;
++	}
++	pending_kill_client(c);
++	return 0;
++}
++
+ int32_t moveresize(const Arg *arg) {
+ 	const char *cursors[] = {"nw-resize", "ne-resize", "sw-resize",
+ 							 "se-resize"};

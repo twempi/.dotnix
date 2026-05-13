@@ -1,4 +1,9 @@
-{...}: {
+{...}: let
+  tagRules =
+    builtins.genList
+    (i: "id:${toString (i + 1)},layout_name:dwindle")
+    10;
+in {
   wayland.windowManager.mango.settings = {
     monitorrule = [
       "name:^eDP-1$,width:1920,height:1080,refresh:60,x:0,y:0,scale:1"
@@ -36,5 +41,6 @@
     mouse_accel_speed = 0.0;
 
     # trackpad settings
+    tagrule = tagRules;
   };
 }
