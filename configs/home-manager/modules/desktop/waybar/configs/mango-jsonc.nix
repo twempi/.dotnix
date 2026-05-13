@@ -11,9 +11,10 @@
       "margin-left": 0,
 
       "modules-left": [
-        "sway/workspaces",
-        "sway/mode"
+        "dwl/tags",
+        "dwl/window"
       ],
+
       "modules-right": [
         "tray",
         "network",
@@ -27,18 +28,28 @@
         "clock"
       ],
 
-      // Modules configuration
-      "sway/workspaces": {
-        "disable-scroll": true,
-        "active-only": false,
-        "all-outputs": true,
-        "warp-on-scroll": false,
-        "format": "{index}"
+      // MangoWC / DWL tags
+      "dwl/tags": {
+        "num-tags": 9,
+        "tag-labels": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "disable-click": false
       },
 
-      "sway/mode": {
-        "format": " {}",
-        "max-length": 50
+      // Focused window title
+      "dwl/window": {
+        "format": "{title}",
+        "max-length": 80,
+        "tooltip": false
       },
 
       "tray": {
@@ -80,7 +91,7 @@
       },
 
       "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
+        // "scroll-step": 1,
         "format": "<span color='#${config.lib.stylix.colors.base0D}'>[]</span> {volume}%",
         "format-muted": "<span color='#${config.lib.stylix.colors.base08}'>[]</span> {volume}%",
         "format-bluetooth": "<span color='#${config.lib.stylix.colors.base0D}'>[󰂰]</span> {volume}%",

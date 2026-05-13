@@ -1,0 +1,215 @@
+@import "./colors.css";
+
+* {
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+  min-height: 0;
+  text-shadow: none;
+  transition: none;
+  box-shadow: none;
+}
+
+/* modules padding */
+#window,
+#disk,
+#cpu,
+#temperature,
+#temperature.critical,
+#custom-cpu_temp,
+#custom-cpu_temp.critical,
+#backlight,
+#memory,
+#custom-memory,
+#pulseaudio,
+#pulseaudio.muted,
+#battery,
+#battery.critical,
+#battery.warning,
+#network,
+#clock {
+  padding-right: 3pt;
+}
+
+window#waybar {
+  color: @text;
+  background: @background;
+  font-family: IosevkaTerm Nerd Font Propo;
+  font-size: 11pt;
+  font-weight: 900;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  padding: 3pt;
+}
+
+/* --- WORKSPACES / TAGS ---
+   Sway:    #workspaces
+   MangoWC: #tags via dwl/tags
+*/
+
+#workspaces button,
+#tags button {
+  color: @ws-persistent-text;
+  border: 2pt solid @ws-persistent-text;
+  margin-right: 3pt;
+
+  min-width: 12pt;
+  padding: 0 2.5pt;
+  font-family: IosevkaTerm Nerd Font Propo;
+  font-size: 11pt;
+  font-weight: 900;
+}
+
+#workspaces button:last-child,
+#tags button:last-child {
+  margin-right: 0;
+}
+
+#workspaces button:hover,
+#tags button:hover {
+  color: @ws-focused;
+  border-color: @ws-focused;
+}
+
+/* Sway visible workspace / Mango occupied tag */
+#workspaces button.visible,
+#workspaces button.visible:hover,
+#tags button.occupied,
+#tags button.occupied:hover {
+  color: @ws-active-text;
+  border-color: @ws-active-text;
+}
+
+/* Mango empty tags */
+#tags button.empty {
+  color: @ws-persistent-text;
+  border-color: @ws-persistent-text;
+}
+
+/* urgent */
+#workspaces button.urgent,
+#tags button.urgent {
+  color: @ws-urgent;
+  border-color: @ws-urgent;
+}
+
+/* focused workspace/tag */
+#workspaces button.focused,
+#workspaces button.focused.visible,
+#tags button.focused,
+#tags button.focused.occupied {
+  color: @ws-focused;
+  border-color: @ws-focused;
+}
+
+/* --- MODULES --- */
+
+/* window title: sway/window or dwl/window */
+#window {
+  border-bottom: 2pt solid @window-border;
+  color: @text;
+}
+
+/* tray */
+#tray {
+  border-bottom: 2pt solid @tray-border;
+  background: @tray-bg;
+  padding: 0 6pt;
+  color: @text;
+}
+
+/* disk */
+#disk {
+  border-bottom: 2pt solid @disk-border;
+  color: @text;
+}
+
+/* cpu */
+#cpu {
+  border-bottom: 2pt solid @cpu-border;
+  color: @text;
+}
+
+/* cpu temp: supports both custom/cpu_temp and built-in temperature */
+#custom-cpu_temp,
+#temperature {
+  border-bottom: 2pt solid @temp-border;
+  color: @text;
+}
+
+#custom-cpu_temp.critical,
+#temperature.critical {
+  color: @text;
+  border-bottom: 2pt solid @critical;
+}
+
+#custom-cpu_temp.unknown,
+#temperature.unknown {
+  color: @text;
+  border-bottom: 2pt solid @muted;
+}
+
+/* backlight */
+#backlight {
+  border-bottom: 2pt solid @backlight-border;
+  color: @text;
+}
+
+/* memory: supports both custom/memory and built-in memory */
+#custom-memory,
+#memory {
+  border-bottom: 2pt solid @memory-border;
+  color: @text;
+}
+
+/* audio */
+#pulseaudio {
+  border-bottom: 2pt solid @audio-border;
+  color: @text;
+}
+
+#pulseaudio.muted {
+  color: @text;
+  border-bottom: 2pt solid @critical;
+}
+
+/* battery */
+#battery {
+  border-bottom: 2pt solid @battery-border;
+  color: @text;
+}
+
+#battery.critical,
+#battery.charging.critical {
+  color: @text;
+  border-bottom: 2pt solid @critical;
+}
+
+#battery.warning,
+#battery.charging.warning {
+  color: @text;
+  border-bottom: 2pt solid @warning;
+}
+
+/* clock */
+#clock {
+  border-bottom: 2pt solid @clock-border;
+  color: @text;
+}
+
+/* network */
+#network {
+  border-bottom: 2pt solid @network-border;
+  color: @text;
+}
+
+/* mode indicator */
+#mode {
+  color: @mode-text;
+  border: 2pt solid @mode-border;
+  background: @mode-bg;
+  padding: 0 4.5pt;
+}

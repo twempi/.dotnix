@@ -23,8 +23,10 @@ in {
     autostart_sh = ''
       awww-daemon
       openrgb --profile ~/.config/OpenRGB/black.orp
-      qs-top-bar daemon
+      # qs-top-bar daemon
       systemctl --user start qs-quick-actions.service
+
+       ${pkgs.waybar}/bin/waybar -c ~/.config/waybar/mango.jsonc -s ~/.config/waybar/mango.css
 
       wpctl set-volume @DEFAULT_AUDIO_SINK@ 1
 
