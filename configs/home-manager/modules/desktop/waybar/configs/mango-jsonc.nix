@@ -1,4 +1,4 @@
-{config, ...}: {
+{ config, ... }: {
   xdg.configFile."waybar/mango.jsonc".text = ''
     {
       "name": "mango",
@@ -11,7 +11,7 @@
       "margin-left": 0,
 
       "modules-left": [
-        "dwl/tags",
+        "ext/workspaces",
         "dwl/window"
       ],
 
@@ -28,26 +28,18 @@
         "clock"
       ],
 
-      // MangoWC / DWL tags
-      "dwl/tags": {
-        "num-tags": 9,
-        "tag-labels": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9"
-        ],
-        "disable-click": false
+      "ext/workspaces": {
+        "format": "{name}",
+        "ignore-hidden": true,
+        "active-only": false,
+        "all-outputs": true,
+        "on-click": "activate",
+        "on-click-right": "deactivate",
+        "sort-by-id": true
       },
 
-      // Focused window title
       "dwl/window": {
-        "format": "{title}",
+        "format": "[{layout}] {title}",
         "max-length": 80,
         "tooltip": false
       },

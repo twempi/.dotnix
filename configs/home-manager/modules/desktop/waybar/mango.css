@@ -14,12 +14,9 @@
 #window,
 #disk,
 #cpu,
-#temperature,
-#temperature.critical,
 #custom-cpu_temp,
 #custom-cpu_temp.critical,
 #backlight,
-#memory,
 #custom-memory,
 #pulseaudio,
 #pulseaudio.muted,
@@ -45,13 +42,9 @@ window#waybar {
   padding: 3pt;
 }
 
-/* --- WORKSPACES / TAGS ---
-   Sway:    #workspaces
-   MangoWC: #tags via dwl/tags
-*/
+/* --- MANGOWC WORKSPACES via ext/workspaces --- */
 
-#workspaces button,
-#tags button {
+#workspaces button {
   color: @ws-persistent-text;
   border: 2pt solid @ws-persistent-text;
   margin-right: 3pt;
@@ -63,51 +56,44 @@ window#waybar {
   font-weight: 900;
 }
 
-#workspaces button:last-child,
-#tags button:last-child {
+#workspaces button:last-child {
   margin-right: 0;
 }
 
-#workspaces button:hover,
-#tags button:hover {
+#workspaces button:hover {
   color: @ws-focused;
   border-color: @ws-focused;
 }
 
-/* Sway visible workspace / Mango occupied tag */
-#workspaces button.visible,
-#workspaces button.visible:hover,
-#tags button.occupied,
-#tags button.occupied:hover {
-  color: @ws-active-text;
-  border-color: @ws-active-text;
-}
-
-/* Mango empty tags */
-#tags button.empty {
+/* hidden workspace */
+#workspaces button.hidden {
   color: @ws-persistent-text;
   border-color: @ws-persistent-text;
 }
 
-/* urgent */
-#workspaces button.urgent,
-#tags button.urgent {
+/* visible workspace */
+#workspaces button.visible,
+#workspaces button.visible:hover {
+  color: @ws-active-text;
+  border-color: @ws-active-text;
+}
+
+/* urgent workspace */
+#workspaces button.urgent {
   color: @ws-urgent;
   border-color: @ws-urgent;
 }
 
-/* focused workspace/tag */
-#workspaces button.focused,
-#workspaces button.focused.visible,
-#tags button.focused,
-#tags button.focused.occupied {
+/* active workspace */
+#workspaces button.active,
+#workspaces button.active.visible {
   color: @ws-focused;
   border-color: @ws-focused;
 }
 
 /* --- MODULES --- */
 
-/* window title: sway/window or dwl/window */
+/* focused window title */
 #window {
   border-bottom: 2pt solid @window-border;
   color: @text;
@@ -133,21 +119,18 @@ window#waybar {
   color: @text;
 }
 
-/* cpu temp: supports both custom/cpu_temp and built-in temperature */
-#custom-cpu_temp,
-#temperature {
+/* cpu temp */
+#custom-cpu_temp {
   border-bottom: 2pt solid @temp-border;
   color: @text;
 }
 
-#custom-cpu_temp.critical,
-#temperature.critical {
+#custom-cpu_temp.critical {
   color: @text;
   border-bottom: 2pt solid @critical;
 }
 
-#custom-cpu_temp.unknown,
-#temperature.unknown {
+#custom-cpu_temp.unknown {
   color: @text;
   border-bottom: 2pt solid @muted;
 }
@@ -158,9 +141,8 @@ window#waybar {
   color: @text;
 }
 
-/* memory: supports both custom/memory and built-in memory */
-#custom-memory,
-#memory {
+/* memory */
+#custom-memory {
   border-bottom: 2pt solid @memory-border;
   color: @text;
 }
@@ -204,12 +186,4 @@ window#waybar {
 #network {
   border-bottom: 2pt solid @network-border;
   color: @text;
-}
-
-/* mode indicator */
-#mode {
-  color: @mode-text;
-  border: 2pt solid @mode-border;
-  background: @mode-bg;
-  padding: 0 4.5pt;
 }

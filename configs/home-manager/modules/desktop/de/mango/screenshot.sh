@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-FILENAME="Screenshot-$(date +%F_%T).png"
+FILENAME="Screenshot-$(date +%F_%H-%M-%S).png"
 TARGET_DIR="$HOME/Pictures/Screenshots"
 SAVE_PATH="$TARGET_DIR/$FILENAME"
 
 mkdir -p "$TARGET_DIR"
 
-# lightweight notifier (uses notify-send if present, else dunstify)
 notify() {
   if command -v notify-send >/dev/null 2>&1; then
     notify-send "Screenshot" "$1"
@@ -16,15 +15,26 @@ notify() {
   fi
 }
 
-# Avoid multiple concurrent selection tools
-if pgrep -x slurp >/dev/null 2>&1 || pgrep -x grimblast >/dev/null 2>&1; then
+need() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    notify "Missing dependency: $1"
+    exit 1
+  fi
+}
+
+# Avoid multiple concurrent region selectors
+if pgrep -x slurp >/dev/null 2>&1; then
+  notify "Screenshot already in progress"
   exit 1
 fi
 
-if command -v grimblast >/dev/null 2>&1; then
-  # Hyprland-native freeze + select + copy + save
+# Give MangoWC time to release the screenshot keybind before slurp grabs input
+sleep 0.15
+
+# Only use grimblast inside Hyprland, not MangoWC
+if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && command -v grimblast >/dev/null 2>&1; then
   if grimblast --freeze copysave area "$SAVE_PATH"; then
-    notify "Saved: $SAVE_PATH (and copied)"
+    notify "Saved: $SAVE_PATH and copied"
     exit 0
   else
     notify "Screenshot cancelled"
@@ -32,25 +42,27 @@ if command -v grimblast >/dev/null 2>&1; then
   fi
 fi
 
-# ---- Fallback path (generic Wayland): freeze overlay + slurp + grim ----
-FREEZE_PID=""
-if command -v wayfreeze >/dev/null 2>&1; then
-  wayfreeze &
-  FREEZE_PID=$!
-  trap '[[ -n "${FREEZE_PID:-}" ]] && kill -TERM "$FREEZE_PID" 2>/dev/null || true' EXIT
-  sleep 0.12
-fi
+# MangoWC / generic wlroots Wayland path
+need grim
+need slurp
+need wl-copy
+
+TMP="$(mktemp --tmpdir screenshot.XXXXXX.png)"
+trap 'rm -f "$TMP"' EXIT
 
 REGION="$(slurp || true)"
-if [ -z "$REGION" ]; then
+
+if [[ -z "$REGION" ]]; then
   notify "Screenshot cancelled"
   exit 1
 fi
 
-grim -g "$REGION" /tmp/screenshot_temp.png
-wl-copy </tmp/screenshot_temp.png
-mv /tmp/screenshot_temp.png "$SAVE_PATH"
-rm -f /tmp/screenshot_temp.png
-
-[[ -n "${FREEZE_PID:-}" ]] && kill -TERM "$FREEZE_PID" 2>/dev/null || true
-notify "Saved: $SAVE_PATH (and copied)"
+if grim -l 0 -g "$REGION" "$TMP"; then
+  wl-copy <"$TMP"
+  mv "$TMP" "$SAVE_PATH"
+  trap - EXIT
+  notify "Saved: $SAVE_PATH and copied"
+else
+  notify "Screenshot failed"
+  exit 1
+fi
