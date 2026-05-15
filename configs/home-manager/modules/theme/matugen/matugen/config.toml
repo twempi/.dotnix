@@ -140,7 +140,7 @@ blend = true
 # # Obsidian
 # [templates.obsidian]
 # input_path = "~/.config/matugen/templates/matugen-obsidian.css"
-# output_path = "/mnt/Storage/Documents/notes/.obsidian/themes/Matugen/theme.css"
+# output_path = "~/Documents/notes/.obsidian/themes/Matugen/theme.css"
 
 # # Heroic Launcher
 # [templates.heroic]

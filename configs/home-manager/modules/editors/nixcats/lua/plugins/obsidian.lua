@@ -31,7 +31,6 @@ return {
 				legacy_commands = false,
 
 				workspaces = {
-					{ name = "notes", path = "/mnt/Storage/Documents/notes/" },
 					{ name = "notes", path = "~/Documents/notes" },
 				},
 

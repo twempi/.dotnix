@@ -71,7 +71,7 @@
 			gf="git fetch";
 
 			# notes
-			notes = "cd /mnt/Storage/Documents/notes/";
+			notes = "cd ~/Documents/notes/";
 
 			# ani-cli
 			ani = "ani-cli";

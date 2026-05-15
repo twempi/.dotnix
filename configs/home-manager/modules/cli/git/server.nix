@@ -1,4 +1,4 @@
-{
+{config, ...}: {
   programs.git = {
     enable = true;
 
@@ -35,7 +35,7 @@
 
       safe = {
         directory = [
-          "/mnt/Storage/Documents/notes"
+          "${config.home.homeDirectory}/Documents/notes"
         ];
       };
 

@@ -118,7 +118,6 @@ return {
 
 					local image_dirs = {
 						vim.fn.expand("~/Documents/notes/999 Images"),
-						vim.fn.expand("/mnt/Storage/Documents/notes/999 Images/"),
 					}
 
 					for _, dir in ipairs(image_dirs) do

@@ -11,10 +11,10 @@
   };
 
   convert-plugin = pkgs.fetchFromGitHub {
-    owner = "atareao";
+    owner = "twempi";
     repo = "convert.yazi";
-    rev = "ce060d9d17e4466d7956213d68a7a74d24ecfdc5";
-    sha256 = "0p52nqbrg19di5gnnj3bv9qw2p4sq6d80krgz729ch8fsz1f69ch";
+    rev = "97946adfc3ab769c4586a9c1780c475c6699f820";
+    sha256 = "sha256-cD4s1NXz09+DmBcYb95OMUez1RMiro7Y4YzRPKI0wtA=";
   };
 
   pdfViewer = "${pkgs.zathura}/bin/zathura";

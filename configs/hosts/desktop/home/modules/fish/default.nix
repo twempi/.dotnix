@@ -8,7 +8,7 @@
 
       hms = "home-manager switch --flake ~/.dotnix#edward-desktop";
 
-      school = "cd /mnt/Storage/Documents/school";
+      school = "cd ~/Documents/school";
     };
   };
 }

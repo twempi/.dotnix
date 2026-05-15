@@ -2,16 +2,12 @@
   config,
   lib,
   pkgs,
-  hostname,
   ...
 }: let
   colors = config.lib.stylix.colors;
   fonts = config.stylix.fonts;
 
-  notesDir =
-    if hostname == "desktop"
-    then "/mnt/Storage/Documents/notes"
-    else "${config.home.homeDirectory}/Documents/notes";
+  notesDir = "${config.home.homeDirectory}/Documents/notes";
 
   stylixThemeManifest = pkgs.writeText "obsidian-stylix-manifest.json" (builtins.toJSON {
     name = "Stylix";

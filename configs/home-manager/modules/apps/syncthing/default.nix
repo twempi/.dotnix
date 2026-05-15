@@ -1,15 +1,15 @@
-{hostname, ...}: let
-  isDesktop = hostname == "desktop";
+{
+  config,
+  hostname,
+  ...
+}: let
   isServer = hostname == "t480s";
 
   mkFolder = name: devices: {
     id = name;
     inherit devices;
 
-    path =
-      if isDesktop
-      then "/mnt/Storage/Documents/${name}"
-      else "/home/edward/Documents/${name}";
+    path = "${config.home.homeDirectory}/Documents/${name}";
 
     versioning =
       if isServer

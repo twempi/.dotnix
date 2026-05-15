@@ -1,4 +1,4 @@
-{pkgs, ...}: let
+{config, pkgs, ...}: let
   gitWithLibsecret = (pkgs.git.override {withLibsecret = true;}).overrideAttrs (_: {
     doInstallCheck = false;
   });
@@ -42,7 +42,7 @@ in {
 
       safe = {
         directory = [
-          "/mnt/Storage/Documents/notes"
+          "${config.home.homeDirectory}/Documents/notes"
         ];
       };
 
