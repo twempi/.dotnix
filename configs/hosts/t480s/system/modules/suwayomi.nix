@@ -4,7 +4,6 @@
     openFirewall = true;
 
     settings.server = {
-      ip = "0.0.0.0";
       port = 8080;
 
       flareSolverrEnabled = true;
