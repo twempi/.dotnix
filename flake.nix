@@ -99,7 +99,7 @@
     };
 
     minimal-grub-theme = {
-      url = "path:/home/edward/Documents/projects/minimal-grub-theme";
+      url = "github:twempi/minimal-grub-theme";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
