@@ -499,14 +499,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1778912386,
-        "narHash": "sha256-y+GKmEGP1TyULUPu0j6I4UHqAqcxsXZeALx2qlYIYio=",
-        "path": "/home/edward/Documents/projects/minimal-grub-theme",
-        "type": "path"
+        "lastModified": 1778912055,
+        "narHash": "sha256-hqeu0MguRJjV8WnbdDTkPYVMyGJn2rKKKCTx97Fk+BY=",
+        "owner": "twempi",
+        "repo": "minimal-grub-theme",
+        "rev": "f961d808aca1d1a7edc9a6a14406fb56e811d8b5",
+        "type": "github"
       },
       "original": {
-        "path": "/home/edward/Documents/projects/minimal-grub-theme",
-        "type": "path"
+        "owner": "twempi",
+        "repo": "minimal-grub-theme",
+        "type": "github"
       }
     },
     "niri": {
