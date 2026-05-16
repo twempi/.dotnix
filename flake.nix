@@ -107,21 +107,6 @@
   outputs = inputs @ {
     nixpkgs,
     home-manager,
-    stylix,
-    nixCats,
-    nixcord,
-    spicetify-nix,
-    bunny-yazi,
-    zen-browser,
-    niri,
-    nix-minecraft,
-    ltspice,
-    dms,
-    quickshell,
-    mangowm,
-    tt-schemes,
-    t3code,
-    noctalia,
     ...
   }: let
     system = "x86_64-linux";
@@ -130,100 +115,84 @@
       inherit system;
       config.allowUnfree = true;
     };
+
+    specialArgsFor = hostname: {
+      inherit inputs system hostname;
+    };
+
+    commonNixosModules = [
+      home-manager.nixosModules.home-manager
+      inputs.stylix.nixosModules.stylix
+    ];
+
+    mkNixosHost = hostname: extraModules:
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgsFor hostname;
+        modules =
+          [
+            (./configs/hosts + "/${hostname}/default.nix")
+          ]
+          ++ commonNixosModules
+          ++ extraModules;
+      };
+
+    commonHomeModules = [
+      inputs.stylix.homeModules.stylix
+      ./configs/system/modules/theme/stylix.nix
+    ];
+
+    desktopHomeModules = [
+      inputs.spicetify-nix.homeManagerModules.default
+      inputs.niri.homeModules.config
+      inputs.niri.homeModules.stylix
+    ];
+
+    mkHome = {
+      hostname,
+      profile,
+      extraModules ? [],
+    }:
+      home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = specialArgsFor hostname;
+        modules =
+          [
+            (./configs/home-manager/profiles + "/${profile}.nix")
+            (./configs/hosts + "/${hostname}/home/modules.nix")
+          ]
+          ++ commonHomeModules
+          ++ extraModules;
+      };
   in {
     nixosConfigurations = {
-      desktop = nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = [
-          ./configs/hosts/desktop/default.nix
-          home-manager.nixosModules.home-manager
-          stylix.nixosModules.stylix
-          t3code.nixosModules.default
-        ];
+      desktop = mkNixosHost "desktop" [
+        inputs.t3code.nixosModules.default
+      ];
 
-        specialArgs = {
-          inherit inputs system;
-          hostname = "desktop";
-        };
-      };
+      t480s = mkNixosHost "t480s" [];
 
-      t480s = nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = [
-          ./configs/hosts/t480s/default.nix
-          home-manager.nixosModules.home-manager
-          stylix.nixosModules.stylix
-        ];
-
-        specialArgs = {
-          inherit inputs system;
-          hostname = "t480s";
-        };
-      };
-
-      g14 = nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = [
-          ./configs/hosts/g14/default.nix
-          home-manager.nixosModules.home-manager
-          stylix.nixosModules.stylix
-          t3code.nixosModules.default
-        ];
-
-        specialArgs = {
-          inherit inputs system;
-          hostname = "g14";
-        };
-      };
+      g14 = mkNixosHost "g14" [
+        inputs.t3code.nixosModules.default
+      ];
     };
 
     homeConfigurations = {
-      edward-desktop = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = {
-          inherit inputs system;
-          hostname = "desktop";
-        };
-        modules = [
-          ./configs/home-manager/profiles/desktop.nix
-          ./configs/hosts/desktop/home/modules.nix
-          stylix.homeModules.stylix
-          ./configs/system/modules/theme/stylix.nix
-          inputs.spicetify-nix.homeManagerModules.default
-          niri.homeModules.config
-          niri.homeModules.stylix
-        ];
+      edward-desktop = mkHome {
+        hostname = "desktop";
+        profile = "desktop";
+        extraModules = desktopHomeModules;
       };
 
-      edward-g14 = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = {
-          inherit inputs system;
-          hostname = "g14";
-        };
-        modules = [
-          ./configs/home-manager/profiles/desktop.nix
-          ./configs/hosts/g14/home/modules.nix
-          stylix.homeModules.stylix
-          ./configs/system/modules/theme/stylix.nix
-          inputs.spicetify-nix.homeManagerModules.default
-          niri.homeModules.config
-          niri.homeModules.stylix
-        ];
+      edward-g14 = mkHome {
+        hostname = "g14";
+        profile = "desktop";
+        extraModules = desktopHomeModules;
       };
 
-      edward-t480s = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = {
-          inherit inputs system;
-          hostname = "t480s";
-        };
-        modules = [
-          ./configs/home-manager/profiles/server.nix
-          ./configs/hosts/t480s/home/modules.nix
-          stylix.homeModules.stylix
-          ./configs/system/modules/theme/stylix.nix
-        ];
+      edward-t480s = mkHome {
+        hostname = "t480s";
+        profile = "server";
       };
     };
   };

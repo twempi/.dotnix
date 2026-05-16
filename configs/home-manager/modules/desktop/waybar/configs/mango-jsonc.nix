@@ -1,4 +1,4 @@
-{ config, ... }: {
+{config, ...}: {
   xdg.configFile."waybar/mango.jsonc".text = ''
     {
       "name": "mango",
@@ -12,7 +12,6 @@
 
       "modules-left": [
         "ext/workspaces",
-        "dwl/window"
       ],
 
       "modules-right": [
@@ -36,12 +35,6 @@
         "on-click": "activate",
         "on-click-right": "deactivate",
         "sort-by-id": true
-      },
-
-      "dwl/window": {
-        "format": "[{layout}] {title}",
-        "max-length": 80,
-        "tooltip": false
       },
 
       "tray": {

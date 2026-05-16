@@ -27,6 +27,9 @@ in {
         efiSupport = true;
         useOSProber = true;
 
+        gfxmodeEfi = "auto";
+        gfxpayloadEfi = "keep";
+
         minimalTheme = {
           enable = true;
           fontSize = 28;
