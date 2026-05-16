@@ -97,11 +97,11 @@
     tectonic-unwrapped
     ghostscript
     mermaid-cli
-    inputs.ltspice.packages.${pkgs.system}.default
+    inputs.ltspice.packages.${pkgs.stdenv.hostPlatform.system}.default
     pipx
     trash-cli
     gowall
-    inputs.codex-cli-nix.packages.${pkgs.system}.default
+    inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Python
     (python313.withPackages (ps: [
