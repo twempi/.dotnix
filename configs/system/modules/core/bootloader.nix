@@ -1,6 +1,6 @@
 {
   pkgs,
-  lib,
+  inputs,
   ...
 }: let
   mac-style-src = pkgs.fetchFromGitHub {
@@ -11,41 +11,10 @@
   };
 
   mac-style-load = pkgs.callPackage "${mac-style-src}/package.nix" {};
-
-  minimal-grub-theme-src = pkgs.fetchFromGitHub {
-    owner = "aspy606";
-    repo = "minimal-grub-theme";
-
-    # Better: replace this with a full commit hash once you pin it.
-    rev = "a6c4c7cdaa5590e057b09e7555eb8af8974fe94c";
-
-    # First rebuild will fail and print the correct hash.
-    # Replace lib.fakeHash with the "got:" hash from the error.
-    hash = "sha256-Zu0e7s7Epy4n4aUVoAQjqshDR02PT2TH9sZRf8ureOQ=";
-  };
-
-  minimal-grub-theme = pkgs.stdenvNoCC.mkDerivation {
-    pname = "minimal-grub-theme";
-    version = "unstable";
-
-    src = minimal-grub-theme-src;
-
-    nativeBuildInputs = [pkgs.grub2];
-
-    installPhase = ''
-      runHook preInstall
-
-      mkdir -p $out
-      cp -r minimal/* $out/
-
-      # Change 24 to whatever font size you want.
-      grub-mkfont -s 24 -o $out/custom.pf2 $out/original.ttf
-
-      runHook postInstall
-    '';
-  };
 in {
-  # Disable this, otherwise Stylix will generate/override the GRUB theme.
+  imports = [
+    inputs.minimal-grub-theme.nixosModules.default
+  ];
   stylix.targets.grub.enable = false;
 
   boot = {
@@ -58,7 +27,12 @@ in {
         efiSupport = true;
         useOSProber = true;
 
-        theme = minimal-grub-theme;
+        minimalTheme = {
+          enable = true;
+          fontSize = 28;
+          fontRange = "0x20-0x7e,0xa0-0xff,0x2010-0x2026";
+          timeout = 5;
+        };
       };
 
       timeout = 5;

@@ -492,6 +492,23 @@
         "type": "github"
       }
     },
+    "minimal-grub-theme": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778912386,
+        "narHash": "sha256-y+GKmEGP1TyULUPu0j6I4UHqAqcxsXZeALx2qlYIYio=",
+        "path": "/home/edward/Documents/projects/minimal-grub-theme",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/edward/Documents/projects/minimal-grub-theme",
+        "type": "path"
+      }
+    },
     "niri": {
       "inputs": {
         "niri-stable": "niri-stable",
@@ -855,6 +872,7 @@
         "home-manager": "home-manager",
         "ltspice": "ltspice",
         "mangowm": "mangowm",
+        "minimal-grub-theme": "minimal-grub-theme",
         "niri": "niri",
         "nix-minecraft": "nix-minecraft",
         "nixCats": "nixCats",

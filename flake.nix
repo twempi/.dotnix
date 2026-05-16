@@ -97,6 +97,11 @@
       url = "github:Daaboulex/linux-corecycler";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    minimal-grub-theme = {
+      url = "path:/home/edward/Documents/projects/minimal-grub-theme";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
