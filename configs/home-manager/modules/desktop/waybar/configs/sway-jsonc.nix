@@ -1,7 +1,7 @@
 {config, ...}: {
-  xdg.configFile."waybar/mango.jsonc".text = ''
+  xdg.configFile."waybar/sway.jsonc".text = ''
     {
-      "name": "mango",
+      "name": "sway",
 
       "layer": "top",
       "height": 20,
