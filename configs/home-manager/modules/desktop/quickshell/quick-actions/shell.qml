@@ -50,6 +50,12 @@ ShellRoot {
   property int focusSecondsRemaining: 25 * 60
   property bool focusRunning: false
 
+  readonly property string sessionName: (
+    (Quickshell.env("XDG_CURRENT_DESKTOP") || "") + " " +
+    (Quickshell.env("XDG_SESSION_DESKTOP") || "") + " " +
+    (Quickshell.env("DESKTOP_SESSION") || "")
+  ).toLowerCase()
+  readonly property bool mangoSession: sessionName.indexOf("mango") !== -1
   readonly property bool genericOverlayActive: root.genericOverlayKinds.indexOf(root.activeOverlay) !== -1
 
   function targetScreen() {
@@ -62,6 +68,56 @@ ShellRoot {
     }
 
     return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
+  }
+
+  function activeScreenWidth() {
+    var screen = root.targetScreen();
+    return screen && screen.width > 0 ? screen.width : 1040;
+  }
+
+  function activeScreenHeight() {
+    var screen = root.targetScreen();
+    return screen && screen.height > 0 ? screen.height : 640;
+  }
+
+  function launcherPanelWidth(screenWidth) {
+    return screenWidth >= 680 ? Math.min(640, screenWidth - 40) : Math.max(1, screenWidth - 24);
+  }
+
+  function launcherPanelHeight(screenHeight) {
+    return screenHeight >= 560 ? Math.min(520, screenHeight - 40) : Math.max(1, screenHeight - 24);
+  }
+
+  function powerPanelWidth(screenWidth) {
+    return screenWidth >= 390 ? 350 : Math.max(1, screenWidth - 24);
+  }
+
+  function powerPanelHeight(screenHeight) {
+    return screenHeight >= 430 ? 390 : Math.max(1, screenHeight - 24);
+  }
+
+  function wallpaperPanelWidth(screenWidth) {
+    return screenWidth >= 740 ? Math.min(1000, screenWidth - 40) : Math.max(1, screenWidth - 24);
+  }
+
+  function wallpaperPanelHeight(screenHeight) {
+    return screenHeight >= 460 ? Math.min(600, screenHeight - 40) : Math.max(1, screenHeight - 24);
+  }
+
+  function genericPanelWidth(screenWidth) {
+    return screenWidth >= 540 ? 500 : Math.max(1, screenWidth - 24);
+  }
+
+  function genericPanelHeight(screenHeight) {
+    return screenHeight >= 500 ? Math.min(460, screenHeight - 40) : Math.max(1, screenHeight - 24);
+  }
+
+  function centerMarginX(panelWidth) {
+    return Math.max(0, Math.round((root.activeScreenWidth() - panelWidth) / 2));
+  }
+
+  function centerMarginY(panelHeight) {
+    return Math.max(0, Math.round((root.activeScreenHeight() - panelHeight) / 2));
   }
 
   function updateTrackedScreen(screenName) {
@@ -666,13 +722,21 @@ ShellRoot {
     screen: root.targetScreen()
     color: "transparent"
     surfaceFormat.opaque: false
+    implicitWidth: root.mangoSession ? root.launcherPanelWidth(root.activeScreenWidth()) : 1
+    implicitHeight: root.mangoSession ? root.launcherPanelHeight(root.activeScreenHeight()) : 1
     exclusionMode: ExclusionMode.Ignore
+    focusable: true
 
     anchors {
       left: true
-      right: true
+      right: !root.mangoSession
       top: true
-      bottom: true
+      bottom: !root.mangoSession
+    }
+
+    margins {
+      left: root.mangoSession ? root.centerMarginX(launcherWindow.implicitWidth) : 0
+      top: root.mangoSession ? root.centerMarginY(launcherWindow.implicitHeight) : 0
     }
 
     WlrLayershell.namespace: "qs-launcher"
@@ -694,18 +758,21 @@ ShellRoot {
       Rectangle {
         anchors.fill: parent
         color: "#99000000"
+        visible: !root.mangoSession
       }
 
       MouseArea {
         anchors.fill: parent
+        enabled: !root.mangoSession
+        visible: !root.mangoSession
         onPressed: launcherSearchInput.forceActiveFocus()
       }
 
       Rectangle {
         id: launcherPanel
 
-        width: parent.width >= 680 ? Math.min(640, parent.width - 40) : Math.max(1, parent.width - 24)
-        height: parent.height >= 560 ? Math.min(520, parent.height - 40) : Math.max(1, parent.height - 24)
+        width: root.mangoSession ? parent.width : root.launcherPanelWidth(parent.width)
+        height: root.mangoSession ? parent.height : root.launcherPanelHeight(parent.height)
         anchors.centerIn: parent
         color: theme.background
         border.color: theme.border
@@ -846,13 +913,21 @@ ShellRoot {
     screen: root.targetScreen()
     color: "transparent"
     surfaceFormat.opaque: false
+    implicitWidth: root.mangoSession ? root.powerPanelWidth(root.activeScreenWidth()) : 1
+    implicitHeight: root.mangoSession ? root.powerPanelHeight(root.activeScreenHeight()) : 1
     exclusionMode: ExclusionMode.Ignore
+    focusable: true
 
     anchors {
       left: true
-      right: true
+      right: !root.mangoSession
       top: true
-      bottom: true
+      bottom: !root.mangoSession
+    }
+
+    margins {
+      left: root.mangoSession ? root.centerMarginX(powerWindow.implicitWidth) : 0
+      top: root.mangoSession ? root.centerMarginY(powerWindow.implicitHeight) : 0
     }
 
     WlrLayershell.namespace: "qs-power"
@@ -874,18 +949,21 @@ ShellRoot {
       Rectangle {
         anchors.fill: parent
         color: "#99000000"
+        visible: !root.mangoSession
       }
 
       MouseArea {
         anchors.fill: parent
+        enabled: !root.mangoSession
+        visible: !root.mangoSession
         onPressed: powerOverlayFocus.forceActiveFocus()
       }
 
       Rectangle {
         id: powerPanel
 
-        width: parent.width >= 390 ? 350 : Math.max(1, parent.width - 24)
-        height: parent.height >= 430 ? 390 : Math.max(1, parent.height - 24)
+        width: root.mangoSession ? parent.width : root.powerPanelWidth(parent.width)
+        height: root.mangoSession ? parent.height : root.powerPanelHeight(parent.height)
         anchors.centerIn: parent
         color: theme.background
         border.color: theme.border
@@ -1064,13 +1142,21 @@ ShellRoot {
     screen: root.targetScreen()
     color: "transparent"
     surfaceFormat.opaque: false
+    implicitWidth: root.mangoSession ? root.wallpaperPanelWidth(root.activeScreenWidth()) : 1
+    implicitHeight: root.mangoSession ? root.wallpaperPanelHeight(root.activeScreenHeight()) : 1
     exclusionMode: ExclusionMode.Ignore
+    focusable: true
 
     anchors {
       left: true
-      right: true
+      right: !root.mangoSession
       top: true
-      bottom: true
+      bottom: !root.mangoSession
+    }
+
+    margins {
+      left: root.mangoSession ? root.centerMarginX(wallpaperWindow.implicitWidth) : 0
+      top: root.mangoSession ? root.centerMarginY(wallpaperWindow.implicitHeight) : 0
     }
 
     WlrLayershell.namespace: "qs-wallpaper"
@@ -1092,18 +1178,21 @@ ShellRoot {
       Rectangle {
         anchors.fill: parent
         color: "#99000000"
+        visible: !root.mangoSession
       }
 
       MouseArea {
         anchors.fill: parent
+        enabled: !root.mangoSession
+        visible: !root.mangoSession
         onPressed: wallpaperSearchInput.forceActiveFocus()
       }
 
       Rectangle {
         id: wallpaperPanel
 
-        width: parent.width >= 740 ? Math.min(1000, parent.width - 40) : Math.max(1, parent.width - 24)
-        height: parent.height >= 460 ? Math.min(600, parent.height - 40) : Math.max(1, parent.height - 24)
+        width: root.mangoSession ? parent.width : root.wallpaperPanelWidth(parent.width)
+        height: root.mangoSession ? parent.height : root.wallpaperPanelHeight(parent.height)
         anchors.centerIn: parent
         color: theme.background
         border.color: theme.border
@@ -1252,13 +1341,21 @@ ShellRoot {
     screen: root.targetScreen()
     color: "transparent"
     surfaceFormat.opaque: false
+    implicitWidth: root.mangoSession ? root.genericPanelWidth(root.activeScreenWidth()) : 1
+    implicitHeight: root.mangoSession ? root.genericPanelHeight(root.activeScreenHeight()) : 1
     exclusionMode: ExclusionMode.Ignore
+    focusable: true
 
     anchors {
       left: true
-      right: true
+      right: !root.mangoSession
       top: true
-      bottom: true
+      bottom: !root.mangoSession
+    }
+
+    margins {
+      left: root.mangoSession ? root.centerMarginX(genericWindow.implicitWidth) : 0
+      top: root.mangoSession ? root.centerMarginY(genericWindow.implicitHeight) : 0
     }
 
     WlrLayershell.namespace: "qs-panel"
@@ -1280,18 +1377,21 @@ ShellRoot {
       Rectangle {
         anchors.fill: parent
         color: "#99000000"
+        visible: !root.mangoSession
       }
 
       MouseArea {
         anchors.fill: parent
+        enabled: !root.mangoSession
+        visible: !root.mangoSession
         onPressed: genericOverlayFocus.forceActiveFocus()
       }
 
       Rectangle {
         id: genericPanel
 
-        width: parent.width >= 540 ? 500 : Math.max(1, parent.width - 24)
-        height: parent.height >= 500 ? Math.min(460, parent.height - 40) : Math.max(1, parent.height - 24)
+        width: root.mangoSession ? parent.width : root.genericPanelWidth(parent.width)
+        height: root.mangoSession ? parent.height : root.genericPanelHeight(parent.height)
         anchors.centerIn: parent
         color: theme.background
         border.color: theme.border

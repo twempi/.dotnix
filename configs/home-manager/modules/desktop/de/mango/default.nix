@@ -10,27 +10,30 @@
 in {
   imports = [
     inputs.mangowm.hmModules.mango
+    ./stylix.nix
     ./general.nix
     ./env.nix
     ./windowrules.nix
     ./keybinds.nix
   ];
 
+  stylix.targets.mango.enable = true;
+
   wayland.windowManager.mango = {
     enable = true;
     package = mangoPackage;
 
     autostart_sh = ''
-      awww-daemon
-      openrgb --profile ~/.config/OpenRGB/black.orp
-      systemctl --user start qs-quick-actions.service
+      awww-daemon &
+      openrgb --profile ~/.config/OpenRGB/black.orp &
+      systemctl --user start qs-quick-actions.service &
 
       waybar -c ~/.config/waybar/mango.jsonc -s ~/.config/waybar/mango.css &
 
-      wpctl set-volume @DEFAULT_AUDIO_SINK@ 1
+      wpctl set-volume @DEFAULT_AUDIO_SINK@ 1 &
 
-      cliphist wipe
-      wl-paste --type text --watch cliphist store
+      cliphist wipe &
+      wl-paste --type text --watch cliphist store &
     '';
   };
 
