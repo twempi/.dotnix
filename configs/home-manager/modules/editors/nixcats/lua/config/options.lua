@@ -1,15 +1,13 @@
 -- [[ Options ]]
 vim.opt.list = true
--- vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 vim.g.snacks_animate = true
 vim.g.markdown_recommended_style = 0
 
 vim.opt.hlsearch = true
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
-
-vim.opt.inccommand = 'split'
+vim.opt.inccommand = "split"
 vim.opt.scrolloff = 10
 vim.opt.confirm = true
 vim.opt.linebreak = true
@@ -19,13 +17,17 @@ vim.opt.swapfile = false
 vim.opt.number = true
 vim.opt.relativenumber = true
 
-
-vim.opt.mouse = 'a'
-vim.opt.cpoptions:append('I')
+vim.opt.mouse = "a"
+vim.opt.cpoptions:append("I")
 vim.opt.expandtab = true
 vim.opt.cursorline = true
 
-vim.opt.clipboard = vim.env.SSH_CONNECTION and "" or "unnamedplus"
+if vim.env.SSH_CONNECTION then
+	vim.g.clipboard = "osc52"
+end
+
+vim.opt.clipboard = "unnamedplus"
+
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.softtabstop = 2
@@ -37,15 +39,13 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.smartindent = true
 vim.opt.smoothscroll = true
-vim.opt.spelllang = {"en"}
+vim.opt.spelllang = { "en" }
 vim.opt.spellsuggest = { "best", 9 }
-vim.opt.signcolumn = 'yes'
-
+vim.opt.signcolumn = "yes"
 
 vim.opt.updatetime = 250
 vim.opt.timeoutlen = 300
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
-
 
 -- Colorscheme (set early so UIs can pick it up)
 -- vim.cmd.colorscheme('nvchad')
