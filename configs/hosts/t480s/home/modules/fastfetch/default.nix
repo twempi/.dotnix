@@ -104,6 +104,14 @@
         }
 
         {
+          type = "disk";
+          key = " ";
+          keyColor = "32";
+          folders = "/";
+          format = "{size-used} / {size-total} ({size-percentage})";
+        }
+
+        {
           type = "memory";
           key = "󰘚 ";
           keyColor = "36";

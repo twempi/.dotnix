@@ -9,5 +9,6 @@
     ./modules/suwayomi.nix
     ./modules/vaultwarden.nix
     ./modules/headless.nix
+    ./modules/immich.nix
   ];
 }
