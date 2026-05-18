@@ -1,16 +1,15 @@
-{...}: let
-  suwayomiInternalPort = 8080;
-  suwayomiExternalPort = 8080;
+{pkgs, ...}: let
+  suwayomiPort = 8080;
 in {
   services.suwayomi-server = {
     enable = true;
 
-    # Tailscale Serve will expose it, so don't open this on LAN/Wi-Fi.
+    # Tailscale Serve exposes it, so don't open this on LAN/Wi-Fi.
     openFirewall = false;
 
     settings.server = {
       ip = "127.0.0.1";
-      port = suwayomiInternalPort;
+      port = suwayomiPort;
 
       flareSolverrEnabled = true;
       flareSolverrUrl = "http://127.0.0.1:8191";
@@ -38,11 +37,28 @@ in {
     openFirewall = false;
   };
 
-  services.tailscale.serve.services.suwayomi = {
-    endpoints = {
-      "tcp:${toString suwayomiExternalPort}" = "http://127.0.0.1:${toString suwayomiInternalPort}";
+  systemd.services.tailscale-serve-suwayomi = {
+    description = "Expose Suwayomi as a Tailscale Service";
+    after = ["tailscaled.service"];
+    wants = ["tailscaled.service"];
+    wantedBy = ["multi-user.target"];
+
+    restartIfChanged = true;
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      TimeoutStartSec = 30;
     };
 
-    advertised = true;
+    script = ''
+      set -euo pipefail
+
+      ${pkgs.util-linux}/bin/flock -w 120 /run/tailscale-serve.lock \
+        ${pkgs.tailscale}/bin/tailscale serve --yes --bg \
+          --service=svc:suwayomi \
+          --https=${toString suwayomiPort} \
+          http://127.0.0.1:${toString suwayomiPort}
+    '';
   };
 }

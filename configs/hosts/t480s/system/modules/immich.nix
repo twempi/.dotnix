@@ -1,14 +1,12 @@
 {pkgs, ...}: let
   immichMediaDir = "/srv/immich";
-
-  immichInternalPort = 2283;
-  immichExternalPort = 2283;
+  immichPort = 2283;
 in {
   services.immich = {
     enable = true;
 
     host = "127.0.0.1";
-    port = immichInternalPort;
+    port = immichPort;
     openFirewall = false;
 
     mediaLocation = immichMediaDir;
@@ -16,12 +14,29 @@ in {
     accelerationDevices = ["/dev/dri/renderD128"];
   };
 
-  services.tailscale.serve.services.immich = {
-    endpoints = {
-      "tcp:${toString immichExternalPort}" = "http://127.0.0.1:${toString immichInternalPort}";
+  systemd.services.tailscale-serve-immich = {
+    description = "Expose Immich as a Tailscale Service";
+    after = ["tailscaled.service"];
+    wants = ["tailscaled.service"];
+    wantedBy = ["multi-user.target"];
+
+    restartIfChanged = true;
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      TimeoutStartSec = 30;
     };
 
-    advertised = true;
+    script = ''
+      set -euo pipefail
+
+      ${pkgs.util-linux}/bin/flock -w 120 /run/tailscale-serve.lock \
+        ${pkgs.tailscale}/bin/tailscale serve --yes --bg \
+          --service=svc:immich \
+          --https=${toString immichPort} \
+          http://127.0.0.1:${toString immichPort}
+    '';
   };
 
   users.users.immich.extraGroups = ["video" "render"];

@@ -15,9 +15,6 @@
   # Tailscale
   services.tailscale = {
     enable = true;
-    serve = {
-      enable = true;
-    };
   };
 
   # SSH
