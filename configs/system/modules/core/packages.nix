@@ -7,6 +7,7 @@
   nixpkgs.overlays = [
     (final: prev: {
       iloader = prev.callPackage ../../pkgs/iloader/default.nix {};
+      handy = prev.callPackage ../../pkgs/handy/default.nix {};
     })
   ];
 

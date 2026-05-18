@@ -10,6 +10,7 @@
     ../modules/theme/ohmyposh
     ../modules/editors/nixcats
     ../modules/apps/syncthing
+    ../modules/cli/yazi
   ];
 
   home.packages = with pkgs; [

@@ -117,6 +117,7 @@
     };
 
     iloaderPackage = pkgs.callPackage ./configs/system/pkgs/iloader/default.nix {};
+    handyPackage = pkgs.callPackage ./configs/system/pkgs/handy/default.nix {};
 
     updateIloader = pkgs.writeShellApplication {
       name = "update-iloader";
@@ -135,6 +136,32 @@
         fi
 
         script="$repo_root/configs/system/pkgs/iloader/update.sh"
+        if [[ ! -f "$script" ]]; then
+          echo "error: updater script not found: $script" >&2
+          exit 1
+        fi
+
+        exec "$script" "$@"
+      '';
+    };
+
+    updateHandy = pkgs.writeShellApplication {
+      name = "update-handy";
+      runtimeInputs = [
+        pkgs.curl
+        pkgs.git
+        pkgs.jq
+        pkgs.nix
+        pkgs.perl
+      ];
+      text = ''
+        repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+        if [[ -z "$repo_root" ]]; then
+          echo "error: run this from inside the dotnix git repository" >&2
+          exit 1
+        fi
+
+        script="$repo_root/configs/system/pkgs/handy/update.sh"
         if [[ ! -f "$script" ]]; then
           echo "error: updater script not found: $script" >&2
           exit 1
@@ -195,12 +222,20 @@
   in {
     packages.${system} = rec {
       iloader = iloaderPackage;
+      handy = handyPackage;
       default = iloader;
     };
 
-    apps.${system}.update-iloader = {
-      type = "app";
-      program = "${updateIloader}/bin/update-iloader";
+    apps.${system} = {
+      update-iloader = {
+        type = "app";
+        program = "${updateIloader}/bin/update-iloader";
+      };
+
+      update-handy = {
+        type = "app";
+        program = "${updateHandy}/bin/update-handy";
+      };
     };
 
     nixosConfigurations = {

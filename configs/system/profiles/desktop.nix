@@ -26,7 +26,13 @@
     ../modules/desktop/mango.nix
 
     ../modules/apps/appimage.nix
+    ../modules/apps/handy.nix
     ../modules/apps/helium.nix
     ../modules/apps/librepods.nix
   ];
+
+  programs.handy = {
+    enable = true;
+    autostart = true;
+  };
 }
