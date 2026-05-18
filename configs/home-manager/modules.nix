@@ -16,6 +16,7 @@
     ./modules/desktop/de/sway
     ./modules/desktop/de/mango
     ./modules/desktop/de/niri
+    ./modules/desktop/screenshot
 
     # Terminal
     ./modules/terminals/ghostty

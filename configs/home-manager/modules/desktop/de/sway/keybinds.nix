@@ -6,7 +6,6 @@
   wayland.windowManager.sway.config = {
     modifier = "Mod4";
     terminal = "${pkgs.foot}/bin/foot";
-    menu = "${pkgs.rofi}/bin/rofi -show drun";
 
     floating.modifier = "Mod4";
 
@@ -41,13 +40,13 @@
       "Mod4+Shift+R" = "exec ${./reload.sh}";
 
       # Screenshots
-      "Mod4+Shift+S" = "exec ${./screenshot.sh}";
-      "Print" = "exec ${pkgs.grim}/bin/grim - | ${pkgs.wl-clipboard}/bin/wl-copy && ${pkgs.wl-clipboard}/bin/wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png";
+      "Mod4+Shift+S" = "exec way-screenshot area";
+      "Print" = "exec way-screenshot screen";
 
       # Launcher / emoji / clipboard
       "Mod4+Space" = "exec qs-launcher";
-      "Mod4+U" = "exec ${pkgs.bemoji}/bin/bemoji";
-      "Mod4+Y" = "exec cliphist list | $menu -dmenu | cliphist decode | wl-copy";
+      "Mod4+U" = "exec qs-emoji";
+      "Mod4+Y" = "exec qs-clipboard";
 
       # Move focus
       "Mod4+H" = "focus left";

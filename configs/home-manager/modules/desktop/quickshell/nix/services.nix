@@ -19,12 +19,17 @@
         "PATH=${lib.makeBinPath [
           helpers.qsPowerAction
           helpers.qsPowerInfo
+          helpers.qsEmojiApply
+          helpers.qsEmojiList
+          helpers.qsClipboardApply
+          helpers.qsClipboardList
           helpers.qsFocusedScreenWatch
           helpers.qsPanelAction
           helpers.qsPanelInfo
           helpers.qsManager
           helpers.qsWallpaperApply
           helpers.qsWallpaperList
+          pkgs.cliphist
           pkgs.iproute2
           pkgs.networkmanager
           pkgs.playerctl
@@ -33,6 +38,7 @@
           pkgs.wireplumber
           pkgs.wlr-randr
           pkgs.coreutils
+          pkgs.wl-clipboard
         ]}:${config.home.profileDirectory}/bin:/run/current-system/sw/bin"
       ];
     };

@@ -21,7 +21,7 @@ in {
     unfocused_opacity = 0.9;
 
     blur = 1;
-    blur_layer = 1;
+    blur_layer = 0;
     blur_optimized = 1;
     blur_params_radius = 6;
     blur_params_num_passes = 2;

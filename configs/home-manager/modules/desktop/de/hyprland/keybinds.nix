@@ -3,7 +3,6 @@
 in {
   wayland.windowManager.hyprland.settings = {
     # Apps
-    "$menu" = "${pkgs.rofi}/bin/rofi";
     "$colorPicker" = "${uwsmApp} ${pkgs.hyprpicker}/bin/hyprpicker -a";
     "$noti-center" = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
 
@@ -15,7 +14,6 @@ in {
     "$explorer1" = "$terminal -e ${pkgs.yazi}/bin/yazi";
     "$explorer2" = "${uwsmApp} ${pkgs.nautilus}/bin/nautilus";
     "$notes" = "${uwsmApp} ${pkgs.obsidian}/bin/obsidian";
-    "$emoji" = "${uwsmApp} ${pkgs.bemoji}/bin/bemoji";
     "$bluetooth" = "$terminal -e ${pkgs.bluetui}/bin/bluetui";
     "$editor" = "$terminal -e nvim";
 
@@ -46,14 +44,14 @@ in {
         "$mod SHIFT, W, exec, ${uwsmApp} qs-wallpaper"
         "$mod SHIFT, R, exec, ${./reload.sh}"
 
-        # Screenshot(grim + slurp)
-        "$mod SHIFT, S, exec, ${./screenshot.sh}"
-        ", Print, exec, ${pkgs.grim}/bin/grim - | ${pkgs.wl-clipboard}/bin/wl-copy && ${pkgs.wl-clipboard}/bin/wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png"
+        # Screenshots
+        "$mod SHIFT, S, exec, way-screenshot area"
+        ", Print, exec, way-screenshot screen"
 
         # Launcher / emoji / clipboard
         "$mod, Space, exec, ${uwsmApp} qs-launcher"
-        "$mod, U, exec, $emoji"
-        "$mod, Y, exec, cliphist list | $menu -dmenu | cliphist decode | wl-copy"
+        "$mod, U, exec, ${uwsmApp} qs-emoji"
+        "$mod, Y, exec, ${uwsmApp} qs-clipboard"
 
         # Move focus with $mod + HJKL(Vim keys)
         "$mod, H, movefocus, l"

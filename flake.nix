@@ -116,6 +116,34 @@
       config.allowUnfree = true;
     };
 
+    iloaderPackage = pkgs.callPackage ./configs/system/pkgs/iloader/default.nix {};
+
+    updateIloader = pkgs.writeShellApplication {
+      name = "update-iloader";
+      runtimeInputs = [
+        pkgs.curl
+        pkgs.git
+        pkgs.jq
+        pkgs.nix
+        pkgs.perl
+      ];
+      text = ''
+        repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+        if [[ -z "$repo_root" ]]; then
+          echo "error: run this from inside the dotnix git repository" >&2
+          exit 1
+        fi
+
+        script="$repo_root/configs/system/pkgs/iloader/update.sh"
+        if [[ ! -f "$script" ]]; then
+          echo "error: updater script not found: $script" >&2
+          exit 1
+        fi
+
+        exec "$script" "$@"
+      '';
+    };
+
     specialArgsFor = hostname: {
       inherit inputs system hostname;
     };
@@ -165,6 +193,16 @@
           ++ extraModules;
       };
   in {
+    packages.${system} = rec {
+      iloader = iloaderPackage;
+      default = iloader;
+    };
+
+    apps.${system}.update-iloader = {
+      type = "app";
+      program = "${updateIloader}/bin/update-iloader";
+    };
+
     nixosConfigurations = {
       desktop = mkNixosHost "desktop" [
         inputs.t3code.nixosModules.default

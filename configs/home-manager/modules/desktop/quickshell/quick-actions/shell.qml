@@ -39,6 +39,26 @@ ShellRoot {
     return root.wallpaperQuery.length === 0 || wallpaper.name.toLowerCase().indexOf(root.wallpaperQuery.toLowerCase()) !== -1;
   })
 
+  property var emojiItems: []
+  property string emojiQuery: ""
+  property int emojiSelectedIndex: 0
+  property string emojiStatusText: emojiListProcess.running && emojiItems.length === 0 ? "Loading emoji" : (emojiItems.length + " emoji")
+  property string emojiErrorText: ""
+  property double emojiLastLoadMs: 0
+  readonly property var filteredEmojiItems: emojiItems.filter(function(item) {
+    return root.emojiQuery.length === 0 || root.pickerSearchText(item).indexOf(root.emojiQuery.toLowerCase()) !== -1;
+  })
+
+  property var clipboardItems: []
+  property string clipboardQuery: ""
+  property int clipboardSelectedIndex: 0
+  property string clipboardStatusText: clipboardListProcess.running && clipboardItems.length === 0 ? "Loading clipboard" : (clipboardItems.length + " clips")
+  property string clipboardErrorText: ""
+  property double clipboardLastLoadMs: 0
+  readonly property var filteredClipboardItems: clipboardItems.filter(function(item) {
+    return root.clipboardQuery.length === 0 || root.pickerSearchText(item).indexOf(root.clipboardQuery.toLowerCase()) !== -1;
+  })
+
   readonly property var genericOverlayKinds: ["monitors", "stewart", "music", "battery", "calendar", "network", "focustime", "volume", "guide"]
   property string genericOverlayTitle: ""
   property string genericOverlaySubtitle: ""
@@ -128,7 +148,7 @@ ShellRoot {
   }
 
   function activateOverlay(kind) {
-    if (kind !== "launcher" && kind !== "power" && kind !== "wallpaper" && root.genericOverlayKinds.indexOf(kind) === -1) {
+    if (kind !== "launcher" && kind !== "power" && kind !== "wallpaper" && kind !== "emoji" && kind !== "clipboard" && root.genericOverlayKinds.indexOf(kind) === -1) {
       return "unknown overlay: " + kind;
     }
 
@@ -155,6 +175,20 @@ ShellRoot {
       }
       root.activeOverlay = "wallpaper";
       Qt.callLater(root.focusWallpaper);
+    } else if (kind === "emoji") {
+      root.emojiQuery = "";
+      root.emojiSelectedIndex = root.filteredEmojiItems.length > 0 ? 0 : -1;
+      if (root.emojiItems.length === 0 && !emojiListProcess.running) {
+        refreshEmojiList();
+      }
+      root.activeOverlay = "emoji";
+      Qt.callLater(root.focusEmoji);
+    } else if (kind === "clipboard") {
+      root.clipboardQuery = "";
+      root.clipboardSelectedIndex = root.filteredClipboardItems.length > 0 ? 0 : -1;
+      refreshClipboardList();
+      root.activeOverlay = "clipboard";
+      Qt.callLater(root.focusClipboard);
     } else {
       root.genericSelectedAction = 0;
       root.genericOverlayTitle = overlayTitle(kind);
@@ -186,6 +220,16 @@ ShellRoot {
   function focusWallpaper() {
     wallpaperOverlayFocus.forceActiveFocus();
     wallpaperSearchInput.forceActiveFocus();
+  }
+
+  function focusEmoji() {
+    emojiOverlayFocus.forceActiveFocus();
+    emojiSearchInput.forceActiveFocus();
+  }
+
+  function focusClipboard() {
+    clipboardOverlayFocus.forceActiveFocus();
+    clipboardSearchInput.forceActiveFocus();
   }
 
   function focusGenericOverlay() {
@@ -453,6 +497,215 @@ ShellRoot {
     return "No matches";
   }
 
+  function pickerSearchText(item) {
+    if (!item) {
+      return "";
+    }
+
+    return [
+      item.search || "",
+      item.label || "",
+      item.description || "",
+      item.value || "",
+      item.id || "",
+      item.line || "",
+    ].join(" ").toLowerCase();
+  }
+
+  function refreshEmojiList() {
+    if (!emojiListProcess.running) {
+      emojiListProcess.running = true;
+    }
+  }
+
+  function parseEmojiPayload(output) {
+    try {
+      var payload = JSON.parse(output);
+      var parsed = payload.items || [];
+
+      root.emojiItems = parsed;
+      root.emojiLastLoadMs = Date.now();
+      root.emojiSelectedIndex = parsed.length > 0 ? Math.max(0, Math.min(root.emojiSelectedIndex, parsed.length - 1)) : -1;
+      root.emojiErrorText = payload.ok === false ? (payload.error || "Could not read emoji") : "";
+      root.emojiStatusText = parsed.length + " emoji";
+    } catch (error) {
+      root.emojiItems = [];
+      root.emojiSelectedIndex = -1;
+      root.emojiErrorText = "Could not parse emoji list";
+      root.emojiStatusText = "0 emoji";
+    }
+  }
+
+  function clampEmojiSelection() {
+    if (filteredEmojiItems.length === 0) {
+      emojiSelectedIndex = -1;
+    } else if (emojiSelectedIndex < 0) {
+      emojiSelectedIndex = 0;
+    } else if (emojiSelectedIndex >= filteredEmojiItems.length) {
+      emojiSelectedIndex = filteredEmojiItems.length - 1;
+    }
+  }
+
+  function moveEmojiSelection(delta) {
+    if (filteredEmojiItems.length === 0 || emojiApplyProcess.running) {
+      return;
+    }
+
+    emojiSelectedIndex = Math.max(0, Math.min(filteredEmojiItems.length - 1, emojiSelectedIndex + delta));
+    emojiList.positionViewAtIndex(emojiSelectedIndex, ListView.Contain);
+  }
+
+  function applySelectedEmoji() {
+    applyEmoji(emojiSelectedIndex);
+  }
+
+  function applyEmoji(index) {
+    if (index < 0 || index >= filteredEmojiItems.length || emojiApplyProcess.running) {
+      return;
+    }
+
+    emojiSelectedIndex = index;
+    var item = filteredEmojiItems[index];
+    emojiApplyProcess.pendingLine = item.line || "";
+    emojiApplyProcess.lastError = "";
+    root.emojiErrorText = "";
+    root.emojiStatusText = "Copying " + (item.label || "emoji");
+    emojiApplyProcess.command = ["qs-emoji-apply", emojiApplyProcess.pendingLine];
+    emojiApplyProcess.running = true;
+  }
+
+  function handleEmojiKey(event) {
+    if (event.key === Qt.Key_Escape) {
+      root.closeActiveOverlay();
+      event.accepted = true;
+    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+      root.applySelectedEmoji();
+      event.accepted = true;
+    } else if (event.key === Qt.Key_Down) {
+      root.moveEmojiSelection(1);
+      event.accepted = true;
+    } else if (event.key === Qt.Key_Up) {
+      root.moveEmojiSelection(-1);
+      event.accepted = true;
+    } else if (event.key === Qt.Key_PageDown) {
+      root.moveEmojiSelection(8);
+      event.accepted = true;
+    } else if (event.key === Qt.Key_PageUp) {
+      root.moveEmojiSelection(-8);
+      event.accepted = true;
+    }
+  }
+
+  function emojiEmptyText() {
+    if (emojiListProcess.running && emojiItems.length === 0) {
+      return "";
+    }
+    if (emojiErrorText.length > 0 && emojiItems.length === 0) {
+      return emojiErrorText;
+    }
+    if (emojiItems.length === 0) {
+      return "No emoji found";
+    }
+    return "No matches";
+  }
+
+  function refreshClipboardList() {
+    if (!clipboardListProcess.running) {
+      clipboardListProcess.running = true;
+    }
+  }
+
+  function parseClipboardPayload(output) {
+    try {
+      var payload = JSON.parse(output);
+      var parsed = payload.items || [];
+
+      root.clipboardItems = parsed;
+      root.clipboardLastLoadMs = Date.now();
+      root.clipboardSelectedIndex = parsed.length > 0 ? Math.max(0, Math.min(root.clipboardSelectedIndex, parsed.length - 1)) : -1;
+      root.clipboardErrorText = payload.ok === false ? (payload.error || "Could not read clipboard history") : "";
+      root.clipboardStatusText = parsed.length + " clips";
+    } catch (error) {
+      root.clipboardItems = [];
+      root.clipboardSelectedIndex = -1;
+      root.clipboardErrorText = "Could not parse clipboard history";
+      root.clipboardStatusText = "0 clips";
+    }
+  }
+
+  function clampClipboardSelection() {
+    if (filteredClipboardItems.length === 0) {
+      clipboardSelectedIndex = -1;
+    } else if (clipboardSelectedIndex < 0) {
+      clipboardSelectedIndex = 0;
+    } else if (clipboardSelectedIndex >= filteredClipboardItems.length) {
+      clipboardSelectedIndex = filteredClipboardItems.length - 1;
+    }
+  }
+
+  function moveClipboardSelection(delta) {
+    if (filteredClipboardItems.length === 0 || clipboardApplyProcess.running) {
+      return;
+    }
+
+    clipboardSelectedIndex = Math.max(0, Math.min(filteredClipboardItems.length - 1, clipboardSelectedIndex + delta));
+    clipboardList.positionViewAtIndex(clipboardSelectedIndex, ListView.Contain);
+  }
+
+  function applySelectedClipboard() {
+    applyClipboard(clipboardSelectedIndex);
+  }
+
+  function applyClipboard(index) {
+    if (index < 0 || index >= filteredClipboardItems.length || clipboardApplyProcess.running) {
+      return;
+    }
+
+    clipboardSelectedIndex = index;
+    var item = filteredClipboardItems[index];
+    clipboardApplyProcess.pendingLine = item.line || "";
+    clipboardApplyProcess.lastError = "";
+    root.clipboardErrorText = "";
+    root.clipboardStatusText = "Copying clip";
+    clipboardApplyProcess.command = ["qs-clipboard-apply", clipboardApplyProcess.pendingLine];
+    clipboardApplyProcess.running = true;
+  }
+
+  function handleClipboardKey(event) {
+    if (event.key === Qt.Key_Escape) {
+      root.closeActiveOverlay();
+      event.accepted = true;
+    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+      root.applySelectedClipboard();
+      event.accepted = true;
+    } else if (event.key === Qt.Key_Down) {
+      root.moveClipboardSelection(1);
+      event.accepted = true;
+    } else if (event.key === Qt.Key_Up) {
+      root.moveClipboardSelection(-1);
+      event.accepted = true;
+    } else if (event.key === Qt.Key_PageDown) {
+      root.moveClipboardSelection(8);
+      event.accepted = true;
+    } else if (event.key === Qt.Key_PageUp) {
+      root.moveClipboardSelection(-8);
+      event.accepted = true;
+    }
+  }
+
+  function clipboardEmptyText() {
+    if (clipboardListProcess.running && clipboardItems.length === 0) {
+      return "";
+    }
+    if (clipboardErrorText.length > 0 && clipboardItems.length === 0) {
+      return clipboardErrorText;
+    }
+    if (clipboardItems.length === 0) {
+      return "No clipboard history";
+    }
+    return "No matches";
+  }
+
   function refreshGenericOverlay(kind) {
     if (panelInfoProcess.running) {
       panelInfoProcess.running = false;
@@ -558,11 +811,15 @@ ShellRoot {
 
   onFilteredAppsChanged: clampLauncherSelection()
   onFilteredWallpapersChanged: clampWallpaperSelection()
+  onFilteredEmojiItemsChanged: clampEmojiSelection()
+  onFilteredClipboardItemsChanged: clampClipboardSelection()
 
   Component.onCompleted: {
     focusedScreenProcess.running = true;
     refreshPowerInfo();
     refreshWallpaperList();
+    refreshEmojiList();
+    refreshClipboardList();
   }
 
   Style {
@@ -665,6 +922,98 @@ ShellRoot {
         root.wallpaperStatusText = root.wallpapers.length + " wallpapers";
         root.wallpaperErrorText = wallpaperApplyProcess.lastError.length > 0 ? wallpaperApplyProcess.lastError : "Failed to apply wallpaper";
         root.focusWallpaper();
+      }
+    }
+  }
+
+  Process {
+    id: emojiListProcess
+
+    command: ["qs-emoji-list"]
+
+    stdout: StdioCollector {
+      onStreamFinished: root.parseEmojiPayload(this.text)
+    }
+
+    stderr: StdioCollector {
+      onStreamFinished: {
+        if (this.text.length > 0) {
+          root.emojiErrorText = this.text.trim();
+        }
+      }
+    }
+
+    onExited: function(exitCode, exitStatus) {
+      if (exitCode !== 0 && root.emojiItems.length === 0 && root.emojiErrorText.length === 0) {
+        root.emojiErrorText = "Could not list emoji";
+      }
+    }
+  }
+
+  Process {
+    id: emojiApplyProcess
+
+    property string pendingLine: ""
+    property string lastError: ""
+
+    stderr: StdioCollector {
+      onStreamFinished: emojiApplyProcess.lastError = this.text.trim()
+    }
+
+    onExited: function(exitCode, exitStatus) {
+      if (exitCode === 0) {
+        root.closeActiveOverlay();
+        root.refreshEmojiList();
+      } else {
+        root.emojiStatusText = root.emojiItems.length + " emoji";
+        root.emojiErrorText = emojiApplyProcess.lastError.length > 0 ? emojiApplyProcess.lastError : "Failed to copy emoji";
+        root.focusEmoji();
+      }
+    }
+  }
+
+  Process {
+    id: clipboardListProcess
+
+    command: ["qs-clipboard-list"]
+
+    stdout: StdioCollector {
+      onStreamFinished: root.parseClipboardPayload(this.text)
+    }
+
+    stderr: StdioCollector {
+      onStreamFinished: {
+        if (this.text.length > 0) {
+          root.clipboardErrorText = this.text.trim();
+        }
+      }
+    }
+
+    onExited: function(exitCode, exitStatus) {
+      if (exitCode !== 0 && root.clipboardItems.length === 0 && root.clipboardErrorText.length === 0) {
+        root.clipboardErrorText = "Could not list clipboard history";
+      }
+    }
+  }
+
+  Process {
+    id: clipboardApplyProcess
+
+    property string pendingLine: ""
+    property string lastError: ""
+
+    stderr: StdioCollector {
+      onStreamFinished: clipboardApplyProcess.lastError = this.text.trim()
+    }
+
+    onExited: function(exitCode, exitStatus) {
+      if (exitCode === 0) {
+        root.closeActiveOverlay();
+        root.refreshClipboardList();
+      } else {
+        root.clipboardStatusText = root.clipboardItems.length + " clips";
+        root.clipboardErrorText = clipboardApplyProcess.lastError.length > 0 ? clipboardApplyProcess.lastError : "Failed to copy clipboard item";
+        root.focusClipboard();
       }
     }
   }
@@ -899,6 +1248,394 @@ ShellRoot {
             color: theme.muted
             font.family: theme.fontFamily
             font.pixelSize: 12
+            verticalAlignment: Text.AlignVCenter
+          }
+        }
+      }
+    }
+  }
+
+  PanelWindow {
+    id: emojiWindow
+
+    visible: root.activeOverlay === "emoji"
+    screen: root.targetScreen()
+    color: "transparent"
+    surfaceFormat.opaque: false
+    implicitWidth: root.mangoSession ? root.launcherPanelWidth(root.activeScreenWidth()) : 1
+    implicitHeight: root.mangoSession ? root.launcherPanelHeight(root.activeScreenHeight()) : 1
+    exclusionMode: ExclusionMode.Ignore
+    focusable: true
+
+    anchors {
+      left: true
+      right: !root.mangoSession
+      top: true
+      bottom: !root.mangoSession
+    }
+
+    margins {
+      left: root.mangoSession ? root.centerMarginX(emojiWindow.implicitWidth) : 0
+      top: root.mangoSession ? root.centerMarginY(emojiWindow.implicitHeight) : 0
+    }
+
+    WlrLayershell.namespace: "qs-emoji"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+
+    onVisibleChanged: if (visible) root.focusEmoji()
+
+    Item {
+      id: emojiOverlayFocus
+
+      anchors.fill: parent
+      focus: true
+
+      Keys.onPressed: function(event) {
+        root.handleEmojiKey(event);
+      }
+
+      Rectangle {
+        anchors.fill: parent
+        color: "#99000000"
+        visible: !root.mangoSession
+      }
+
+      MouseArea {
+        anchors.fill: parent
+        enabled: !root.mangoSession
+        visible: !root.mangoSession
+        onPressed: emojiSearchInput.forceActiveFocus()
+      }
+
+      Rectangle {
+        id: emojiPanel
+
+        width: root.mangoSession ? parent.width : root.launcherPanelWidth(parent.width)
+        height: root.mangoSession ? parent.height : root.launcherPanelHeight(parent.height)
+        anchors.centerIn: parent
+        color: theme.background
+        border.color: theme.border
+        border.width: 1
+        clip: true
+
+        Item {
+          anchors.fill: parent
+          anchors.margins: 12
+
+          Rectangle {
+            id: emojiSearchBox
+
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: emojiCountLabel.left
+            anchors.rightMargin: 10
+            height: 42
+            color: theme.backgroundAlt
+            border.color: emojiSearchInput.activeFocus ? theme.accent : theme.border
+            border.width: 1
+
+            Text {
+              anchors.left: parent.left
+              anchors.leftMargin: 12
+              anchors.verticalCenter: parent.verticalCenter
+              visible: emojiSearchInput.text.length === 0
+              text: "Search emoji"
+              color: theme.muted
+              font.family: theme.fontFamily
+              font.pixelSize: 14
+            }
+
+            TextInput {
+              id: emojiSearchInput
+
+              anchors.fill: parent
+              anchors.leftMargin: 12
+              anchors.rightMargin: 12
+              text: root.emojiQuery
+              color: theme.foreground
+              selectionColor: theme.accent
+              selectedTextColor: theme.selectedForeground
+              clip: true
+              font.family: theme.fontFamily
+              font.pixelSize: 14
+              verticalAlignment: TextInput.AlignVCenter
+
+              onTextChanged: {
+                root.emojiQuery = text;
+                root.emojiSelectedIndex = root.filteredEmojiItems.length > 0 ? 0 : -1;
+                if (root.emojiSelectedIndex >= 0) {
+                  emojiList.positionViewAtIndex(root.emojiSelectedIndex, ListView.Beginning);
+                }
+              }
+
+              Keys.onPressed: function(event) {
+                root.handleEmojiKey(event);
+              }
+            }
+          }
+
+          Text {
+            id: emojiCountLabel
+
+            anchors.top: emojiSearchBox.top
+            anchors.right: parent.right
+            width: 100
+            height: emojiSearchBox.height
+            text: emojiApplyProcess.running ? "Copying" : (root.filteredEmojiItems.length + " / " + root.emojiItems.length)
+            color: emojiApplyProcess.running ? theme.accent : theme.muted
+            font.family: theme.fontFamily
+            font.pixelSize: 12
+            horizontalAlignment: Text.AlignRight
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+          }
+
+          ListView {
+            id: emojiList
+
+            anchors.top: emojiSearchBox.bottom
+            anchors.topMargin: 10
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: emojiStatusLine.top
+            anchors.bottomMargin: 8
+            clip: true
+            spacing: 5
+            model: root.filteredEmojiItems
+            currentIndex: root.emojiSelectedIndex
+            boundsBehavior: Flickable.StopAtBounds
+            keyNavigationEnabled: false
+            highlightMoveDuration: 80
+
+            delegate: PickerRow {
+              width: emojiList.width
+              variant: "emoji"
+              label: modelData.label || modelData.value || ""
+              description: modelData.description || modelData.line || ""
+              selected: index === root.emojiSelectedIndex
+              onClicked: root.applyEmoji(index)
+            }
+          }
+
+          Text {
+            anchors.centerIn: emojiList
+            width: emojiList.width - 40
+            visible: !(emojiListProcess.running && root.emojiItems.length === 0) && root.filteredEmojiItems.length === 0
+            text: root.emojiEmptyText()
+            color: root.emojiErrorText.length > 0 ? theme.urgent : theme.muted
+            font.family: theme.fontFamily
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.Wrap
+          }
+
+          Text {
+            id: emojiStatusLine
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 18
+            text: root.emojiErrorText.length > 0 ? root.emojiErrorText : root.emojiStatusText
+            color: root.emojiErrorText.length > 0 ? theme.urgent : theme.muted
+            font.family: theme.fontFamily
+            font.pixelSize: 12
+            elide: Text.ElideRight
+            verticalAlignment: Text.AlignVCenter
+          }
+        }
+      }
+    }
+  }
+
+  PanelWindow {
+    id: clipboardWindow
+
+    visible: root.activeOverlay === "clipboard"
+    screen: root.targetScreen()
+    color: "transparent"
+    surfaceFormat.opaque: false
+    implicitWidth: root.mangoSession ? root.launcherPanelWidth(root.activeScreenWidth()) : 1
+    implicitHeight: root.mangoSession ? root.launcherPanelHeight(root.activeScreenHeight()) : 1
+    exclusionMode: ExclusionMode.Ignore
+    focusable: true
+
+    anchors {
+      left: true
+      right: !root.mangoSession
+      top: true
+      bottom: !root.mangoSession
+    }
+
+    margins {
+      left: root.mangoSession ? root.centerMarginX(clipboardWindow.implicitWidth) : 0
+      top: root.mangoSession ? root.centerMarginY(clipboardWindow.implicitHeight) : 0
+    }
+
+    WlrLayershell.namespace: "qs-clipboard"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+
+    onVisibleChanged: if (visible) root.focusClipboard()
+
+    Item {
+      id: clipboardOverlayFocus
+
+      anchors.fill: parent
+      focus: true
+
+      Keys.onPressed: function(event) {
+        root.handleClipboardKey(event);
+      }
+
+      Rectangle {
+        anchors.fill: parent
+        color: "#99000000"
+        visible: !root.mangoSession
+      }
+
+      MouseArea {
+        anchors.fill: parent
+        enabled: !root.mangoSession
+        visible: !root.mangoSession
+        onPressed: clipboardSearchInput.forceActiveFocus()
+      }
+
+      Rectangle {
+        id: clipboardPanel
+
+        width: root.mangoSession ? parent.width : root.launcherPanelWidth(parent.width)
+        height: root.mangoSession ? parent.height : root.launcherPanelHeight(parent.height)
+        anchors.centerIn: parent
+        color: theme.background
+        border.color: theme.border
+        border.width: 1
+        clip: true
+
+        Item {
+          anchors.fill: parent
+          anchors.margins: 12
+
+          Rectangle {
+            id: clipboardSearchBox
+
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: clipboardCountLabel.left
+            anchors.rightMargin: 10
+            height: 42
+            color: theme.backgroundAlt
+            border.color: clipboardSearchInput.activeFocus ? theme.accent : theme.border
+            border.width: 1
+
+            Text {
+              anchors.left: parent.left
+              anchors.leftMargin: 12
+              anchors.verticalCenter: parent.verticalCenter
+              visible: clipboardSearchInput.text.length === 0
+              text: "Search clipboard"
+              color: theme.muted
+              font.family: theme.fontFamily
+              font.pixelSize: 14
+            }
+
+            TextInput {
+              id: clipboardSearchInput
+
+              anchors.fill: parent
+              anchors.leftMargin: 12
+              anchors.rightMargin: 12
+              text: root.clipboardQuery
+              color: theme.foreground
+              selectionColor: theme.accent
+              selectedTextColor: theme.selectedForeground
+              clip: true
+              font.family: theme.fontFamily
+              font.pixelSize: 14
+              verticalAlignment: TextInput.AlignVCenter
+
+              onTextChanged: {
+                root.clipboardQuery = text;
+                root.clipboardSelectedIndex = root.filteredClipboardItems.length > 0 ? 0 : -1;
+                if (root.clipboardSelectedIndex >= 0) {
+                  clipboardList.positionViewAtIndex(root.clipboardSelectedIndex, ListView.Beginning);
+                }
+              }
+
+              Keys.onPressed: function(event) {
+                root.handleClipboardKey(event);
+              }
+            }
+          }
+
+          Text {
+            id: clipboardCountLabel
+
+            anchors.top: clipboardSearchBox.top
+            anchors.right: parent.right
+            width: 100
+            height: clipboardSearchBox.height
+            text: clipboardApplyProcess.running ? "Copying" : (root.filteredClipboardItems.length + " / " + root.clipboardItems.length)
+            color: clipboardApplyProcess.running ? theme.accent : theme.muted
+            font.family: theme.fontFamily
+            font.pixelSize: 12
+            horizontalAlignment: Text.AlignRight
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+          }
+
+          ListView {
+            id: clipboardList
+
+            anchors.top: clipboardSearchBox.bottom
+            anchors.topMargin: 10
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: clipboardStatusLine.top
+            anchors.bottomMargin: 8
+            clip: true
+            spacing: 5
+            model: root.filteredClipboardItems
+            currentIndex: root.clipboardSelectedIndex
+            boundsBehavior: Flickable.StopAtBounds
+            keyNavigationEnabled: false
+            highlightMoveDuration: 80
+
+            delegate: PickerRow {
+              width: clipboardList.width
+              variant: "clipboard"
+              label: modelData.label || modelData.line || ""
+              description: modelData.description || ""
+              selected: index === root.clipboardSelectedIndex
+              onClicked: root.applyClipboard(index)
+            }
+          }
+
+          Text {
+            anchors.centerIn: clipboardList
+            width: clipboardList.width - 40
+            visible: !(clipboardListProcess.running && root.clipboardItems.length === 0) && root.filteredClipboardItems.length === 0
+            text: root.clipboardEmptyText()
+            color: root.clipboardErrorText.length > 0 ? theme.urgent : theme.muted
+            font.family: theme.fontFamily
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.Wrap
+          }
+
+          Text {
+            id: clipboardStatusLine
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 18
+            text: root.clipboardErrorText.length > 0 ? root.clipboardErrorText : root.clipboardStatusText
+            color: root.clipboardErrorText.length > 0 ? theme.urgent : theme.muted
+            font.family: theme.fontFamily
+            font.pixelSize: 12
+            elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
           }
         }

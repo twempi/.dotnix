@@ -225,6 +225,221 @@ let
       fi
     '';
   };
+  qsEmojiList = pkgs.writeShellApplication {
+    name = "qs-emoji-list";
+    runtimeInputs = with pkgs; [
+      coreutils
+      python3
+    ];
+    text = ''
+      exec python3 - <<'PY'
+      import json
+      import os
+      import re
+      from pathlib import Path
+
+      unicode_emoji_test = Path("${pkgs.unicode-emoji}/share/unicode/emoji/emoji-test.txt")
+
+      def compact_json(payload):
+          return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+
+      def emit(payload):
+          print(compact_json(payload))
+
+      def plain_item(raw):
+          line = raw.strip()
+          if not line or line.startswith("#"):
+              return None
+
+          parts = line.split(maxsplit=1)
+          value = parts[0] if parts else ""
+          if not value:
+              return None
+
+          description = parts[1] if len(parts) > 1 else value
+          return {
+              "line": line,
+              "value": value,
+              "label": value,
+              "description": description,
+              "search": line,
+          }
+
+      def unicode_item(raw):
+          if "#" not in raw or "; fully-qualified" not in raw:
+              return None
+
+          comment = raw.split("#", 1)[1].strip()
+          match = re.match(r"(\S+)\s+E[0-9.]+\s+(.+)$", comment)
+          if not match:
+              return None
+
+          value, description = match.groups()
+          line = f"{value} {description}"
+          return {
+              "line": line,
+              "value": value,
+              "label": value,
+              "description": description,
+              "search": line,
+          }
+
+      def parse_item(raw):
+          return unicode_item(raw) or plain_item(raw)
+
+      def read_lines(path):
+          try:
+              return path.read_text(encoding="utf-8", errors="ignore").splitlines()
+          except OSError:
+              return []
+
+      def emoji_source_lines():
+          custom = os.environ.get("BEMOJI_CUSTOM_LIST")
+          if custom:
+              custom_path = Path(custom).expanduser()
+              if custom_path.is_file():
+                  return read_lines(custom_path)
+
+          data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
+          database = Path(os.environ.get("BEMOJI_DB_LOCATION", data_home / "bemoji")).expanduser()
+          lines = []
+          if database.is_dir():
+              for path in sorted(database.glob("*.txt")):
+                  if path.is_file():
+                      lines.extend(read_lines(path))
+          if lines:
+              return lines
+
+          return read_lines(unicode_emoji_test)
+
+      def history_lines():
+          state_home = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
+          history_dir = Path(os.environ.get("BEMOJI_HISTORY_LOCATION", state_home)).expanduser()
+          history_file = history_dir / "bemoji-history.txt"
+          counts = {}
+          order = []
+
+          for raw in read_lines(history_file):
+              line = raw.strip()
+              if not line:
+                  continue
+              if line not in counts:
+                  counts[line] = 0
+                  order.append(line)
+              counts[line] += 1
+
+          return sorted(order, key=lambda line: (-counts[line], order.index(line)))
+
+      items = []
+      seen = set()
+      for raw in history_lines() + emoji_source_lines():
+          item = parse_item(raw)
+          if item is None or item["line"] in seen:
+              continue
+          seen.add(item["line"])
+          items.append(item)
+
+      emit({"ok": True, "items": items})
+      PY
+    '';
+  };
+  qsEmojiApply = pkgs.writeShellApplication {
+    name = "qs-emoji-apply";
+    runtimeInputs = with pkgs; [
+      coreutils
+      wl-clipboard
+    ];
+    text = ''
+      if [ "$#" -ne 1 ]; then
+        echo "usage: qs-emoji-apply <line>" >&2
+        exit 64
+      fi
+
+      line="$1"
+      if [[ "$line" =~ ^[[:space:]]*([^[:space:]]+) ]]; then
+        value="''${BASH_REMATCH[1]}"
+      else
+        echo "empty emoji selection" >&2
+        exit 65
+      fi
+
+      printf '%s' "$value" | wl-copy
+
+      history_dir="''${BEMOJI_HISTORY_LOCATION:-''${XDG_STATE_HOME:-$HOME/.local/state}}"
+      mkdir -p "$history_dir"
+      printf '%s\n' "$line" >> "$history_dir/bemoji-history.txt"
+    '';
+  };
+  qsClipboardList = pkgs.writeShellApplication {
+    name = "qs-clipboard-list";
+    runtimeInputs = with pkgs; [
+      cliphist
+      python3
+    ];
+    text = ''
+      exec python3 - <<'PY'
+      import json
+      import subprocess
+
+      def emit(payload):
+          print(json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
+
+      try:
+          result = subprocess.run(
+              ["cliphist", "list"],
+              check=False,
+              stdout=subprocess.PIPE,
+              stderr=subprocess.PIPE,
+              text=True,
+          )
+      except OSError as error:
+          emit({"ok": False, "error": str(error), "items": []})
+          raise SystemExit(0)
+
+      if result.returncode != 0:
+          error = result.stderr.strip() or "Could not read clipboard history"
+          emit({"ok": False, "error": error, "items": []})
+          raise SystemExit(0)
+
+      items = []
+      for raw in result.stdout.splitlines():
+          line = raw.rstrip("\n")
+          if not line:
+              continue
+
+          item_id, separator, preview = line.partition("\t")
+          if not separator:
+              item_id = ""
+              preview = line
+
+          label = preview.strip() or item_id
+          items.append({
+              "line": line,
+              "id": item_id,
+              "label": label,
+              "description": item_id,
+              "search": f"{item_id} {preview}".strip(),
+          })
+
+      emit({"ok": True, "items": items})
+      PY
+    '';
+  };
+  qsClipboardApply = pkgs.writeShellApplication {
+    name = "qs-clipboard-apply";
+    runtimeInputs = with pkgs; [
+      cliphist
+      wl-clipboard
+    ];
+    text = ''
+      if [ "$#" -ne 1 ]; then
+        echo "usage: qs-clipboard-apply <line>" >&2
+        exit 64
+      fi
+
+      printf '%s\n' "$1" | cliphist decode | wl-copy
+    '';
+  };
   qsFocusedScreen = pkgs.writeShellApplication {
     name = "qs-focused-screen";
     runtimeInputs = with pkgs; [
@@ -905,13 +1120,13 @@ let
     ];
     text = ''
       if [ "$#" -ne 1 ]; then
-        echo "usage: qs-quick-action <launcher|power|wallpaper|monitors|stewart|music|battery|calendar|network|focustime|volume|guide>" >&2
+        echo "usage: qs-quick-action <launcher|power|wallpaper|emoji|clipboard|monitors|stewart|music|battery|calendar|network|focustime|volume|guide>" >&2
         exit 64
       fi
 
       kind="$1"
       case "$kind" in
-        launcher|power|wallpaper|monitors|stewart|music|battery|calendar|network|focustime|volume|guide) ;;
+        launcher|power|wallpaper|emoji|clipboard|monitors|stewart|music|battery|calendar|network|focustime|volume|guide) ;;
         *)
           echo "unknown quick action: $kind" >&2
           exit 64
@@ -1061,6 +1276,24 @@ let
       exec qs-quick-action power
     '';
   };
+  qsEmoji = pkgs.writeShellApplication {
+    name = "qs-emoji";
+    runtimeInputs = [
+      qsQuickAction
+    ];
+    text = ''
+      exec qs-quick-action emoji
+    '';
+  };
+  qsClipboard = pkgs.writeShellApplication {
+    name = "qs-clipboard";
+    runtimeInputs = [
+      qsQuickAction
+    ];
+    text = ''
+      exec qs-quick-action clipboard
+    '';
+  };
   qsShell = pkgs.writeShellApplication {
     name = "qs-shell";
     runtimeInputs = [
@@ -1068,6 +1301,10 @@ let
       qsAudioStatus
       qsBacklightStatus
       qsBatteryStatus
+      qsClipboardApply
+      qsClipboardList
+      qsEmojiApply
+      qsEmojiList
       qsFocusedScreenWatch
       qsMangoTag
       qsMangoTags
@@ -1169,6 +1406,12 @@ in
     qsAudioStatus
     qsBacklightStatus
     qsBatteryStatus
+    qsClipboard
+    qsClipboardApply
+    qsClipboardList
+    qsEmoji
+    qsEmojiApply
+    qsEmojiList
     qsFocusedScreen
     qsFocusedScreenWatch
     qsLauncher
@@ -1194,6 +1437,12 @@ in
     qsAudioStatus
     qsBacklightStatus
     qsBatteryStatus
+    qsClipboard
+    qsClipboardApply
+    qsClipboardList
+    qsEmoji
+    qsEmojiApply
+    qsEmojiList
     qsFocusedScreen
     qsFocusedScreenWatch
     qsLauncher

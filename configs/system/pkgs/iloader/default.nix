@@ -35,14 +35,13 @@
   libxtst,
   libxcb,
 }:
-
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "iloader";
-  version = "2.2.3";
+  version = "2.2.6";
 
   src = fetchurl {
     url = "https://github.com/nab138/iloader/releases/download/v${finalAttrs.version}/iloader-linux-amd64.deb";
-    hash = "sha256-DfFc2hwgQQZLFqLtraCtiYnLcvVj8tj46dRYFbAK+wI=";
+    hash = "sha256-YWoeQjjoqLkaA1oNx2Eg7PwXaenWYKk73CdAKHISlWI=";
   };
 
   nativeBuildInputs = [
@@ -105,7 +104,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     wrapProgram "$out/bin/iloader" \
       --set WEBKIT_DISABLE_DMABUF_RENDERER 1 \
       --prefix XDG_DATA_DIRS : "${gtk3}/share/gsettings-schemas/${gtk3.name}" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ libGL mesa ]}"
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [libGL mesa]}"
 
     runHook postInstall
   '';
@@ -116,18 +115,18 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       desktopName = "iLoader";
       exec = "iloader";
       terminal = false;
-      categories = [ "Utility" ];
+      categories = ["Utility"];
     })
   ];
 
-  passthru.updateScript = nix-update-script { };
+  passthru.updateScript = nix-update-script {};
 
   meta = with lib; {
     description = "User friendly sideloader";
     homepage = "https://iloader.app/";
     license = licenses.mit;
-    sourceProvenance = with sourceTypes; [ binaryNativeCode ];
-    platforms = [ "x86_64-linux" ];
+    sourceProvenance = with sourceTypes; [binaryNativeCode];
+    platforms = ["x86_64-linux"];
     mainProgram = "iloader";
   };
 })

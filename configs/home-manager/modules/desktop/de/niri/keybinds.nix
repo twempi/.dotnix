@@ -87,11 +87,14 @@
       "Mod+Shift+R".action.spawn = "${./reload.sh}";
 
       ################################
-      ## Screenshots (niri-native)
+      ## Screenshots
       ################################
 
-      # Mod+Shift+S → interactive area selection
-      "Mod+Shift+S".action.screenshot = [];
+      # Mod+Shift+S -> universal interactive window or area selection
+      "Mod+Shift+S".action.spawn = [
+        "way-screenshot"
+        "area"
+      ];
 
       # Print → full screen (current monitor)
       "Print".action.screenshot-screen = [];
@@ -106,11 +109,11 @@
       # $mod, Space, exec, qs-launcher
       "Mod+Space".action.spawn = "qs-launcher";
 
-      # $mod, U, exec, $emoji
-      "Mod+U".action.spawn = "${pkgs.bemoji}/bin/bemoji";
+      # $mod, U, exec, qs-emoji
+      "Mod+U".action.spawn = "qs-emoji";
 
-      # $mod, Y, exec, cliphist list | rofi -dmenu | ...
-      "Mod+Y".action.spawn-sh = "cliphist list | ${pkgs.rofi}/bin/rofi -dmenu | cliphist decode | wl-copy";
+      # $mod, Y, exec, qs-clipboard
+      "Mod+Y".action.spawn = "qs-clipboard";
 
       ################################
       ## Focus movement (H J K L)

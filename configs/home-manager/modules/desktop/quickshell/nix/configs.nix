@@ -40,6 +40,7 @@ let
   quickActionsConfig = pkgs.runCommandLocal "quickshell-quick-actions-config" {} ''
     mkdir -p "$out"
     cp ${../quick-actions/shell.qml} "$out/shell.qml"
+    cp ${../quick-actions/PickerRow.qml} "$out/PickerRow.qml"
     cp ${../app-launcher/AppRow.qml} "$out/AppRow.qml"
     cp ${../wallpaper-picker/WallpaperCard.qml} "$out/WallpaperCard.qml"
     cp ${styleQml} "$out/Style.qml"

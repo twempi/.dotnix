@@ -17,5 +17,11 @@
       "tags:9,isopensilent:1,appid:^(Spotify)$"
       "tags:10,isopensilent:1,appid:^(Obsidian)$"
     ];
+
+    layerrule = [
+      "noanim:1,noblur:1,layer_name:^(selection)$"
+      "noblur:1,layer_name:^(swaync)$"
+      "noblur:1,layer_name:^(qs-launcher|qs-emoji|qs-clipboard|qs-power|qs-wallpaper|qs-panel)$"
+    ];
   };
 }

@@ -1,6 +1,5 @@
 {pkgs, ...}: let
   terminal = "${pkgs.kitty}/bin/kitty";
-  menu = "${pkgs.rofi}/bin/rofi";
   colorPicker = "${pkgs.hyprpicker}/bin/hyprpicker -a";
   notiCenter = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
 
@@ -8,7 +7,6 @@
   explorer1 = "${terminal} -e ${pkgs.yazi}/bin/yazi";
   explorer2 = "${pkgs.nautilus}/bin/nautilus";
   notes = "${pkgs.obsidian}/bin/obsidian";
-  emoji = "${pkgs.bemoji}/bin/bemoji";
   bluetooth = "${terminal} -e ${pkgs.bluetui}/bin/bluetui";
   editor = "${terminal} -e nvim";
 
@@ -58,12 +56,12 @@ in {
         "SUPER+SHIFT,W,spawn,qs-wallpaper"
         "SUPER+SHIFT,R,spawn,bash ${./reload.sh}"
 
-        "SUPER+SHIFT,S,spawn,bash ${./screenshot.sh}"
-        "NONE,Print,spawn_shell,${pkgs.grim}/bin/grim - | ${pkgs.wl-clipboard}/bin/wl-copy && ${pkgs.wl-clipboard}/bin/wl-paste > ~/Pictures/Screenshots/Screenshot-$(date +%F_%T).png"
+        "SUPER+SHIFT,S,spawn,way-screenshot area"
+        "NONE,Print,spawn,way-screenshot screen"
 
         "SUPER,Space,spawn,qs-launcher"
-        "SUPER,U,spawn,${emoji}"
-        "SUPER,Y,spawn_shell,${pkgs.cliphist}/bin/cliphist list | ${menu} -dmenu | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy"
+        "SUPER,U,spawn,qs-emoji"
+        "SUPER,Y,spawn,qs-clipboard"
 
         "SUPER,H,focusdir,left"
         "SUPER,L,focusdir,right"
