@@ -61,5 +61,6 @@
     ./modules/apps/helium
     ./modules/apps/obsidian
     ./modules/apps/rars
+    ./modules/apps/blanket
   ];
 }
