@@ -1,10 +1,16 @@
-{
+{...}: let
+  suwayomiInternalPort = 8080;
+  suwayomiExternalPort = 8080;
+in {
   services.suwayomi-server = {
     enable = true;
-    openFirewall = true;
+
+    # Tailscale Serve will expose it, so don't open this on LAN/Wi-Fi.
+    openFirewall = false;
 
     settings.server = {
-      port = 8080;
+      ip = "127.0.0.1";
+      port = suwayomiInternalPort;
 
       flareSolverrEnabled = true;
       flareSolverrUrl = "http://127.0.0.1:8191";
@@ -15,9 +21,9 @@
 
       webUIEnabled = true;
       initialOpenInBrowserEnabled = true;
-      webUIInterface = "browser"; # "browser" or "electron"
-      webUIFlavor = "WebUI"; # "WebUI" or "Custom"
-      webUIChannel = "stable"; # "BUNDLED" or "STABLE" or "PREVIEW"
+      webUIInterface = "browser";
+      webUIFlavor = "WebUI";
+      webUIChannel = "stable";
       webUIUpdateCheckInterval = 23;
 
       extensionRepos = [
@@ -30,5 +36,13 @@
     enable = true;
     port = 8191;
     openFirewall = false;
+  };
+
+  services.tailscale.serve.services.suwayomi = {
+    endpoints = {
+      "tcp:${toString suwayomiExternalPort}" = "http://127.0.0.1:${toString suwayomiInternalPort}";
+    };
+
+    advertised = true;
   };
 }

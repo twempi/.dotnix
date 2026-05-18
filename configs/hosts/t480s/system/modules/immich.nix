@@ -1,21 +1,30 @@
-{ pkgs, ... }:
-
-let
+{pkgs, ...}: let
   immichMediaDir = "/srv/immich";
+
+  immichInternalPort = 2283;
+  immichExternalPort = 2283;
 in {
   services.immich = {
     enable = true;
 
     host = "127.0.0.1";
-    port = 2283;
+    port = immichInternalPort;
     openFirewall = false;
 
     mediaLocation = immichMediaDir;
     machine-learning.enable = true;
-    accelerationDevices = [ "/dev/dri/renderD128" ];
+    accelerationDevices = ["/dev/dri/renderD128"];
   };
 
-  users.users.immich.extraGroups = [ "video" "render" ];
+  services.tailscale.serve.services.immich = {
+    endpoints = {
+      "tcp:${toString immichExternalPort}" = "http://127.0.0.1:${toString immichInternalPort}";
+    };
+
+    advertised = true;
+  };
+
+  users.users.immich.extraGroups = ["video" "render"];
 
   hardware.graphics = {
     enable = true;
