@@ -102,6 +102,11 @@
       url = "github:twempi/minimal-grub-theme";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    librepods = {
+      url = "github:kavishdevar/librepods/linux/rust";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
