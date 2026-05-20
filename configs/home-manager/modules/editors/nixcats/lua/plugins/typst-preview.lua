@@ -1,7 +1,8 @@
 return {
 	"chomosuke/typst-preview.nvim",
 	enabled = true,
-	ft = "typst",
+	ft = { "typst" },
+	lazy = true,
 	opts = {
 		follow_cursor = true,
 		port = 1234,

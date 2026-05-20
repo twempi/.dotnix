@@ -13,12 +13,17 @@ in {
     enable = true;
     enabledExtensions = with spicePkgs.extensions; [
       adblock
+      autoSkipVideo
       keyboardShortcut
       hidePodcasts
+      savePlaylists
+      aiBandBlocker
+      skipStats
       fullScreen
     ];
     enabledCustomApps = with spicePkgs.apps; [
       lyricsPlus
+      # marketplace
     ];
     theme = spicePkgs.themes.text;
     colorScheme = "custom";

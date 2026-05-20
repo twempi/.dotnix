@@ -113,7 +113,7 @@ in {
           latex = with pkgs; [
             texlab
             texlivePackages.latexindent
-            chktex
+            texlivePackages.chktex
           ];
 
           cpp = with pkgs; [

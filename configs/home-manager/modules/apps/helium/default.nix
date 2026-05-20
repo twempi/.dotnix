@@ -247,9 +247,9 @@ in {
         }
         {
           featured = true;
-          name = "ChatGPT";
-          shortcut = "gpt";
-          url = "https://chatgpt.com/?q={searchTerms}";
+          name = "Nix Options";
+          shortcut = "nt";
+          url = "https://mynixos.com/search?q=={searchTerms}";
         }
       ];
 
