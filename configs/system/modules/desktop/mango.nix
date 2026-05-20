@@ -4,7 +4,7 @@
   system,
   ...
 }: let
-  mangoPackage = import ../../../home-manager/modules/desktop/de/mango/mango-patched.nix {
+  mangoPackage = import ../../../home-manager/modules/desktop/windowmanagers/mango/mango-patched.nix {
     inherit inputs pkgs system;
   };
 in {

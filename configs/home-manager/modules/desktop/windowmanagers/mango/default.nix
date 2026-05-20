@@ -15,6 +15,7 @@ in {
     ./env.nix
     ./windowrules.nix
     ./keybinds.nix
+    ./screenshot.nix
   ];
 
   stylix.targets.mango.enable = true;

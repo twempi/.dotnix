@@ -15,7 +15,6 @@
     ./modules/desktop/windowmanagers/hyprland
     ./modules/desktop/windowmanagers/sway
     ./modules/desktop/windowmanagers/mango
-    ./modules/desktop/screenshot
 
     # Terminal
     ./modules/terminals/ghostty
