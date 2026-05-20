@@ -8,6 +8,7 @@
     ../../system/modules/core/shell.nix
     ../../system/modules/core/nh.nix
     ../../system/modules/core/home-manager.nix
+    ../../system/modules/core/cachix.nix
 
     ./hardware-configuration.nix
 

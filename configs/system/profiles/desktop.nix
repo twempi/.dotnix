@@ -6,6 +6,7 @@
     ../modules/core/shell.nix
     ../modules/core/user.nix
     ../modules/core/nh.nix
+    ../modules/core/cachix.nix
 
     ../modules/networking/dns-over-tls.nix
     ../modules/networking/usbmuxd.nix

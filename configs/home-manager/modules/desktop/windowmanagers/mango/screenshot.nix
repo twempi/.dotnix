@@ -4,7 +4,7 @@
   system,
   ...
 }: let
-  mangoPackage = import ../windowmanagers/mango/mango-patched.nix {
+  mangoPackage = import ../mango/mango-patched.nix {
     inherit inputs pkgs system;
   };
 
