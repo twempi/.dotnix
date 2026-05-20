@@ -8,8 +8,6 @@
 
   xdg.configFile."waybar/hyprland.jsonc".source = ./hyprland.jsonc;
   xdg.configFile."waybar/hyprland.css".source = ./hyprland.css;
-  xdg.configFile."waybar/niri.jsonc".source = ./niri.jsonc;
-  xdg.configFile."waybar/niri.css".source = ./niri.css;
   xdg.configFile."waybar/sway.css".source = ./sway.css;
   xdg.configFile."waybar/mango.css".source = ./mango.css;
 

@@ -88,6 +88,11 @@
       id = "eboaimjcbpkmciikmjpceacdacegnfao";
       hash = "sha256-xXPE57buWkwYAG+V0K6LbErYQh8XoZUOYSrOCGzNndY=";
     }
+    # Obsidian Web Clipper
+    {
+      id = "cnjifjpddelmedmihgijeibhnjfabmlf";
+      hash = "sha256-4BLH0QvZj3yL4tqv/WBdZKij1Vye4p26oy4b9oB25/M=";
+    }
   ];
 
   fetchExtension = {

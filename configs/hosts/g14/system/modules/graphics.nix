@@ -1,4 +1,4 @@
-{config, ...}: {
+{
   # Graphic Settings
   hardware.graphics = {
     enable = true;
@@ -9,6 +9,4 @@
     enable = true;
     ppfeaturemask = "0xffffffff";
   };
-
-  services.switcherooControl.enable = true;
 }

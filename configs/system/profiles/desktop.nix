@@ -20,7 +20,6 @@
     ../modules/desktop/chromium.nix
     ../modules/desktop/seahorse.nix
     ../modules/desktop/login-manager.nix
-    ../modules/desktop/niri.nix
     ../modules/desktop/sway.nix
     ../modules/desktop/hyprland.nix
     ../modules/desktop/mango.nix
@@ -29,5 +28,6 @@
     ../modules/apps/handy.nix
     ../modules/apps/helium.nix
     ../modules/apps/librepods.nix
+    ../modules/apps/t3-code.nix
   ];
 }

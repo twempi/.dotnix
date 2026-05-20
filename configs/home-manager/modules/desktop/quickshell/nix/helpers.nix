@@ -2,8 +2,7 @@
   lib,
   pkgs,
   quickshellPackage,
-}:
-let
+}: let
   qsWallpaperCache = pkgs.writeShellApplication {
     name = "qs-wallpaper-cache";
     runtimeInputs = with pkgs; [
@@ -467,16 +466,6 @@ let
         printf '%s\n' "$output"
       }
 
-      detect_niri_screen() {
-        [ -n "''${NIRI_SOCKET:-}" ] || return 1
-        command -v niri >/dev/null || return 1
-
-        local output
-        output="$(niri msg -j focused-output 2>/dev/null | jq -er '.. | objects | .name? // empty' | head -n 1)" || return 1
-        [ -n "$output" ] || return 1
-        printf '%s\n' "$output"
-      }
-
       detect_mango_screen() {
         case "''${XDG_CURRENT_DESKTOP:-} ''${DESKTOP_SESSION:-}" in
           *mango*) ;;
@@ -493,7 +482,6 @@ let
       detect_focused_screen() {
         detect_hyprland_screen && return 0
         detect_sway_screen && return 0
-        detect_niri_screen && return 0
         detect_mango_screen && return 0
         return 1
       }
@@ -635,8 +623,6 @@ let
             swaymsg exit
           elif [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && command -v hyprctl >/dev/null; then
             hyprctl dispatch exit
-          elif [ -n "''${NIRI_SOCKET:-}" ] && command -v niri >/dev/null; then
-            niri msg action quit
           elif command -v mmsg >/dev/null; then
             mmsg -q
           elif [ "''${DESKTOP_SESSION:-}" = "openbox" ] && command -v openbox >/dev/null; then
@@ -1400,8 +1386,7 @@ let
       esac
     '';
   };
-in
-{
+in {
   inherit
     qsAudioStatus
     qsBacklightStatus

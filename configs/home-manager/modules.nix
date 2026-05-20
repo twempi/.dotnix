@@ -11,11 +11,10 @@
     ./modules/theme/fontconfig
     ./modules/theme/ohmyposh
 
-    # DE
-    ./modules/desktop/de/hyprland
-    ./modules/desktop/de/sway
-    ./modules/desktop/de/mango
-    ./modules/desktop/de/niri
+    # Window Managers
+    ./modules/desktop/windowmanagers/hyprland
+    ./modules/desktop/dendowmanagers/sway
+    ./modules/desktop/dendowmanagers/mango
     ./modules/desktop/screenshot
 
     # Terminal

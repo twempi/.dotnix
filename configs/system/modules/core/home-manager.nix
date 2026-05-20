@@ -26,8 +26,6 @@
         ]
         ++ lib.optionals (hostname != "t480s") [
           inputs.spicetify-nix.homeManagerModules.default
-          inputs.niri.homeModules.config
-          inputs.niri.homeModules.stylix
         ];
     };
   };

@@ -157,7 +157,7 @@ return {
 				},
 
 				math = {
-					enabled = true,
+					enabled = false,
 
 					typst = {
 						tpl = [[
@@ -246,7 +246,7 @@ return {
 			},
 
 			{
-				"<leader>sf",
+				"<leader><leader>",
 				function()
 					require("snacks").picker.smart()
 				end,

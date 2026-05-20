@@ -51,8 +51,8 @@ in {
       ++ lib.flatten (map (app: forApp app floatCenter) alwaysFloatCenterApps);
 
     assigns = {
-      "9" = matchApp "^spotify$";
-      "10" = matchApp "^obsidian$";
+      "9" = matchApp "^(Spotify|spotify)$";
+      "10" = matchApp "^(Obsidian|obsidian)$";
     };
   };
 }

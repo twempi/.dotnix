@@ -1,4 +1,4 @@
-{ pkgs, ... }: let
+{pkgs, ...}: let
   asusProfileNotify = pkgs.writeShellScriptBin "asus-profile-notify" ''
     #!${pkgs.bash}/bin/bash
 
@@ -24,6 +24,6 @@ in {
   wayland.windowManager.sway.config.keybindings = {
     "XF86KbdBrightnessUp" = "exec asusctl leds next";
     "XF86KbdBrightnessDown" = "exec asusctl leds prev";
-    "XF86Launch4" = "exec ${asusProfileNotify}/bin/asus-profile-notify";
+    "XF86Launch4" = "exec ${pkgs.libnotify}/bin/notify-send 'ASUS profile' 'keybind test'";
   };
 }

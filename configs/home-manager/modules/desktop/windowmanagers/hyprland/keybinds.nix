@@ -74,7 +74,6 @@ in {
         "$mod, 6, workspace, 6"
         "$mod, 7, workspace, 7"
         "$mod, 9, workspace, 9"
-        "$mod, 9, workspace, 9"
         "$mod, 0, workspace, 10"
 
         # Move active window to workspace #

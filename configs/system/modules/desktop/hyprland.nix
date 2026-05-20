@@ -1,10 +1,18 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: let
+  hyprPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+  hyprPortal = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+in {
   programs = {
     hyprland = {
       enable = true;
       withUWSM = true;
       xwayland.enable = true;
-      portalPackage = pkgs.xdg-desktop-portal-hyprland;
+      package = hyprPackage;
+      portalPackage = hyprPortal;
     };
   };
 

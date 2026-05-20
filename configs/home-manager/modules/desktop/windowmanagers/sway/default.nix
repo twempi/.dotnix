@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{...}: {
   imports = [
     ./general.nix
     ./keybinds.nix
@@ -13,7 +13,7 @@
     enable = true;
     # package = pkgs.swayfx;
     xwayland = true;
-    checkConfig = false;
+    checkConfig = true;
     extraOptions = ["--unsupported-gpu"];
   };
 
@@ -25,17 +25,5 @@
     XDG_SESSION_TYPE = "wayland";
     GDK_BACKEND = "wayland,x11";
     QT_QPA_PLATFORM = "wayland;xcb";
-  };
-
-  xdg.portal = {
-    enable = true;
-    xdgOpenUsePortal = true;
-    config = {
-      sway.default = ["wlr" "gtk"];
-    };
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-wlr
-      xdg-desktop-portal-gtk
-    ];
   };
 }

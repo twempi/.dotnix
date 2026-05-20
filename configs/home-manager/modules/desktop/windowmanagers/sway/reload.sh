@@ -7,7 +7,7 @@ pkill swaync
 # Optional: Kill any currently running Rofi instances
 pkill rofi
 
-# Reload Hyprland configuration
+# Reload Sway configuration
 swaymsg reload
 
 # Restart SwayNC and Waybar

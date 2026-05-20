@@ -41,8 +41,8 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    niri = {
-      url = "github:sodiboo/niri-flake";
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -151,8 +151,6 @@
 
     desktopHomeModules = [
       inputs.spicetify-nix.homeManagerModules.default
-      inputs.niri.homeModules.config
-      inputs.niri.homeModules.stylix
     ];
 
     mkHome = {
@@ -177,15 +175,11 @@
     apps.${system} = localPkgs.apps;
 
     nixosConfigurations = {
-      desktop = mkNixosHost "desktop" [
-        inputs.t3code.nixosModules.default
-      ];
+      desktop = mkNixosHost "desktop" [];
 
       t480s = mkNixosHost "t480s" [];
 
-      g14 = mkNixosHost "g14" [
-        inputs.t3code.nixosModules.default
-      ];
+      g14 = mkNixosHost "g14" [];
     };
 
     homeConfigurations = {

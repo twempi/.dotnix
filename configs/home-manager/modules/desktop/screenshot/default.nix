@@ -20,7 +20,6 @@
         hyprpicker
         jq
         libnotify
-        niri
         slurp
         sway
         wayfreeze
@@ -200,43 +199,6 @@
         '
       }
 
-      niri_rects() {
-        [ -n "''${NIRI_SOCKET:-}" ] || return 1
-        command -v niri >/dev/null 2>&1 || return 1
-        command -v jq >/dev/null 2>&1 || return 1
-
-        local outputs workspaces windows
-        outputs="$(niri msg -j outputs 2>/dev/null)" || return 1
-        workspaces="$(niri msg -j workspaces 2>/dev/null)" || return 1
-        windows="$(niri msg -j windows 2>/dev/null)" || return 1
-
-        jq -nr \
-          --argjson outputs "$outputs" \
-          --argjson workspaces "$workspaces" \
-          --argjson windows "$windows" '
-            def max($a; $b): if $a > $b then $a else $b end;
-            def min($a; $b): if $a < $b then $a else $b end;
-
-            $windows[] as $window
-            | ($workspaces[] | select(.id == $window.workspace_id and .is_active == true)) as $workspace
-            | ($outputs[] | select(.name == $workspace.output) | .logical) as $output
-            | select($output != null)
-            | ($window.layout.tile_pos_in_workspace_view // null) as $pos
-            | ($window.layout.tile_size // null) as $size
-            | select($pos != null and $size != null)
-            | ($output.x + ($pos[0] | floor)) as $x
-            | ($output.y + ($pos[1] | floor)) as $y
-            | (($size[0] | ceil)) as $width
-            | (($size[1] | ceil)) as $height
-            | max($x; $output.x) as $x1
-            | max($y; $output.y) as $y1
-            | min($x + $width; $output.x + $output.width) as $x2
-            | min($y + $height; $output.y + $output.height) as $y2
-            | select($x2 > $x1 and $y2 > $y1)
-            | "\($x1),\($y1) \($x2 - $x1)x\($y2 - $y1) \($window.app_id // $window.title // "window")"
-          '
-      }
-
       mango_rects() {
         command -v mmsg >/dev/null 2>&1 || return 1
 
@@ -260,7 +222,6 @@
       collect_rects() {
         hyprland_rects && return 0
         sway_rects && return 0
-        niri_rects && return 0
         mango_rects && return 0
         return 1
       }

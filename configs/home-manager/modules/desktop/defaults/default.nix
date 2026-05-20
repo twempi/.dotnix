@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   ############################
   # Environment variables
   ############################
@@ -8,48 +12,62 @@
 
     # BROWSER = "${pkgs.brave}/bin/brave";
     # DEFAULT_BROWSER = "${pkgs.brave}/bin/brave";
-    BROWSER = "zen-beta";
-    DEFAULT_BROWSER = "zen-beta";
+    # BROWSER = "zen-beta";
+    # DEFAULT_BROWSER = "zen-beta";
   };
-
-  ############################
-  # XDG MIME associations
-  ############################
-  xdg.mimeApps = {
+  xdg = {
     enable = true;
 
-    defaultApplications = {
-      # Web / URLs
-      # "text/html" = ["brave-browser.desktop"];
-      # "application/xhtml+xml" = ["brave-browser.desktop"];
-      # "x-scheme-handler/http" = ["brave-browser.desktop"];
-      # "x-scheme-handler/https" = ["brave-browser.desktop"];
+    ############################
+    # XDG MIME associations
+    ############################
+    mimeApps = {
+      enable = true;
 
-      # Images (EOG)
-      "image/png" = ["org.gnome.eog.desktop"];
-      "image/jpeg" = ["org.gnome.eog.desktop"];
-      "image/jpg" = ["org.gnome.eog.desktop"];
-      "image/gif" = ["org.gnome.eog.desktop"];
-      "image/bmp" = ["org.gnome.eog.desktop"];
-      "image/svg+xml" = ["org.gnome.eog.desktop"];
+      associations.added = {
+        "x-scheme-handler/obsidian" = ["obsidian.desktop"];
+      };
 
-      # Video / Audio (mpv)
-      "video/mp4" = ["mpv.desktop"];
-      "video/x-matroska" = ["mpv.desktop"];
-      "video/webm" = ["mpv.desktop"];
-      "audio/mpeg" = ["mpv.desktop"];
-      "audio/ogg" = ["mpv.desktop"];
-      "audio/wav" = ["mpv.desktop"];
+      defaultApplications = {
+        # Web / URLs
+        # "text/html" = ["brave-browser.desktop"];
+        # "application/xhtml+xml" = ["brave-browser.desktop"];
+        # "x-scheme-handler/http" = ["brave-browser.desktop"];
+        # "x-scheme-handler/https" = ["brave-browser.desktop"];
 
-      # File manager
-      "inode/directory" = ["org.gnome.Nautilus.desktop"];
+        # Images (EOG)
+        "image/png" = ["org.gnome.eog.desktop"];
+        "image/jpeg" = ["org.gnome.eog.desktop"];
+        "image/jpg" = ["org.gnome.eog.desktop"];
+        "image/gif" = ["org.gnome.eog.desktop"];
+        "image/bmp" = ["org.gnome.eog.desktop"];
+        "image/svg+xml" = ["org.gnome.eog.desktop"];
 
-      # Documents
-      "application/pdf" = ["org.pwmt.zathura.desktop"];
+        # Video / Audio (mpv)
+        "video/mp4" = ["mpv.desktop"];
+        "video/x-matroska" = ["mpv.desktop"];
+        "video/webm" = ["mpv.desktop"];
+        "audio/mpeg" = ["mpv.desktop"];
+        "audio/ogg" = ["mpv.desktop"];
+        "audio/wav" = ["mpv.desktop"];
 
-      # Zoom
-      "x-scheme-handler/zoommtg" = ["zoom-us.desktop"];
-      "application/x-zoom" = ["zoom-us.desktop"];
+        # File manager
+        "inode/directory" = ["org.gnome.Nautilus.desktop"];
+
+        # Documents
+        "application/pdf" = ["org.pwmt.zathura.desktop"];
+
+        # Zoom
+        "x-scheme-handler/zoommtg" = ["zoom-us.desktop"];
+        "application/x-zoom" = ["zoom-us.desktop"];
+
+        # Obsidian Web Clipper / obsidian:// links
+        "x-scheme-handler/obsidian" = ["obsidian.desktop"];
+      };
     };
   };
+
+  home.activation.updateDesktopDatabase = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    ${pkgs.desktop-file-utils}/bin/update-desktop-database -q "$HOME/.local/share/applications" || true
+  '';
 }

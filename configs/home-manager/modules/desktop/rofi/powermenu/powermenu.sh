@@ -55,8 +55,6 @@ run_cmd() {
         swaymsg exit
       elif [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && command -v hyprctl >/dev/null; then
         hyprctl dispatch exit
-      elif command -v niri >/dev/null && niri msg --help >/dev/null 2>&1; then
-        niri msg exit
 
       # Fallbacks (X11 / legacy)
       elif [[ "$DESKTOP_SESSION" == 'openbox' ]]; then

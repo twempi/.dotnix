@@ -11,27 +11,37 @@
   };
 
   hardware.amdgpu.initrd.enable = true;
-  programs.corectrl.enable = true;
 
   users.users.edward.extraGroups = ["corectrl"];
 
   systemd.services.ryzenadj-battery-limits = {
-    description = "Apply Ryzen power limits on battery only";
-    wantedBy = ["multi-user.target"];
-    after = ["multi-user.target"];
-
-    unitConfig = {
-      ConditionACPower = false;
-    };
+    description = "Apply Ryzen power limits on battery";
+    unitConfig.ConditionACPower = false;
 
     serviceConfig = {
       Type = "oneshot";
       ExecStart = ''
         ${pkgs.ryzenadj}/bin/ryzenadj \
-          --stapm-limit=20000 \
-          --fast-limit=24000 \
-          --slow-limit=22000 \
-          --tctl-temp=80
+          --stapm-limit=23000 \
+          --fast-limit=30000 \
+          --slow-limit=25000 \
+          --tctl-temp=82
+      '';
+    };
+  };
+
+  systemd.services.ryzenadj-ac-limits = {
+    description = "Apply Ryzen power limits on AC";
+    unitConfig.ConditionACPower = true;
+
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = ''
+        ${pkgs.ryzenadj}/bin/ryzenadj \
+          --stapm-limit=45000 \
+          --fast-limit=65000 \
+          --slow-limit=55000 \
+          --tctl-temp=95
       '';
     };
   };
@@ -40,8 +50,17 @@
     wantedBy = ["timers.target"];
     timerConfig = {
       OnBootSec = "2min";
-      OnUnitActiveSec = "1min";
+      OnUnitInactiveSec = "5min";
       Unit = "ryzenadj-battery-limits.service";
+    };
+  };
+
+  systemd.timers.ryzenadj-ac-limits = {
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnBootSec = "2min";
+      OnUnitInactiveSec = "5min";
+      Unit = "ryzenadj-ac-limits.service";
     };
   };
 

@@ -182,4 +182,13 @@ in {
     run install -m644 "$tmp_file" "$appearance_file"
     rm "$tmp_file"
   '';
+
+  xdg.desktopEntries.obsidian = {
+    name = "Obsidian";
+    exec = "${pkgs.obsidian}/bin/obsidian %U";
+    icon = "obsidian";
+    terminal = false;
+    categories = ["Office"];
+    mimeType = ["x-scheme-handler/obsidian"];
+  };
 }

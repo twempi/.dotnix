@@ -5,14 +5,6 @@
 
       defaultWorkspace = "workspace 1";
 
-      output = {
-        "HDMI-A-2" = {
-          mode = "1920x1080@60Hz";
-          pos = "0 -1080";
-          scale = "1";
-        };
-      };
-
       startup = [
         {command = "awww-daemon";}
         {command = "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp";}

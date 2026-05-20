@@ -18,5 +18,5 @@ in {
     };
   };
 
-  # xdg.portal.config.hyprland.default = ["hyprland" "gtk"];
+  xdg.portal.config.mangowm.default = ["wlr" "gtk"];
 }
