@@ -23,29 +23,37 @@ in {
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    environment.systemPackages = [
-      cfg.package
-      pkgs.wtype
-      pkgs.xdotool
-    ];
-
-    services.udev.extraRules = ''
-      KERNEL=="uinput", GROUP="input", MODE="0660"
-    '';
-
-    systemd.user.services.handy = lib.mkIf cfg.autostart {
-      description = "Handy speech-to-text";
-      partOf = ["graphical-session.target"];
-      after = ["graphical-session.target"];
-      wantedBy = ["graphical-session.target"];
-      environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-
-      serviceConfig = {
-        ExecStart = "${lib.getExe cfg.package} --start-hidden";
-        Restart = "on-failure";
-        RestartSec = "5s";
+  config = lib.mkMerge [
+    {
+      programs.handy = {
+        enable = true;
+        autostart = false;
       };
-    };
-  };
+    }
+    (lib.mkIf cfg.enable {
+      environment.systemPackages = [
+        cfg.package
+        pkgs.wtype
+        pkgs.xdotool
+      ];
+
+      services.udev.extraRules = ''
+        KERNEL=="uinput", GROUP="input", MODE="0660"
+      '';
+
+      systemd.user.services.handy = lib.mkIf cfg.autostart {
+        description = "Handy speech-to-text";
+        partOf = ["graphical-session.target"];
+        after = ["graphical-session.target"];
+        wantedBy = ["graphical-session.target"];
+        environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
+
+        serviceConfig = {
+          ExecStart = "${lib.getExe cfg.package} --start-hidden";
+          Restart = "on-failure";
+          RestartSec = "5s";
+        };
+      };
+    })
+  ];
 }

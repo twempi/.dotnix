@@ -83,6 +83,11 @@
       id = "ilmdofdhpnhffldihboadndccenlnfll";
       hash = "sha256-InqXKKEblfVEehgnEjFYCjrzVnbr90djmzyROKH/NCA=";
     }
+    # Polyratings Extension
+    {
+      id = "eboaimjcbpkmciikmjpceacdacegnfao";
+      hash = "sha256-xXPE57buWkwYAG+V0K6LbErYQh8XoZUOYSrOCGzNndY=";
+    }
   ];
 
   fetchExtension = {

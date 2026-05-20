@@ -30,9 +30,4 @@
     ../modules/apps/helium.nix
     ../modules/apps/librepods.nix
   ];
-
-  programs.handy = {
-    enable = true;
-    autostart = true;
-  };
 }
