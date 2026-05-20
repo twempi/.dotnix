@@ -13,8 +13,8 @@
 
     # Window Managers
     ./modules/desktop/windowmanagers/hyprland
-    ./modules/desktop/dendowmanagers/sway
-    ./modules/desktop/dendowmanagers/mango
+    ./modules/desktop/windowmanagers/sway
+    ./modules/desktop/windowmanagers/mango
     ./modules/desktop/screenshot
 
     # Terminal
