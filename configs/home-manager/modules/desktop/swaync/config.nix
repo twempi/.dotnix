@@ -27,8 +27,8 @@
     notification-body-image-width = 200;
 
     # --- Timeouts ---
-    timeout = 8;
-    timeout-low = 6;
+    timeout = 5;
+    timeout-low = 3;
     timeout-critical = 0;
 
     # --- Behavior / misc ---

@@ -82,14 +82,19 @@ in {
             nodejs
             fd
           ];
+
           lua = with pkgs; [
             lua-language-server
             stylua
           ];
+
           nix = with pkgs; [
             nil
             alejandra
+            statix
+            deadnix
           ];
+
           go = with pkgs; [
             gopls
             delve
@@ -99,33 +104,49 @@ in {
             go-tools
             go
           ];
+
           typst = with pkgs; [
             tinymist
             typstyle
           ];
+
           latex = with pkgs; [
             texlab
             texlivePackages.latexindent
+            chktex
           ];
+
           cpp = with pkgs; [
             clang
             clang-tools
           ];
+
           python = with pkgs; [
             pyright
             black
+            isort
+            ruff
           ];
+
           bash = with pkgs; [
             bash-language-server
             shfmt
+            shellcheck
           ];
+
           javascript = with pkgs; [
             typescript-language-server
             prettier
+            prettierd
+            eslint_d
           ];
-          ardiono = with pkgs; [
+
+          arduino = with pkgs; [
             arduino-language-server
+            arduino-cli
+            clang-tools
           ];
+
           assembly = with pkgs; [
             asm-lsp
             asmfmt

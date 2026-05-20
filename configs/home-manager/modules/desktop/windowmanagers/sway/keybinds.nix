@@ -85,8 +85,8 @@
       "Mod4+Shift+0" = "move container to workspace 10";
 
       # Resize windows
-      "Mod4+Shift+H" = "resize shrink width 50 px";
-      "Mod4+Shift+L" = "resize grow width 50 px";
+      "Mod4+Shift+H" = "resize grow width 50 px";
+      "Mod4+Shift+L" = "resize shrink width 50 px";
       "Mod4+Shift+J" = "resize shrink height 50 px";
       "Mod4+Shift+K" = "resize grow height 50 px";
 

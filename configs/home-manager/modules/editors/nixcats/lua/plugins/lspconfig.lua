@@ -3,9 +3,6 @@ return {
 	event = { "BufReadPre", "BufNewFile" },
 
 	config = function()
-		-- =========================
-		-- Capabilities (blink.cmp)
-		-- =========================
 		local capabilities = vim.lsp.protocol.make_client_capabilities()
 
 		local ok, blink = pcall(require, "blink.cmp")
@@ -13,11 +10,7 @@ return {
 			capabilities = blink.get_lsp_capabilities(capabilities)
 		end
 
-		-- =========================
-		-- on_attach
-		-- =========================
 		local on_attach = function(client, bufnr)
-			-- 🔒 Disable ALL LSP formatting
 			client.server_capabilities.documentFormattingProvider = false
 			client.server_capabilities.documentRangeFormattingProvider = false
 
@@ -37,20 +30,8 @@ return {
 
 			map("n", "<leader>cr", vim.lsp.buf.rename, "Rename symbol")
 			map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
-
-			-- Formatting is handled ONLY by conform.nvim
-			map("n", "<leader>cf", function()
-				require("conform").format({
-					lsp_format = "fallback",
-					async = true,
-					timeout_ms = 1000,
-				})
-			end, "Format buffer")
 		end
 
-		-- =========================
-		-- Diagnostics UI
-		-- =========================
 		vim.diagnostic.config({
 			virtual_text = true,
 			signs = true,
@@ -58,10 +39,6 @@ return {
 			update_in_insert = false,
 			severity_sort = true,
 		})
-
-		-- =========================
-		-- LSP servers
-		-- =========================
 
 		vim.lsp.config("lua_ls", {
 			capabilities = capabilities,

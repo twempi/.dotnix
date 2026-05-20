@@ -29,11 +29,6 @@ require("nixCatsUtils.lazyCat").setup(nixCats.pawsible({ "allPlugins", "start", 
 	checker = { enabled = false },
 })
 
--- after lazy setup: load cached base46 highlights
--- (method 1 from nvchad/ui docs)
--- dofile(vim.g.base46_cache .. "defaults")
--- dofile(vim.g.base46_cache .. "statusline")
-
 -- if you prefer your old "load everything" method, you can do:
 for _, v in ipairs(vim.fn.readdir(vim.g.base46_cache)) do
 	dofile(vim.g.base46_cache .. v)

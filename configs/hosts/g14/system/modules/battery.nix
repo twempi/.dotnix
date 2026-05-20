@@ -1,4 +1,11 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: {
+  imports = [
+    inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402
+  ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   environment.systemPackages = with pkgs; [ryzenadj];
@@ -11,8 +18,6 @@
   };
 
   hardware.amdgpu.initrd.enable = true;
-
-  users.users.edward.extraGroups = ["corectrl"];
 
   systemd.services.ryzenadj-battery-limits = {
     description = "Apply Ryzen power limits on battery";

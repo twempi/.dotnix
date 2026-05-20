@@ -6,7 +6,27 @@ return {
 			local lint = require("lint")
 
 			lint.linters_by_ft = {
+				-- Python
+				python = { "ruff" },
+
+				-- Go
 				go = { "golangcilint" },
+
+				-- JavaScript / TypeScript
+				javascript = { "eslint_d" },
+				typescript = { "eslint_d" },
+				javascriptreact = { "eslint_d" },
+				typescriptreact = { "eslint_d" },
+
+				-- Shell
+				sh = { "shellcheck" },
+				bash = { "shellcheck" },
+
+				-- Nix
+				nix = { "statix", "deadnix" },
+
+				-- LaTeX
+				tex = { "chktex" },
 			}
 
 			local grp = vim.api.nvim_create_augroup("UserLint", { clear = true })
@@ -28,7 +48,7 @@ return {
 				"<leader>cf",
 				function()
 					require("conform").format({
-						lsp_format = "fallback",
+						lsp_format = "never",
 						async = false,
 						timeout_ms = 1000,
 					})
@@ -43,16 +63,16 @@ return {
 				lua = { "stylua" },
 
 				-- Python
-				python = { "black" },
+				python = { "isort", "black" },
 
 				-- Go
-				go = { "gofmt" },
+				go = { "goimports", "gofmt" },
 
 				-- JavaScript / TypeScript
-				javascript = { "prettier" },
-				typescript = { "prettier" },
-				javascriptreact = { "prettier" },
-				typescriptreact = { "prettier" },
+				javascript = { "prettierd", "prettier", stop_after_first = true },
+				typescript = { "prettierd", "prettier", stop_after_first = true },
+				javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+				typescriptreact = { "prettierd", "prettier", stop_after_first = true },
 
 				-- C / C++
 				c = { "clang_format" },
