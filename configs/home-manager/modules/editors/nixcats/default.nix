@@ -80,6 +80,7 @@ in {
           general = with pkgs; [
             lazygit
             nodejs
+            fd
           ];
           lua = with pkgs; [
             lua-language-server
@@ -159,6 +160,7 @@ in {
             nvim-lspconfig
             vim-startuptime
             blink-cmp
+            blink-cmp-spell
             nvim-treesitter.withAllGrammars
             nvim-treesitter-textobjects
             lualine-nvim
@@ -173,7 +175,8 @@ in {
             yazi-nvim
             luasnip
             friendly-snippets
-            auto-pairs
+            nvim-autopairs
+            sqlite-lua
           ];
           markdown = with pkgs.vimPlugins; [
             obsidian-nvim
@@ -196,7 +199,9 @@ in {
         # shared libraries to be added to LD_LIBRARY_PATH
         # variable available to nvim runtime
         sharedLibraries = {
-          general = with pkgs; [];
+          general = with pkgs; [
+            sqlite
+          ];
         };
 
         # environmentVariables:
@@ -266,6 +271,7 @@ in {
           # anything else to pass and grab in lua with `nixCats.extra`
           extra = {
             nixdExtras.nixpkgs = ''import ${pkgs.path} {}'';
+            sqlite.libsqlite3 = "${pkgs.sqlite.out}/lib/libsqlite3.so";
             stylix = {
               colors = stylixBase16;
               polarity = config.stylix.polarity;

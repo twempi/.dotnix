@@ -33,7 +33,7 @@ M.colorify = {
 }
 
 M.term = {
-  base46_colors = true,
+	base46_colors = true,
 }
 
 return M

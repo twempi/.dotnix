@@ -25,16 +25,16 @@ return {
 		event = { "BufReadPost", "BufNewFile" },
 		keys = {
 			{
-				"<leader>FF",
+				"<leader>cf",
 				function()
 					require("conform").format({
-						lsp_fallback = true,
+						lsp_format = "fallback",
 						async = false,
 						timeout_ms = 1000,
 					})
 				end,
 				mode = { "n", "v" },
-				desc = "[F]ormat [F]ile",
+				desc = "Format file",
 			},
 		},
 		opts = {
@@ -71,11 +71,11 @@ return {
 				-- LaTeX
 				tex = { "latexindent" },
 
-        -- Assembly
-        asm = {"asmfmt"},
+				-- Assembly
+				asm = { "asmfmt" },
 
-        -- Arduino
-        arduino = {"clang_format"},
+				-- Arduino
+				arduino = { "clang_format" },
 			},
 		},
 		config = function(_, opts)

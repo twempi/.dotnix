@@ -1,8 +1,18 @@
+local function sqlite3_path()
+	local ok, nixCats = pcall(require, "nixCats")
+	if not ok then
+		return nil
+	end
+
+	return nixCats.extra("sqlite.libsqlite3")
+end
+
 return {
 	{
 		"folke/snacks.nvim",
 		enabled = true,
-		event = "VeryLazy",
+		lazy = false,
+		priority = 1000,
 
 		opts = {
 			animate = { enabled = true },
@@ -11,31 +21,31 @@ return {
 				enabled = true,
 				preset = {
 					-- header = [[
-					--                    @99o..                                        
-					--                    `99   o                                       
-					--                     99.aad9.                                     
-					--              "bad9999999999P                                     
-					--                     99                                           
-					--                   od99o.                                         
-					--                  99 99 9o        .o                              
-					--                  `9999999     ,// `a                             
-					--                .ooP`99P'   .o%    ,@9.                           
-					--             .''       .oaadObooooa9999                           
-					--         . ~  .oad999999999999999P'                                
-					--        "soo999999999999999P"'                                    
-					--             ,.oaa99aooo.                                         
-					--           .  ,o9999999999.   o@@o                                
-					--           o o99'        `99   @@@                                
-					--           `99'       ,oda9'   "'                                 
-					--                     0   a999o.                                   
-					--                     `.ao" `999,                                  
-					--                            `999;          A Chinese character    
-					--                             999           (means long life).     
-					--               o            ,99'                                  
-					--                `9a,       ,9F             Z. LIN  17 MARCH, 1994 
-					--                  "*bo. ,g9"                                      
+					--                    @99o..
+					--                    `99   o
+					--                     99.aad9.
+					--              "bad9999999999P
+					--                     99
+					--                   od99o.
+					--                  99 99 9o        .o
+					--                  `9999999     ,// `a
+					--                .ooP`99P'   .o%    ,@9.
+					--             .''       .oaadObooooa9999
+					--         . ~  .oad999999999999999P'
+					--        "soo999999999999999P"'
+					--             ,.oaa99aooo.
+					--           .  ,o9999999999.   o@@o
+					--           o o99'        `99   @@@
+					--           `99'       ,oda9'   "'
+					--                     0   a999o.
+					--                     `.ao" `999,
+					--                            `999;          A Chinese character
+					--                             999           (means long life).
+					--               o            ,99'
+					--                `9a,       ,9F             Z. LIN  17 MARCH, 1994
+					--                  "*bo. ,g9"
 					--    ]],
-          header = [[
+					header = [[
 
 
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣾⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -102,6 +112,13 @@ return {
 
 			explorer = { enabled = false },
 			bigfile = { enabled = true },
+			picker = {
+				enabled = true,
+				ui_select = true,
+				db = {
+					sqlite3_path = sqlite3_path(),
+				},
+			},
 
 			input = {
 				enabled = true,
@@ -140,7 +157,7 @@ return {
 				},
 
 				math = {
-					enabled = false,
+					enabled = true,
 
 					typst = {
 						tpl = [[
@@ -195,6 +212,14 @@ return {
 		config = function(_, opts)
 			local Snacks = require("snacks")
 			Snacks.setup(opts)
+
+			-- These normally initialize on UIEnter, but health checks run headless before that event.
+			if Snacks.input and Snacks.input.enable then
+				Snacks.input.enable()
+			end
+			if Snacks.picker and Snacks.picker.select then
+				vim.ui.select = Snacks.picker.select
+			end
 		end,
 
 		keys = {
@@ -228,11 +253,11 @@ return {
 				desc = "Smart Find Files",
 			},
 			{
-				"<leader><leader>s",
+				"<leader>bb",
 				function()
 					require("snacks").picker.buffers()
 				end,
-				desc = "Search Buffers",
+				desc = "Buffers",
 			},
 			{
 				"<leader>ff",
@@ -302,7 +327,7 @@ return {
 				desc = "Help Pages",
 			},
 			{
-				"<leader>sl",
+				"<leader>xl",
 				function()
 					require("snacks").picker.loclist()
 				end,
@@ -323,7 +348,7 @@ return {
 				desc = "Man Pages",
 			},
 			{
-				"<leader>sq",
+				"<leader>xq",
 				function()
 					require("snacks").picker.qflist()
 				end,

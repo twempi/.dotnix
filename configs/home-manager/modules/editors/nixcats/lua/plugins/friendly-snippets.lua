@@ -1,5 +1,5 @@
 return {
-  "rafamadriz/friendly-snippets",
-  enabled = true,
-  event = "VeryLazy",
+	"rafamadriz/friendly-snippets",
+	enabled = true,
+	event = "VeryLazy",
 }

@@ -4,25 +4,31 @@ return {
 		enabled = true,
 		ft = { "markdown" },
 		opts = {
+			preset = "obsidian",
 			checkbox = {
 				enabled = true,
 				custom = {
-					todo = {
+					in_progress = {
 						raw = "[~]",
 						rendered = "󰥔 ",
 						highlight = "RenderMarkdownTodo",
 					},
 					important = {
-						raw = "[s]",
+						raw = "[!]",
 						rendered = "󰓎 ",
 						highlight = "DiagnosticWarn",
 					},
-          strikethrough = {
-            raw = "[/]",
-            rendered = " ",
-            highlight = "DiagnosticError",
-            scope_highlight = "@markup.strikethrough",
-          },
+					forwarded = {
+						raw = "[>]",
+						rendered = " ",
+						highlight = "DiagnosticInfo",
+					},
+					strikethrough = {
+						raw = "[/]",
+						rendered = " ",
+						highlight = "DiagnosticError",
+						scope_highlight = "@markup.strikethrough",
+					},
 				},
 			},
 			latex = { enabled = false },

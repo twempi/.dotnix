@@ -35,13 +35,13 @@ return {
 			map("n", "gr", vim.lsp.buf.references, "References")
 			map("n", "K", vim.lsp.buf.hover, "Hover documentation")
 
-			map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
+			map("n", "<leader>cr", vim.lsp.buf.rename, "Rename symbol")
 			map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
 
 			-- Formatting is handled ONLY by conform.nvim
-			map("n", "<leader>f", function()
+			map("n", "<leader>cf", function()
 				require("conform").format({
-					lsp_fallback = true,
+					lsp_format = "fallback",
 					async = true,
 					timeout_ms = 1000,
 				})

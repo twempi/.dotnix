@@ -1,7 +1,7 @@
 return {
 	"lervag/vimtex",
 	enabled = true,
-	ft = "latex",
+	ft = { "tex", "plaintex", "latex" },
 	lazy = false,
 	init = function()
 		vim.g.vimtex_view_method = "zathura"
@@ -15,5 +15,5 @@ return {
 
 	keys = {
 		{ "<leader>l", "<nop>", desc = "[l]atex" },
-	}
+	},
 }
