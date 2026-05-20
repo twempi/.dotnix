@@ -5,8 +5,9 @@
         "eDP-1,2560x1600@120,0x0,1.5"
       ];
     }
-    ./modules/de/sway
-    ./modules/de/mango
+    ./modules/windowmanagers/hyprland
+    ./modules/windowmanagers/sway
+    ./modules/windowmanagers/mango
     ./modules/fish
     ./modules/fastfetch
   ];

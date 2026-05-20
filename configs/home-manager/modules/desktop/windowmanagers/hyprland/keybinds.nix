@@ -76,6 +76,9 @@ in {
         "$mod, 9, workspace, 9"
         "$mod, 0, workspace, 10"
 
+        # Cycle through actice workspaces
+        "$mod, TAB, workspace, e+1"
+
         # Move active window to workspace #
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"
