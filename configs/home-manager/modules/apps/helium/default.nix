@@ -237,7 +237,7 @@ in {
           featured = true;
           name = "Nix Search";
           shortcut = "ns";
-          url = "https://mynixos.com/search?q=={searchTerms}";
+          url = "https://mynixos.com/search?q={searchTerms}";
         }
       ];
 

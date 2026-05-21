@@ -1244,6 +1244,22 @@
         "type": "github"
       }
     },
+    "plugins-math-conceal-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779204399,
+        "narHash": "sha256-W4dacg4i8C4Rc5M/g4VRCFFl+dns9M7G8+6tsSrq3HM=",
+        "owner": "pxwg",
+        "repo": "math-conceal.nvim",
+        "rev": "8b2bc05aaad6a7ebb0a0f41463bffe37247ef14a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pxwg",
+        "repo": "math-conceal.nvim",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -1306,6 +1322,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "noctalia": "noctalia",
+        "plugins-math-conceal-nvim": "plugins-math-conceal-nvim",
         "quickshell": "quickshell",
         "spicetify-nix": "spicetify-nix",
         "stylix": "stylix",

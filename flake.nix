@@ -18,6 +18,7 @@
 
     nixCats = {
       url = "github:BirdeeHub/nixCats-nvim";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixcord = {
@@ -106,6 +107,11 @@
     librepods = {
       url = "github:kavishdevar/librepods/linux/rust";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    "plugins-math-conceal-nvim" = {
+      url = "github:pxwg/math-conceal.nvim";
+      flake = false;
     };
   };
 

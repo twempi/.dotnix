@@ -2,9 +2,12 @@
   config,
   lib,
   inputs,
+  hostname,
   ...
 }: let
   utils = inputs.nixCats.utils;
+
+  homeConfigName = "${config.home.username}-${hostname}";
   stylixBase16Names = [
     "base00"
     "base01"
@@ -23,9 +26,9 @@
     "base0E"
     "base0F"
   ];
-  stylixBase16 = lib.genAttrs stylixBase16Names (
-    name: "#${config.lib.stylix.colors.${name}}"
-  );
+
+  stylixBase16 = lib.getAttrs stylixBase16Names config.lib.stylix.colors.withHashtag;
+
   stylixCacheKey = builtins.substring 0 12 (
     builtins.hashString "sha256" (builtins.toJSON stylixBase16)
   );
@@ -86,10 +89,11 @@ in {
           lua = with pkgs; [
             lua-language-server
             stylua
+            lua51Packages.luacheck
           ];
 
           nix = with pkgs; [
-            nil
+            nixd
             alejandra
             statix
             deadnix
@@ -98,7 +102,6 @@ in {
           go = with pkgs; [
             gopls
             delve
-            golint
             golangci-lint
             gotools
             go-tools
@@ -110,8 +113,14 @@ in {
             typstyle
           ];
 
+          markdown = with pkgs; [
+            marksman
+            markdownlint-cli2
+          ];
+
           latex = with pkgs; [
             texlab
+            texlivePackages.latexmk
             texlivePackages.latexindent
             texlivePackages.chktex
           ];
@@ -119,6 +128,20 @@ in {
           cpp = with pkgs; [
             clang
             clang-tools
+          ];
+
+          json = with pkgs; [
+            vscode-langservers-extracted
+            jq
+          ];
+
+          yaml = with pkgs; [
+            yaml-language-server
+            yamlfmt
+          ];
+
+          toml = with pkgs; [
+            taplo
           ];
 
           python = with pkgs; [
@@ -198,6 +221,8 @@ in {
             friendly-snippets
             nvim-autopairs
             sqlite-lua
+            tabout-nvim
+            math-conceal-nvim
           ];
           markdown = with pkgs.vimPlugins; [
             obsidian-nvim
@@ -284,15 +309,32 @@ in {
             typst = true;
             latex = true;
             cpp = true;
+            json = true;
+            yaml = true;
+            toml = true;
             python = true;
             bash = true;
+            javascript = true;
             arduino = true;
             assembly = true;
+            mini = true;
           };
           # anything else to pass and grab in lua with `nixCats.extra`
           extra = {
-            nixdExtras.nixpkgs = ''import ${pkgs.path} {}'';
+            nixdExtras = {
+              nixpkgs = ''import ${pkgs.path} {}'';
+
+              nixosOptions = ''
+                (builtins.getFlake "${inputs.self}").nixosConfigurations.${hostname}.options
+              '';
+
+              homeManagerOptions = ''
+                (builtins.getFlake "${inputs.self}").homeConfigurations.${homeConfigName}.options
+              '';
+            };
+
             sqlite.libsqlite3 = "${pkgs.sqlite.out}/lib/libsqlite3.so";
+
             stylix = {
               colors = stylixBase16;
               polarity = config.stylix.polarity;

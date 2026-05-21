@@ -11,6 +11,7 @@ return {
 		end
 
 		local on_attach = function(client, bufnr)
+			-- Formatting is handled by conform.nvim, not LSP servers.
 			client.server_capabilities.documentFormattingProvider = false
 			client.server_capabilities.documentRangeFormattingProvider = false
 
@@ -40,27 +41,84 @@ return {
 			severity_sort = true,
 		})
 
+		local function nixcats_extra(path, fallback)
+			if type(nixCats) == "table" and type(nixCats.extra) == "function" then
+				local value = nixCats.extra(path)
+				if value ~= nil then
+					return value
+				end
+			end
+			return fallback
+		end
+
+		local default_config = {
+			capabilities = capabilities,
+			on_attach = on_attach,
+		}
+
 		vim.lsp.config("lua_ls", {
 			capabilities = capabilities,
 			on_attach = on_attach,
 			settings = {
 				Lua = {
-					diagnostics = { globals = { "vim" } },
-					workspace = { checkThirdParty = false },
-					telemetry = { enable = false },
+					runtime = {
+						version = "LuaJIT",
+					},
+					diagnostics = {
+						globals = { "vim", "nixCats" },
+					},
+					workspace = {
+						checkThirdParty = false,
+						library = {
+							vim.env.VIMRUNTIME,
+						},
+					},
+					telemetry = {
+						enable = false,
+					},
 				},
 			},
 		})
 
-		vim.lsp.config("pyright", {
+		vim.lsp.config("nixd", {
 			capabilities = capabilities,
 			on_attach = on_attach,
+			cmd = { "nixd" },
+			filetypes = { "nix" },
+			root_markers = { "flake.nix", ".git" },
+			settings = {
+				nixd = {
+					nixpkgs = {
+						expr = nixcats_extra("nixdExtras.nixpkgs", "import <nixpkgs> { }"),
+					},
+					formatting = {
+						command = { "alejandra" },
+					},
+					options = {
+						nixos = {
+							expr = nixcats_extra("nixdExtras.nixosOptions", ""),
+						},
+						["home-manager"] = {
+							expr = nixcats_extra("nixdExtras.homeManagerOptions", ""),
+						},
+					},
+				},
+			},
 		})
 
-		vim.lsp.config("ts_ls", {
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
+		vim.lsp.config("pyright", default_config)
+
+		vim.lsp.config("ts_ls", default_config)
+
+		vim.lsp.config("gopls", default_config)
+
+		vim.lsp.config("marksman", default_config)
+
+		vim.lsp.config("jsonls", default_config)
+
+		vim.lsp.config("yamlls", default_config)
+
+		vim.lsp.config("taplo", default_config)
 
 		vim.lsp.config("clangd", {
 			capabilities = capabilities,
@@ -73,24 +131,7 @@ return {
 			},
 		})
 
-		vim.lsp.config("bashls", {
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		vim.lsp.config("nil_ls", {
-			capabilities = capabilities,
-			on_attach = on_attach,
-			settings = {
-				["nil"] = {
-					nix = {
-						flake = {
-							autoArchive = true,
-						},
-					},
-				},
-			},
-		})
+		vim.lsp.config("bashls", default_config)
 
 		vim.lsp.config("tinymist", {
 			capabilities = capabilities,
@@ -98,7 +139,7 @@ return {
 			settings = {
 				exportPdf = "onType",
 				semanticTokens = "enable",
-				formatterMode = "typestyle",
+				formatterMode = "typstyle",
 			},
 		})
 
@@ -129,10 +170,7 @@ return {
 			},
 		})
 
-		vim.lsp.config("arduino-language-server", {
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
+		vim.lsp.config("arduino_language_server", default_config)
 
 		vim.lsp.config("asm_lsp", {
 			capabilities = capabilities,
@@ -142,14 +180,19 @@ return {
 
 		vim.lsp.enable({
 			"lua_ls",
+			"nixd",
 			"pyright",
 			"ts_ls",
+			"gopls",
+			"marksman",
+			"jsonls",
+			"yamlls",
+			"taplo",
 			"clangd",
 			"bashls",
-			"nil_ls",
 			"tinymist",
 			"texlab",
-			"arduino-language-server",
+			"arduino_language_server",
 			"asm_lsp",
 		})
 	end,
