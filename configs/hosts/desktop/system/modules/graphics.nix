@@ -31,7 +31,10 @@
     videoDrivers = ["nvidia"];
   };
 
-  services.lact.enable = true;
+  services.lact = {
+    enable = true;
+    # settings = {};
+  };
 
   systemd.user.services.nvidia-powermizer-max = {
     description = "Prefer maximum NVIDIA performance mode";

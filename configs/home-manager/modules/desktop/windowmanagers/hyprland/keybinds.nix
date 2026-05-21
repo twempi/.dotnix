@@ -78,6 +78,7 @@ in {
 
         # Cycle through actice workspaces
         "$mod, TAB, workspace, e+1"
+        "$mod SHIFT, TAB, workspace, e-1"
 
         # Move active window to workspace #
         "$mod SHIFT, 1, movetoworkspace, 1"

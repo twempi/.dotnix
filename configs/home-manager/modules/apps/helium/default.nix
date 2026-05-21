@@ -235,20 +235,8 @@ in {
       SiteSearchSettings = [
         {
           featured = true;
-          name = "Nix Packages";
-          shortcut = "np";
-          url = "https://search.nixos.org/packages?channel=unstable&query={searchTerms}";
-        }
-        {
-          featured = true;
-          name = "Nix Options";
-          shortcut = "nop";
-          url = "https://search.nixos.org/options?channel=unstable&query={searchTerms}";
-        }
-        {
-          featured = true;
-          name = "Nix Options";
-          shortcut = "nt";
+          name = "Nix Search";
+          shortcut = "ns";
           url = "https://mynixos.com/search?q=={searchTerms}";
         }
       ];

@@ -46,7 +46,6 @@
     seahorse
     gnome-clocks
     zathura
-    sioyek
     gearlever
     upscayl
     iloader
@@ -54,6 +53,7 @@
     geogebra
     telegram-desktop
     blueman
+    pdfarranger
 
     # CLI
     brightnessctl
@@ -101,7 +101,6 @@
     inputs.ltspice.packages.${pkgs.stdenv.hostPlatform.system}.default
     pipx
     trash-cli
-    gowall
     inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Python

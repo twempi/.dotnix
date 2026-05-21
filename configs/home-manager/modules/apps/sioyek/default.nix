@@ -1,4 +1,6 @@
-{
+{pkgs, ...}: {
+  homePackages = with pkgs; [sioyek];
+
   stylix.targets.sioyek = {
     enable = true;
     colors.enable = true;
@@ -7,8 +9,8 @@
   programs.sioyek = {
     enable = true;
     # config = {
-      # startup_commands = {
-      # };
+    # startup_commands = {
+    # };
     # };
     # keybinds = {
     # };

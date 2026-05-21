@@ -33,6 +33,7 @@
     ./modules/cli/btop
     ./modules/cli/bat
     ./modules/cli/lazygit
+    ./modules/cli/gowall
 
     # Shell
     ./modules/desktop/waybar
