@@ -1,37 +1,43 @@
 {pkgs, ...}: {
-  homePackages = with pkgs; [
-    gowall
-    realesrgan-ncnn-vulkan
-    vulkan-tools
-  ];
+  home = {
+    packages = with pkgs; [
+      gowall
+      realesrgan-ncnn-vulkan
+      vulkan-tools
+    ];
 
-  home.file.".config/gowall/config.yml".text = ''
-    themes:
-      - name: "black to white"
-        colors:
-          - "#000000"
-          - "#0f0f0f"
-          - "#1e1e1e"
-          - "#2d2d2d"
-          - "#3c3c3c"
-          - "#4b4b4b"
-          - "#5a5a5a"
-          - "#696969"
-          - "#787878"
-          - "#878787"
-          - "#969696"
-          - "#a5a5a5"
-          - "#b4b4b4"
-          - "#c3c3c3"
-          - "#d2d2d2"
-          - "#e1e1e1"
-          - "#f0f0f0"
-          - "#ffffff"
-      - name: "placeholder2"
-        colors:
-          - "#F73253"
-          - "#FA39DF"
-          - "#005382"
-          - "#123456"
-  '';
+    sessionVariables = {
+      LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
+    };
+
+    file.".config/gowall/config.yml".text = ''
+      themes:
+        - name: "black to white"
+          colors:
+            - "#000000"
+            - "#050505"
+            - "#090909"
+            - "#0e0e0e"
+            - "#111111"
+            - "#141414"
+            - "#171717"
+            - "#1a1a1a"
+            - "#1c1c1c"
+            - "#1f1f1f"
+            - "#212121"
+            - "#242424"
+            - "#494949"
+            - "#6d6d6d"
+            - "#929292"
+            - "#b6b6b6"
+            - "#dbdbdb"
+            - "#ffffff"
+        - name: "white to black"
+          colors:
+            - "#F73253"
+            - "#FA39DF"
+            - "#005382"
+            - "#123456"
+    '';
+  };
 }

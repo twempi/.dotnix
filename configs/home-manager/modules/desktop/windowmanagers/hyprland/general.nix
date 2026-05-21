@@ -96,7 +96,6 @@
 
     dwindle = {
       "preserve_split" = true;
-      "pseudotile" = true;
     };
 
     misc = {
@@ -112,7 +111,7 @@
     };
 
     input = {
-      "kb_layout" = ["us"];
+      "kb_layout" = "us";
       "follow_mouse" = 1;
       "sensitivity" = 0;
       "numlock_by_default" = true;

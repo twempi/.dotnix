@@ -1,13 +1,14 @@
 {
   pkgs,
   inputs,
+  lib,
   ...
 }: let
   mac-style-src = pkgs.fetchFromGitHub {
-    owner = "SergioRibera";
-    repo = "s4rchiso-plymouth-theme";
-    rev = "2f782f4b68ce1c00cef3fde6970d7b4241bb97d4";
-    sha256 = "sha256-bjtQvzupAFX5AYAIyBXSFgWhaG4nP4TvgKDoKyUhZ4U=";
+    owner = "twempi";
+    repo = "plymouth-theme";
+    rev = "b305c7200b90c204ad69c23ea5a4ae16939e6fc8";
+    sha256 = "sha256-dlNXlIPxPSDbai8W1itxsTG93l5735uP15pCqFDoQV8=";
   };
 
   mac-style-load = pkgs.callPackage "${mac-style-src}/package.nix" {};
