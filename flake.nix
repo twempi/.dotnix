@@ -16,10 +16,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixCats = {
-      url = "github:BirdeeHub/nixCats-nvim";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixCats.url = "github:BirdeeHub/nixCats-nvim";
 
     nixcord = {
       url = "github:FlameFlag/nixcord";
@@ -112,7 +109,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    plugins-math-conceal-nvim = {
+    math-conceal-nvim = {
       url = "github:pxwg/math-conceal.nvim/preview";
       flake = false;
     };
