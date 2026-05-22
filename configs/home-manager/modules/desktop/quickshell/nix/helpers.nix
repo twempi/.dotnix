@@ -651,6 +651,264 @@
       esac
     '';
   };
+  qsGpuInfo = pkgs.writeShellApplication {
+    name = "qs-gpu-info";
+    runtimeInputs = with pkgs; [
+      python3
+      supergfxctl
+    ];
+    text = ''
+      exec python3 - <<'PY'
+      import json
+      import re
+      import subprocess
+
+      OPTIONS = [
+          {
+              "id": "integrated",
+              "mode": "Integrated",
+              "label": "Integrated",
+              "shortcut": "I",
+              "description": "Use the integrated GPU for lower power.",
+          },
+          {
+              "id": "hybrid",
+              "mode": "Hybrid",
+              "label": "Hybrid",
+              "shortcut": "H",
+              "description": "Use the iGPU with dGPU offload available.",
+          },
+          {
+              "id": "amdmuxdgpu",
+              "mode": "AsusMuxDgpu",
+              "label": "AMDMuxDgpu",
+              "shortcut": "A",
+              "description": "Route display output through the AMD dGPU MUX.",
+          },
+      ]
+
+      MODE_BY_ID = {option["id"]: option for option in OPTIONS}
+      ID_BY_MODE = {
+          "integrated": "integrated",
+          "hybrid": "hybrid",
+          "asusmuxdgpu": "amdmuxdgpu",
+          "amdmuxdgpu": "amdmuxdgpu",
+      }
+
+      def compact_json(payload):
+          return json.dumps(payload, separators=(",", ":"))
+
+      def normalize(value):
+          return re.sub(r"[^a-z0-9]", "", (value or "").lower())
+
+      def mode_id(value):
+          return ID_BY_MODE.get(normalize(value), "")
+
+      def mode_label(value):
+          option_id = mode_id(value)
+          if option_id:
+              return MODE_BY_ID[option_id]["label"]
+          return value or "Unknown"
+
+      def run_supergfxctl(*args):
+          try:
+              return subprocess.check_output(
+                  ["supergfxctl", *args],
+                  stderr=subprocess.STDOUT,
+                  text=True,
+                  timeout=2,
+              ).strip(), ""
+          except FileNotFoundError:
+              return "", "supergfxctl not found"
+          except subprocess.CalledProcessError as error:
+              return "", (error.output or "").strip() or str(error)
+          except Exception as error:
+              return "", str(error)
+
+      def parse_supported(raw):
+          supported = []
+          for part in re.split(r"[\[\],\s]+", raw or ""):
+              option_id = mode_id(part)
+              if option_id and option_id not in supported:
+                  supported.append(option_id)
+          return supported
+
+      current, current_error = run_supergfxctl("--get")
+      supported_raw, supported_error = run_supergfxctl("--supported")
+      status, _ = run_supergfxctl("--status")
+      vendor, _ = run_supergfxctl("--vendor")
+      pending_action, _ = run_supergfxctl("--pend-action")
+      pending_mode, _ = run_supergfxctl("--pend-mode")
+
+      current_id = mode_id(current)
+      supported = parse_supported(supported_raw)
+      error = current_error or supported_error
+      options = []
+      for option in OPTIONS:
+          item = dict(option)
+          item["supported"] = option["id"] in supported
+          item["current"] = option["id"] == current_id
+          options.append(item)
+
+      print(compact_json({
+          "ok": not bool(error),
+          "error": error,
+          "current": current_id or normalize(current) or "unknown",
+          "currentLabel": mode_label(current),
+          "supported": supported,
+          "vendor": vendor or "Unknown",
+          "status": status or "unknown",
+          "pendingAction": pending_action or "Unknown",
+          "pendingMode": pending_mode or "Unknown",
+          "options": options,
+      }))
+      PY
+    '';
+  };
+  qsGpuSwitch = pkgs.writeShellApplication {
+    name = "qs-gpu-switch";
+    runtimeInputs = with pkgs; [
+      libnotify
+      python3
+      supergfxctl
+    ];
+    text = ''
+      exec python3 - "$@" <<'PY'
+      import json
+      import re
+      import subprocess
+      import sys
+
+      OPTIONS = {
+          "integrated": {
+              "mode": "Integrated",
+              "label": "Integrated",
+          },
+          "hybrid": {
+              "mode": "Hybrid",
+              "label": "Hybrid",
+          },
+          "amdmuxdgpu": {
+              "mode": "AsusMuxDgpu",
+              "label": "AMDMuxDgpu",
+          },
+      }
+      ID_BY_MODE = {
+          "integrated": "integrated",
+          "hybrid": "hybrid",
+          "asusmuxdgpu": "amdmuxdgpu",
+          "amdmuxdgpu": "amdmuxdgpu",
+      }
+
+      def compact_json(payload):
+          return json.dumps(payload, separators=(",", ":"))
+
+      def normalize(value):
+          return re.sub(r"[^a-z0-9]", "", (value or "").lower())
+
+      def mode_id(value):
+          return ID_BY_MODE.get(normalize(value), "")
+
+      def parse_supported(raw):
+          supported = []
+          for part in re.split(r"[\[\],\s]+", raw or ""):
+              option_id = mode_id(part)
+              if option_id and option_id not in supported:
+                  supported.append(option_id)
+          return supported
+
+      def run_supergfxctl(*args, timeout=2):
+          return subprocess.run(
+              ["supergfxctl", *args],
+              check=False,
+              capture_output=True,
+              text=True,
+              timeout=timeout,
+          )
+
+      def supergfx_output(*args):
+          try:
+              result = run_supergfxctl(*args)
+              if result.returncode == 0:
+                  return (result.stdout or "").strip()
+          except Exception:
+              pass
+          return ""
+
+      def notify(title, body):
+          subprocess.run(
+              ["notify-send", title, body, "--app-name=quickshell"],
+              check=False,
+              stdout=subprocess.DEVNULL,
+              stderr=subprocess.DEVNULL,
+          )
+
+      def fail(message, code=1):
+          notify("GPU switch failed", message)
+          print(message, file=sys.stderr)
+          print(compact_json({"ok": False, "error": message}))
+          raise SystemExit(code)
+
+      def action_message(pending_action):
+          normalized = normalize(pending_action)
+          if not normalized or normalized in {"unknown", "noactionrequired", "nothing"}:
+              return "No action required."
+          if "logout" in normalized:
+              return "Log out and back in to fully apply the change."
+          if "reboot" in normalized:
+              return "Reboot to fully apply the change."
+          return pending_action
+
+      if len(sys.argv) != 2:
+          fail("usage: qs-gpu-switch <integrated|hybrid|amdmuxdgpu>", 64)
+
+      target_id = normalize(sys.argv[1])
+      if target_id not in OPTIONS:
+          fail(f"unknown GPU mode: {sys.argv[1]}", 64)
+
+      try:
+          supported_result = run_supergfxctl("--supported")
+      except FileNotFoundError:
+          fail("supergfxctl not found", 69)
+      except Exception as error:
+          fail(str(error), 1)
+
+      if supported_result.returncode != 0:
+          message = (supported_result.stderr or supported_result.stdout or "").strip() or "could not read supported GPU modes"
+          fail(message, supported_result.returncode)
+
+      supported = parse_supported(supported_result.stdout)
+      if target_id not in supported:
+          fail(f"{OPTIONS[target_id]['label']} is not supported on this machine", 65)
+
+      target = OPTIONS[target_id]
+      try:
+          switch_result = run_supergfxctl("--mode", target["mode"], timeout=30)
+      except Exception as error:
+          fail(str(error), 1)
+
+      if switch_result.returncode != 0:
+          message = (switch_result.stderr or switch_result.stdout or "").strip() or f"failed to switch to {target['label']}"
+          fail(message, switch_result.returncode)
+
+      pending_action = supergfx_output("--pend-action") or "Unknown"
+      pending_mode = supergfx_output("--pend-mode") or "Unknown"
+      body_lines = [f"Requested: {target['label']}"]
+      if normalize(pending_mode) not in {"", "unknown"}:
+          body_lines.append(f"Pending mode: {pending_mode}")
+      body_lines.append(action_message(pending_action))
+      notify("GPU mode switched", "\n".join(body_lines))
+
+      print(compact_json({
+          "ok": True,
+          "mode": target_id,
+          "label": target["label"],
+          "pendingAction": pending_action,
+          "pendingMode": pending_mode,
+      }))
+      PY
+    '';
+  };
   qsMangoTags = pkgs.writeShellApplication {
     name = "qs-mango-tags";
     runtimeInputs = with pkgs; [
@@ -1043,6 +1301,7 @@
               ("SUPER+SHIFT+1..9,0", "Move window to tags 1-10"),
               ("SUPER+ALT+V", "Volume panel"),
               ("SUPER+ALT+G", "This guide"),
+              ("SUPER+XF86Launch1", "GPU switcher"),
           ]
           payload("Guide", "Mango keybinds", [{"label": key, "value": value} for key, value in rows])
 
@@ -1106,13 +1365,13 @@
     ];
     text = ''
       if [ "$#" -ne 1 ]; then
-        echo "usage: qs-quick-action <launcher|power|wallpaper|emoji|clipboard|monitors|stewart|music|battery|calendar|network|focustime|volume|guide>" >&2
+        echo "usage: qs-quick-action <launcher|power|wallpaper|emoji|clipboard|gpu|monitors|stewart|music|battery|calendar|network|focustime|volume|guide>" >&2
         exit 64
       fi
 
       kind="$1"
       case "$kind" in
-        launcher|power|wallpaper|emoji|clipboard|monitors|stewart|music|battery|calendar|network|focustime|volume|guide) ;;
+        launcher|power|wallpaper|emoji|clipboard|gpu|monitors|stewart|music|battery|calendar|network|focustime|volume|guide) ;;
         *)
           echo "unknown quick action: $kind" >&2
           exit 64
@@ -1280,6 +1539,15 @@
       exec qs-quick-action clipboard
     '';
   };
+  qsGpu = pkgs.writeShellApplication {
+    name = "qs-gpu";
+    runtimeInputs = [
+      qsQuickAction
+    ];
+    text = ''
+      exec qs-quick-action gpu
+    '';
+  };
   qsShell = pkgs.writeShellApplication {
     name = "qs-shell";
     runtimeInputs = [
@@ -1292,6 +1560,9 @@
       qsEmojiApply
       qsEmojiList
       qsFocusedScreenWatch
+      qsGpu
+      qsGpuInfo
+      qsGpuSwitch
       qsMangoTag
       qsMangoTags
       qsManager
@@ -1399,6 +1670,9 @@ in {
     qsEmojiList
     qsFocusedScreen
     qsFocusedScreenWatch
+    qsGpu
+    qsGpuInfo
+    qsGpuSwitch
     qsLauncher
     qsMangoTag
     qsMangoTags
@@ -1430,6 +1704,9 @@ in {
     qsEmojiList
     qsFocusedScreen
     qsFocusedScreenWatch
+    qsGpu
+    qsGpuInfo
+    qsGpuSwitch
     qsLauncher
     qsMangoTag
     qsMangoTags

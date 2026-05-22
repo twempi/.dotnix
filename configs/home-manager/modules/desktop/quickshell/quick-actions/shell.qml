@@ -29,6 +29,22 @@ ShellRoot {
     {"name": "Shutdown", "label": "Shutdown", "icon": Qt.resolvedUrl("icons/shutdown.svg"), "action": "shutdown", "shortcut": "P"},
   ]
 
+  property int gpuSelectedIndex: 0
+  property string gpuCurrent: "unknown"
+  property string gpuCurrentLabel: "Unknown"
+  property string gpuVendor: "Unknown"
+  property string gpuPowerStatus: "unknown"
+  property string gpuPendingAction: "Unknown"
+  property string gpuPendingMode: "Unknown"
+  property string gpuStatusText: "Loading GPU state"
+  property string gpuErrorText: ""
+  property var gpuSupported: []
+  property var gpuOptions: [
+    {"id": "integrated", "mode": "Integrated", "label": "Integrated", "shortcut": "I", "description": "Use the integrated GPU for lower power.", "supported": false, "current": false},
+    {"id": "hybrid", "mode": "Hybrid", "label": "Hybrid", "shortcut": "H", "description": "Use the iGPU with dGPU offload available.", "supported": false, "current": false},
+    {"id": "amdmuxdgpu", "mode": "AsusMuxDgpu", "label": "AMDMuxDgpu", "shortcut": "A", "description": "Route display output through the AMD dGPU MUX.", "supported": false, "current": false},
+  ]
+
   property var wallpapers: []
   property string wallpaperQuery: ""
   property int wallpaperSelectedIndex: 0
@@ -116,6 +132,14 @@ ShellRoot {
     return screenHeight >= 430 ? 390 : Math.max(1, screenHeight - 24);
   }
 
+  function gpuPanelWidth(screenWidth) {
+    return screenWidth >= 470 ? 430 : Math.max(1, screenWidth - 24);
+  }
+
+  function gpuPanelHeight(screenHeight) {
+    return screenHeight >= 430 ? 410 : Math.max(1, screenHeight - 24);
+  }
+
   function wallpaperPanelWidth(screenWidth) {
     return screenWidth >= 740 ? Math.min(1000, screenWidth - 40) : Math.max(1, screenWidth - 24);
   }
@@ -148,7 +172,7 @@ ShellRoot {
   }
 
   function activateOverlay(kind) {
-    if (kind !== "launcher" && kind !== "power" && kind !== "wallpaper" && kind !== "emoji" && kind !== "clipboard" && root.genericOverlayKinds.indexOf(kind) === -1) {
+    if (kind !== "launcher" && kind !== "power" && kind !== "gpu" && kind !== "wallpaper" && kind !== "emoji" && kind !== "clipboard" && root.genericOverlayKinds.indexOf(kind) === -1) {
       return "unknown overlay: " + kind;
     }
 
@@ -167,6 +191,13 @@ ShellRoot {
       refreshPowerInfo();
       root.activeOverlay = "power";
       Qt.callLater(root.focusPower);
+    } else if (kind === "gpu") {
+      root.gpuErrorText = "";
+      root.gpuStatusText = "Loading GPU state";
+      root.gpuSelectedIndex = root.currentGpuOptionIndex();
+      refreshGpuInfo();
+      root.activeOverlay = "gpu";
+      Qt.callLater(root.focusGpu);
     } else if (kind === "wallpaper") {
       root.wallpaperQuery = "";
       root.wallpaperSelectedIndex = root.filteredWallpapers.length > 0 ? 0 : -1;
@@ -215,6 +246,10 @@ ShellRoot {
 
   function focusPower() {
     powerOverlayFocus.forceActiveFocus();
+  }
+
+  function focusGpu() {
+    gpuOverlayFocus.forceActiveFocus();
   }
 
   function focusWallpaper() {
@@ -392,6 +427,184 @@ ShellRoot {
       event.accepted = true;
     } else if (keyText === "l") {
       runPowerAction("logout");
+      event.accepted = true;
+    }
+  }
+
+  function refreshGpuInfo() {
+    if (!gpuInfoProcess.running) {
+      gpuInfoProcess.running = true;
+    }
+  }
+
+  function normalizeGpuText(value) {
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  }
+
+  function gpuFollowupText(action) {
+    var normalized = normalizeGpuText(action);
+    if (normalized.length === 0 || normalized === "unknown" || normalized === "noactionrequired" || normalized === "nothing") {
+      return "No action required";
+    }
+    if (normalized.indexOf("logout") !== -1) {
+      return "Log out and back in to fully apply";
+    }
+    if (normalized.indexOf("reboot") !== -1) {
+      return "Reboot to fully apply";
+    }
+    return action;
+  }
+
+  function gpuPendingText() {
+    var followup = gpuFollowupText(root.gpuPendingAction);
+    if (normalizeGpuText(root.gpuPendingMode) !== "unknown" && normalizeGpuText(root.gpuPendingMode).length > 0) {
+      return followup + " | Pending: " + root.gpuPendingMode;
+    }
+    return followup;
+  }
+
+  function gpuOptionIndexById(optionId) {
+    for (var i = 0; i < root.gpuOptions.length; i++) {
+      if (root.gpuOptions[i].id === optionId) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  function currentGpuOptionIndex() {
+    for (var i = 0; i < root.gpuOptions.length; i++) {
+      if (root.gpuOptions[i].current === true) {
+        return i;
+      }
+    }
+    for (var j = 0; j < root.gpuOptions.length; j++) {
+      if (root.gpuOptions[j].supported === true) {
+        return j;
+      }
+    }
+    return root.gpuOptions.length > 0 ? 0 : -1;
+  }
+
+  function gpuOptionStateText(option) {
+    if (gpuSwitchProcess.running && gpuSwitchProcess.pendingId === option.id) {
+      return "Switching";
+    }
+    if (option.current === true) {
+      return "Current";
+    }
+    if (option.supported !== true) {
+      return "Unavailable";
+    }
+    return option.shortcut || "";
+  }
+
+  function gpuHeaderText() {
+    if (gpuInfoProcess.running && root.gpuCurrent === "unknown") {
+      return "Loading GPU state";
+    }
+    if (root.gpuErrorText.length > 0) {
+      return root.gpuErrorText;
+    }
+    return "Current: " + root.gpuCurrentLabel;
+  }
+
+  function gpuDetailText() {
+    return "Vendor: " + root.gpuVendor + " | dGPU: " + root.gpuPowerStatus;
+  }
+
+  function parseGpuPayload(output) {
+    try {
+      var payload = JSON.parse(output);
+      root.gpuCurrent = payload.current || "unknown";
+      root.gpuCurrentLabel = payload.currentLabel || "Unknown";
+      root.gpuVendor = payload.vendor || "Unknown";
+      root.gpuPowerStatus = payload.status || "unknown";
+      root.gpuPendingAction = payload.pendingAction || "Unknown";
+      root.gpuPendingMode = payload.pendingMode || "Unknown";
+      root.gpuSupported = payload.supported || [];
+      root.gpuOptions = payload.options || root.gpuOptions;
+      root.gpuErrorText = payload.ok === false ? (payload.error || "Could not read GPU state") : "";
+      root.gpuSelectedIndex = root.currentGpuOptionIndex();
+      root.gpuStatusText = root.gpuPendingText();
+    } catch (error) {
+      root.gpuCurrent = "unknown";
+      root.gpuCurrentLabel = "Unknown";
+      root.gpuErrorText = "Could not parse GPU state";
+      root.gpuStatusText = root.gpuErrorText;
+      root.gpuSelectedIndex = root.currentGpuOptionIndex();
+    }
+  }
+
+  function moveGpuSelection(delta) {
+    if (root.gpuOptions.length === 0 || gpuSwitchProcess.running) {
+      return;
+    }
+
+    root.gpuSelectedIndex = Math.max(0, Math.min(root.gpuOptions.length - 1, root.gpuSelectedIndex + delta));
+    gpuList.positionViewAtIndex(root.gpuSelectedIndex, ListView.Contain);
+  }
+
+  function switchGpu(index) {
+    if (index < 0 || index >= root.gpuOptions.length || gpuSwitchProcess.running) {
+      return;
+    }
+
+    var option = root.gpuOptions[index];
+    root.gpuSelectedIndex = index;
+    if (option.supported !== true) {
+      root.gpuErrorText = option.label + " is not supported on this machine";
+      root.gpuStatusText = root.gpuErrorText;
+      return;
+    }
+    if (option.current === true) {
+      root.gpuErrorText = "";
+      root.gpuStatusText = option.label + " is already active";
+      return;
+    }
+
+    gpuSwitchProcess.pendingId = option.id;
+    gpuSwitchProcess.pendingLabel = option.label;
+    gpuSwitchProcess.lastError = "";
+    root.gpuErrorText = "";
+    root.gpuStatusText = "Switching to " + option.label;
+    gpuSwitchProcess.command = ["qs-gpu-switch", option.id];
+    gpuSwitchProcess.running = true;
+  }
+
+  function switchGpuById(optionId) {
+    var index = root.gpuOptionIndexById(optionId);
+    if (index >= 0) {
+      root.switchGpu(index);
+    }
+  }
+
+  function handleGpuKey(event) {
+    var keyText = event.text.toLowerCase();
+
+    if (event.key === Qt.Key_Escape) {
+      root.closeActiveOverlay();
+      event.accepted = true;
+    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+      root.switchGpu(root.gpuSelectedIndex);
+      event.accepted = true;
+    } else if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
+      root.moveGpuSelection(1);
+      event.accepted = true;
+    } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Left) {
+      root.moveGpuSelection(-1);
+      event.accepted = true;
+    } else if (keyText === "i") {
+      root.switchGpuById("integrated");
+      event.accepted = true;
+    } else if (keyText === "h") {
+      root.switchGpuById("hybrid");
+      event.accepted = true;
+    } else if (keyText === "a") {
+      root.switchGpuById("amdmuxdgpu");
+      event.accepted = true;
+    } else if (event.key === Qt.Key_R) {
+      root.refreshGpuInfo();
       event.accepted = true;
     }
   }
@@ -879,6 +1092,57 @@ ShellRoot {
     running: true
     repeat: true
     onTriggered: root.refreshPowerInfo()
+  }
+
+  Process {
+    id: gpuInfoProcess
+
+    command: ["qs-gpu-info"]
+
+    stdout: StdioCollector {
+      onStreamFinished: root.parseGpuPayload(this.text)
+    }
+
+    stderr: StdioCollector {
+      onStreamFinished: {
+        if (this.text.length > 0) {
+          root.gpuErrorText = this.text.trim();
+          root.gpuStatusText = root.gpuErrorText;
+        }
+      }
+    }
+
+    onExited: function(exitCode, exitStatus) {
+      if (exitCode !== 0 && root.gpuErrorText.length === 0) {
+        root.gpuErrorText = "Could not read GPU state";
+        root.gpuStatusText = root.gpuErrorText;
+      }
+    }
+  }
+
+  Process {
+    id: gpuSwitchProcess
+
+    property string pendingId: ""
+    property string pendingLabel: ""
+    property string lastError: ""
+
+    stderr: StdioCollector {
+      onStreamFinished: gpuSwitchProcess.lastError = this.text.trim()
+    }
+
+    onExited: function(exitCode, exitStatus) {
+      if (exitCode === 0) {
+        root.gpuStatusText = "Switch requested: " + gpuSwitchProcess.pendingLabel;
+        root.refreshGpuInfo();
+      } else {
+        root.gpuErrorText = gpuSwitchProcess.lastError.length > 0 ? gpuSwitchProcess.lastError : "Failed to switch GPU";
+        root.gpuStatusText = root.gpuErrorText;
+      }
+      gpuSwitchProcess.pendingId = "";
+      gpuSwitchProcess.pendingLabel = "";
+      root.focusGpu();
+    }
   }
 
   Process {
@@ -1866,6 +2130,286 @@ ShellRoot {
                 onEntered: root.powerSelectedIndex = index
               }
             }
+          }
+        }
+      }
+    }
+  }
+
+  PanelWindow {
+    id: gpuWindow
+
+    visible: root.activeOverlay === "gpu"
+    screen: root.targetScreen()
+    color: "transparent"
+    surfaceFormat.opaque: false
+    implicitWidth: root.mangoSession ? root.gpuPanelWidth(root.activeScreenWidth()) : 1
+    implicitHeight: root.mangoSession ? root.gpuPanelHeight(root.activeScreenHeight()) : 1
+    exclusionMode: ExclusionMode.Ignore
+    focusable: true
+
+    anchors {
+      left: true
+      right: !root.mangoSession
+      top: true
+      bottom: !root.mangoSession
+    }
+
+    margins {
+      left: root.mangoSession ? root.centerMarginX(gpuWindow.implicitWidth) : 0
+      top: root.mangoSession ? root.centerMarginY(gpuWindow.implicitHeight) : 0
+    }
+
+    WlrLayershell.namespace: "qs-gpu"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+
+    onVisibleChanged: if (visible) root.focusGpu()
+
+    Item {
+      id: gpuOverlayFocus
+
+      anchors.fill: parent
+      focus: true
+
+      Keys.onPressed: function(event) {
+        root.handleGpuKey(event);
+      }
+
+      Rectangle {
+        anchors.fill: parent
+        color: "#99000000"
+        visible: !root.mangoSession
+      }
+
+      MouseArea {
+        anchors.fill: parent
+        enabled: !root.mangoSession
+        visible: !root.mangoSession
+        onPressed: gpuOverlayFocus.forceActiveFocus()
+      }
+
+      Rectangle {
+        id: gpuPanel
+
+        width: root.mangoSession ? parent.width : root.gpuPanelWidth(parent.width)
+        height: root.mangoSession ? parent.height : root.gpuPanelHeight(parent.height)
+        anchors.centerIn: parent
+        color: theme.background
+        border.color: theme.border
+        border.width: 1
+        clip: true
+
+        Item {
+          anchors.fill: parent
+          anchors.margins: 12
+
+          Rectangle {
+            id: gpuTitleBlock
+
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 104
+            color: theme.backgroundAlt
+            border.color: root.gpuErrorText.length > 0 ? theme.urgent : theme.border
+            border.width: 1
+
+            Rectangle {
+              id: gpuIcon
+
+              anchors.left: parent.left
+              anchors.leftMargin: 12
+              anchors.verticalCenter: parent.verticalCenter
+              width: 52
+              height: 52
+              color: root.gpuErrorText.length > 0 ? theme.urgent : theme.accent
+
+              Text {
+                anchors.centerIn: parent
+                text: "GPU"
+                color: theme.selectedForeground
+                font.family: theme.fontFamily
+                font.pixelSize: 12
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+              }
+            }
+
+            Text {
+              id: gpuTitleLabel
+
+              anchors.left: gpuIcon.right
+              anchors.leftMargin: 12
+              anchors.right: parent.right
+              anchors.rightMargin: 12
+              anchors.top: parent.top
+              anchors.topMargin: 14
+              text: root.gpuHeaderText()
+              color: root.gpuErrorText.length > 0 ? theme.urgent : theme.foreground
+              font.family: theme.fontFamily
+              font.pixelSize: 15
+              font.bold: true
+              elide: Text.ElideRight
+            }
+
+            Text {
+              anchors.left: gpuTitleLabel.left
+              anchors.right: gpuTitleLabel.right
+              anchors.top: gpuTitleLabel.bottom
+              anchors.topMargin: 7
+              text: root.gpuDetailText()
+              color: theme.muted
+              font.family: theme.fontFamily
+              font.pixelSize: 12
+              elide: Text.ElideRight
+            }
+
+            Text {
+              anchors.left: gpuTitleLabel.left
+              anchors.right: gpuTitleLabel.right
+              anchors.bottom: parent.bottom
+              anchors.bottomMargin: 13
+              text: root.gpuPendingText()
+              color: root.normalizeGpuText(root.gpuPendingAction).indexOf("reboot") !== -1 || root.normalizeGpuText(root.gpuPendingAction).indexOf("logout") !== -1
+                ? theme.accent
+                : theme.muted
+              font.family: theme.fontFamily
+              font.pixelSize: 12
+              elide: Text.ElideRight
+            }
+          }
+
+          ListView {
+            id: gpuList
+
+            anchors.top: gpuTitleBlock.bottom
+            anchors.topMargin: 10
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: gpuStatusLine.top
+            anchors.bottomMargin: 8
+            clip: true
+            spacing: 5
+            model: root.gpuOptions
+            currentIndex: root.gpuSelectedIndex
+            interactive: false
+            keyNavigationEnabled: false
+
+            delegate: Item {
+              readonly property bool optionSupported: modelData.supported === true
+              readonly property bool optionSelected: index === root.gpuSelectedIndex
+              readonly property bool optionCurrent: modelData.current === true
+
+              width: gpuList.width
+              height: 62
+              enabled: optionSupported && !gpuSwitchProcess.running
+              opacity: optionSupported ? 1 : 0.55
+
+              Rectangle {
+                anchors.fill: parent
+                color: optionSelected ? theme.accent : (gpuModeMouse.containsMouse && optionSupported ? theme.backgroundAlt : "transparent")
+                border.color: optionSelected || (gpuModeMouse.containsMouse && optionSupported) ? theme.accent : theme.border
+                border.width: optionSelected || (gpuModeMouse.containsMouse && optionSupported) ? 1 : 0
+              }
+
+              Rectangle {
+                id: gpuModeBadge
+
+                anchors.left: parent.left
+                anchors.leftMargin: 12
+                anchors.verticalCenter: parent.verticalCenter
+                width: 34
+                height: 34
+                color: optionCurrent
+                  ? (optionSelected ? theme.selectedForeground : theme.accent)
+                  : (optionSelected ? theme.selectedForeground : theme.backgroundAlt)
+                border.color: optionSelected ? theme.selectedForeground : theme.border
+                border.width: 1
+
+                Text {
+                  anchors.centerIn: parent
+                  text: modelData.shortcut || ""
+                  color: optionCurrent
+                    ? (optionSelected ? theme.accent : theme.selectedForeground)
+                    : (optionSelected ? theme.accent : theme.foreground)
+                  font.family: theme.fontFamily
+                  font.pixelSize: 13
+                  font.bold: true
+                }
+              }
+
+              Text {
+                id: gpuModeLabel
+
+                anchors.left: gpuModeBadge.right
+                anchors.leftMargin: 12
+                anchors.right: gpuModeState.left
+                anchors.rightMargin: 10
+                anchors.top: parent.top
+                anchors.topMargin: 10
+                text: modelData.label || ""
+                color: optionSelected ? theme.selectedForeground : theme.foreground
+                font.family: theme.fontFamily
+                font.pixelSize: 14
+                font.bold: optionCurrent
+                elide: Text.ElideRight
+              }
+
+              Text {
+                anchors.left: gpuModeLabel.left
+                anchors.right: gpuModeLabel.right
+                anchors.top: gpuModeLabel.bottom
+                anchors.topMargin: 4
+                text: modelData.description || ""
+                color: optionSelected ? theme.selectedForeground : theme.muted
+                font.family: theme.fontFamily
+                font.pixelSize: 11
+                elide: Text.ElideRight
+              }
+
+              Text {
+                id: gpuModeState
+
+                anchors.right: parent.right
+                anchors.rightMargin: 12
+                anchors.verticalCenter: parent.verticalCenter
+                width: 78
+                text: root.gpuOptionStateText(modelData)
+                color: optionSelected ? theme.selectedForeground : (optionCurrent ? theme.accent : theme.muted)
+                font.family: theme.fontFamily
+                font.pixelSize: 11
+                font.bold: optionCurrent || (gpuSwitchProcess.running && gpuSwitchProcess.pendingId === modelData.id)
+                horizontalAlignment: Text.AlignRight
+                elide: Text.ElideRight
+              }
+
+              MouseArea {
+                id: gpuModeMouse
+
+                anchors.fill: parent
+                enabled: optionSupported && !gpuSwitchProcess.running
+                hoverEnabled: true
+                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                onClicked: root.switchGpu(index)
+                onEntered: root.gpuSelectedIndex = index
+              }
+            }
+          }
+
+          Text {
+            id: gpuStatusLine
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 20
+            text: root.gpuStatusText
+            color: root.gpuErrorText.length > 0 ? theme.urgent : (gpuSwitchProcess.running ? theme.accent : theme.muted)
+            font.family: theme.fontFamily
+            font.pixelSize: 12
+            elide: Text.ElideRight
+            verticalAlignment: Text.AlignVCenter
           }
         }
       }

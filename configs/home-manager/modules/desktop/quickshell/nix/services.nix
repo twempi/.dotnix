@@ -24,6 +24,8 @@
           helpers.qsClipboardApply
           helpers.qsClipboardList
           helpers.qsFocusedScreenWatch
+          helpers.qsGpuInfo
+          helpers.qsGpuSwitch
           helpers.qsPanelAction
           helpers.qsPanelInfo
           helpers.qsManager

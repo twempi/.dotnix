@@ -24,6 +24,7 @@ in {
   wayland.windowManager.sway.config.keybindings = {
     "XF86KbdBrightnessUp" = "exec asusctl leds next";
     "XF86KbdBrightnessDown" = "exec asusctl leds prev";
+    "Mod4+XF86Launch1" = "exec qs-gpu";
     "XF86Launch4" = "exec ${pkgs.libnotify}/bin/notify-send 'ASUS profile' 'keybind test'";
   };
 }
