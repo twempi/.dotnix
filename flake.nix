@@ -57,7 +57,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ltspice.url = "git+https://codeberg.org/pilonsi/flake-ltspice";
+    ltspice = {
+      url = "git+https://codeberg.org/pilonsi/flake-ltspice";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     quickshell = {
       url = "git+https://git.outfoxxed.me/quickshell/quickshell";
@@ -109,8 +112,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    "plugins-math-conceal-nvim" = {
-      url = "github:pxwg/math-conceal.nvim";
+    plugins-math-conceal-nvim = {
+      url = "github:pxwg/math-conceal.nvim/preview";
       flake = false;
     };
   };

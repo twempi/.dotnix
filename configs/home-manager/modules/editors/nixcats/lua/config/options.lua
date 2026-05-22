@@ -47,5 +47,5 @@ vim.opt.updatetime = 250
 vim.opt.timeoutlen = 300
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 
--- Colorscheme (set early so UIs can pick it up)
--- vim.cmd.colorscheme('nvchad')
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0

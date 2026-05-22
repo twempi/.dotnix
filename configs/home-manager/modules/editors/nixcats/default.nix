@@ -84,6 +84,7 @@ in {
             lazygit
             nodejs
             fd
+            tree-sitter
           ];
 
           lua = with pkgs; [
@@ -188,6 +189,8 @@ in {
             nvim-web-devicons
             base46
             nvchad-ui
+            nvim-treesitter.withAllGrammars
+            nvim-treesitter-textobjects
           ];
         };
 
@@ -205,8 +208,6 @@ in {
             vim-startuptime
             blink-cmp
             blink-cmp-spell
-            nvim-treesitter.withAllGrammars
-            nvim-treesitter-textobjects
             lualine-nvim
             lualine-lsp-progress
             gitsigns-nvim
@@ -222,7 +223,7 @@ in {
             nvim-autopairs
             sqlite-lua
             tabout-nvim
-            math-conceal-nvim
+            pkgs.neovimPlugins.math-conceal-nvim
           ];
           markdown = with pkgs.vimPlugins; [
             obsidian-nvim
