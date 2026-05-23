@@ -69,7 +69,43 @@ in {
         name,
         mkPlugin,
         ...
-      } @ packageDef: {
+      } @ packageDef: let
+        math-conceal-nvim-preview = let
+          typst-concealer-service = pkgs.rustPlatform.buildRustPackage {
+            pname = "typst-concealer-service";
+            version = "0.1.0-preview";
+
+            src = inputs.math-conceal-nvim;
+            sourceRoot = "source/service";
+
+            nativeBuildInputs = with pkgs; [
+              pkg-config
+              cargo
+              rustc
+            ];
+
+            buildInputs = with pkgs; [
+              openssl
+            ];
+
+            cargoLock = {
+              lockFile = inputs.math-conceal-nvim + "/service/Cargo.lock";
+            };
+          };
+        in
+          pkgs.vimUtils.buildVimPlugin {
+            pname = "math-conceal-nvim";
+            version = "preview";
+
+            src = inputs.math-conceal-nvim;
+
+            postInstall = ''
+              mkdir -p $out/service/target/release
+              ln -s ${typst-concealer-service}/bin/typst-concealer-service \
+                $out/service/target/release/typst-concealer-service
+            '';
+          };
+      in {
         # to define and use a new category, simply add a new list to a set here,
         # and later, you will include categoryname = true; in the set you
         # provide when you build the package using this builder function.
@@ -223,7 +259,7 @@ in {
             nvim-autopairs
             sqlite-lua
             tabout-nvim
-            pkgs.neovimPlugins.math-conceal-nvim
+            math-conceal-nvim-preview
           ];
           markdown = with pkgs.vimPlugins; [
             obsidian-nvim

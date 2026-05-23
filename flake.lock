@@ -958,6 +958,23 @@
         "type": "github"
       }
     },
+    "math-conceal-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779415167,
+        "narHash": "sha256-coIj1YQSsvh048A1DkCQrevMpljU9V7uAhY/iepuOWs=",
+        "owner": "pxwg",
+        "repo": "math-conceal.nvim",
+        "rev": "63b20b99daf297c7aa7544c6542ad3ac1875b993",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pxwg",
+        "ref": "preview",
+        "repo": "math-conceal.nvim",
+        "type": "github"
+      }
+    },
     "minimal-grub-theme": {
       "inputs": {
         "nixpkgs": [
@@ -1230,23 +1247,6 @@
         "type": "github"
       }
     },
-    "plugins-math-conceal-nvim": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1779411314,
-        "narHash": "sha256-CiYxBWIBC4Wi/8UfxWQbTGZOlvAZkLUI1yosBqmQRZE=",
-        "owner": "pxwg",
-        "repo": "math-conceal.nvim",
-        "rev": "f8f133bb0b3891e18214910cd6ba46913f1996d2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "pxwg",
-        "ref": "preview",
-        "repo": "math-conceal.nvim",
-        "type": "github"
-      }
-    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -1302,6 +1302,7 @@
         "librepods": "librepods",
         "ltspice": "ltspice",
         "mangowm": "mangowm",
+        "math-conceal-nvim": "math-conceal-nvim",
         "minimal-grub-theme": "minimal-grub-theme",
         "nix-minecraft": "nix-minecraft",
         "nixCats": "nixCats",
@@ -1309,7 +1310,6 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "noctalia": "noctalia",
-        "plugins-math-conceal-nvim": "plugins-math-conceal-nvim",
         "quickshell": "quickshell",
         "spicetify-nix": "spicetify-nix",
         "stylix": "stylix",
