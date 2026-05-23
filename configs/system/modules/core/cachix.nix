@@ -11,6 +11,7 @@
     ];
 
     trusted-substituters = [
+      "https://nix-community.cachix.org"
       "https://hyprland.cachix.org"
     ];
   };

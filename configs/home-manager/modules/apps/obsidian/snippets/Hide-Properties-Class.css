@@ -1,4 +1,0 @@
-/* Hide properties only in notes with cssclass: hide-properties */
-.hide-properties .metadata-container {
-  display: none !important;
-}

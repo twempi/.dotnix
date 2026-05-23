@@ -39,10 +39,7 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    hyprland = {
-      url = "github:hyprwm/Hyprland";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    hyprland.url = "github:hyprwm/Hyprland";
 
     mangowm = {
       url = "github:mangowm/mango";
