@@ -33,7 +33,25 @@
 
   services.lact = {
     enable = true;
-    # settings = {};
+    settings = {
+      version = 5;
+      daemon = {
+        log_level = "info";
+        admin_group = "wheel";
+        disable_clocks_cleanup = false;
+      };
+      apply_settings_timer = 5;
+      gpus = {
+        "10DE:2705-1043:896B-0000:01:00.0" = {
+          fan_control_enabled = false;
+          pmfw_options.target_temperature = 88;
+          power_cap = 366.0;
+          gpu_clock_offsets."0" = 170;
+          mem_clock_offsets."0" = 1700;
+        };
+      };
+      auto_switch_profiles = false;
+    };
   };
 
   systemd.user.services.nvidia-powermizer-max = {

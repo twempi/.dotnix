@@ -26,6 +26,7 @@ in {
         devices = ["nodev"];
         efiSupport = true;
         useOSProber = true;
+        configurationLimit = 8;
 
         gfxmodeEfi = "auto";
         gfxpayloadEfi = "keep";

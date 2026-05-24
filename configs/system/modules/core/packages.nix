@@ -99,7 +99,6 @@
     ghostscript
     mermaid-cli
     inputs.ltspice.packages.${pkgs.stdenv.hostPlatform.system}.default
-    pipx
     trash-cli
     inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
 

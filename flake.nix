@@ -11,6 +11,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix = {
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -132,6 +137,7 @@
 
     commonNixosModules = [
       home-manager.nixosModules.home-manager
+      inputs.sops-nix.nixosModules.sops
       inputs.stylix.nixosModules.stylix
     ];
 

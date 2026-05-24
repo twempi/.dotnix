@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }: {
+{
   services.ssh-agent.enable = true;
 
   programs.ssh = {
@@ -6,11 +6,11 @@
 
     enableDefaultConfig = false;
 
-    matchBlocks = {
+    settings = {
       "github.com" = {
         host = "github.com";
         user = "git";
-        identityFile = [ "~/.ssh/id_ed25519" ];
+        identityFile = ["~/.ssh/id_ed25519"];
         addKeysToAgent = "yes";
         # optionally:
         identitiesOnly = true;

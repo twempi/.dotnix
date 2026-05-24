@@ -4,30 +4,46 @@
   pkgs,
   ...
 }: let
-  notesDir = "${config.home.homeDirectory}/Documents/notes";
+  cfg = config.programs.obsidian.stylixMinimal;
 
   stylixMinimalCss = import ./stylix-minimal.nix {
-    inherit config pkgs;
+    inherit config lib pkgs;
   };
 in {
-  home.activation.obsidianStylixMinimalCss = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    obsidian_dir=${lib.escapeShellArg "${notesDir}/.obsidian"}
-    snippets_dir="$obsidian_dir/snippets"
+  options.programs.obsidian.stylixMinimal = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to install the Stylix-generated Minimal CSS snippet without managing Obsidian appearance settings.";
+    };
 
-    verboseEcho "Installing Obsidian Stylix Minimal CSS snippet"
+    vaultPath = lib.mkOption {
+      type = lib.types.str;
+      default = "${config.home.homeDirectory}/Documents/notes";
+      description = "Absolute path to the Obsidian vault that should receive the Stylix Minimal CSS snippet.";
+    };
+  };
 
-    run mkdir -p "$snippets_dir"
+  config = {
+    home.activation.obsidianStylixMinimalCss = lib.mkIf cfg.enable (lib.hm.dag.entryAfter ["writeBoundary"] ''
+      obsidian_dir=${lib.escapeShellArg "${cfg.vaultPath}/.obsidian"}
+      snippets_dir="$obsidian_dir/snippets"
 
-    run install -m644 ${lib.escapeShellArg "${stylixMinimalCss}"} \
-      "$snippets_dir/stylix-minimal.css"
-  '';
+      verboseEcho "Installing Obsidian Stylix Minimal CSS snippet"
 
-  xdg.desktopEntries.obsidian = {
-    name = "Obsidian";
-    exec = "${pkgs.obsidian}/bin/obsidian %U";
-    icon = "obsidian";
-    terminal = false;
-    categories = ["Office"];
-    mimeType = ["x-scheme-handler/obsidian"];
+      run mkdir -p "$snippets_dir"
+
+      run install -m644 ${lib.escapeShellArg "${stylixMinimalCss}"} \
+        "$snippets_dir/stylix-minimal.css"
+    '');
+
+    xdg.desktopEntries.obsidian = {
+      name = "Obsidian";
+      exec = "${pkgs.obsidian}/bin/obsidian %U";
+      icon = "obsidian";
+      terminal = false;
+      categories = ["Office"];
+      mimeType = ["x-scheme-handler/obsidian"];
+    };
   };
 }
