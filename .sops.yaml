@@ -1,6 +1,3 @@
-# Replace these recipients with your real age recipients before creating
-# secrets/cachix.yaml. Include your user key plus every NixOS host key that
-# should decrypt the Cachix write token.
 keys:
   - &edward_user age1kyrv750wvqtld75c6jj8xy6eyfd2jur2sssg6nepd99h9z5hpevq639m9t
   - &desktop age1zhvmv086szugp0jzrsk5w23suxuca44ssf7u3k35y48yn5q76vjsa7tkhn

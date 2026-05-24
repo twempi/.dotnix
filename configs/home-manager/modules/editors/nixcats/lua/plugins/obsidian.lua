@@ -43,7 +43,7 @@ return {
 				end,
 			},
 
-			notes_subdir = "000 Index",
+			notes_subdir = "000 Homepage/Inbox",
 			new_notes_location = "notes_subdir",
 
 			ui = {
@@ -57,7 +57,7 @@ return {
 			},
 
 			frontmatter = {
-				enabled = true,
+				enabled = false,
 				sort = { "aliases", "tags", "references", "links" },
 				func = function(note)
 					local meta = vim.deepcopy(note.metadata or {})
@@ -108,7 +108,7 @@ return {
 			},
 
 			attachments = {
-				folder = "999 Images",
+				folder = "990 Attachments",
 				img_name_func = function()
 					return string.format("Pasted image %s", os.date("%Y%m%d%H%M%S"))
 				end,
