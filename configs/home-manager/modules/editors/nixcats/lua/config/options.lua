@@ -39,7 +39,8 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.smartindent = true
 vim.opt.smoothscroll = true
-vim.opt.spelllang = { "en" }
+vim.opt.spell = true
+vim.opt.spelllang = { "en_us" }
 vim.opt.spellsuggest = { "best", 9 }
 vim.opt.signcolumn = "yes"
 

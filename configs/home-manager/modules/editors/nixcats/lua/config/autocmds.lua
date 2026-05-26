@@ -52,3 +52,16 @@ vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 		end
 	end,
 })
+
+-- Enable spellcheck for certian filetypes
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = {
+		"markdown",
+		"text",
+		"gitcommit",
+		"typst",
+	},
+	callback = function()
+		vim.opt_local.spell = true
+	end,
+})

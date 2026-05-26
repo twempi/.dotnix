@@ -30,7 +30,5 @@
     ../modules/apps/helium.nix
     ../modules/apps/librepods.nix
     ../modules/apps/t3-code.nix
-    ../modules/apps/bluemail.nix
-    ../modules/apps/geary.nix
   ];
 }
