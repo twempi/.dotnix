@@ -1,7 +1,6 @@
 {
   services.resolved = {
     enable = false;
-    fallbackDns = ["1.1.1.1" "1.0.0.1"];
     settings = {
       Resolve = {
         DNSSEC = false;
