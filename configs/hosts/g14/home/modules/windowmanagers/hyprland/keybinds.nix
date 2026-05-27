@@ -1,5 +1,10 @@
-{...}: {
+{lib, ...}: {
   wayland.windowManager.hyprland.settings.bind = [
-    "$mod, XF86Launch1, exec, uwsm app -- qs-gpu"
+    {
+      _args = [
+        (lib.generators.mkLuaInline ''mod .. " + XF86Launch1"'')
+        (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("uwsm app -- qs-gpu")'')
+      ];
+    }
   ];
 }

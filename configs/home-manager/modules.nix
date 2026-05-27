@@ -4,7 +4,7 @@
     ./modules/theme
     ./modules/editors/latex
     ./modules/editors/typst
-    ./modules/editors/nixcats
+    ./modules/editors/neovim
 
     # Themes
     ./modules/theme/matugen

@@ -1,5 +1,10 @@
 {
   wayland.windowManager.hyprland.settings.monitor = [
-    "eDP-1,2560x1600@120,0x0,1.5"
+    {
+      output = "eDP-1";
+      mode = "2560x1600@120";
+      position = "0x0";
+      scale = 1.5;
+    }
   ];
 }

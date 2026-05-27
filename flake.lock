@@ -125,11 +125,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779385571,
-        "narHash": "sha256-qvJmkFUHLb0lWUHguEpcFh5sBUSSBzkjGimWkh7RMfQ=",
+        "lastModified": 1779824545,
+        "narHash": "sha256-Gx/K9PRYQ0+eKMwjnOX2BqOvkjP+MeXXyFA2M2PvBQg=",
         "owner": "sadjow",
         "repo": "codex-cli-nix",
-        "rev": "1b8816f0f793031ee98c928ae7a3bcca2f0b54c0",
+        "rev": "26c2ba2aed14632a04335a2f0a99d14abfb63f14",
         "type": "github"
       },
       "original": {
@@ -934,6 +934,22 @@
         "url": "https://LTspice.analog.com/download/26.0.1/LTspice64.msi"
       }
     },
+    "luasnip-latex-snippets-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1766323359,
+        "narHash": "sha256-0Q24sRsmdUCr7V3jod9XmgeUev3BfmiHj5OmrEZiXSI=",
+        "owner": "twempi",
+        "repo": "luasnip-latex-snippets.nvim",
+        "rev": "a14821dd680dfdd2006b135425cc2a8ab297ebc6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "twempi",
+        "repo": "luasnip-latex-snippets.nvim",
+        "type": "github"
+      }
+    },
     "mangowm": {
       "inputs": {
         "flake-parts": "flake-parts_3",
@@ -1015,18 +1031,23 @@
         "type": "github"
       }
     },
-    "nixCats": {
+    "nixWrapperModules": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1777273601,
-        "narHash": "sha256-xBUa8Tl9V7IXI+VmLEuDc81La/EhoSn1C3EVSnJ3cfU=",
+        "lastModified": 1779698383,
+        "narHash": "sha256-8B0VM13icJClvwK6ILfXHm9c5DuVUb2OZjC2UouFAYA=",
         "owner": "BirdeeHub",
-        "repo": "nixCats-nvim",
-        "rev": "f69ea013e328841a7def7037ed59788a76be8816",
+        "repo": "nix-wrapper-modules",
+        "rev": "0a1c7485f39141e461380239f804de2bd9f43322",
         "type": "github"
       },
       "original": {
         "owner": "BirdeeHub",
-        "repo": "nixCats-nvim",
+        "repo": "nix-wrapper-modules",
         "type": "github"
       }
     },
@@ -1315,11 +1336,12 @@
         "hyprland": "hyprland",
         "librepods": "librepods",
         "ltspice": "ltspice",
+        "luasnip-latex-snippets-nvim": "luasnip-latex-snippets-nvim",
         "mangowm": "mangowm",
         "math-conceal-nvim": "math-conceal-nvim",
         "minimal-grub-theme": "minimal-grub-theme",
         "nix-minecraft": "nix-minecraft",
-        "nixCats": "nixCats",
+        "nixWrapperModules": "nixWrapperModules",
         "nixcord": "nixcord",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",

@@ -21,12 +21,6 @@ output_path = '~/.dotnix/configs/home-manager/modules/apps/spicetify/themes/text
 input_path = '~/.config/matugen/templates/matugen-rofi.rasi'
 output_path = '~/.config/rofi/theme.rasi'
 
-# Hyprland
-[templates.hyprland]
-input_path = '~/.config/matugen/templates/matugen-hyprland.conf'
-output_path = '~/.config/hypr/matugen.conf'
-post_hook = 'hyprctl reload'
-
 # # Zathura
 # [templates.zathura]
 # input_path = '~/.config/matugen/templates/matugen-zathura'

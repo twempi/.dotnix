@@ -1,153 +1,233 @@
-{pkgs, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  lua = lib.generators.mkLuaInline;
+  toLua = lib.generators.toLua {};
   uwsmApp = "uwsm app --";
+
+  modKey = key: lua ''mod .. " + ${key}"'';
+  execCmd = command: lua "hl.dsp.exec_cmd(${toLua command})";
+  execLocal = name: lua "hl.dsp.exec_cmd(${name})";
+  bind = key: action: {
+    _args = [
+      key
+      action
+    ];
+  };
+  bindWith = key: action: opts: {
+    _args = [
+      key
+      action
+      opts
+    ];
+  };
+  resize = x: y:
+    lua "hl.dsp.window.resize({ x = ${toString x}, y = ${toString y}, relative = true })";
+  workspaceKey = ws:
+    if ws == 10
+    then "0"
+    else toString ws;
+  workspaceBind = ws: let
+    key = workspaceKey ws;
+    workspace = toString ws;
+  in [
+    (bind (modKey key) (lua "hl.dsp.focus({ workspace = ${workspace} })"))
+    (bind (modKey "SHIFT + ${key}") (lua "hl.dsp.window.move({ workspace = ${workspace} })"))
+  ];
+  keycodeWorkspaceBinds = builtins.concatLists (builtins.genList (
+      i: let
+        ws = i + 1;
+        code = i + 10;
+        workspace = toString ws;
+      in [
+        (bind (modKey "code:${toString code}") (lua "hl.dsp.focus({ workspace = ${workspace} })"))
+        (bind (modKey "SHIFT + code:${toString code}") (lua "hl.dsp.window.move({ workspace = ${workspace}, follow = false })"))
+      ]
+    )
+    9);
+  forceKillActive = "hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid // empty' | ${pkgs.findutils}/bin/xargs -r kill";
+  quickShellToggle = name:
+    bind (modKey "ALT + ${name.key}") (lua ''hl.dsp.exec_cmd(qs .. " toggle ${name.panel}")'');
 in {
   wayland.windowManager.hyprland.settings = {
     # Apps
-    "$colorPicker" = "${uwsmApp} ${pkgs.hyprpicker}/bin/hyprpicker -a";
-    "$noti-center" = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
+    colorPicker = {
+      _var = "${uwsmApp} ${pkgs.hyprpicker}/bin/hyprpicker -a";
+    };
+    notiCenter = {
+      _var = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
+    };
 
-    # "$terminal" = "${pkgs.ghostty}/bin/ghostty";
-    "$terminal" = "${uwsmApp} ${pkgs.kitty}/bin/kitty";
-    # "$browser" = "${pkgs.brave}/bin/brave";
-    # "$browser" = "zen-beta";
-    "$browser" = "${uwsmApp} helium";
-    "$explorer1" = "$terminal -e ${pkgs.yazi}/bin/yazi";
-    "$explorer2" = "${uwsmApp} ${pkgs.nautilus}/bin/nautilus";
-    "$notes" = "${uwsmApp} ${pkgs.obsidian}/bin/obsidian";
-    "$bluetooth" = "$terminal -e ${pkgs.bluetui}/bin/bluetui";
-    "$editor" = "$terminal -e nvim";
+    # terminal = { _var = "${pkgs.ghostty}/bin/ghostty"; };
+    terminal = {
+      _var = "${uwsmApp} ${pkgs.kitty}/bin/kitty";
+    };
+    # browser = { _var = "${pkgs.brave}/bin/brave"; };
+    # browser = { _var = "zen-beta"; };
+    browser = {
+      _var = "${uwsmApp} helium";
+    };
+    explorer1 = {
+      _var = "${uwsmApp} ${pkgs.kitty}/bin/kitty -e ${pkgs.yazi}/bin/yazi";
+    };
+    explorer2 = {
+      _var = "${uwsmApp} ${pkgs.nautilus}/bin/nautilus";
+    };
+    notes = {
+      _var = "${uwsmApp} ${pkgs.obsidian}/bin/obsidian";
+    };
+    bluetooth = {
+      _var = "${uwsmApp} ${pkgs.kitty}/bin/kitty -e ${pkgs.bluetui}/bin/bluetui";
+    };
+    editor = {
+      _var = "${uwsmApp} ${pkgs.kitty}/bin/kitty -e nvim";
+    };
 
-    "$mod" = "SUPER";
-    "$qs" = "bash ~/.config/hypr/scripts/qs_manager.sh";
+    mod = {
+      _var = "SUPER";
+    };
+    qs = {
+      _var = "${config.home.profileDirectory}/bin/qs-manager";
+    };
 
     bind =
       [
         # Basic
-        "$mod, Q, killactive,"
-        "$mod SHIFT, Q, exec, hyprctl activewindow | grep pid | tr -d 'pid:'| xargs kill,"
-        "$mod, V, togglefloating,"
-        "$mod, F, fullscreen, 1"
-        "$mod SHIFT, F, fullscreen, 0"
+        (bind (modKey "Q") (lua "hl.dsp.window.close()"))
+        (bind (modKey "SHIFT + Q") (execCmd forceKillActive))
+        (bind (modKey "V") (lua ''hl.dsp.window.float({ action = "toggle" })''))
+        (bind (modKey "F") (lua ''hl.dsp.window.fullscreen({ mode = "maximized" })''))
+        (bind (modKey "SHIFT + F") (lua ''hl.dsp.window.fullscreen({ mode = "fullscreen" })''))
 
-        "$mod, return, exec, $terminal"
-        "$mod, B, exec, $browser"
-        "$mod, E, exec, $explorer1"
-        "$mod SHIFT, E, exec, $explorer2"
-        "$mod, M, exec, ${uwsmApp} spotify"
-        "$mod, O, exec, $notes"
-        "$mod, N, exec, $editor"
-        "$mod SHIFT, B, exec, $bluetooth"
-        "$mod SHIFT, N, exec, $noti-center"
-        "$mod, ESCAPE, exec, ${uwsmApp} qs-power"
+        (bind (modKey "return") (execLocal "terminal"))
+        (bind (modKey "B") (execLocal "browser"))
+        (bind (modKey "E") (execLocal "explorer1"))
+        (bind (modKey "SHIFT + E") (execLocal "explorer2"))
+        (bind (modKey "M") (execCmd "${uwsmApp} spotify"))
+        (bind (modKey "O") (execLocal "notes"))
+        (bind (modKey "N") (execLocal "editor"))
+        (bind (modKey "SHIFT + B") (execLocal "bluetooth"))
+        (bind (modKey "SHIFT + N") (execLocal "notiCenter"))
+        (bind (modKey "Escape") (execCmd "${uwsmApp} qs-power"))
 
-        "$mod, Z, exec, $colorPicker"
-        "$mod SHIFT, W, exec, ${uwsmApp} qs-wallpaper"
-        "$mod SHIFT, R, exec, ${./reload.sh}"
+        (bind (modKey "Z") (execLocal "colorPicker"))
+        (bind (modKey "SHIFT + W") (execCmd "${uwsmApp} qs-wallpaper"))
+        (bind (modKey "SHIFT + R") (execCmd "${./reload.sh}"))
 
         # Screenshots
-        "$mod SHIFT, S, exec, way-screenshot area"
-        ", Print, exec, way-screenshot screen"
+        (bind (modKey "SHIFT + S") (execCmd "way-screenshot area"))
+        (bind "Print" (execCmd "way-screenshot screen"))
 
         # Launcher / emoji / clipboard
-        "$mod, Space, exec, ${uwsmApp} qs-launcher"
-        "$mod, U, exec, ${uwsmApp} qs-emoji"
-        "$mod, Y, exec, ${uwsmApp} qs-clipboard"
+        (bind (modKey "Space") (execCmd "${uwsmApp} qs-launcher"))
+        (bind (modKey "U") (execCmd "${uwsmApp} qs-emoji"))
+        (bind (modKey "Y") (execCmd "${uwsmApp} qs-clipboard"))
 
-        # Move focus with $mod + HJKL(Vim keys)
-        "$mod, H, movefocus, l"
-        "$mod, L, movefocus, r"
-        "$mod, J, movefocus, d"
-        "$mod, K, movefocus, u"
+        # Move focus with mod + HJKL(Vim keys)
+        (bind (modKey "H") (lua ''hl.dsp.focus({ direction = "left" })''))
+        (bind (modKey "L") (lua ''hl.dsp.focus({ direction = "right" })''))
+        (bind (modKey "J") (lua ''hl.dsp.focus({ direction = "down" })''))
+        (bind (modKey "K") (lua ''hl.dsp.focus({ direction = "up" })''))
 
-        # Move windows with $mod + CTRL + HJKL(Vim keys)
-        "$mod CTRL, H, movewindow, l"
-        "$mod CTRL, L, movewindow, r"
-        "$mod CTRL, J, movewindow, d"
-        "$mod CTRL, K, movewindow, u"
+        # Move windows with mod + CTRL + HJKL(Vim keys)
+        (bind (modKey "CTRL + H") (lua ''hl.dsp.window.move({ direction = "left" })''))
+        (bind (modKey "CTRL + L") (lua ''hl.dsp.window.move({ direction = "right" })''))
+        (bind (modKey "CTRL + J") (lua ''hl.dsp.window.move({ direction = "down" })''))
+        (bind (modKey "CTRL + K") (lua ''hl.dsp.window.move({ direction = "up" })''))
 
-        # Workspaces
-        "$mod, 1, workspace, 1"
-        "$mod, 2, workspace, 2"
-        "$mod, 3, workspace, 3"
-        "$mod, 4, workspace, 4"
-        "$mod, 5, workspace, 5"
-        "$mod, 6, workspace, 6"
-        "$mod, 7, workspace, 7"
-        "$mod, 9, workspace, 9"
-        "$mod, 0, workspace, 10"
-
-        # Cycle through actice workspaces
-        "$mod, TAB, workspace, e+1"
-        "$mod SHIFT, TAB, workspace, e-1"
-
-        # Move active window to workspace #
-        "$mod SHIFT, 1, movetoworkspace, 1"
-        "$mod SHIFT, 2, movetoworkspace, 2"
-        "$mod SHIFT, 3, movetoworkspace, 3"
-        "$mod SHIFT, 4, movetoworkspace, 4"
-        "$mod SHIFT, 5, movetoworkspace, 5"
-        "$mod SHIFT, 6, movetoworkspace, 6"
-        "$mod SHIFT, 7, movetoworkspace, 7"
-        "$mod SHIFT, 8, movetoworkspace, 8"
-        "$mod SHIFT, 9, movetoworkspace, 9"
-        "$mod SHIFT, 0, movetoworkspace, 10"
+        # Cycle through active workspaces
+        (bind (modKey "TAB") (lua ''hl.dsp.focus({ workspace = "e+1" })''))
+        (bind (modKey "SHIFT + TAB") (lua ''hl.dsp.focus({ workspace = "e-1" })''))
 
         # QuickShell toggles (merged from ilyamiro, remapped to avoid conflicts)
-        "$mod ALT, M, exec, $qs toggle monitors"
-        "$mod ALT, S, exec, $qs toggle stewart"
-        "$mod ALT, Q, exec, $qs toggle music"
-        "$mod ALT, B, exec, $qs toggle battery"
-        "$mod ALT, W, exec, $qs toggle wallpaper"
-        "$mod ALT, C, exec, $qs toggle calendar"
-        "$mod ALT, N, exec, $qs toggle network"
-        "$mod ALT, T, exec, $qs toggle focustime"
-        "$mod ALT, V, exec, $qs toggle volume"
-        "$mod ALT, G, exec, $qs toggle guide"
+        (quickShellToggle {
+          key = "M";
+          panel = "monitors";
+        })
+        (quickShellToggle {
+          key = "S";
+          panel = "stewart";
+        })
+        (quickShellToggle {
+          key = "Q";
+          panel = "music";
+        })
+        (quickShellToggle {
+          key = "B";
+          panel = "battery";
+        })
+        (quickShellToggle {
+          key = "W";
+          panel = "wallpaper";
+        })
+        (quickShellToggle {
+          key = "C";
+          panel = "calendar";
+        })
+        (quickShellToggle {
+          key = "N";
+          panel = "network";
+        })
+        (quickShellToggle {
+          key = "T";
+          panel = "focustime";
+        })
+        (quickShellToggle {
+          key = "V";
+          panel = "volume";
+        })
+        (quickShellToggle {
+          key = "G";
+          panel = "guide";
+        })
+
+        # Move windows with mouse
+        (bindWith (modKey "mouse:272") (lua "hl.dsp.window.drag()") {mouse = true;})
+        # Resize windows with mouse
+        (bindWith (modKey "mouse:273") (lua "hl.dsp.window.resize()") {mouse = true;})
+
+        # Resize windows with mod + Shift + HJKL(vim keys)
+        (bindWith (modKey "SHIFT + H") (resize (-50) 0) {repeating = true;})
+        (bindWith (modKey "SHIFT + L") (resize 50 0) {repeating = true;})
+        (bindWith (modKey "SHIFT + J") (resize 0 (-50)) {repeating = true;})
+        (bindWith (modKey "SHIFT + K") (resize 0 50) {repeating = true;})
+
+        # Laptop multimedia keys for volume and LCD brightness
+        (bindWith "XF86AudioLowerVolume" (execCmd "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-") {
+          locked = true;
+          repeating = true;
+        })
+        (bindWith "XF86AudioRaiseVolume" (execCmd "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+") {
+          locked = true;
+          repeating = true;
+        })
+        (bindWith "XF86AudioMute" (execCmd "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") {
+          locked = true;
+          repeating = true;
+        })
+        (bindWith "XF86AudioMicMute" (execCmd "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle") {
+          locked = true;
+          repeating = true;
+        })
+        (bindWith "XF86MonBrightnessUp" (execCmd "brightnessctl set 5%+") {
+          locked = true;
+          repeating = true;
+        })
+        (bindWith "XF86MonBrightnessDown" (execCmd "brightnessctl set 5%-") {
+          locked = true;
+          repeating = true;
+        })
+
+        # Requires playerctl
+        (bindWith "XF86AudioNext" (execCmd "playerctl next") {locked = true;})
+        (bindWith "XF86AudioPause" (execCmd "playerctl play-pause") {locked = true;})
+        (bindWith "XF86AudioPlay" (execCmd "playerctl play-pause") {locked = true;})
+        (bindWith "XF86AudioPrev" (execCmd "playerctl previous") {locked = true;})
       ]
-      ++ (
-        # workspaces 1-9
-        builtins.concatLists (builtins.genList (
-            i: let
-              ws = i + 1;
-            in [
-              "$mod, code:1${toString i}, workspace, ${toString ws}"
-              "$mod SHIFT, code:1${toString i}, movetoworkspacesilent, ${toString ws}"
-            ]
-          )
-          9)
-      );
-
-    bindm = [
-      # Move windows with mouse
-      "$mod, mouse:272, movewindow"
-      # Resize windows with mouse
-      "$mod, mouse:273, resizewindow"
-    ];
-
-    binde = [
-      # Resize windows with $mod + Shift + HJKL(vim keys)
-      "$mod SHIFT, H, resizeactive,-50 0"
-      "$mod SHIFT, L, resizeactive,50 0"
-      "$mod SHIFT, J, resizeactive,0 -50"
-      "$mod SHIFT, K, resizeactive,0 50"
-    ];
-
-    bindel = [
-      # Laptop multimedia keys for volume and LCD brightness
-      ",XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-      ",XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-      ",XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-      ",XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-      ",XF86MonBrightnessUp, exec, brightnessctl set 5%+"
-      ",XF86MonBrightnessDown, exec, brightnessctl set 5%-"
-    ];
-
-    bindl = [
-      # Requires playerctl
-      ",XF86AudioNext, exec, playerctl next"
-      ",XF86AudioPause, exec, playerctl play-pause"
-      ",XF86AudioPlay, exec, playerctl play-pause"
-      ",XF86AudioPrev, exec, playerctl previous"
-    ];
+      ++ builtins.concatLists (map workspaceBind [1 2 3 4 5 6 7 9 10])
+      ++ keycodeWorkspaceBinds;
   };
 }

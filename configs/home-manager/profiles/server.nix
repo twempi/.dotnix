@@ -8,7 +8,7 @@
     ../modules/cli/tmux
     ../modules/cli/git/server.nix
     ../modules/theme/ohmyposh
-    ../modules/editors/nixcats
+    ../modules/editors/neovim
     ../modules/apps/syncthing
     ../modules/cli/yazi
   ];

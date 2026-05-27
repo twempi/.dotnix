@@ -9,6 +9,9 @@
   qs-quick-actions = {
     Unit = {
       Description = "Resident Quickshell quick action overlays";
+      After = [config.wayland.systemd.target];
+      PartOf = [config.wayland.systemd.target];
+      ConditionEnvironment = "WAYLAND_DISPLAY";
     };
 
     Service = {

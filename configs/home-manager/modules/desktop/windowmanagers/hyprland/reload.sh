@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
-# Kill and restart Waybar and SwayNC
-pkill waybar
-pkill swaync
+set -u
 
-# Optional: Kill any currently running Rofi instances
-pkill rofi
+waybar_config="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/hyprland.jsonc"
+waybar_style="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/hyprland.css"
 
-# Reload Hyprland configuration
+pkill -x rofi 2>/dev/null || true
+
 hyprctl reload
 
-# Restart SwayNC and Waybar
-swaync &
-waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css&
+systemctl --user restart swaync.service || true
+
+pkill -x waybar 2>/dev/null || true
+
+if command -v uwsm >/dev/null 2>&1 && uwsm check is-active >/dev/null 2>&1; then
+  uwsm app -- waybar -c "$waybar_config" -s "$waybar_style"
+else
+  waybar -c "$waybar_config" -s "$waybar_style" >/dev/null 2>&1 &
+fi

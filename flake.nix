@@ -21,7 +21,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixCats.url = "github:BirdeeHub/nixCats-nvim";
+    nixWrapperModules = {
+      url = "github:BirdeeHub/nix-wrapper-modules";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nixcord = {
       url = "github:FlameFlag/nixcord";
@@ -113,6 +116,11 @@
 
     math-conceal-nvim = {
       url = "github:pxwg/math-conceal.nvim/preview";
+      flake = false;
+    };
+
+    luasnip-latex-snippets-nvim = {
+      url = "github:twempi/luasnip-latex-snippets.nvim";
       flake = false;
     };
   };
