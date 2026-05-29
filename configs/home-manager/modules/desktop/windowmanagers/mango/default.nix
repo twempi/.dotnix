@@ -1,12 +1,9 @@
 {
   inputs,
-  pkgs,
   system,
   ...
 }: let
-  mangoPackage = import ./mango-patched.nix {
-    inherit inputs pkgs system;
-  };
+  mangoPackage = inputs.mangowm.packages.${system}.mango;
 in {
   imports = [
     inputs.mangowm.hmModules.mango

@@ -924,7 +924,7 @@
       screen = sys.argv[1] if len(sys.argv) > 1 else ""
       tags = [
           {"id": i, "name": str(i), "active": False, "occupied": False, "urgent": False}
-          for i in range(1, 11)
+          for i in range(1, 10)
       ]
 
       session = " ".join([
@@ -1291,14 +1291,13 @@
               ("SUPER+B", "Browser"),
               ("SUPER+Space", "Launcher"),
               ("SUPER+Q", "Close focused window"),
-              ("SUPER+SHIFT+Q", "Force kill focused window"),
               ("SUPER+F", "Maximize"),
               ("SUPER+SHIFT+F", "Fullscreen"),
               ("SUPER+H/J/K/L", "Move focus"),
               ("SUPER+CTRL+H/J/K/L", "Swap windows"),
               ("SUPER+SHIFT+H/J/K/L", "Resize window"),
-              ("SUPER+1..9,0", "View tags 1-10"),
-              ("SUPER+SHIFT+1..9,0", "Move window to tags 1-10"),
+              ("SUPER+1..9", "View tags 1-9"),
+              ("SUPER+SHIFT+1..9", "Move window to tags 1-9"),
               ("SUPER+ALT+V", "Volume panel"),
               ("SUPER+ALT+G", "This guide"),
               ("SUPER+XF86Launch1", "GPU switcher"),

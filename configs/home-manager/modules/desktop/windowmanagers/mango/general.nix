@@ -2,7 +2,7 @@
   tagRules =
     builtins.genList
     (i: "id:${toString (i + 1)},layout_name:dwindle")
-    10;
+    9;
 in {
   wayland.windowManager.mango.settings = {
     gappih = 2;

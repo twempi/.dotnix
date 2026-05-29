@@ -10,11 +10,8 @@
   bluetooth = "${terminal} -e ${pkgs.bluetui}/bin/bluetui";
   editor = "${terminal} -e nvim";
 
-  tagNumbers = builtins.genList (i: i + 1) 10;
-  numberKeyFor = tag:
-    if tag == 10
-    then "0"
-    else toString tag;
+  tagNumbers = builtins.genList (i: i + 1) 9;
+  numberKeyFor = tag: toString tag;
   tagBind = tag: let
     key = numberKeyFor tag;
     tagString = toString tag;
@@ -37,7 +34,6 @@ in {
     bind =
       [
         "SUPER,Q,killclient"
-        "SUPER+SHIFT,Q,forcekillclient"
         "SUPER,V,togglefloating"
         "SUPER,F,togglemaximizescreen"
         "SUPER+SHIFT,F,togglefullscreen"

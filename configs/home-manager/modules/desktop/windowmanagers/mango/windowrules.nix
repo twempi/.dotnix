@@ -15,7 +15,6 @@
       "isfloating:1,appid:^(io.github.alainm23.planify.quick-add)$"
 
       "tags:9,isopensilent:1,appid:^(Spotify|spotify)$"
-      "tags:10,isopensilent:1,appid:^(Obsidian|obsidian)$"
     ];
 
     layerrule = [

@@ -53,7 +53,7 @@ ShellRoot {
 
       function defaultTags() {
         var values = [];
-        for (var i = 1; i <= 10; i++) {
+        for (var i = 1; i <= 9; i++) {
           values.push({"id": i, "name": String(i), "active": false, "occupied": false, "urgent": false});
         }
         return values;
@@ -132,7 +132,7 @@ ShellRoot {
           model: bar.tags
 
           delegate: Rectangle {
-            width: modelData.id === 10 ? 24 : 18
+            width: 18
             height: tagRow.height
             color: "transparent"
 

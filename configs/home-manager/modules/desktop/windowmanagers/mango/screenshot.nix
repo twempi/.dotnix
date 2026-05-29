@@ -4,9 +4,7 @@
   system,
   ...
 }: let
-  mangoPackage = import ../mango/mango-patched.nix {
-    inherit inputs pkgs system;
-  };
+  mangoPackage = inputs.mangowm.packages.${system}.mango;
 
   wayScreenshot = pkgs.writeShellApplication {
     name = "way-screenshot";
