@@ -39,6 +39,8 @@ in {
     trackpad_accel_speed = 0.5;
     disable_while_typing = 0;
 
+    syncobj_enable = 0;
+
     tagrule = tagRules;
   };
 }

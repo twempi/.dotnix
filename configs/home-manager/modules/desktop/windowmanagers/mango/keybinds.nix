@@ -23,14 +23,15 @@
     "SUPER+SHIFT,${key},tagsilent,${tagString}"
   ];
   keycodeTagBinds = builtins.concatLists (builtins.genList (i: let
-    tag = i + 1;
-    code = i + 10;
-    tagString = toString tag;
-    codeString = toString code;
-  in [
-    "SUPER,code:${codeString},view,${tagString}"
-    "SUPER+SHIFT,code:${codeString},tagsilent,${tagString}"
-  ]) 9);
+      tag = i + 1;
+      code = i + 10;
+      tagString = toString tag;
+      codeString = toString code;
+    in [
+      "SUPER,code:${codeString},view,${tagString}"
+      "SUPER+SHIFT,code:${codeString},tagsilent,${tagString}"
+    ])
+    9);
 in {
   wayland.windowManager.mango.settings = {
     bind =
@@ -101,8 +102,8 @@ in {
         "NONE,XF86AudioPlay,spawn,${pkgs.playerctl}/bin/playerctl play-pause"
         "NONE,XF86AudioPrev,spawn,${pkgs.playerctl}/bin/playerctl previous"
       ]
-      ++ builtins.concatLists (map tagBind tagNumbers)
-      ++ keycodeTagBinds;
+      ++ builtins.concatLists (map tagBind tagNumbers);
+    # ++ keycodeTagBinds;
 
     mousebind = [
       "SUPER,btn_left,moveresize,curmove"

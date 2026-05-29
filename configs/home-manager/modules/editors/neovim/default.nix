@@ -250,7 +250,7 @@ in {
           nvim-autopairs
           sqlite-lua
           tabout-nvim
-          math-conceal-nvim-preview
+          # math-conceal-nvim-preview
           luasnip-latex-snippets-nvim
 
           obsidian-nvim

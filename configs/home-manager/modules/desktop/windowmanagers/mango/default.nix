@@ -44,5 +44,6 @@ in {
     XDG_SESSION_TYPE = "wayland";
     GDK_BACKEND = "wayland,x11";
     QT_QPA_PLATFORM = "wayland;xcb";
+    WLR_DRM_NO_ATOMIC = "1";
   };
 }
