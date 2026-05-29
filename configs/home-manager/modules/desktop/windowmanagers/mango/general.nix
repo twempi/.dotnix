@@ -5,11 +5,11 @@
     10;
 in {
   wayland.windowManager.mango.settings = {
-    gappih = 3;
-    gappiv = 3;
-    gappoh = 5;
-    gappov = 5;
-    borderpx = 2;
+    gappih = 2;
+    gappiv = 2;
+    gappoh = 2;
+    gappov = 2;
+    borderpx = 1;
     border_radius = 0;
     focused_opacity = 1.0;
     unfocused_opacity = 0.9;
