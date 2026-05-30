@@ -172,29 +172,66 @@ function getLastBookmarkMatch() {
   return _lastBookmarkMatch;
 }
 
+function _appendBookmarkSection(container, title, bookmarks) {
+  const section = document.createElement('div');
+  section.className = 'bookmark-section';
+  const ul = document.createElement('ul');
+
+  if (title) {
+    section.dataset.category = title;
+    const heading = document.createElement('h2');
+    heading.className = 'bookmark-section-title';
+    heading.textContent = title;
+    section.appendChild(heading);
+  }
+
+  bookmarks.forEach(bookmark => {
+    if (!bookmark.href || !bookmark.title) return;
+    const li = _buildBookmarkLi(bookmark);
+    ul.appendChild(li);
+    _upfrontSlots.push({ li, bookmark });
+  });
+
+  section.appendChild(ul);
+  container.appendChild(section);
+}
+
+function _getBookmarkCategoryGroups(bookmarks) {
+  if (!bookmarks.some(bookmark => bookmark.category)) return [];
+
+  const groups = [];
+  const groupByTitle = new Map();
+
+  bookmarks.forEach(bookmark => {
+    const title = String(bookmark.category || 'other').trim() || 'other';
+    if (!groupByTitle.has(title)) {
+      const group = { title, bookmarks: [] };
+      groupByTitle.set(title, group);
+      groups.push(group);
+    }
+    groupByTitle.get(title).bookmarks.push(bookmark);
+  });
+
+  return groups;
+}
+
 function generateBookmarks() {
   const container = document.getElementById('bookmarks');
   container.innerHTML = '';
   _upfrontSlots = [];
 
   const bookmarks = getStoredBookmarks();
+  const categoryGroups = _getBookmarkCategoryGroups(bookmarks);
+
+  if (categoryGroups.length) {
+    categoryGroups.forEach(group => _appendBookmarkSection(container, group.title, group.bookmarks));
+    return;
+  }
+
   const numSections = Math.ceil(bookmarks.length / ITEMS_PER_SECTION);
-
   for (let i = 0; i < numSections; i++) {
-    const section = document.createElement('div');
-    section.className = 'bookmark-section';
-    const ul = document.createElement('ul');
     const slice = bookmarks.slice(i * ITEMS_PER_SECTION, (i + 1) * ITEMS_PER_SECTION);
-
-    slice.forEach(bookmark => {
-      if (!bookmark.href || !bookmark.title) return;
-      const li = _buildBookmarkLi(bookmark);
-      ul.appendChild(li);
-      _upfrontSlots.push({ li, bookmark });
-    });
-
-    section.appendChild(ul);
-    container.appendChild(section);
+    _appendBookmarkSection(container, null, slice);
   }
 }
 

@@ -312,6 +312,16 @@ html.newspaper-mode .bookmark-section {
   opacity: 0.95;
 }
 
+.bookmark-section-title {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  opacity: 0.9;
+}
+
 ul {
   list-style-type: none;
   display: flex;

@@ -182,6 +182,13 @@ function renderGridEditor(bookmarks) {
       titleInput.value = bm.title || '';
       titleInput.spellcheck = false;
 
+      const categoryInput = document.createElement('input');
+      categoryInput.type = 'text';
+      categoryInput.className = 'bm-category-input';
+      categoryInput.placeholder = 'Category';
+      categoryInput.value = bm.category || '';
+      categoryInput.spellcheck = false;
+
       const urlInput = document.createElement('input');
       urlInput.type = 'text';
       urlInput.className = 'bm-url-input';
@@ -190,6 +197,7 @@ function renderGridEditor(bookmarks) {
       urlInput.spellcheck = false;
 
       cell.appendChild(titleInput);
+      cell.appendChild(categoryInput);
       cell.appendChild(urlInput);
       colDiv.appendChild(cell);
     }
@@ -239,9 +247,14 @@ function collectGridBookmarks() {
   const bookmarks = [];
   cells.forEach(cell => {
     const title = cell.querySelector('.bm-title-input').value.trim();
+    const category = cell.querySelector('.bm-category-input').value.trim();
     const href  = cell.querySelector('.bm-url-input').value.trim();
     if (title || href) {
-      bookmarks.push({ title: title || href, href: href || '#' });
+      bookmarks.push({
+        title: title || href,
+        href: href || '#',
+        ...(category ? { category } : {})
+      });
     }
   });
   return bookmarks;

@@ -2,30 +2,30 @@
 // Defaults
 // ========================================
 const DEFAULT_BOOKMARKS = [
-  { href: "https://canvas.calpoly.edu/", title: "canvas" },
-  { href: "https://outlook.office365.com/mail/", title: "outlook" },
-  { href: "https://teams.microsoft.com/v2/", title: "teams" },
-  { href: "https://cmsweb.pscs.calpoly.edu/psp/CSLOPRD/EMPLOYEE/SA/s/WEBLIB_HCX_GN.H_DASHBOARD.FieldFormula.IScript_Main?", title: "student center" },
-  { href: "https://mycourses.pearson.com/course-home#/tab/active", title: "pearson" },
-  { href: "https://mail.google.com/mail/u/1/#inbox=", title: "gmail" },
-  { href: "https://calendar.google.com/calendar/u/1/r", title: "calendar" },
-  { href: "https://github.com/twempi", title: "github" },
-  { href: "https://youtube.com/", title: "youtube" },
-  { href: "https://reddit.com/r/unixporn/", title: "unixp*rn" },
-  { href: "https://wallhaven.cc/toplist?page=1", title: "wallhaven" },
-  { href: "https://www.taobao.com/", title: "taobao" },
-  { href: "https://chatgpt.com/", title: "chatgpt" },
-  { href: "https://chat.deepseek.com/", title: "deepseek" },
-  { href: "https://claude.ai/chats", title: "claude" },
-  { href: "https://www.perplexity.ai/", title: "perplexity" },
-  { href: "https://animekai.to/updates?page=1", title: "animekai" },
-  { href: "https://anilist.co/home", title: "anilist" },
-  { href: "https://suwayomi.tailae03d0.ts.net:8080/library", title: "reader" },
-  { href: "https://mynixos.com/", title: "nix pakgs" },
-  { href: "https://nix-community.github.io/stylix/index.html", title: "stylix" },
-  { href: "https://leetcode.com/problemset/", title: "leetcode" },
-  { href: "https://neetcode.io/practice/practice/neetcode150", title: "neetcode" },
-  { href: "https://codingbat.com/python", title: "codingbat" }
+  { href: "https://canvas.calpoly.edu/", title: "canvas", category: "school" },
+  { href: "https://outlook.office365.com/mail/", title: "outlook", category: "school" },
+  { href: "https://teams.microsoft.com/v2/", title: "teams", category: "school" },
+  { href: "https://cmsweb.pscs.calpoly.edu/psp/CSLOPRD/EMPLOYEE/SA/s/WEBLIB_HCX_GN.H_DASHBOARD.FieldFormula.IScript_Main?", title: "student center", category: "school" },
+  { href: "https://mycourses.pearson.com/course-home#/tab/active", title: "pearson", category: "school" },
+  { href: "https://mail.google.com/mail/u/1/#inbox=", title: "gmail", category: "personal" },
+  { href: "https://calendar.google.com/calendar/u/1/r", title: "calendar", category: "personal" },
+  { href: "https://github.com/twempi", title: "github", category: "personal" },
+  { href: "https://youtube.com/", title: "youtube", category: "fun" },
+  { href: "https://reddit.com/r/unixporn/", title: "unixp*rn", category: "fun" },
+  { href: "https://wallhaven.cc/toplist?page=1", title: "wallhaven", category: "fun" },
+  { href: "https://www.taobao.com/", title: "taobao", category: "fun" },
+  { href: "https://chatgpt.com/", title: "chatgpt", category: "ai" },
+  { href: "https://chat.deepseek.com/", title: "deepseek", category: "ai" },
+  { href: "https://claude.ai/chats", title: "claude", category: "ai" },
+  { href: "https://www.perplexity.ai/", title: "perplexity", category: "ai" },
+  { href: "https://animekai.to/updates?page=1", title: "animekai", category: "anime" },
+  { href: "https://anilist.co/home", title: "anilist", category: "anime" },
+  { href: "https://suwayomi.tailae03d0.ts.net:8080/library", title: "reader", category: "anime" },
+  { href: "https://mynixos.com/", title: "nix pakgs", category: "linux" },
+  { href: "https://nix-community.github.io/stylix/index.html", title: "stylix", category: "linux" },
+  { href: "https://leetcode.com/problemset/", title: "leetcode", category: "coding" },
+  { href: "https://neetcode.io/practice/practice/neetcode150", title: "neetcode", category: "coding" },
+  { href: "https://codingbat.com/python", title: "codingbat", category: "coding" }
 ];
 
 const DEFAULT_USERNAME = "edward";
@@ -88,10 +88,24 @@ function applySyntaxColors(colors) {
 // ========================================
 // Bookmarks
 // ========================================
+function applyDefaultBookmarkCategories(bookmarks) {
+  const categoriesByHref = new Map(
+    DEFAULT_BOOKMARKS
+      .filter(bookmark => bookmark.href && bookmark.category)
+      .map(bookmark => [bookmark.href, bookmark.category])
+  );
+
+  return bookmarks.map(bookmark => {
+    if (!bookmark || typeof bookmark !== 'object' || bookmark.category) return bookmark;
+    const category = categoriesByHref.get(bookmark.href);
+    return category ? { ...bookmark, category } : bookmark;
+  });
+}
+
 function getStoredBookmarks() {
   try {
     const stored = localStorage.getItem('bookmarks');
-    return stored ? JSON.parse(stored) : DEFAULT_BOOKMARKS;
+    return stored ? applyDefaultBookmarkCategories(JSON.parse(stored)) : DEFAULT_BOOKMARKS;
   } catch (e) {
     console.error('Failed to parse bookmarks:', e);
     return DEFAULT_BOOKMARKS;
