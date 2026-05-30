@@ -3,12 +3,24 @@
   source,
   colors,
   fontFamily,
+  sansFontFamily ? fontFamily,
+  includeChromeManifest ? false,
 }: let
+  color = name: "#${builtins.getAttr name colors}";
+  cssFontFamily = builtins.toJSON sansFontFamily;
+  cssMonoFontFamily = builtins.toJSON fontFamily;
+
   cacheInputs = {
-    inherit fontFamily;
+    inherit fontFamily sansFontFamily includeChromeManifest;
     base00 = colors.base00;
+    base01 = colors.base01;
+    base02 = colors.base02;
+    base03 = colors.base03;
     base05 = colors.base05;
+    base08 = colors.base08;
     base0A = colors.base0A;
+    base0B = colors.base0B;
+    base0C = colors.base0C;
     base0D = colors.base0D;
     base0E = colors.base0E;
   };
@@ -16,124 +28,94 @@
     builtins.hashString "sha256" (builtins.toJSON cacheInputs)
   );
 
-  startpageCss = pkgs.writeText "startpage-style.css" ''
-    :root {
-      --color-bg: #${colors.base00};
-      --color-fg: #${colors.base05};
-      --color-link: #${colors.base0D};
-      --color-link-visited: #${colors.base0E};
-      --color-link-hover: #${colors.base0A};
+  stylixBackground = color "base00";
+
+  stylixCss = pkgs.writeText "startpage-stylix.css" ''
+    html.stylix-mode body {
+      --background-color: ${color "base00"};
+      --text-color: ${color "base05"};
+      --card-background: color-mix(in srgb, ${color "base01"} 78%, transparent);
+      --card-border: color-mix(in srgb, ${color "base03"} 62%, transparent);
+      --terminal-bg: color-mix(in srgb, ${color "base01"} 88%, transparent);
+      --terminal-text: ${color "base05"};
+      --shadow-color: color-mix(in srgb, ${color "base00"} 70%, transparent);
+      --link-background: color-mix(in srgb, ${color "base02"} 72%, transparent);
+      --link-hover: color-mix(in srgb, ${color "base03"} 64%, transparent);
+      --color-primary: ${color "base0D"};
+      --color-warning: ${color "base0A"};
+      --color-error: ${color "base08"};
+      --color-success: ${color "base0B"};
+      --color-version: ${color "base0B"};
+      --font-family: ${cssFontFamily}, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --monospace-font-family: ${cssMonoFontFamily}, ui-monospace, "Cascadia Code", "Fira Code", "Fira Mono", "Consolas", "Menlo", monospace;
+      color-scheme: dark;
     }
 
-    html, body {
-      background: var(--color-bg);
-      color: var(--color-fg);
-      font-family: "${fontFamily}";
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
+    html.stylix-mode body {
+      background: var(--background-color);
     }
 
-    .container {
-      display: grid;
-      grid-template-columns: 1fr 460px 600px 1fr;
-      grid-template-areas:
-        ". left right .";
-      column-gap: 80px;
-      justify-items: center;
-      align-items: center;
-      min-height: 100%;
+    html.stylix-mode #theme-overlay-scanlines,
+    html.stylix-mode #theme-overlay-texture {
+      display: none;
     }
 
-    .left-container {
-      grid-area: left;
-      aspect-ratio: 1/1;
-    }
-
-    .right-container {
-      grid-area: right;
-      height: 50%;
-      width: 100%;
-    }
-
-    .gif img {
-      max-width: 100%;
-      max-height: 100%;
-      width: 350px;
-      height: auto;
-    }
-
-    .head {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 40px;
-      padding-top: 60px;
-    }
-
-    .category {
-      display: flex;
-      flex-direction: column;
-      width: 180px;
-    }
-
-    .bookmarks {
-      display: flex;
-      justify-content: center;
-    }
-
-    .links {
-      display: flex;
-      white-space: nowrap;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 20px;
-      padding-bottom: 20px;
-    }
-
-    .title {
-      font-size: 20px;
-    }
-
-    li {
-      font-size: 16px;
-      list-style-type: none;
-      padding: 5px;
-    }
-
-    a:link {
-      text-decoration: none;
-      color: var(--color-link);
-    }
-
-    a:visited {
-      color: var(--color-link-visited);
-    }
-
-    a:hover {
-      color: var(--color-link-hover);
-    }
-
-    @keyframes opacity {
-      0% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0;
-      }
-
-      100% {
-        opacity: 1;
-      }
+    html.stylix-mode .bookmark-icon {
+      filter: none;
     }
   '';
+
+  localDefaultsJs = pkgs.writeText "startpage-local-defaults.js" ''
+    (function () {
+      window.STARTPAGE_STYLIX_BACKGROUND = "${stylixBackground}";
+      window.STARTPAGE_DEFAULT_SYNTAX_COLORS = {
+        cmd: "${color "base0D"}",
+        theme: "${color "base0E"}",
+        search: "${color "base0A"}",
+        version: "${color "base0B"}",
+        url: "${color "base0C"}",
+        unknown: "${color "base08"}"
+      };
+
+      const meta = document.getElementById("meta-theme-color");
+      if (meta) meta.setAttribute("content", window.STARTPAGE_STYLIX_BACKGROUND);
+
+      if (!localStorage.getItem("syntaxColors") && typeof applySyntaxColors === "function") {
+        applySyntaxColors(window.STARTPAGE_DEFAULT_SYNTAX_COLORS);
+      }
+    })();
+  '';
+
+  manifestInstall =
+    if includeChromeManifest
+    then ''
+      cp ${source}/manifests/chrome.json "$out/manifest.json"
+    ''
+    else "";
 in
-  pkgs.runCommand "stylix-startpage" {} ''
+  pkgs.runCommand "stylix-terminal-startpage" {} ''
     mkdir -p "$out"
-    sed 's#href="style.css"#href="style.css?v=${cacheKey}"#g' ${source}/index.html > "$out/index.html"
-    cp ${source}/totoro.gif "$out/totoro.gif"
-    cp ${source}/cat.gif "$out/cat.gif"
-    cp ${startpageCss} "$out/style.css"
+
+    cp ${source}/style.css "$out/style.css"
+    cp -R ${source}/icon "$out/icon"
+    cp -R ${source}/script "$out/script"
+    cp -R ${source}/version "$out/version"
+    chmod -R u+w "$out/script"
+
+    mkdir -p "$out/focus"
+    cp ${source}/focus/focus.html "$out/focus/focus.html"
+    sed 's|__STYLIX_BACKGROUND__|${stylixBackground}|g' \
+      ${source}/focus/focus.js > "$out/focus/focus.js"
+
+    sed \
+      -e 's#<link rel="stylesheet" href="style.css" />#<link rel="stylesheet" href="style.css" />\
+  <link rel="stylesheet" href="stylix.css?v=${cacheKey}" />#' \
+      -e 's#<script src="script/storage.js"></script>#<script src="script/storage.js"></script>\
+  <script src="script/local-defaults.js?v=${cacheKey}"></script>#' \
+      ${source}/index.html > "$out/index.html"
+
+    cp ${stylixCss} "$out/stylix.css"
+    cp ${localDefaultsJs} "$out/script/local-defaults.js"
+
+    ${manifestInstall}
   ''

@@ -2,95 +2,623 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>~/startpage</title>
-    <base target="_top">
-    <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <meta name="description" content="A minimal, keyboard-centric start page with dynamic themes and AI routing." />
+  <meta property="og:title" content="Start Page" />
+  <meta property="og:description" content="A minimal, keyboard-centric start page." />
+  <meta name="theme-color" content="#ffffff" id="meta-theme-color" />
+  <link rel="icon" type="image/png" href="icon/128.png">
+  <title>Start Page</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
 </head>
 
 <body>
-    <div class="container">
-        <div class="left-container">
-            <div class="gif">
-                <img src="totoro.gif" />
-            </div>
-        </div>
-
-        <div class="right-container">
-            <div class="head">
-                <p>welcome back edward</p>
-            </div>
-
-            <div class="bookmarks">
-                <div class="category">
-                    <div class="links">
-                        <li class="title">school</li>
-                        <li><a href="https://canvas.calpoly.edu/">canvas</a></li>
-                        <li><a href="https://outlook.office365.com/mail/">outlook</a></li>
-                        <li><a href="https://teams.microsoft.com/v2/">teams</a></li>
-                        <li><a href="https://cmsweb.pscs.calpoly.edu/psp/CSLOPRD/EMPLOYEE/SA/s/WEBLIB_HCX_GN.H_DASHBOARD.FieldFormula.IScript_Main?">student center</a></li>
-                        <li><a href="https://mycourses.pearson.com/course-home#/tab/active">pearson</a></li>
-                    </div>
-                </div>
-
-                <div class="category">
-                    <div class="links">
-                        <li class="title">personal</li>
-                        <li><a href="https://mail.google.com/mail/u/1/#inbox=">gmail</a></li>
-                        <li><a href="https://calendar.google.com/calendar/u/1/r">calendar</a></li>
-                        <li><a href="https://github.com/twempi">github</a></li>
-                    </div>
-                </div>
-
-                <div class="category">
-                    <div class="links">
-                        <li class="title">fun</li>
-                        <li><a href="https://youtube.com/">youtube</a></li>
-                        <li><a href="https://reddit.com/r/unixporn/">unixp*rn</a></li>
-                        <li><a href="https://wallhaven.cc/toplist?page=1">wallhaven</a></li>
-                        <li><a href="https://www.taobao.com/">taobao</a></li>
-                    </div>
-                </div>
-
-                <div class="category">
-                    <div class="links">
-                        <li class="title">ai</li>
-                        <li><a href="https://chatgpt.com/">chatgpt</a></li>
-                        <li><a href="https://chat.deepseek.com/">deepseek</a></li>
-                        <li><a href="https://claude.ai/chats">claude</a></li>
-                        <li><a href="https://www.perplexity.ai/">perplexity</a></li>
-                    </div>
-                </div>
-
-                <div class="category">
-                    <div class="links">
-                        <li class="title">anime</li>
-                        <li><a href="https://animekai.to/updates?page=1">animekai</a></li>
-                        <li><a href="https://anilist.co/home">anilist</a></li>
-                        <li><a href="https://suwayomi.tailae03d0.ts.net:8080/library">reader</a></li>
-                    </div>
-                </div>
-
-                <div class="category">
-                    <div class="links">
-                        <li class="title">linux</li>
-                        <li><a href="https://mynixos.com/">nix pakgs</a></li>
-                        <li><a href="https://nix-community.github.io/stylix/index.html">stylix</a></li>
-                    </div>
-                </div>
-
-                <div class="category">
-                    <div class="links">
-                        <li class="title">coding</li>
-                        <li><a href="https://leetcode.com/problemset/">leetcode</a></li>
-                        <li><a href="https://neetcode.io/practice/practice/neetcode150">neetcode</a></li>
-                        <li><a href="https://codingbat.com/python">codingbat</a></li>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+  <noscript>
+    <div
+      style="position: fixed; top: 0; left: 0; width: 100%; padding: 20px; background: #e74c3c; color: white; text-align: center; z-index: 9999;">
+      This start page requires JavaScript to function. Please enable JavaScript in your browser settings.
     </div>
+  </noscript>
+  <div id="theme-overlay-scanlines" class="theme-overlay"></div>
+  <div id="theme-overlay-texture" class="theme-overlay"></div>
+
+  <div class="content">
+    <!-- Time and Weather Info -->
+    <div class="info-section">
+      <div class="time" id="time-display">--:--</div>
+      <div class="separator">|</div>
+      <div class="weather" id="weather-display">
+        <span>--°</span>
+      </div>
+    </div>
+
+    <!-- Bookmarks Section -->
+    <section class="bookmark-sections" id="bookmarks">
+      <!-- Bookmarks will be generated by JavaScript -->
+    </section>
+
+    <!-- Terminal Command Line -->
+    <section class="terminal-section">
+      <p><span id="username">user</span>@<span id="browser-info">browser</span><span>$</span></p>
+      <div class="terminal-input-wrapper">
+        <div class="command-hint" id="command-hint"></div>
+        <input id="terminal-input" type="text" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" aria-label="Terminal Input" autofocus />
+      </div>
+      <div class="ai-route-badge" id="ai-route-badge" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <!-- Config Modal -->
+  <div class="config-modal" id="config-modal" lang="en" role="dialog" aria-labelledby="config-modal-title">
+    <div class="config-content">
+      <h2 id="config-modal-title">Configuration</h2>
+
+      <div class="config-section">
+        <h3>Username</h3>
+        <input type="text" id="config-username" spellcheck="false" autocorrect="off" />
+      </div>
+
+      <div class="config-section">
+        <button class="btn-save btn-edit-bookmarks" id="btn-edit-bookmarks">Edit Bookmarks</button>
+      </div>
+
+      <div class="config-section">
+        <button class="btn-save btn-edit-bookmarks" id="btn-tags-from-config" style="background: var(--terminal-bg); color: var(--text-color); border: 1px solid var(--card-border);">Search Overrides &amp; Custom Tags</button>
+      </div>
+
+      <div class="config-section">
+        <h3>Weather Location</h3>
+        <input type="text" id="weather-location" spellcheck="false" autocorrect="off" />
+      </div>
+
+      <div class="config-section">
+        <h3>Weather Unit</h3>
+        <select id="weather-unit">
+          <option value="celsius">Celsius (°C)</option>
+          <option value="fahrenheit">Fahrenheit (°F)</option>
+        </select>
+      </div>
+
+      <div class="config-section">
+        <h3>Time Zone</h3>
+        <input type="text" id="time-zone" spellcheck="false" autocorrect="off" />
+      </div>
+
+      <div class="config-section">
+        <h3>Gemini API Key</h3>
+        <input type="password" id="gemini-api-key" autocomplete="off" spellcheck="false" />
+      </div>
+
+      <div class="config-section">
+        <h3>Gemini Model</h3>
+        <input type="text" id="gemini-model" spellcheck="false" autocorrect="off" />
+      </div>
+
+      <div class="config-section">
+        <h3>Gemini System Prompt</h3>
+        <textarea id="gemini-system-prompt" spellcheck="false"></textarea>
+      </div>
+
+      <div class="config-section">
+        <h3>AI Router Mode</h3>
+        <label class="config-inline-toggle">
+          <input type="checkbox" id="ai-mode-enabled" />
+          Enable AI mode (no need to type <span class="config-code">ai:</span>)
+        </label>
+      </div>
+
+      <div class="config-section">
+        <h3>AI Route Badge</h3>
+        <select id="ai-route-badge-mode">
+          <option value="live">Live preview + routed</option>
+          <option value="route">Routed only (previous behavior)</option>
+          <option value="off">Disabled</option>
+        </select>
+      </div>
+
+      <div class="config-section">
+        <h3>Default Search Engine</h3>
+        <select id="search-engine">
+          <option value="google">Google</option>
+          <option value="ddg">DuckDuckGo</option>
+          <option value="bing">Bing</option>
+        </select>
+        <p class="config-hint">Used when no prefix is typed (e.g. plain text or <span class="config-code">ai:</span> fallback). Also the default engine for <span class="config-code">dir:</span> searches.</p>
+      </div>
+
+      <div class="config-buttons">
+        <button class="btn-customize-link" id="btn-customize-from-config">Customize?</button>
+        <button class="btn-backup" id="btn-import-backup" title="Import backup">↑ Import</button>
+        <button class="btn-backup" id="btn-export-backup" title="Export backup">↓ Export</button>
+        <button class="btn-cancel" id="btn-cancel-config">Cancel</button>
+        <button class="btn-save" id="btn-save-config">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div class="config-modal" id="help-modal" lang="en" role="dialog" aria-labelledby="help-modal-title">
+    <div class="config-content help-content">
+      <h2 id="help-modal-title">Available Commands</h2>
+
+      <div class="help-section">
+        <h3>System</h3>
+        <div class="help-commands">
+          <div class="help-cmd"><span>:config</span> → Open settings (weather, timezone, Gemini, AI mode)</div>
+          <div class="help-cmd"><span>:customize</span> → Customize syntax colors &amp; switch theme</div>
+          <div class="help-cmd"><span>:tags</span> → Override search URLs &amp; add custom prefix shortcuts</div>
+          <div class="help-cmd"><span>:bookmarks</span> → Edit bookmarks (grid or JSON)</div>
+          <div class="help-cmd"><span>:dir</span> → Open directory search builder</div>
+          <div class="help-cmd"><span>:dirconfig</span> → Customize file extensions per category</div>
+          <div class="help-cmd"><span>:prompts</span> → Edit terminal placeholder suggestions</div>
+          <div class="help-cmd"><span>:ipconfig</span> → Show network info &amp; VPN status</div>
+          <div class="help-cmd"><span>:netspeed</span> → Run internet speed test</div>
+          <div class="help-cmd"><span>:aimode</span> → Toggle AI mode (no <span>ai:</span> prefix needed)</div>
+          <div class="help-cmd"><span>:version</span> → Show app version</div>
+          <div class="help-cmd"><span>:update</span> → Check for updates on GitHub</div>
+          <div class="help-cmd"><span>:history</span> → Browse &amp; recall command history</div>
+          <div class="help-cmd"><span>:tour</span> → Replay the onboarding tour</div>
+          <div class="help-cmd"><span>:export</span> → Export all settings to JSON</div>
+          <div class="help-cmd"><span>:import</span> → Import settings from JSON</div>
+          <div class="help-cmd"><span>:reset</span> → Clear all settings, cache &amp; localStorage</div>
+          <div class="help-cmd"><span>:help</span> → Show this help</div>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h3>Themes</h3>
+        <div class="help-commands">
+          <div class="help-cmd"><span>:stylix</span> → Stylix system theme</div>
+          <div class="help-cmd"><span>:light</span> → Light mode</div>
+          <div class="help-cmd"><span>:dark</span> → Dark mode</div>
+          <div class="help-cmd"><span>:black</span> / <span>:amoled</span> → Full black / AMOLED</div>
+          <div class="help-cmd"><span>:nord</span> → Arctic Nord</div>
+          <div class="help-cmd"><span>:newspaper</span> → Classic Newspaper</div>
+          <div class="help-cmd"><span>:coffee</span> → Organic Coffee</div>
+          <div class="help-cmd"><span>:root</span> / <span>:hacker</span> → Hacker terminal</div>
+          <div class="help-cmd"><span>:neon</span> / <span>:cyberpunk</span> → Cyberpunk Neon</div>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h3>Search</h3>
+        <div class="help-commands">
+          <div class="help-cmd"><span>r:query</span> → Search Reddit</div>
+          <div class="help-cmd"><span>yt:query</span> → Search YouTube</div>
+          <div class="help-cmd"><span>ggl:query</span> → Search Google explicitly</div>
+          <div class="help-cmd"><span>bing:query</span> → Search Bing</div>
+          <div class="help-cmd"><span>ddg:query</span> → Search DuckDuckGo</div>
+          <div class="help-cmd"><span>amazon:query</span> → Search Amazon</div>
+          <div class="help-cmd"><span>maps:location</span> → Google Maps</div>
+          <div class="help-cmd"><span>imdb:movie</span> → Search IMDb</div>
+          <div class="help-cmd"><span>alt:query</span> → Search AlternativeTo</div>
+          <div class="help-cmd"><span>def:word</span> → Define word (OneLook)</div>
+          <div class="help-cmd"><span>the:phrase</span> → Thesaurus (OneLook)</div>
+          <div class="help-cmd"><span>syn:words</span> → Synonyms (OneLook)</div>
+          <div class="help-cmd"><span>quote:phrase</span> → Find quotes (OneLook)</div>
+          <div class="help-cmd"><span>spell:word</span> → Check spelling · <span>D</span> to define selected word</div>
+          <div class="help-cmd"><span>pronounce:word</span> → Pronunciation + audio · <span>Space</span> to play · <span>D</span> to define</div>
+          <div class="help-cmd"><span>cws:name</span> → Search browser extensions</div>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h3>Open Directory</h3>
+        <div class="help-commands">
+          <div class="help-cmd"><span>dir: keyword</span> → Open dir search, default engine, no filter</div>
+          <div class="help-cmd"><span>dir/media: keyword</span> → Filter for video files</div>
+          <div class="help-cmd"><span>dir/books: keyword</span> → Filter for ebook formats</div>
+          <div class="help-cmd"><span>dir/music: keyword</span> → Filter for audio files</div>
+          <div class="help-cmd"><span>dir/software: keyword</span> → Filter for executables &amp; archives</div>
+          <div class="help-cmd"><span>dir/images: keyword</span> → Filter for image files</div>
+          <div class="help-cmd"><span>dir/other: keyword</span> → Raw open dir, no file filter</div>
+          <div class="help-cmd" style="margin-top:6px;"><span>dir/cat/ggl:</span> <span>dir/cat/ddg:</span> <span>dir/cat/bing:</span> → Override search engine</div>
+          <div class="help-cmd" style="margin-top:4px; opacity:0.7;">Aliases: <span>vid</span> <span>video</span> · <span>book</span> <span>ebook</span> · <span>audio</span> <span>mus</span> · <span>soft</span> <span>iso</span> <span>app</span> · <span>img</span> <span>pics</span></div>
+          <div class="help-cmd" style="opacity:0.7;">Tab autocomplete works after <span>dir/</span> for categories and engines.</div>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h3>AI</h3>
+        <div class="help-commands">
+          <div class="help-cmd"><span>gem:prompt</span> → Ask Gemini directly</div>
+          <div class="help-cmd"><span>gemini:prompt</span> → Ask Gemini (alias)</div>
+          <div class="help-cmd"><span>ai:intent</span> → Route to best site/tool for your intent</div>
+          <div class="help-cmd"><span>:help_ai_router</span> → Guide for how <span>ai:</span> routing works</div>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h3>General</h3>
+        <div class="help-commands">
+          <div class="help-cmd">Type <span>website.com</span> → navigate directly (highlighted teal)</div>
+          <div class="help-cmd">Type anything else → search with your default engine</div>
+          <div class="help-cmd">Trailing space on any command or bookmark → falls through to search</div>
+          <div class="help-cmd"><span>Tab</span> / <span>→</span> → accept autocomplete suggestion</div>
+          <div class="help-cmd"><span>↑ ↓</span> → navigate command history</div>
+          <div class="help-cmd"><span>Ctrl+Enter</span> / <span>Alt+Enter</span> → open bookmark in background tab</div>
+          <div class="help-cmd"><span>Ctrl+Shift+Enter</span> / <span>Alt+Shift+Enter</span> → open bookmark in focused tab</div>
+        </div>
+      </div>
+
+      <div class="config-buttons">
+        <button class="btn-cancel" id="btn-restart-tour" style="margin-right:auto;">↺ Take the tour</button>
+        <button class="btn-save" id="btn-close-help">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IP Info Modal -->
+  <div class="config-modal" id="ip-modal" lang="en" role="dialog" aria-labelledby="ip-modal-title">
+    <div class="config-content ip-content">
+      <h2 id="ip-modal-title">Network Information</h2>
+
+      <div class="ip-grid">
+        <div class="ip-item">
+          <div class="ip-label">IPv4 Address</div>
+          <div class="ip-value" id="ip-address">Loading...</div>
+        </div>
+
+        <div class="ip-item">
+          <div class="ip-label">IPv6 Address</div>
+          <div class="ip-value" id="ip-ipv6">Loading...</div>
+        </div>
+
+        <div class="ip-item">
+          <div class="ip-label">ISP</div>
+          <div class="ip-value" id="ip-isp">Loading...</div>
+        </div>
+
+        <div class="ip-item">
+          <div class="ip-label">Location</div>
+          <div class="ip-value" id="ip-location">Loading...</div>
+        </div>
+
+        <div class="ip-item">
+          <div class="ip-label">Timezone</div>
+          <div class="ip-value" id="ip-timezone">Loading...</div>
+        </div>
+
+        <div class="ip-item">
+          <div class="ip-label">ASN</div>
+          <div class="ip-value" id="ip-asn">Loading...</div>
+        </div>
+
+        <div class="ip-item">
+          <div class="ip-label">BGP Network</div>
+          <div class="ip-value" id="ip-network">Loading...</div>
+        </div>
+
+        <div class="ip-item">
+          <div class="ip-label">DNS</div>
+          <div class="ip-value" id="ip-dns">Loading...</div>
+        </div>
+
+        <div class="ip-item">
+          <div class="ip-label">Latency</div>
+          <div class="ip-value" id="ip-latency">Testing...</div>
+        </div>
+
+        <div class="ip-item">
+          <div class="ip-label">VPN Status</div>
+          <div class="ip-value" id="ip-vpn">Checking...</div>
+        </div>
+      </div>
+
+      <div class="config-buttons">
+        <button class="btn-save" id="btn-close-ip">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Network Speed Test Modal -->
+  <div class="config-modal" id="speed-modal" lang="en" role="dialog" aria-labelledby="speed-modal-title">
+    <div class="config-content speed-content">
+      <h2 id="speed-modal-title">Network Speed Test</h2>
+
+      <div class="speed-main">
+        <div class="speed-display">
+          <div class="speed-value" id="speed-download">--</div>
+          <div class="speed-label">Mbps Download</div>
+        </div>
+        <div class="speed-display">
+          <div class="speed-value" id="speed-upload">--</div>
+          <div class="speed-label">Mbps Upload</div>
+        </div>
+        <div class="speed-display">
+          <div class="speed-value" id="speed-ping">--</div>
+          <div class="speed-label">ms Ping</div>
+        </div>
+      </div>
+
+      <div class="speed-progress">
+        <div class="speed-progress-bar" id="speed-progress-bar"></div>
+      </div>
+
+      <div class="speed-signal-display">Signal Strength: <span id="speed-signal">--</span></div>
+
+      <div class="speed-timer" id="speed-timer">00:00</div>
+
+      <div class="speed-status" id="speed-status">Starting test...</div>
+
+      <div class="config-buttons">
+        <button class="btn-cancel" id="btn-close-speed">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spell Check Modal -->
+  <div class="config-modal" id="spell-modal" lang="en" role="dialog" aria-labelledby="spell-modal-title">
+    <div class="config-content spell-check-content">
+      <h2 id="spell-modal-title">Spell Check</h2>
+      <div class="spell-query-display">spell: <span id="spell-query-word"></span></div>
+      <div id="spell-result-area" class="spell-result-area">checking...</div>
+      <div class="spell-hint" id="spell-hint"></div>
+      <div class="config-buttons">
+        <button class="btn-save" id="btn-close-spell">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bookmarks Modal -->
+  <div class="config-modal" id="bookmarks-modal" lang="en" role="dialog" aria-labelledby="bookmarks-modal-title">
+    <div class="config-content" style="max-width: 900px;">
+      <div class="config-header-row">
+        <h2 id="bookmarks-modal-title">Manage Bookmarks</h2>
+        <button class="btn-toggle-editor" id="toggle-editor-btn">Edit as JSON</button>
+      </div>
+
+      <!-- Tab switcher -->
+      <div class="bm-tabs">
+        <button class="bm-tab-btn bm-tab-active" data-tab="upfront">Upfront</button>
+        <button class="bm-tab-btn" data-tab="shelf">Shelf</button>
+      </div>
+
+      <!-- Visual Grid Editor -->
+      <div id="bookmarks-grid-editor" class="bookmarks-grid-editor">
+        <!-- Dynamically generated -->
+      </div>
+
+      <!-- JSON Editor (Hidden by default) -->
+      <textarea id="config-textarea" class="hidden" spellcheck="false" style="min-height: 400px;" placeholder='[
+  { "href": "https://github.com", "title": "Github" },
+  { "href": "https://youtube.com", "title": "YouTube" }
+]'></textarea>
+
+      <div class="config-buttons">
+        <button class="btn-cancel" id="btn-cancel-bookmarks">Cancel</button>
+        <button class="btn-save" id="btn-save-bookmarks">Save Bookmarks</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gemini Modal -->
+  <div class="config-modal" id="gemini-modal" lang="en" role="dialog" aria-labelledby="gemini-modal-title">
+    <div class="config-content gemini-content">
+      <h2 id="gemini-modal-title">Gemini Response</h2>
+      <div class="gemini-meta-row">
+        <div class="spell-query-display">prompt: <span id="gemini-query-text"></span></div>
+        <div class="gemini-model-badge" id="gemini-model-badge">model</div>
+      </div>
+      <div class="gemini-system-state" id="gemini-system-state">system prompt: off</div>
+      <div class="gemini-status" id="gemini-status">waiting...</div>
+      <div id="gemini-response-area" class="gemini-response-area">waiting...</div>
+      <div class="config-buttons">
+        <button class="btn-cancel" id="btn-copy-gemini">Copy</button>
+        <button class="btn-save" id="btn-close-gemini">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customize Modal -->
+  <div class="config-modal" id="customize-modal" lang="en" role="dialog" aria-labelledby="customize-modal-title">
+    <div class="config-content">
+      <h2 id="customize-modal-title">Customize</h2>
+
+      <div class="config-section">
+        <div class="customize-section-title">Theme</div>
+        <div class="customize-theme-grid" id="customize-theme-grid"></div>
+      </div>
+
+      <div class="config-section">
+        <div class="customize-section-title">Syntax Highlight Colors</div>
+        <p class="config-hint" style="margin-bottom:10px;">These colors are universal — they apply across all themes and persist independently.</p>
+        <div class="customize-grid" id="customize-color-grid"></div>
+      </div>
+
+      <div class="config-buttons">
+        <button class="btn-cancel" id="btn-reset-colors" style="margin-right:auto;">Reset colors</button>
+        <button class="btn-cancel" id="btn-edit-prompts" style="border-color: color-mix(in srgb, var(--syn-cmd) 40%, var(--card-border)); color: var(--syn-cmd);">✎ Edit Prompts</button>
+        <button class="btn-cancel" id="btn-cancel-customize">Cancel</button>
+        <button class="btn-save" id="btn-save-customize">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tags Modal -->
+  <div class="config-modal" id="tags-modal" lang="en" role="dialog" aria-labelledby="tags-modal-title">
+    <div class="config-content tags-content">
+      <h2 id="tags-modal-title">Search Overrides &amp; Tags</h2>
+
+      <div class="config-section">
+        <div class="customize-section-title">Search Overrides</div>
+        <p class="config-hint" style="margin-bottom: 12px;">Replace the default URL for built-in prefixes. Leave blank to use the default.</p>
+        <div id="tags-overrides-grid" class="tags-overrides-grid"></div>
+      </div>
+
+      <div class="config-section">
+        <div class="customize-section-title">Custom Tags</div>
+        <p class="config-hint" style="margin-bottom: 12px;">Define your own <span class="config-code">prefix:</span> shortcuts. The search query is appended to the URL.</p>
+        <div id="tags-custom-list" class="tags-custom-list"></div>
+        <button class="tags-add-btn" id="btn-add-tag">+ Add tag</button>
+      </div>
+
+      <div class="config-buttons">
+        <button class="btn-cancel tags-dir-btn" id="btn-dir-extensions" title="Customize Open Directory file extensions">⊞ Dir Extensions</button>
+        <button class="btn-cancel" id="btn-cancel-tags">Cancel</button>
+        <button class="btn-save" id="btn-save-tags">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Open Directory Modal -->
+  <div class="config-modal" id="dir-modal" lang="en" role="dialog" aria-labelledby="dir-modal-title">
+    <div class="config-content dir-content">
+      <h2 id="dir-modal-title">Open Directory Search</h2>
+      <p class="config-hint" style="margin-bottom: 16px;">
+        Search for public open directory indexes using Google dorking. Uses <span class="config-code">intitle:index.of</span> with file-type filters.
+        Inspired by <a href="https://ewasion.github.io/opendirectory-finder/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-color, var(--syn-cmd));">ewasion's opendirectory-finder</a>.
+      </p>
+
+      <!-- Keyword -->
+      <div class="config-section">
+        <h3>Keyword</h3>
+        <input type="text" id="dir-keyword-input" spellcheck="false" autocorrect="off" placeholder="e.g. dune, pink floyd, photoshop..." />
+      </div>
+
+      <!-- Category -->
+      <div class="config-section">
+        <h3>Category <span class="config-hint" style="font-weight:normal; font-size:0.85em;">(optional)</span></h3>
+        <div class="dir-cat-grid" id="dir-cat-grid">
+          <button class="dir-cat-btn active-cat" data-cat="">All files</button>
+          <button class="dir-cat-btn" data-cat="media">Media <span class="dir-cat-hint">mkv mp4 avi</span></button>
+          <button class="dir-cat-btn" data-cat="books">Books <span class="dir-cat-hint">pdf epub mobi</span></button>
+          <button class="dir-cat-btn" data-cat="music">Music <span class="dir-cat-hint">mp3 flac ogg</span></button>
+          <button class="dir-cat-btn" data-cat="software">Software <span class="dir-cat-hint">exe iso zip apk</span></button>
+          <button class="dir-cat-btn" data-cat="images">Images <span class="dir-cat-hint">jpg png psd</span></button>
+          <button class="dir-cat-btn" data-cat="other">Other <span class="dir-cat-hint">no filter</span></button>
+        </div>
+      </div>
+
+      <!-- Engine -->
+      <div class="config-section">
+        <h3>Search Engine <span class="config-hint" style="font-weight:normal; font-size:0.85em;">(optional override)</span></h3>
+        <div class="dir-engine-grid" id="dir-engine-grid">
+          <button class="dir-engine-btn active-engine" data-engine="">Default (Google)</button>
+          <button class="dir-engine-btn" data-engine="ggl">Google</button>
+          <button class="dir-engine-btn" data-engine="ddg">DuckDuckGo</button>
+          <button class="dir-engine-btn" data-engine="bing">Bing</button>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="dir-preview-box">
+        <div class="dir-preview-label">Terminal command</div>
+        <div class="dir-preview-cmd" id="dir-command-preview">dir: &lt;keyword&gt;</div>
+        <div class="dir-preview-url" id="dir-url-preview">Enter a keyword to preview</div>
+      </div>
+
+      <div class="config-buttons">
+        <button class="btn-cancel" id="dir-copy-btn">Copy Command</button>
+        <button class="btn-cancel" id="btn-cancel-dir">Cancel</button>
+        <button class="btn-save" id="btn-search-dir">Search</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prompts Modal — Placeholder suggestions editor -->
+  <div class="config-modal" id="prompts-modal" lang="en" role="dialog" aria-labelledby="prompts-modal-title">
+    <div class="config-content prompts-content">
+      <h2 id="prompts-modal-title">Terminal Prompts</h2>
+      <p class="config-hint" style="margin-bottom: 14px;">
+        Customize the placeholder suggestions that cycle in the terminal input. One suggestion per line. Saving an empty list resets to defaults.
+      </p>
+      <textarea
+        id="prompts-textarea"
+        class="prompts-textarea"
+        spellcheck="false"
+        autocorrect="off"
+        placeholder="search anything...&#10;:help → commands&#10;yt:query → youtube"></textarea>
+      <div class="config-buttons">
+        <button class="btn-cancel" id="btn-reset-prompts" style="margin-right:auto;">Reset to defaults</button>
+        <button class="btn-cancel" id="btn-cancel-prompts">Cancel</button>
+        <button class="btn-save" id="btn-save-prompts">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dir Config Modal — Extension Editor -->
+  <div class="config-modal" id="dirconfig-modal" lang="en" role="dialog" aria-labelledby="dirconfig-modal-title">
+    <div class="config-content dirconfig-content">
+      <h2 id="dirconfig-modal-title">Open Dir — File Extensions</h2>
+      <p class="config-hint" style="margin-bottom: 16px;">
+        Customize which file extensions each <span class="config-code">dir/category:</span> filter searches for.
+        Click <span class="config-code">×</span> to remove, type + Enter to add. Use <span class="config-code">↺</span> to reset a category to defaults.
+      </p>
+      <div id="dirconfig-categories" class="dirconfig-categories"></div>
+      <div class="config-buttons">
+        <button class="btn-cancel" id="btn-cancel-dirconfig">Cancel</button>
+        <button class="btn-save" id="btn-save-dirconfig">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pronounce Modal -->
+  <div class="config-modal" id="pronounce-modal" lang="en" role="dialog" aria-labelledby="pronounce-modal-title">
+    <div class="config-content pronounce-content">
+      <h2 id="pronounce-modal-title">Pronunciation</h2>
+      <div class="spell-query-display">pronounce: <span id="pronounce-query-word"></span></div>
+      <div id="pronounce-result-area" class="pronounce-result-area"></div>
+      <div class="pronounce-hint" id="pronounce-hint"></div>
+      <div class="config-buttons">
+        <button class="btn-save" id="btn-close-pronounce">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div class="config-modal" id="history-modal" lang="en" role="dialog" aria-labelledby="history-modal-title">
+    <div class="config-content history-content">
+      <h2 id="history-modal-title">Command History</h2>
+      <p class="config-hint" style="margin-bottom: 12px;">Click or press Enter on an entry to fill the terminal. Use ↑ ↓ to navigate, PgUp / PgDn to scroll fast.</p>
+      <div id="history-list" class="history-list"></div>
+      <div class="config-buttons">
+        <button class="btn-cancel" style="margin-right:auto;" id="btn-clear-history">Clear history</button>
+        <button class="btn-save" id="btn-close-history">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay">
+    <div id="loading-ring"></div>
+  </div>
+
+  <script src="script/ext-storage.js"></script>
+  <script src="script/focus-grab.js"></script>
+  <script src="version/version.js"></script>
+  <!-- load order matters: storage → utils → ui → modals → terminal → commands → main -->
+  <script src="script/utils.js"></script>
+  <script src="script/ui.js"></script>
+  <script src="script/storage.js"></script>
+  <script src="script/time-weather.js"></script>
+  <script src="script/bookmarks.js"></script>
+  <script src="script/modals/config.js"></script>
+  <script src="script/modals/bookmarks.js"></script>
+  <script src="script/modals/help.js"></script>
+  <script src="script/modals/ipinfo.js"></script>
+  <script src="script/modals/speedtest.js"></script>
+  <script src="script/modals/spell.js"></script>
+  <script src="script/modals/gemini.js"></script>
+  <script src="script/modals/customize.js"></script>
+  <script src="script/modals/tags.js"></script>
+  <script src="script/modals/backup.js"></script>
+  <script src="script/modals/dir.js"></script>
+  <script src="script/modals/prompts.js"></script>
+  <script src="script/modals/pronounce.js"></script>
+  <script src="script/modals/tour.js"></script>
+  <script src="script/commands.js"></script>
+  <script src="script/terminal.js"></script>
+  <script src="script/script.js"></script>
+  <script src="script/inline-handlers.js"></script>
 </body>
 
 </html>

@@ -9,6 +9,7 @@
     source = ./startpage;
     colors = config.lib.stylix.colors;
     fontFamily = config.stylix.fonts.monospace.name;
+    sansFontFamily = config.stylix.fonts.sansSerif.name;
   };
 in {
   services.tailscale.permitCertUid = "caddy";

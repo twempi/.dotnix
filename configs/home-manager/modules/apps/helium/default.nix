@@ -15,6 +15,8 @@
     source = ../../../../hosts/t480s/system/modules/caddy/startpage;
     colors = config.lib.stylix.colors;
     fontFamily = config.stylix.fonts.monospace.name;
+    sansFontFamily = config.stylix.fonts.sansSerif.name;
+    includeChromeManifest = true;
   };
 
   webStoreExtensions = [
@@ -137,15 +139,9 @@
         '{ external_crx: $crx, external_version: $version }' > "$out"
     '';
 
-  localNewTabExtension = pkgs.runCommand "helium-new-tab-startpage" {} ''
+  localNewTabExtension = pkgs.runCommand "helium-startpage" {} ''
     mkdir -p $out
     cp -r ${stylixStartpage}/* $out/
-    cp ${./new-tab-startpage/manifest.json} $out/manifest.json
-    mkdir -p $out/icons
-    cp ${./new-tab-startpage/icons/16.png} $out/icons/16.png
-    cp ${./new-tab-startpage/icons/32.png} $out/icons/32.png
-    cp ${./new-tab-startpage/icons/48.png} $out/icons/48.png
-    cp ${./new-tab-startpage/icons/128.png} $out/icons/128.png
   '';
 
   allUnpackedExtensionPaths = map toString [localNewTabExtension];
