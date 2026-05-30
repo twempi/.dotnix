@@ -18,20 +18,20 @@ const TOUR_STEPS = [
     tip: "Welcome to Terminal Start Page. Everything runs through the terminal. Let's take a quick look.",
   },
   {
-    tip: "Not a fan of the light theme? Let's switch to dark — watch the terminal.",
-    type: ':dark',
+    tip: "The page uses the system Stylix theme. The terminal command keeps it pinned there.",
+    type: ':stylix',
     execute: () => {
-      if (typeof handleSpecialCommands === 'function') handleSpecialCommands(':dark');
+      if (typeof handleSpecialCommands === 'function') handleSpecialCommands(':stylix');
     },
   },
   {
-    tip: "Type :config to open settings — username, weather location, timezone, Gemini API key.",
+    tip: "Type :config to open settings — username, weather location, timezone, search, and AI routing.",
     type: ':config',
     execute: () => { if (typeof openConfig === 'function') openConfig(); },
     afterHide: () => { if (typeof closeConfig === 'function') closeConfig(); },
   },
   {
-    tip: "Type :customize to pick a theme and set your own syntax highlight colors.",
+    tip: "Type :customize to review Stylix and set your own syntax highlight colors.",
     type: ':customize',
     execute: () => { if (typeof openCustomizeModal === 'function') openCustomizeModal(); },
     afterHide: () => { if (typeof closeCustomizeModal === 'function') closeCustomizeModal(); },

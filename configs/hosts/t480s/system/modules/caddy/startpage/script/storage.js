@@ -32,11 +32,17 @@ const DEFAULT_USERNAME = "edward";
 const DEFAULT_WEATHER_LOCATION = "Gurgaon";
 const DEFAULT_WEATHER_UNIT = "celsius";
 const DEFAULT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash-lite";
-const DEFAULT_GEMINI_SYSTEM_PROMPT = "";
 const DEFAULT_AI_MODE_ENABLED = false;
 const DEFAULT_AI_ROUTE_BADGE_MODE = "live";
-const DEFAULT_SEARCH_ENGINE = "google"; // "google" | "ddg" | "bing"
+const DEFAULT_SEARCH_ENGINE = "brave"; // "brave" | "google" | "ddg" | "bing"
+const DEFAULT_THEME = "stylix";
+const SEARCH_ENGINE_IDS = ["brave", "google", "ddg", "bing"];
+const SEARCH_ENGINE_LABELS = {
+  brave: "Brave",
+  google: "Google",
+  ddg: "DuckDuckGo",
+  bing: "Bing"
+};
 
 const DEFAULT_SHELF_BOOKMARKS = [];
 
@@ -162,11 +168,11 @@ function saveUsername(name) {
 // Theme
 // ========================================
 function getStoredTheme() {
-  return localStorage.getItem('theme') || 'stylix';
+  return DEFAULT_THEME;
 }
-function saveTheme(theme) {
+function saveTheme() {
   try {
-    localStorage.setItem('theme', theme);
+    localStorage.setItem('theme', DEFAULT_THEME);
   } catch (e) {
     console.error('Failed to save theme:', e);
   }
@@ -201,62 +207,6 @@ function saveTimezone(tz) {
 }
 
 // ========================================
-// Gemini
-// ========================================
-
-// Gemini API key is stored in extension storage (chrome.storage.local /
-// browser.storage.local) when running as an extension, for security.
-// ext-storage.js populates _cachedGeminiApiKey and resolves extStorageReady.
-// On localhost (no extension API), we fall back to localStorage.
-
-function getStoredGeminiApiKey() {
-  // ext-storage.js sets this cache; falls back to localStorage on localhost
-  if (typeof _cachedGeminiApiKey !== 'undefined') return _cachedGeminiApiKey;
-  return localStorage.getItem('geminiApiKey') || '';
-}
-
-function normalizeGeminiApiKey(key) {
-  return String(key || '').trim();
-}
-
-function saveGeminiApiKey(key) {
-  const normalized = normalizeGeminiApiKey(key);
-
-  // Extension: save to chrome.storage.local / browser.storage.local
-  const extStorage = (typeof browser !== 'undefined' && browser?.storage?.local)
-    ? browser.storage.local
-    : (typeof chrome !== 'undefined' && chrome?.storage?.local)
-      ? chrome.storage.local
-      : null;
-
-  if (extStorage) {
-    // Update in-memory cache used by getStoredGeminiApiKey
-    if (typeof _cachedGeminiApiKey !== 'undefined') {
-      // _cachedGeminiApiKey is declared in ext-storage.js — update via its setter
-      window._cachedGeminiApiKey = normalized;
-    }
-    localStorage.removeItem('geminiApiKey'); // never store in localStorage
-    extStorage.set({ geminiApiKey: normalized });
-    return;
-  }
-
-  // Localhost fallback
-  localStorage.setItem('geminiApiKey', normalized);
-}
-function getStoredGeminiModel() {
-  return localStorage.getItem('geminiModel') || DEFAULT_GEMINI_MODEL;
-}
-function saveGeminiModel(model) {
-  localStorage.setItem('geminiModel', model);
-}
-function getStoredGeminiSystemPrompt() {
-  return localStorage.getItem('geminiSystemPrompt') || DEFAULT_GEMINI_SYSTEM_PROMPT;
-}
-function saveGeminiSystemPrompt(prompt) {
-  localStorage.setItem('geminiSystemPrompt', String(prompt || '').trim());
-}
-
-// ========================================
 // AI Router
 // ========================================
 function getStoredAiModeEnabled() {
@@ -281,7 +231,8 @@ function saveAiRouteBadgeMode(mode) {
 // ========================================
 const OVERRIDEABLE_PREFIXES = {
   'yt':     { label: 'YouTube',       default: 'https://www.youtube.com/results?search_query=' },
-  'r':      { label: 'Reddit',        default: 'https://google.com/search?q=site:reddit.com ' },
+  'r':      { label: 'Reddit',        default: 'https://search.brave.com/search?q=site%3Areddit.com%20' },
+  'brave':  { label: 'Brave',         default: 'https://search.brave.com/search?q=' },
   'ddg':    { label: 'DuckDuckGo',    default: 'https://duckduckgo.com/?q=' },
   'bing':   { label: 'Bing',          default: 'https://www.bing.com/search?q=' },
   'ggl':    { label: 'Google',        default: 'https://www.google.com/search?q=' },
@@ -315,11 +266,25 @@ function saveCustomTags(tags) {
   try { localStorage.setItem('customTags', JSON.stringify(tags)); }
   catch (e) { console.error('Failed to save custom tags:', e); }
 }
+function isValidSearchEngine(engine) {
+  return SEARCH_ENGINE_IDS.includes(String(engine || '').toLowerCase());
+}
+function getSearchEngineLabel(engine) {
+  return SEARCH_ENGINE_LABELS[engine] || SEARCH_ENGINE_LABELS[DEFAULT_SEARCH_ENGINE];
+}
+function buildSearchUrl(engine, query) {
+  const normalized = isValidSearchEngine(engine) ? String(engine).toLowerCase() : DEFAULT_SEARCH_ENGINE;
+  const q = encodeURIComponent(query);
+  if (normalized === 'google') return `https://google.com/search?q=${q}`;
+  if (normalized === 'ddg') return `https://duckduckgo.com/?q=${q}`;
+  if (normalized === 'bing') return `https://www.bing.com/search?q=${q}`;
+  return `https://search.brave.com/search?q=${q}`;
+}
 function getStoredSearchEngine() {
   const stored = localStorage.getItem('searchEngine') || DEFAULT_SEARCH_ENGINE;
-  return ['google', 'ddg', 'bing'].includes(stored) ? stored : DEFAULT_SEARCH_ENGINE;
+  return isValidSearchEngine(stored) ? stored : DEFAULT_SEARCH_ENGINE;
 }
 function saveSearchEngine(engine) {
   const normalized = String(engine || '').toLowerCase();
-  localStorage.setItem('searchEngine', ['google', 'ddg', 'bing'].includes(normalized) ? normalized : DEFAULT_SEARCH_ENGINE);
+  localStorage.setItem('searchEngine', isValidSearchEngine(normalized) ? normalized : DEFAULT_SEARCH_ENGINE);
 }

@@ -1,5 +1,5 @@
-/* CSS Variables - Light Theme (Default) */
-:root {
+/* CSS Variables - fallback values before generated Stylix CSS loads */
+html {
   --background-color: #ffffff;
   --text-color: #212529;
   --card-background: rgba(255, 255, 255, 0.1);
@@ -59,60 +59,7 @@ img {
   display: block;
 }
 
-/* Dark Theme */
-html.dark-mode body {
-  --background-color: #2d3436;
-  --text-color: #dfe6e9;
-  --card-background: rgba(45, 52, 54, 0.5);
-  --card-border: rgba(80, 100, 130, 0.3);
-  --terminal-bg: rgba(20, 30, 40, 0.8);
-  --terminal-text: #dfe6e9;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --link-background: rgba(255, 255, 255, 0.08);
-  --link-hover: rgba(255, 255, 255, 0.12);
-}
-
-/* Full Black Theme */
-html.black-mode body {
-  --background-color: #000000;
-  --text-color: #f4f5f6;
-  --card-background: rgba(8, 8, 8, 0.94);
-  --card-border: rgba(255, 255, 255, 0.11);
-  --terminal-bg: rgba(7, 7, 7, 0.96);
-  --terminal-text: #f4f5f6;
-  --shadow-color: rgba(0, 0, 0, 0.55);
-  --link-background: #0b0b0b;
-  --link-hover: #141414;
-}
-
-/* Nord Theme */
-html.nord-mode body {
-  --background-color: #2e3440;
-  --text-color: #eceff4;
-  --card-background: rgba(59, 66, 82, 0.6);
-  --card-border: rgba(76, 86, 106, 0.4);
-  --terminal-bg: rgba(46, 52, 64, 0.9);
-  --terminal-text: #eceff4;
-  --shadow-color: rgba(0, 0, 0, 0.4);
-  --link-background: rgba(255, 255, 255, 0.05);
-  --link-hover: rgba(255, 255, 255, 0.1);
-}
-
-/* Newspaper Theme */
-html.newspaper-mode body {
-  --background-color: #f4efdf;
-  --text-color: #121212;
-  --card-background: rgba(230, 220, 190, 0.25);
-  --card-border: rgba(18, 18, 18, 0.15);
-  --terminal-bg: rgba(244, 239, 223, 0.9);
-  --terminal-text: #121212;
-  --shadow-color: rgba(0, 0, 0, 0.08);
-  --font-family: 'Libre Baskerville', serif;
-  --link-background: rgba(18, 18, 18, 0.03);
-  --link-hover: rgba(18, 18, 18, 0.06);
-}
-
-/* Texture Overlay for Newspaper */
+/* Theme Overlay */
 .theme-overlay {
   position: fixed;
   top: 0;
@@ -122,75 +69,6 @@ html.newspaper-mode body {
   pointer-events: none;
   z-index: var(--z-overlay);
   display: none;
-}
-
-html.newspaper-mode #theme-overlay-texture {
-  display: block;
-  opacity: 0.06;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-}
-
-/* Coffee Theme */
-html.coffee-mode body {
-  --background-color: #2b1b17;
-  --text-color: #f1e4d1;
-  --card-background: rgba(43, 27, 23, 0.4);
-  --card-border: rgba(241, 228, 209, 0.15);
-  --terminal-bg: rgba(30, 18, 15, 0.85);
-  --terminal-text: #f1e4d1;
-  --shadow-color: rgba(0, 0, 0, 0.6);
-  --link-hover: rgba(241, 228, 209, 0.08);
-}
-
-/* Root (Hacker) Theme */
-html.root-mode body {
-  --background-color: #050505;
-  --text-color: #00ff41;
-  --card-background: rgba(0, 50, 10, 0.2);
-  --card-border: rgba(0, 255, 65, 0.3);
-  --terminal-bg: rgba(5, 5, 5, 0.95);
-  --terminal-text: #00ff41;
-  --shadow-color: rgba(0, 255, 65, 0.1);
-  --font-family: 'Source Code Pro', ui-monospace, 'Cascadia Code', 'Fira Code', 'Consolas', 'Menlo', monospace;
-  --link-background: rgba(0, 255, 65, 0.05);
-  --link-hover: rgba(0, 255, 65, 0.15);
-}
-
-html.root-mode #theme-overlay-scanlines {
-  display: block;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%,
-      rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg,
-      rgba(255, 0, 0, 0.06),
-      rgba(0, 255, 0, 0.02),
-      rgba(0, 0, 255, 0.06));
-  background-size: 100% 2px, 3px 100%;
-  opacity: 0.3;
-}
-
-/* Neon (Cyberpunk) Theme */
-html.neon-mode body {
-  --background-color: #0d0d0d;
-  --text-color: #00f3ff;
-  --card-background: rgba(20, 20, 20, 0.7);
-  --card-border: #ff00ff;
-  --terminal-bg: rgba(13, 13, 13, 0.9);
-  --terminal-text: #00f3ff;
-  --shadow-color: rgba(255, 0, 255, 0.3);
-  --font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --link-background: rgba(0, 243, 255, 0.05);
-  --link-hover: rgba(255, 0, 255, 0.15);
-}
-
-html.neon-mode body {
-  background: radial-gradient(circle at center, #1a1a1a 0%, #0d0d0d 100%);
-}
-
-html.newspaper-mode body {
-  letter-spacing: -0.01em;
-}
-
-html.newspaper-mode .bookmark-link span {
-  font-weight: 700;
 }
 
 /* Global Styles */
@@ -215,17 +93,6 @@ body {
   justify-content: center;
   overflow-x: hidden;
   position: relative;
-}
-
-/* Scanlines ONLY on body background via pseudo-element BELOW content */
-html.dark-mode #theme-overlay-scanlines {
-  display: block;
-  z-index: -1;
-  background: repeating-linear-gradient(0deg,
-      rgba(0, 0, 0, 0.3) 0px,
-      transparent 1px,
-      transparent 2px,
-      rgba(0, 0, 0, 0.3) 3px);
 }
 
 /* Content Container */
@@ -295,18 +162,6 @@ html.dark-mode #theme-overlay-scanlines {
   z-index: 10;
 }
 
-html.coffee-mode .bookmark-section {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  border-radius: 16px;
-}
-
-html.newspaper-mode .bookmark-section {
-  border-radius: 2px 5px 3px 6px;
-  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.05);
-}
-
 .bookmark-section:hover {
   background: var(--card-background);
   opacity: 0.95;
@@ -361,14 +216,6 @@ ul li a:hover {
   max-width: 20px;
   max-height: 20px;
   border-radius: 4px;
-}
-
-html.newspaper-mode .bookmark-icon {
-  filter: grayscale(100%) contrast(1.2) brightness(0.9);
-}
-
-html.root-mode .bookmark-icon {
-  filter: grayscale(100%) brightness(0.8) sepia(1) hue-rotate(80deg) saturate(5);
 }
 
 ul li a span {
@@ -1141,65 +988,6 @@ ul li a span {
   background: rgba(102, 126, 234, 0.25) !important;
 }
 
-/* Gemini Modal */
-.gemini-content {
-  max-width: 760px;
-}
-
-.gemini-meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.gemini-model-badge {
-  font-family: var(--monospace-font-family);
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-primary);
-  background: rgba(102, 126, 234, 0.14);
-  border: 1px solid rgba(102, 126, 234, 0.28);
-  border-radius: 999px;
-  padding: 5px 10px;
-}
-
-.gemini-status {
-  font-size: 13px;
-  opacity: 0.75;
-  margin-bottom: 10px;
-}
-
-.gemini-system-state {
-  font-family: var(--monospace-font-family);
-  font-size: 12px;
-  opacity: 0.65;
-  margin-bottom: 8px;
-}
-
-.gemini-response-area {
-  min-height: 120px;
-  max-height: 48vh;
-  overflow: auto;
-  white-space: pre-wrap;
-  line-height: 1.55;
-  font-family: var(--monospace-font-family);
-  font-size: 14px;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid var(--card-border);
-  background: var(--terminal-bg);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.gemini-response-area.gemini-error {
-  border-color: rgba(231, 76, 60, 0.45);
-  color: var(--color-error);
-}
-
 /* Bookmark Matching Styles */
 .bookmark-match a {
   background: rgba(255, 255, 255, 0.08) !important;
@@ -1495,10 +1283,6 @@ ul li a span {
   -webkit-appearance: none;
   overflow: hidden;
   color-scheme: dark;
-}
-
-html:not(.dark-mode):not(.black-mode):not(.nord-mode):not(.coffee-mode):not(.root-mode):not(.neon-mode) .customize-swatch {
-  color-scheme: light;
 }
 
 .customize-swatch::-webkit-color-swatch-wrapper { padding: 0; }

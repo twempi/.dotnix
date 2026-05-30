@@ -47,8 +47,7 @@ function openAiRouterHelp() {
     '1) You type a natural-language intent.\n' +
     '2) It detects likely destination (maps, YouTube, Reddit, settings, etc.).\n' +
     '3) It navigates there directly.\n' +
-    '4) If no clear match exists, it falls back to Google search.\n\n' +
-    'Use gem: or gemini: for direct Gemini prompting.',
+    '4) If no clear match exists, it falls back to your default search engine.',
     { title: 'AI Router', type: 'info' }
   );
 }
@@ -95,7 +94,6 @@ function handleSpecialCommands(value) {
   if (normalized === ":reset") { handleResetCommand(); clear(); return; }
   if (normalized === ":ipconfig" || normalized === ":ip") { openIPInfo(); clear(); return; }
   if (normalized === ":netspeed" || normalized === ":speed") { openSpeedTest(); clear(); return; }
-  if (normalized === ":gemini") { navigate("https://gemini.google.com/app"); return; }
   if (normalized === ":bookmarks" || normalized === ":bm") { openBookmarksModal(); clear(); return; }
   if (normalized === ":customize" || normalized === ":custom") { openCustomizeModal(); clear(); return; }
   if (normalized === ":tags") { openTagsModal(); clear(); return; }
@@ -111,17 +109,15 @@ function handleSpecialCommands(value) {
 
   // ---- Theme ----
   const themeMatch = normalized.replace(/^:/, '');
-  const THEME_ALIASES = { 'amoled': 'black', 'hacker': 'root', 'cyberpunk': 'neon' };
-  const targetTheme = THEME_ALIASES[themeMatch] || themeMatch;
+  const targetTheme = themeMatch;
 
-  if (THEMES.includes(targetTheme) || targetTheme === 'light') {
+  if (THEMES.includes(targetTheme)) {
     THEMES.forEach(t => {
       document.body.classList.remove(`${t}-mode`);
       document.documentElement.classList.remove(`${t}-mode`);
     });
-    if (targetTheme !== 'light') {
-      document.documentElement.classList.add(`${targetTheme}-mode`);
-    }
+    document.body.classList.add(`${targetTheme}-mode`);
+    document.documentElement.classList.add(`${targetTheme}-mode`);
     saveTheme(targetTheme);
     clear();
     return;
@@ -138,16 +134,6 @@ function handleSpecialCommands(value) {
   if (/^pronounce\s*:/i.test(rawValue)) {
     const query = rawValue.replace(/^pronounce\s*:/i, "").trim();
     if (query) { handlePronounce(query); clear(); }
-    return;
-  }
-
-  // ---- Gemini AI ----
-  if (/^(gem|gemini)\s*:/i.test(rawValue)) {
-    const query = rawValue.replace(/^(gem|gemini)\s*:/i, "").trim();
-    if (query) {
-      handleGeminiPrompt(query);
-      clear();
-    }
     return;
   }
 
@@ -178,7 +164,12 @@ function handleSpecialCommands(value) {
 
   // ---- Search shortcuts ----
   if (/^yt:/i.test(rawValue)) { navigate(`${overrides.yt || 'https://www.youtube.com/results?search_query='}${encodeSearchQuery(rawValue, 'yt:')}`); return; }
-  if (/^r:/i.test(rawValue)) { navigate(`${overrides.r || 'https://google.com/search?q=site:reddit.com '}${rawValue.replace(/^r:/i, '')}`); return; }
+  if (/^r:/i.test(rawValue)) {
+    const query = rawValue.replace(/^r:/i, '').trim();
+    navigate(overrides.r ? `${overrides.r}${encodeSearchQuery(rawValue, 'r:')}` : buildSearchUrl('brave', `site:reddit.com ${query}`));
+    return;
+  }
+  if (/^brave:/i.test(rawValue)) { navigate(`${overrides.brave || 'https://search.brave.com/search?q='}${encodeSearchQuery(rawValue, 'brave:')}`); return; }
   if (/^ddg:/i.test(rawValue)) { navigate(`${overrides.ddg || 'https://duckduckgo.com/?q='}${encodeSearchQuery(rawValue, 'ddg:')}`); return; }
   if (/^bing:/i.test(rawValue)) { navigate(`${overrides.bing || 'https://www.bing.com/search?q='}${encodeSearchQuery(rawValue, 'bing:')}`); return; }
   if (/^ggl:/i.test(rawValue)) { navigate(`${overrides.ggl || 'https://www.google.com/search?q='}${encodeSearchQuery(rawValue, 'ggl:')}`); return; }
@@ -202,11 +193,8 @@ function handleSpecialCommands(value) {
   if (rawValue.split(".").length >= 2 && !rawValue.includes(" ")) {
     navigate(rawValue.startsWith("http") ? rawValue : `https://${rawValue}`);
   } else {
-    const engine = (typeof getStoredSearchEngine === 'function') ? getStoredSearchEngine() : 'google';
-    const q = encodeURIComponent(rawValue);
-    if (engine === 'ddg') navigate(`https://duckduckgo.com/?q=${q}`);
-    else if (engine === 'bing') navigate(`https://www.bing.com/search?q=${q}`);
-    else navigate(`https://google.com/search?q=${q}`);
+    const engine = (typeof getStoredSearchEngine === 'function') ? getStoredSearchEngine() : DEFAULT_SEARCH_ENGINE;
+    navigate(buildSearchUrl(engine, rawValue));
   }
 }
 
@@ -267,11 +255,8 @@ function routeSemanticIntent(query) {
     return;
   }
 
-  const engine = (typeof getStoredSearchEngine === 'function') ? getStoredSearchEngine() : 'google';
-  const q = encodeURIComponent(cleaned || raw);
-  if (engine === 'ddg') navRoute(`https://duckduckgo.com/?q=${q}`, 'DuckDuckGo Search');
-  else if (engine === 'bing') navRoute(`https://www.bing.com/search?q=${q}`, 'Bing Search');
-  else navRoute(`https://google.com/search?q=${q}`, 'Google Search');
+  const engine = (typeof getStoredSearchEngine === 'function') ? getStoredSearchEngine() : DEFAULT_SEARCH_ENGINE;
+  navRoute(buildSearchUrl(engine, cleaned || raw), `${getSearchEngineLabel(engine)} Search`);
 }
 
 function stripIntentLead(query) {
@@ -306,7 +291,7 @@ function matchWebIntent(cleanedQuery, lowerQuery, options = {}) {
     return `https://www.google.com/maps/search/${encodeURIComponent(cleanedQuery)}`;
   }
   if (includesAny(lowerQuery, [/\b(reddit|subreddit|r\/)\b/])) {
-    return `https://google.com/search?q=${encodeURIComponent(`site:reddit.com ${cleanedQuery}`)}`;
+    return buildSearchUrl('brave', `site:reddit.com ${cleanedQuery}`);
   }
   if (includesAny(lowerQuery, [/\b(youtube|yt|video|watch|trailer|playlist|music video)\b/])) {
     return `https://www.youtube.com/results?search_query=${encodeURIComponent(cleanedQuery)}`;
@@ -423,7 +408,8 @@ function previewAiRoute(query) {
     return;
   }
 
-  showAiRouteBadge('Google Search', raw, 0, 'preview');
+  const engine = (typeof getStoredSearchEngine === 'function') ? getStoredSearchEngine() : DEFAULT_SEARCH_ENGINE;
+  showAiRouteBadge(`${getSearchEngineLabel(engine)} Search`, raw, 0, 'preview');
 }
 
 function getAiCommandDestination(cmd) {
@@ -448,6 +434,7 @@ function getAiUrlDestination(url) {
   if (lower.includes('onelook.com')) return 'OneLook';
   if (lower.includes('alternativeto.net')) return 'AlternativeTo';
   if (lower.includes('addons.mozilla.org') || lower.includes('chromewebstore.google.com')) return 'Extension Store';
+  if (lower.includes('search.brave.com/search')) return 'Brave Search';
   if (lower.includes('google.com/search')) return 'Google Search';
 
   try {
@@ -461,20 +448,10 @@ function getAiUrlDestination(url) {
 // ---- :reset — wipe all localStorage + caches ----
 async function handleResetCommand() {
   const confirmed = await showConfirm(
-    'This will clear ALL settings, bookmarks, API keys, themes, syntax colors, favicon cache, command history, and any other stored data.\n\nThe page will reload with factory defaults.',
+    'This will clear ALL settings, bookmarks, themes, syntax colors, favicon cache, command history, and any other stored data.\n\nThe page will reload with factory defaults.',
     { title: 'Reset Everything?', confirmLabel: 'Yes, reset', cancelLabel: 'Cancel' }
   );
   if (!confirmed) return;
-
-  // Clear extension storage (Gemini API key) if available
-  try {
-    const extStorage = (typeof browser !== 'undefined' && browser?.storage?.local)
-      ? browser.storage.local
-      : (typeof chrome !== 'undefined' && chrome?.storage?.local)
-        ? chrome.storage.local
-        : null;
-    if (extStorage) extStorage.clear();
-  } catch (e) {}
 
   // Wipe all localStorage
   localStorage.clear();

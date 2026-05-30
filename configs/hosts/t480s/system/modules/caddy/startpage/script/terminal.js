@@ -96,7 +96,7 @@ function getDirAutocompleteSuggestion(value) {
   const afterCatSlash = lower.match(/^dir\/([a-z]+)\/([a-z]*)$/);
   if (afterCatSlash) {
     const typedEng = afterCatSlash[2];
-    const engines = ['ggl', 'ddg', 'bing'];
+    const engines = ['brave', 'ggl', 'ddg', 'bing'];
     // Exact match (e.g. 'dir/media/ggl' → 'dir/media/ggl:')
     const exact = engines.find(e => e === typedEng);
     if (exact) return `dir/${afterCatSlash[1]}/${exact}:`;
@@ -109,7 +109,7 @@ function getDirAutocompleteSuggestion(value) {
   const afterDoubleSlash = lower.match(/^dir\/\/([a-z]*)$/);
   if (afterDoubleSlash) {
     const typedEng = afterDoubleSlash[1];
-    const engines = ['ggl', 'ddg', 'bing'];
+    const engines = ['brave', 'ggl', 'ddg', 'bing'];
     const exact = engines.find(e => e === typedEng);
     if (exact) return `dir//${exact}:`;
     const match = engines.find(e => e.startsWith(typedEng) && e !== typedEng);
@@ -186,15 +186,14 @@ function updateSyntaxHighlight(rawValue) {
     'd': 'dir/',      // dir takes priority over def: — type 'de' for def:
     'de': 'def:',
     'dd': 'ddg:',
+    'br': 'brave:',
     'i': 'imdb:',
     't': 'the:',
     's': 'syn:',
     'q': 'quote:',
     'm': 'maps:',
     'c': 'cws:',
-    'g': 'gem:',
     'gg': 'ggl:',
-    'ge': 'gemini:',
     'bi': 'bing:',
     'ai': 'ai:',
     'sp': 'spell:',
@@ -205,18 +204,13 @@ function updateSyntaxHighlight(rawValue) {
     ':di': ':dir',
     ':dirc': ':dirconfig',
     ':p': ':prompts',
-    ':d': ':dark',
-    ':b': ':black',
-    ':am': ':amoled',
     ':bm': ':bookmarks',
     ':i': ':ipconfig',
-    ':l': ':light',
     ':h': ':help',
     ':ha': ':help_ai_router',
     ':hi': ':history',
     ':to': ':tour',
     ':aim': ':aimode',
-    ':ge': ':gemini',
     ':n': ':netspeed',
     ':w': ':weather',
     ':ti': ':time',
@@ -225,12 +219,7 @@ function updateSyntaxHighlight(rawValue) {
     ':ex': ':export',
     ':im': ':import',
     ':re': ':reset',
-    ':st': ':stylix',
-    ':no': ':nord',
-    ':ne': ':newspaper',
-    ':co': ':coffee',
-    ':ro': ':root',
-    ':neo': ':neon'
+    ':st': ':stylix'
   };
 
   // Inject custom tags into suggestions
@@ -242,12 +231,12 @@ function updateSyntaxHighlight(rawValue) {
   });
   const customTagPrefixes = customTags.map(t => t.prefix).filter(Boolean);
 
-  const themeCommands = [':stylix', ':dark', ':black', ':amoled', ':light', ':nord', ':newspaper', ':coffee', ':root', ':neon'];
-  const knownCommands = [':help', ':help_ai_router', ':aimode', ':bookmarks', ':bm', ':ipconfig', ':ip', ':netspeed', ':speed', ':config', ':customize', ':custom', ':tags', ':dir', ':dirconfig', ':prompts', ':weather', ':time', ':gemini', ':update', ':export', ':import', ':reset', ':history', ':tour', ':hacker', ':cyberpunk', ...themeCommands];
+  const themeCommands = [':stylix'];
+  const knownCommands = [':help', ':help_ai_router', ':aimode', ':bookmarks', ':bm', ':ipconfig', ':ip', ':netspeed', ':speed', ':config', ':customize', ':custom', ':tags', ':dir', ':dirconfig', ':prompts', ':weather', ':time', ':update', ':export', ':import', ':reset', ':history', ':tour', ...themeCommands];
   const versionCommands = [':version', ':ver', ':update'];
-  const knownSearch = /^(r|yt|alt|def|ddg|ggl|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|gem|gemini|ai):/;
+  const knownSearch = /^(r|yt|alt|def|brave|ddg|ggl|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|ai):/;
   const knownSearchDynamic = customTagPrefixes.length
-    ? new RegExp(`^(r|yt|alt|def|ddg|ggl|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|gem|gemini|ai|${customTagPrefixes.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')}):`)
+    ? new RegExp(`^(r|yt|alt|def|brave|ddg|ggl|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|ai|${customTagPrefixes.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')}):`)
     : knownSearch;
 
   // ---- DIR syntax: only match valid dir patterns (not 'directory', 'dir is broken', etc.) ----
@@ -587,7 +576,7 @@ function resolveUrl(rawValue, elements) {
   const value = rawValue.trim().toLowerCase();
   if (!value) return null;
 
-  const isCommand = value.startsWith(':') && !value.match(/^:(gemini)$/);
+  const isCommand = value.startsWith(':');
   if (isCommand) return null;
 
   // Dir command
@@ -606,7 +595,8 @@ function resolveUrl(rawValue, elements) {
   const strip = (prefix) => rawValue.replace(new RegExp(`^${prefix}`, 'i'), '').trim();
 
   if (/^yt:/i.test(value))     return `https://www.youtube.com/results?search_query=${enc(strip('yt:'))}`;
-  if (/^r:/i.test(value))      return `https://google.com/search?q=site:reddit.com ${enc(strip('r:'))}`;
+  if (/^r:/i.test(value))      return buildSearchUrl('brave', `site:reddit.com ${strip('r:')}`);
+  if (/^brave:/i.test(value))  return buildSearchUrl('brave', strip('brave:'));
   if (/^ddg:/i.test(value))    return `https://duckduckgo.com/?q=${enc(strip('ddg:'))}`;
   if (/^bing:/i.test(value))   return `https://www.bing.com/search?q=${enc(strip('bing:'))}`;
   if (/^ggl:/i.test(value))    return `https://www.google.com/search?q=${enc(strip('ggl:'))}`;
@@ -628,11 +618,8 @@ function resolveUrl(rawValue, elements) {
   if (rawValue.split('.').length >= 2 && !rawValue.includes(' '))
     return rawValue.startsWith('http') ? rawValue : `https://${rawValue}`;
 
-  const engine = typeof getStoredSearchEngine === 'function' ? getStoredSearchEngine() : 'google';
-  const q = enc(rawValue.trim());
-  if (engine === 'ddg')  return `https://duckduckgo.com/?q=${q}`;
-  if (engine === 'bing') return `https://www.bing.com/search?q=${q}`;
-  return `https://google.com/search?q=${q}`;
+  const engine = typeof getStoredSearchEngine === 'function' ? getStoredSearchEngine() : DEFAULT_SEARCH_ENGINE;
+  return buildSearchUrl(engine, rawValue.trim());
 }
 
 // ---- Open a URL in a new tab (background or focused) ----
@@ -648,7 +635,7 @@ function openInNewTab(url, focus) {
 
 // ---- Enter key routing ----
 function handleEnterKey(rawValue, value, elements) {
-  const isSearch = value.match(/^(r|yt|alt|ddg|imdb|def|the|syn|quote|maps|cws|spell|pronounce|gem|gemini|ai):/);
+  const isSearch = value.match(/^(r|yt|alt|brave|ddg|ggl|bing|amazon|imdb|def|the|syn|quote|maps|cws|spell|pronounce|ai):/);
   const isCommand = value.startsWith(':');
   const isDirCmd = /^dir(\/[a-z]*)?(\/[a-z]*)?:/i.test(rawValue);
   const hasTrailingSpace = /\s$/.test(rawValue);
@@ -660,11 +647,8 @@ function handleEnterKey(rawValue, value, elements) {
   }
 
   if (hasTrailingSpace && /[a-z0-9]\.[a-z]+/i.test(rawValue.trim()) && !rawValue.trim().includes(' ')) {
-    const q = encodeURIComponent(rawValue.trim());
-    const engine = typeof getStoredSearchEngine === 'function' ? getStoredSearchEngine() : 'google';
-    if (engine === 'ddg') navigate(`https://duckduckgo.com/?q=${q}`);
-    else if (engine === 'bing') navigate(`https://www.bing.com/search?q=${q}`);
-    else navigate(`https://google.com/search?q=${q}`);
+    const engine = typeof getStoredSearchEngine === 'function' ? getStoredSearchEngine() : DEFAULT_SEARCH_ENGINE;
+    navigate(buildSearchUrl(engine, rawValue.trim()));
     pushHistory(rawValue.trim());
     return;
   }

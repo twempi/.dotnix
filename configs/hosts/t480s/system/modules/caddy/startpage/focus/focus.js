@@ -1,22 +1,8 @@
 (function redirectWithThemeShell() {
   try {
     const stylixBackground = '__STYLIX_BACKGROUND__'.startsWith('#') ? '__STYLIX_BACKGROUND__' : '#000000';
-    const theme = localStorage.getItem('theme') || 'stylix';
-    const backgroundByTheme = {
-      stylix:    stylixBackground,
-      light:     '#ffffff',
-      dark:      '#2d3436',
-      black:     '#000000',
-      nord:      '#2e3440',
-      newspaper: '#f4efdf',
-      coffee:    '#2b1b17',
-      root:      '#050505',
-      neon:      '#0d0d0d'
-    };
-    const darkThemes = new Set(['stylix', 'dark', 'black', 'nord', 'coffee', 'root', 'neon']);
-
-    document.documentElement.style.backgroundColor = backgroundByTheme[theme] || '#ffffff';
-    document.documentElement.style.colorScheme = darkThemes.has(theme) ? 'dark' : 'light';
+    document.documentElement.style.backgroundColor = stylixBackground;
+    document.documentElement.style.colorScheme = 'dark';
   } catch (e) {}
 
   // Use absolute extension URL so it resolves correctly regardless of folder depth

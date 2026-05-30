@@ -8,10 +8,11 @@ const DEFAULT_PROMPTS = [
   ":config → settings",
   "ai:directions to home → maps",
   ":aimode → toggle no-prefix AI routing",
+  "brave:query → brave search",
   "yt:query → youtube",
   "maps:location → google maps",
   "dir/books: dune → open directory",
-  "dir/music/ddg: flac albums → open dir on DDG",
+  "dir/music/brave: flac albums → open dir on Brave",
 ];
 
 // ---- Storage ----

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width" />
-  <meta name="description" content="A minimal, keyboard-centric start page with dynamic themes and AI routing." />
+  <meta name="description" content="A minimal, keyboard-centric start page with Stylix theming and local AI routing." />
   <meta property="og:title" content="Start Page" />
   <meta property="og:description" content="A minimal, keyboard-centric start page." />
   <meta name="theme-color" content="#ffffff" id="meta-theme-color" />
@@ -93,21 +93,6 @@
       </div>
 
       <div class="config-section">
-        <h3>Gemini API Key</h3>
-        <input type="password" id="gemini-api-key" autocomplete="off" spellcheck="false" />
-      </div>
-
-      <div class="config-section">
-        <h3>Gemini Model</h3>
-        <input type="text" id="gemini-model" spellcheck="false" autocorrect="off" />
-      </div>
-
-      <div class="config-section">
-        <h3>Gemini System Prompt</h3>
-        <textarea id="gemini-system-prompt" spellcheck="false"></textarea>
-      </div>
-
-      <div class="config-section">
         <h3>AI Router Mode</h3>
         <label class="config-inline-toggle">
           <input type="checkbox" id="ai-mode-enabled" />
@@ -127,6 +112,7 @@
       <div class="config-section">
         <h3>Default Search Engine</h3>
         <select id="search-engine">
+          <option value="brave">Brave</option>
           <option value="google">Google</option>
           <option value="ddg">DuckDuckGo</option>
           <option value="bing">Bing</option>
@@ -152,8 +138,8 @@
       <div class="help-section">
         <h3>System</h3>
         <div class="help-commands">
-          <div class="help-cmd"><span>:config</span> → Open settings (weather, timezone, Gemini, AI mode)</div>
-          <div class="help-cmd"><span>:customize</span> → Customize syntax colors &amp; switch theme</div>
+          <div class="help-cmd"><span>:config</span> → Open settings (weather, timezone, search, AI mode)</div>
+          <div class="help-cmd"><span>:customize</span> → Customize syntax colors &amp; view theme</div>
           <div class="help-cmd"><span>:tags</span> → Override search URLs &amp; add custom prefix shortcuts</div>
           <div class="help-cmd"><span>:bookmarks</span> → Edit bookmarks (grid or JSON)</div>
           <div class="help-cmd"><span>:dir</span> → Open directory search builder</div>
@@ -177,14 +163,6 @@
         <h3>Themes</h3>
         <div class="help-commands">
           <div class="help-cmd"><span>:stylix</span> → Stylix system theme</div>
-          <div class="help-cmd"><span>:light</span> → Light mode</div>
-          <div class="help-cmd"><span>:dark</span> → Dark mode</div>
-          <div class="help-cmd"><span>:black</span> / <span>:amoled</span> → Full black / AMOLED</div>
-          <div class="help-cmd"><span>:nord</span> → Arctic Nord</div>
-          <div class="help-cmd"><span>:newspaper</span> → Classic Newspaper</div>
-          <div class="help-cmd"><span>:coffee</span> → Organic Coffee</div>
-          <div class="help-cmd"><span>:root</span> / <span>:hacker</span> → Hacker terminal</div>
-          <div class="help-cmd"><span>:neon</span> / <span>:cyberpunk</span> → Cyberpunk Neon</div>
         </div>
       </div>
 
@@ -193,6 +171,7 @@
         <div class="help-commands">
           <div class="help-cmd"><span>r:query</span> → Search Reddit</div>
           <div class="help-cmd"><span>yt:query</span> → Search YouTube</div>
+          <div class="help-cmd"><span>brave:query</span> → Search Brave explicitly</div>
           <div class="help-cmd"><span>ggl:query</span> → Search Google explicitly</div>
           <div class="help-cmd"><span>bing:query</span> → Search Bing</div>
           <div class="help-cmd"><span>ddg:query</span> → Search DuckDuckGo</div>
@@ -220,7 +199,7 @@
           <div class="help-cmd"><span>dir/software: keyword</span> → Filter for executables &amp; archives</div>
           <div class="help-cmd"><span>dir/images: keyword</span> → Filter for image files</div>
           <div class="help-cmd"><span>dir/other: keyword</span> → Raw open dir, no file filter</div>
-          <div class="help-cmd" style="margin-top:6px;"><span>dir/cat/ggl:</span> <span>dir/cat/ddg:</span> <span>dir/cat/bing:</span> → Override search engine</div>
+          <div class="help-cmd" style="margin-top:6px;"><span>dir/cat/brave:</span> <span>dir/cat/ggl:</span> <span>dir/cat/ddg:</span> <span>dir/cat/bing:</span> → Override search engine</div>
           <div class="help-cmd" style="margin-top:4px; opacity:0.7;">Aliases: <span>vid</span> <span>video</span> · <span>book</span> <span>ebook</span> · <span>audio</span> <span>mus</span> · <span>soft</span> <span>iso</span> <span>app</span> · <span>img</span> <span>pics</span></div>
           <div class="help-cmd" style="opacity:0.7;">Tab autocomplete works after <span>dir/</span> for categories and engines.</div>
         </div>
@@ -229,8 +208,6 @@
       <div class="help-section">
         <h3>AI</h3>
         <div class="help-commands">
-          <div class="help-cmd"><span>gem:prompt</span> → Ask Gemini directly</div>
-          <div class="help-cmd"><span>gemini:prompt</span> → Ask Gemini (alias)</div>
           <div class="help-cmd"><span>ai:intent</span> → Route to best site/tool for your intent</div>
           <div class="help-cmd"><span>:help_ai_router</span> → Guide for how <span>ai:</span> routing works</div>
         </div>
@@ -400,24 +377,6 @@
     </div>
   </div>
 
-  <!-- Gemini Modal -->
-  <div class="config-modal" id="gemini-modal" lang="en" role="dialog" aria-labelledby="gemini-modal-title">
-    <div class="config-content gemini-content">
-      <h2 id="gemini-modal-title">Gemini Response</h2>
-      <div class="gemini-meta-row">
-        <div class="spell-query-display">prompt: <span id="gemini-query-text"></span></div>
-        <div class="gemini-model-badge" id="gemini-model-badge">model</div>
-      </div>
-      <div class="gemini-system-state" id="gemini-system-state">system prompt: off</div>
-      <div class="gemini-status" id="gemini-status">waiting...</div>
-      <div id="gemini-response-area" class="gemini-response-area">waiting...</div>
-      <div class="config-buttons">
-        <button class="btn-cancel" id="btn-copy-gemini">Copy</button>
-        <button class="btn-save" id="btn-close-gemini">Close</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Customize Modal -->
   <div class="config-modal" id="customize-modal" lang="en" role="dialog" aria-labelledby="customize-modal-title">
     <div class="config-content">
@@ -474,7 +433,7 @@
     <div class="config-content dir-content">
       <h2 id="dir-modal-title">Open Directory Search</h2>
       <p class="config-hint" style="margin-bottom: 16px;">
-        Search for public open directory indexes using Google dorking. Uses <span class="config-code">intitle:index.of</span> with file-type filters.
+        Search for public open directory indexes using search dorking. Uses <span class="config-code">intitle:index.of</span> with file-type filters.
         Inspired by <a href="https://ewasion.github.io/opendirectory-finder/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-color, var(--syn-cmd));">ewasion's opendirectory-finder</a>.
       </p>
 
@@ -502,7 +461,8 @@
       <div class="config-section">
         <h3>Search Engine <span class="config-hint" style="font-weight:normal; font-size:0.85em;">(optional override)</span></h3>
         <div class="dir-engine-grid" id="dir-engine-grid">
-          <button class="dir-engine-btn active-engine" data-engine="">Default (Google)</button>
+          <button class="dir-engine-btn active-engine" data-engine="">Default (Brave)</button>
+          <button class="dir-engine-btn" data-engine="brave">Brave</button>
           <button class="dir-engine-btn" data-engine="ggl">Google</button>
           <button class="dir-engine-btn" data-engine="ddg">DuckDuckGo</button>
           <button class="dir-engine-btn" data-engine="bing">Bing</button>
@@ -592,7 +552,6 @@
     <div id="loading-ring"></div>
   </div>
 
-  <script src="script/ext-storage.js"></script>
   <script src="script/focus-grab.js"></script>
   <script src="version/version.js"></script>
   <!-- load order matters: storage → utils → ui → modals → terminal → commands → main -->
@@ -607,7 +566,6 @@
   <script src="script/modals/ipinfo.js"></script>
   <script src="script/modals/speedtest.js"></script>
   <script src="script/modals/spell.js"></script>
-  <script src="script/modals/gemini.js"></script>
   <script src="script/modals/customize.js"></script>
   <script src="script/modals/tags.js"></script>
   <script src="script/modals/backup.js"></script>

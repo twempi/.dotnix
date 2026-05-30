@@ -4,7 +4,7 @@
 
 const SYNTAX_COLOR_DEFS = [
   { key: 'cmd',     label: ':commands',       example: ':config'   },
-  { key: 'theme',   label: ':theme commands', example: ':dark'     },
+  { key: 'theme',   label: ':theme commands', example: ':stylix'   },
   { key: 'search',  label: 'search prefixes', example: 'yt:query'  },
   { key: 'version', label: ':version',        example: ':version'  },
   { key: 'url',     label: 'direct URLs',     example: 'chess.com' },
@@ -12,15 +12,7 @@ const SYNTAX_COLOR_DEFS = [
 ];
 
 const THEME_DEFS = [
-  { value: 'stylix',    label: 'Stylix'    },
-  { value: 'light',     label: 'Light'     },
-  { value: 'dark',      label: 'Dark'      },
-  { value: 'black',     label: 'Black'     },
-  { value: 'nord',      label: 'Nord'      },
-  { value: 'newspaper', label: 'Newspaper' },
-  { value: 'coffee',    label: 'Coffee'    },
-  { value: 'root',      label: 'Root'      },
-  { value: 'neon',      label: 'Neon'      },
+  { value: 'stylix', label: 'Stylix' },
 ];
 
 // ---- Open / Close ----
@@ -136,9 +128,8 @@ function _applyTheme(theme) {
     document.body.classList.remove(`${t}-mode`);
     document.documentElement.classList.remove(`${t}-mode`);
   });
-  if (theme !== 'light') {
-    document.documentElement.classList.add(`${theme}-mode`);
-  }
+  document.body.classList.add('stylix-mode');
+  document.documentElement.classList.add('stylix-mode');
   saveTheme(theme);
 }
 

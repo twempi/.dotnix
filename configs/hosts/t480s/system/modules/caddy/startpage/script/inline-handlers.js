@@ -38,10 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
   on('btn-cancel-bookmarks',   () => closeBookmarksModal());
   on('btn-save-bookmarks',     () => saveBookmarksFromModal());
 
-  // ---- Gemini modal ----
-  on('btn-copy-gemini',        () => copyGeminiResponse());
-  on('btn-close-gemini',       () => closeGeminiModal());
-
   // ---- Customize modal ----
   on('btn-reset-colors',       () => resetAllSyntaxColors());
   on('btn-edit-prompts',       () => { closeCustomizeModal(); openPromptsModal(); });

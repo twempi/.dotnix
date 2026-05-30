@@ -65,6 +65,7 @@ function resolveDirCategory(raw) {
 function resolveDirEngine(engineStr) {
   if (!engineStr) return getStoredSearchEngine();
   const e = engineStr.toLowerCase();
+  if (['brave'].includes(e)) return 'brave';
   if (['ggl', 'google'].includes(e)) return 'google';
   if (['ddg', 'duckduckgo'].includes(e)) return 'ddg';
   if (['bing'].includes(e)) return 'bing';
@@ -74,10 +75,7 @@ function resolveDirEngine(engineStr) {
 function buildDirUrl(keyword, category, engineOverride) {
   const query = buildDirQuery(keyword, category);
   const engine = resolveDirEngine(engineOverride);
-  const q = encodeURIComponent(query);
-  if (engine === 'ddg')  return `https://duckduckgo.com/?q=${q}`;
-  if (engine === 'bing') return `https://www.bing.com/search?q=${q}`;
-  return `https://www.google.com/search?q=${q}`;
+  return buildSearchUrl(engine, query);
 }
 
 function parseDirCommand(rawValue) {
@@ -120,8 +118,7 @@ function _renderDirModal(prefill = {}) {
     const isSelected = !!prefill.engine && btn.dataset.engine === prefill.engine;
     btn.classList.toggle('active-engine', isDefault || isSelected);
     if (btn.dataset.engine === '') {
-      btn.textContent = `Default ({{ ${({ google: 'Google', ddg: 'DDG', bing: 'Bing' }[defaultEngine] || 'Google')} }})`;
-      btn.textContent = `Default (${({ google: 'Google', ddg: 'DDG', bing: 'Bing' }[defaultEngine] || 'Google')})`;
+      btn.textContent = `Default (${getSearchEngineLabel(defaultEngine)})`;
     }
   });
   _updateDirPreview();
@@ -150,7 +147,7 @@ function _updateDirPreview() {
   preview.textContent = cmd;
 
   if (previewUrl) {
-    const engineName = { google: 'Google', ddg: 'DuckDuckGo', bing: 'Bing' }[resolveDirEngine(state.engine)] || 'Google';
+    const engineName = getSearchEngineLabel(resolveDirEngine(state.engine));
     previewUrl.textContent = state.keyword ? `→ ${engineName} open directory search` : 'Enter a keyword to preview';
   }
 }
