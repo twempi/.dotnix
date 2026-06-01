@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  pkgsStable,
+  ...
+}: {
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -19,6 +23,7 @@
   hardware = {
     bluetooth = {
       enable = true;
+      package = pkgsStable.bluez;
       powerOnBoot = true;
       settings = {
         General = {

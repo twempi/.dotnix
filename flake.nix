@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
@@ -137,10 +138,15 @@
       config.allowUnfree = true;
     };
 
+    pkgsStable = import inputs.nixpkgs-stable {
+      inherit system;
+      config.allowUnfree = true;
+    };
+
     localPkgs = import ./configs/system/pkgs {inherit pkgs;};
 
     specialArgsFor = hostname: {
-      inherit inputs system hostname;
+      inherit inputs system hostname pkgsStable;
     };
 
     commonNixosModules = [
