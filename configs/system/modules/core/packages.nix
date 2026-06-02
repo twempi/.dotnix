@@ -1,5 +1,6 @@
 {
   pkgs,
+  pkgsStable,
   lib,
   inputs,
   ...
@@ -107,6 +108,8 @@
       ps.pywal
       ps.watchdog
     ]))
+    pkgsStable.python3
+    pkgsStable.pipx
 
     # LibreOffice
     libreoffice

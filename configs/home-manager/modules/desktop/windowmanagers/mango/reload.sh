@@ -3,7 +3,7 @@ set -euo pipefail
 
 pkill waybar
 
-mmsg -d reload_config
+mmsg dispatch reload_config
 
 waybar -c ~/.config/waybar/mango.jsonc -s ~/.config/waybar/mango.css &
 

@@ -4,154 +4,140 @@
       "name": "mango",
 
       "layer": "top",
-      "height": 20,
-      "spacing": 4,
-      "margin-top": 0,
-      "margin-right": 0,
-      "margin-left": 0,
+      "position": "top",
+      "height": 10,
+      "spacing": 6,
+      "margin-top": 4,
+      "margin-right": 4,
+      "margin-left": 4,
 
       "modules-left": [
-        "ext/workspaces",
+        "ext/workspaces"
       ],
 
       "modules-right": [
-        "tray",
         "network",
-        "disk",
-        "cpu",
-        // "custom/cpu_temp",
         "backlight",
-        "custom/memory",
-        "pulseaudio",
+        "cpu",
+        "memory",
+        "wireplumber",
         "battery",
         "clock"
       ],
 
       "ext/workspaces": {
         "format": "{name}",
+        "sort-by-id": true,
         "ignore-hidden": true,
+        "all-outputs": false,
         "active-only": false,
-        "all-outputs": true,
-        "on-click": "activate",
-        "on-click-right": "deactivate",
-        "sort-by-id": true
+        "on-click": "activate"
       },
 
-      "tray": {
-        "icon-size": 14,
-        "spacing": 8
-      },
-
-      "disk": {
-        "format": "<span color='#${config.lib.stylix.colors.base08}'>[]</span> {free}",
-        "interval": 20
-      },
-
-      "cpu": {
-        "format": "<span color='#${config.lib.stylix.colors.base09}'>[]</span> {usage}%",
+      "dwl/window": {
+        "format": "{title}",
+        "icon": true,
+        "icon-size": 16,
+        "swap-icon-label": false,
+        "max-length": 70,
+        "expand": true,
         "tooltip": false,
-        "interval": 1
-      },
-
-      "custom/cpu_temp": {
-        "exec": "~/.config/waybar/scripts/waybarTemp.sh",
-        "return-type": "json",
-        "interval": 2,
-        "format": "{}",
-        "tooltip": false
-      },
-
-      "backlight": {
-        // "device": "acpi_video1",
-        "format": "<span color='#${config.lib.stylix.colors.base0A}'>[󰞏]</span> {percent}%",
-        "tooltip": false,
-        "on-click-right": "~/.config/waybar/scripts/wlsunset.sh"
-      },
-
-      "custom/memory": {
-        "exec": "~/.config/waybar/scripts/memory_usage.sh",
-        "interval": 2,
-        "return-type": "json",
-        "format": "<span color='#${config.lib.stylix.colors.base0C}'>[]</span> {}"
-      },
-
-      "pulseaudio": {
-        // "scroll-step": 1,
-        "format": "<span color='#${config.lib.stylix.colors.base0D}'>[]</span> {volume}%",
-        "format-muted": "<span color='#${config.lib.stylix.colors.base08}'>[]</span> {volume}%",
-        "format-bluetooth": "<span color='#${config.lib.stylix.colors.base0D}'>[󰂰]</span> {volume}%",
-        "format-bluetooth-muted": "<span color='#${config.lib.stylix.colors.base08}'>[󰂲]</span> {volume}%",
-        "format-source": "{volume}% ",
-        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-        "on-click-right": "pulseaudio",
-        "tooltip": false,
-        "max-volume": 130
-      },
-
-      "battery#bat2": {
-        "bat": "BAT2"
-      },
-
-      "battery": {
-        "interval": 1,
-        "states": {
-          "good": 99,
-          "warning": 30,
-          "critical": 20
-        },
-        "format-icons": [
-          "󰂎",
-          "󰁺",
-          "󰁻",
-          "󰁽",
-          "󰁾",
-          "󰁿",
-          "󰂀",
-          "󰂁",
-          "󰂂",
-          "󰁹"
-        ],
-
-        "format": "<span color='#${config.lib.stylix.colors.base0B}'>[{icon}]</span> {capacity}%",
-        "format-full": "<span color='#${config.lib.stylix.colors.base0B}'>[{icon}]</span> {capacity}%",
-        "format-plugged": "<span color='#${config.lib.stylix.colors.base0B}'>[󰂅]</span> {capacity}%",
-
-        "format-charging": "<span color='#${config.lib.stylix.colors.base0B}'>[󰂅]</span> {capacity}%",
-        "format-charging-warning": "<span color='#${config.lib.stylix.colors.base09}'>[󰢝]</span> {capacity}%",
-        "format-charging-critical": "<span color='#${config.lib.stylix.colors.base08}'>[󰢜]</span> {capacity}%",
-
-        "format-warning": "<span color='#${config.lib.stylix.colors.base09}'>[{icon}]</span> {capacity}%",
-        "format-critical": "<span color='#${config.lib.stylix.colors.base08}'>[{icon}]</span> {capacity}%!!",
-
-        "format-alt": "<span color='#${config.lib.stylix.colors.base0B}'>[󱧥]</span> {time}",
-
-        "tooltip": false
-      },
-
-      "clock": {
-        "format": "<span color='#${config.lib.stylix.colors.base0A}'>[]</span> {:%a %d | %I:%M %p}",
-        "tooltip": false,
-        "on-click": "swaync-client -t -sw",
-        "escape": true,
-        "interval": 1
+        "rewrite": {
+          "^$": "Workspace Overview"
+        }
       },
 
       "network": {
-        "interval": 2,
-        "format": "<span color='#${config.lib.stylix.colors.base0E}'>[󱘖]</span> {bandwidthDownBits}",
-        "format-wifi": "<span color='#${config.lib.stylix.colors.base0E}'>[{icon}]</span> {bandwidthDownBits}",
-        "format-ethernet": "<span color='#${config.lib.stylix.colors.base0E}'>[󰈀]</span> {bandwidthDownBits}",
+        "format-wifi": "{icon} {signalStrength:>2}%",
+        "format-ethernet": "󰈀",
+        "format-linked": "󰈀",
+        "format-disconnected": "󰖪",
         "format-icons": [
-          "󰤫",
+          "󰤯",
           "󰤟",
           "󰤢",
           "󰤥",
           "󰤨"
         ],
-        "tooltip": false,
+        "tooltip-format": "{ifname} {ipaddr}/{cidr}",
+        "tooltip-format-wifi": "{essid}\\nSignal: {signalStrength}%\\n{ipaddr}/{cidr}"
+      },
+
+      "wireplumber": {
+        "format": "󰕾 {volume:>2}%",
+        "format-muted": "󰝟 muted",
+        "format-icons": {
+          "default": [
+            "󰕿",
+            "󰖀",
+            "󰕾"
+          ]
+        },
+        "scroll-step": 5,
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "tooltip-format": "{node_name} {volume}%"
+      },
+
+      "cpu": {
+        "format": "󰍛 {usage:>2}%",
+        "tooltip": false
+      },
+
+      "memory": {
+        "format": "󰘚 {}%",
+        "tooltip-format": "{used:0.1f}G / {total:0.1f}G"
+      },
+
+      "battery": {
         "states": {
-          "normal": 25
-        }
+          "warning": 30,
+          "critical": 15
+        },
+        "format": "{icon} {capacity:>2}%",
+        "format-charging": "󰂄 {capacity:>2}%",
+        "format-plugged": "󰂄 {capacity:>2}%",
+        "format-full": "󰁹 100%",
+        "format-alt": "BAT {time}",
+        "format-icons": [
+          "󰂎",
+          "󰁺",
+          "󰁼",
+          "󰁾",
+          "󰂀",
+          "󰁹"
+        ],
+        "tooltip-format": "{capacity}% {timeTo}\\n{power:0.1f}W"
+      },
+
+      "backlight": {
+        "format": "󰃠 {percent:>2}%",
+        "format-icons": [
+          "󰃞",
+          "󰃟",
+          "󰃠"
+        ],
+        "tooltip": false,
+        "on-scroll-up": "brightnessctl set +5%",
+        "on-scroll-down": "brightnessctl set 5%-"
+      },
+
+      "clock": {
+        "format": "{:%a %d %b  %H:%M}",
+        "format-alt": "{:%Y-%m-%d %H:%M}",
+        "tooltip-format": "<span weight='bold'>{:%A, %d %B %Y}</span>\\n<tt>{calendar}</tt>",
+       // "calendar": {
+       //   "mode": "month",
+       //   "mode-mon-col": 3,
+       //   "weeks-pos": "left",
+       //   "on-scroll": 1,
+       //   "format": {
+       //     "months": "<span weight='bold'>{}</span>",
+       //     "days": "{}",
+       //     "weeks": "<span color='#${config.lib.stylix.colors.base03}'>W{}</span>",
+       //     "weekdays": "<span color='#${config.lib.stylix.colors.base04}'>{}</span>",
+       //     "today": "<span background='#${config.lib.stylix.colors.base0A}' color='#${config.lib.stylix.colors.base00}'>{}</span>"
+       //   }
+       // }
       }
     }
   '';

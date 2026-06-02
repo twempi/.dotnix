@@ -1,189 +1,172 @@
 @import "./colors.css";
 
+@define-color surface alpha(@background, 0.94);
+@define-color surface-strong alpha(shade(@background, 0.97), 0.98);
+@define-color surface-muted alpha(shade(@background, 0.92), 0.9);
+@define-color line alpha(shade(@text, 0.78), 0.24);
+@define-color line-strong alpha(shade(@text, 0.72), 0.36);
+@define-color text-muted alpha(@text, 0.58);
+@define-color accent @network-border;
+@define-color accent-soft alpha(@network-border, 0.16);
+@define-color accent-alt @clock-border;
+@define-color good @battery-border;
+@define-color warn @warning;
+
 * {
-  padding: 0;
-  margin: 0;
+  border: none;
   border-radius: 0;
   min-height: 0;
+  padding: 0;
+  margin: 0;
   text-shadow: none;
   transition: none;
   box-shadow: none;
+  font-family: IosevkaTerm Nerd Font Propo, "Symbols Nerd Font", monospace;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-/* modules padding */
-#window,
-#disk,
-#cpu,
-#custom-cpu_temp,
-#custom-cpu_temp.critical,
-#backlight,
-#custom-memory,
-#pulseaudio,
-#pulseaudio.muted,
-#battery,
-#battery.critical,
-#battery.warning,
-#network,
-#clock {
-  padding-right: 3pt;
-}
-
-window#waybar {
+tooltip {
+  background: @surface-strong;
   color: @text;
-  background: @background;
-  font-family: IosevkaTerm Nerd Font Propo;
-  font-size: 11pt;
-  font-weight: 900;
+  border: 1px solid @line-strong;
 }
 
-.modules-left,
-.modules-center,
-.modules-right {
-  padding: 3pt;
+tooltip label {
+  padding: 2px 6px;
 }
 
-/* --- MANGOWC WORKSPACES via ext/workspaces --- */
+#workspaces,
+#network,
+#backlight,
+#wireplumber,
+#cpu,
+#memory,
+#battery,
+#clock {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  padding-top: 1px;
+  padding-bottom: 3px;
+  background: @surface-muted;
+  color: @text;
+  border: 1px solid @line;
+}
+
+#workspaces {
+  margin-left: 6px;
+  padding: 2px 4px;
+}
 
 #workspaces button {
-  color: @ws-persistent-text;
-  border: 2pt solid @ws-persistent-text;
-  margin-right: 3pt;
-
-  min-width: 12pt;
-  padding: 0 2.5pt;
-  font-family: IosevkaTerm Nerd Font Propo;
-  font-size: 11pt;
-  font-weight: 900;
-}
-
-#workspaces button:last-child {
-  margin-right: 0;
+  min-width: 22px;
+  margin: 0 2px;
+  padding: 1px 2px 3px 2px;
+  background: transparent;
+  color: @text-muted;
+  border-bottom: 2px solid transparent;
+  font-family: IosevkaTerm Nerd Font Propo, "Symbols Nerd Font", monospace;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 #workspaces button:hover {
-  color: @ws-focused;
-  border-color: @ws-focused;
+  background: @accent-soft;
+  color: @text;
 }
 
-/* hidden workspace */
-#workspaces button.hidden {
-  color: @ws-persistent-text;
-  border-color: @ws-persistent-text;
+#workspaces button.active {
+  background: alpha(@ws-focused, 0.1);
+  color: @text;
+  border-bottom: 2px solid @ws-focused;
 }
 
-/* visible workspace */
-#workspaces button.visible,
-#workspaces button.visible:hover {
-  color: @ws-active-text;
-  border-color: @ws-active-text;
-}
-
-/* urgent workspace */
 #workspaces button.urgent {
+  background: alpha(@ws-urgent, 0.18);
   color: @ws-urgent;
-  border-color: @ws-urgent;
+  border-bottom: 2px solid @ws-urgent;
 }
 
-/* active workspace */
-#workspaces button.active,
-#workspaces button.active.visible {
-  color: @ws-focused;
-  border-color: @ws-focused;
+#workspaces button.hidden {
+  color: @text-muted;
 }
 
-/* --- MODULES --- */
+#workspaces button.visible {
+  color: @text;
+}
 
-/* focused window title */
 #window {
-  border-bottom: 2pt solid @window-border;
-  color: @text;
+  margin-left: 8px;
+  margin-right: 8px;
+  padding-top: 1px;
+  padding-right: 14px;
+  padding-bottom: 3px;
+  padding-left: 14px;
 }
 
-/* tray */
-#tray {
-  border-bottom: 2pt solid @tray-border;
-  background: @tray-bg;
-  padding: 0 6pt;
-  color: @text;
+#window.empty {
+  color: @text-muted;
 }
 
-/* disk */
-#disk {
-  border-bottom: 2pt solid @disk-border;
-  color: @text;
-}
-
-/* cpu */
-#cpu {
-  border-bottom: 2pt solid @cpu-border;
-  color: @text;
-}
-
-/* cpu temp */
-#custom-cpu_temp {
-  border-bottom: 2pt solid @temp-border;
-  color: @text;
-}
-
-#custom-cpu_temp.critical {
-  color: @text;
-  border-bottom: 2pt solid @critical;
-}
-
-#custom-cpu_temp.unknown {
-  color: @text;
-  border-bottom: 2pt solid @muted;
-}
-
-/* backlight */
-#backlight {
-  border-bottom: 2pt solid @backlight-border;
-  color: @text;
-}
-
-/* memory */
-#custom-memory {
-  border-bottom: 2pt solid @memory-border;
-  color: @text;
-}
-
-/* audio */
-#pulseaudio {
-  border-bottom: 2pt solid @audio-border;
-  color: @text;
-}
-
-#pulseaudio.muted {
-  color: @text;
-  border-bottom: 2pt solid @critical;
-}
-
-/* battery */
-#battery {
-  border-bottom: 2pt solid @battery-border;
-  color: @text;
-}
-
-#battery.critical,
-#battery.charging.critical {
-  color: @text;
-  border-bottom: 2pt solid @critical;
-}
-
-#battery.warning,
-#battery.charging.warning {
-  color: @text;
-  border-bottom: 2pt solid @warning;
-}
-
-/* clock */
+#network,
+#backlight,
+#wireplumber,
+#cpu,
+#memory,
+#battery,
 #clock {
-  border-bottom: 2pt solid @clock-border;
-  color: @text;
+  padding-top: 1px;
+  padding-right: 12px;
+  padding-bottom: 3px;
+  padding-left: 12px;
 }
 
-/* network */
 #network {
-  border-bottom: 2pt solid @network-border;
-  color: @text;
+  color: @network-border;
+}
+
+#network.disconnected {
+  color: @warn;
+}
+
+#backlight {
+  color: @backlight-border;
+}
+
+#wireplumber {
+  color: @audio-border;
+}
+
+#wireplumber.muted {
+  color: @text-muted;
+}
+
+#cpu {
+  color: @cpu-border;
+}
+
+#memory {
+  color: @memory-border;
+}
+
+#battery {
+  color: @good;
+}
+
+#battery.warning {
+  color: @accent-alt;
+}
+
+#battery.critical {
+  color: @warn;
+}
+
+#battery.charging,
+#battery.plugged {
+  color: @audio-border;
+}
+
+#clock {
+  margin-right: 6px;
+  color: @ws-persistent-text;
 }

@@ -1,9 +1,21 @@
-{lib, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   stylix.targets.zathura = {
     enable = true;
   };
   programs.zathura = {
     enable = true;
+    package = pkgs.zathura.override {
+      plugins = with pkgs.zathuraPkgs; [
+        zathura_pdf_poppler
+        zathura_djvu
+        zathura_ps
+        zathura_cb
+      ];
+    };
 
     options = {
       selection-clipboard = "clipboard";

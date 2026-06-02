@@ -1,5 +1,6 @@
 {pkgs, ...}: {
   environment = {
+    localBinInPath = true;
     sessionVariables = {
       # Application Specific
       MOZ_ENABLE_WAYLAND = "1";
