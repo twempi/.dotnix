@@ -12,7 +12,11 @@ Item {
 
   readonly property string appName: app ? (app.name || app.id || "") : ""
   readonly property string description: app ? (app.genericName || app.comment || app.id || "") : ""
-  readonly property string iconSource: app && app.icon.length > 0 ? Quickshell.iconPath(app.icon, "") : ""
+  readonly property string appIconName: app && app.icon ? String(app.icon) : ""
+
+  readonly property string iconSource: appIconName.length > 0
+    ? Quickshell.iconPath(appIconName, true)
+    : ""
 
   height: 58
 
@@ -35,16 +39,18 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
     width: 32
     height: 32
+
     source: row.iconSource
     implicitSize: 32
     asynchronous: true
     mipmap: true
-    visible: row.iconSource.length > 0
+
+    visible: row.iconSource.length > 0 && status !== Image.Error
   }
 
   Rectangle {
     anchors.fill: appIcon
-    visible: row.iconSource.length === 0
+    visible: row.iconSource.length === 0 || appIcon.status === Image.Error
     color: style.backgroundAlt
     border.color: row.selected ? style.selectedForeground : style.border
     border.width: 1

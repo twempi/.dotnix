@@ -11,7 +11,7 @@ hyprctl reload
 
 systemctl --user restart swaync.service || true
 
-pkill -x waybar 2>/dev/null || true
+pkill waybar
 
 if command -v uwsm >/dev/null 2>&1 && uwsm check is-active >/dev/null 2>&1; then
   uwsm app -- waybar -c "$waybar_config" -s "$waybar_style"
