@@ -27,8 +27,8 @@
           always = true;
         }
 
-        {command = "obsidian";}
-        {command = "spotify";}
+        # {command = "obsidian";}
+        # {command = "spotify";}
       ];
 
       window = {

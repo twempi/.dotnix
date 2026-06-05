@@ -36,42 +36,6 @@
     config.wrappers.neovim.nvim-lib.mkPlugin
     "luasnip-latex-snippets"
     inputs.luasnip-latex-snippets-nvim;
-
-  math-conceal-nvim-preview = let
-    typst-concealer-service = pkgs.rustPlatform.buildRustPackage {
-      pname = "typst-concealer-service";
-      version = "0.1.0-preview";
-
-      src = inputs.math-conceal-nvim;
-      sourceRoot = "source/service";
-
-      nativeBuildInputs = with pkgs; [
-        pkg-config
-        cargo
-        rustc
-      ];
-
-      buildInputs = with pkgs; [
-        openssl
-      ];
-
-      cargoLock = {
-        lockFile = inputs.math-conceal-nvim + "/service/Cargo.lock";
-      };
-    };
-  in
-    pkgs.vimUtils.buildVimPlugin {
-      pname = "math-conceal-nvim";
-      version = "preview";
-
-      src = inputs.math-conceal-nvim;
-
-      postInstall = ''
-        mkdir -p $out/service/target/release
-        ln -s ${typst-concealer-service}/bin/typst-concealer-service \
-          $out/service/target/release/typst-concealer-service
-      '';
-    };
 in {
   imports = [
     inputs.nixWrapperModules.homeModules.neovim
@@ -250,10 +214,8 @@ in {
           nvim-autopairs
           sqlite-lua
           tabout-nvim
-          # math-conceal-nvim-preview
           luasnip-latex-snippets-nvim
 
-          obsidian-nvim
           render-markdown-nvim
           typst-preview-nvim
           markdown-preview-nvim
