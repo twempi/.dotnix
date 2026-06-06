@@ -35,8 +35,8 @@
       "Mod4+N" = "exec ${pkgs.foot}/bin/foot -e nvim";
       "Mod4+Shift+B" = "exec ${pkgs.foot}/bin/foot -e bluetui";
       "Mod4+Shift+N" = "exec ${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
-      "Mod4+Escape" = "exec qs-power";
-      "Mod4+Shift+W" = "exec qs-wallpaper";
+      "Mod4+Escape" = "exec rofi-power";
+      "Mod4+Shift+W" = "exec rofi-wallpaper";
       "Mod4+Shift+R" = "exec ${./reload.sh}";
 
       # Screenshots
@@ -44,9 +44,9 @@
       "Print" = "exec way-screenshot screen";
 
       # Launcher / emoji / clipboard
-      "Mod4+Space" = "exec qs-launcher";
-      "Mod4+U" = "exec qs-emoji";
-      "Mod4+Y" = "exec qs-clipboard";
+      "Mod4+Space" = "exec rofi-launcher";
+      "Mod4+U" = "exec rofi-emoji";
+      "Mod4+Y" = "exec rofi-clipboard";
 
       # Move focus
       "Mod4+H" = "focus left";

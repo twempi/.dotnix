@@ -16,7 +16,7 @@
   programs.zen-browser = {
     enable = true;
     setAsDefaultBrowser = false;
-    nativeMessagingHosts = [pkgs.firefoxpwa];
+    nativeMessagingHosts = [];
 
     policies = let
       mkLockedAttrs = lib.mapAttrs (_: value: {

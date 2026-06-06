@@ -24,7 +24,6 @@ in {
     autostart_sh = ''
       awww-daemon &
       openrgb --profile ~/.config/OpenRGB/black.orp &
-      systemctl --user start qs-quick-actions.service &
 
       waybar -c ~/.config/waybar/mango.jsonc -s ~/.config/waybar/mango.css &
 

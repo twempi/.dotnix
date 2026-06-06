@@ -1,4 +1,4 @@
-{pkgs, config, ...}: {
+{pkgs, ...}: {
   stylix.targets.gtk.enable = true;
 
   gtk.iconTheme = {
@@ -7,6 +7,4 @@
       color = "black";
     };
   };
-
-  gtk.gtk4.theme = config.gtk.theme;
 }

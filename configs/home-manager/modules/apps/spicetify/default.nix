@@ -11,20 +11,25 @@ in {
 
   programs.spicetify = {
     enable = true;
+    wayland = true;
     enabledExtensions = with spicePkgs.extensions; [
-      adblock
-      autoSkipVideo
+      # adblock
+      # autoSkipVideo
       keyboardShortcut
       hidePodcasts
-      savePlaylists
-      aiBandBlocker
-      skipStats
+      # savePlaylists
       fullScreen
     ];
+
     enabledCustomApps = with spicePkgs.apps; [
       lyricsPlus
       # marketplace
     ];
+
+    enabledSnippets = [
+      (builtins.readFile ./snippets/spotify-overrides.css)
+    ];
+
     theme = spicePkgs.themes.text;
     colorScheme = "custom";
     customColorScheme = {

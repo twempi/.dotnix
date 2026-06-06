@@ -20,7 +20,7 @@
     layerrule = [
       "noanim:1,noblur:1,layer_name:^(selection)$"
       "noblur:1,layer_name:^(swaync)$"
-      "noblur:1,layer_name:^(qs-launcher|qs-emoji|qs-clipboard|qs-power|qs-gpu|qs-wallpaper|qs-panel)$"
+      "noblur:1,layer_name:^(rofi)$"
     ];
   };
 }

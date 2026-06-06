@@ -89,11 +89,12 @@
 
   "hyprland/workspaces": {
     "all-outputs": true,
-    "format": "{name}",
-    "on-scroll-up": "hyprctl dispatch workspace e+1 1>/dev/null",
-    "on-scroll-down": "hyprctl dispatch workspace e-1 1>/dev/null",
-    "sort-by-number": true,
-    "active-only": false
+    "format": "{id}",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })' 1>/dev/null",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })' 1>/dev/null",
+    "sort-by": "number",
+    "active-only": false,
+    "move-to-monitor": true
   },
 
   "clock": {

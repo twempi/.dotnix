@@ -60,16 +60,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ltspice = {
-      url = "git+https://codeberg.org/pilonsi/flake-ltspice";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    quickshell = {
-      url = "git+https://git.outfoxxed.me/quickshell/quickshell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     dms = {
       url = "github:AvengeMedia/DankMaterialShell";
       inputs.nixpkgs.follows = "nixpkgs";

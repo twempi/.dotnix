@@ -1,0 +1,6 @@
+/* spicetify/spotify-overrides.css */
+
+/* test: make the top bar device button easier to notice */
+button[aria-label="Connect to a device"] {
+  outline: 1px solid red !important;
+}

@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   ...
@@ -49,8 +48,6 @@
     )
     9);
   forceKillActive = "hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid // empty' | ${pkgs.findutils}/bin/xargs -r kill";
-  quickShellToggle = name:
-    bind (modKey "ALT + ${name.key}") (lua ''hl.dsp.exec_cmd(qs .. " toggle ${name.panel}")'');
 in {
   wayland.windowManager.hyprland.settings = {
     # Apps
@@ -89,10 +86,6 @@ in {
     mod = {
       _var = "SUPER";
     };
-    qs = {
-      _var = "${config.home.profileDirectory}/bin/qs-manager";
-    };
-
     bind =
       [
         # Basic
@@ -111,10 +104,10 @@ in {
         (bind (modKey "N") (execLocal "editor"))
         (bind (modKey "SHIFT + B") (execLocal "bluetooth"))
         (bind (modKey "SHIFT + N") (execLocal "notiCenter"))
-        (bind (modKey "Escape") (execCmd "${uwsmApp} qs-power"))
+        (bind (modKey "Escape") (execCmd "${uwsmApp} rofi-power"))
 
         (bind (modKey "Z") (execLocal "colorPicker"))
-        (bind (modKey "SHIFT + W") (execCmd "${uwsmApp} qs-wallpaper"))
+        (bind (modKey "SHIFT + W") (execCmd "${uwsmApp} rofi-wallpaper"))
         (bind (modKey "SHIFT + R") (execCmd "${./reload.sh}"))
 
         # Screenshots
@@ -122,9 +115,9 @@ in {
         (bind "Print" (execCmd "way-screenshot screen"))
 
         # Launcher / emoji / clipboard
-        (bind (modKey "Space") (execCmd "${uwsmApp} qs-launcher"))
-        (bind (modKey "U") (execCmd "${uwsmApp} qs-emoji"))
-        (bind (modKey "Y") (execCmd "${uwsmApp} qs-clipboard"))
+        (bind (modKey "Space") (execCmd "${uwsmApp} rofi-launcher"))
+        (bind (modKey "U") (execCmd "${uwsmApp} rofi-emoji"))
+        (bind (modKey "Y") (execCmd "${uwsmApp} rofi-clipboard"))
 
         # Move focus with mod + HJKL(Vim keys)
         (bind (modKey "H") (lua ''hl.dsp.focus({ direction = "left" })''))
@@ -141,48 +134,6 @@ in {
         # Cycle through active workspaces
         (bind (modKey "TAB") (lua ''hl.dsp.focus({ workspace = "e+1" })''))
         (bind (modKey "SHIFT + TAB") (lua ''hl.dsp.focus({ workspace = "e-1" })''))
-
-        # QuickShell toggles (merged from ilyamiro, remapped to avoid conflicts)
-        (quickShellToggle {
-          key = "M";
-          panel = "monitors";
-        })
-        (quickShellToggle {
-          key = "S";
-          panel = "stewart";
-        })
-        (quickShellToggle {
-          key = "Q";
-          panel = "music";
-        })
-        (quickShellToggle {
-          key = "B";
-          panel = "battery";
-        })
-        (quickShellToggle {
-          key = "W";
-          panel = "wallpaper";
-        })
-        (quickShellToggle {
-          key = "C";
-          panel = "calendar";
-        })
-        (quickShellToggle {
-          key = "N";
-          panel = "network";
-        })
-        (quickShellToggle {
-          key = "T";
-          panel = "focustime";
-        })
-        (quickShellToggle {
-          key = "V";
-          panel = "volume";
-        })
-        (quickShellToggle {
-          key = "G";
-          panel = "guide";
-        })
 
         # Move windows with mouse
         (bindWith (modKey "mouse:272") (lua "hl.dsp.window.drag()") {mouse = true;})

@@ -59,6 +59,7 @@
     # CLI
     brightnessctl
     bluetui
+    impala
     oh-my-posh
     eza
     yazi
@@ -99,7 +100,7 @@
     tectonic-unwrapped
     ghostscript
     mermaid-cli
-    inputs.ltspice.packages.${pkgs.stdenv.hostPlatform.system}.default
+    ltspice
     trash-cli
     inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
 

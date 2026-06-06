@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
+set -u
+
 # Current Theme
 dir="$HOME/.config/rofi/themes"
 theme='powermenu'
 
 # CMDs
-uptime="$(uptime -p | sed -e 's/up //g')"
+uptime="$(uptime -p)"
+uptime="${uptime#up }"
 host="$(hostname)"
 
 # Options
@@ -55,6 +58,8 @@ run_cmd() {
         swaymsg exit
       elif [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && command -v hyprctl >/dev/null; then
         hyprctl dispatch exit
+      elif command -v mmsg >/dev/null; then
+        mmsg -q
 
       # Fallbacks (X11 / legacy)
       elif [[ "$DESKTOP_SESSION" == 'openbox' ]]; then
@@ -78,10 +83,13 @@ rofi_exit=$?
 
 # Handle custom keybindings
 case "$rofi_exit" in
-10) run_cmd --shutdown ;;
-11) run_cmd --reboot ;;
-12) run_cmd --suspend ;;
-13) run_cmd --logout ;;
+0) ;;
+1) exit 0 ;;
+10) run_cmd --shutdown; exit $? ;;
+11) run_cmd --reboot; exit $? ;;
+12) run_cmd --suspend; exit $? ;;
+13) run_cmd --logout; exit $? ;;
+*) exit 0 ;;
 esac
 
 # Normal selection (Enter / mouse)

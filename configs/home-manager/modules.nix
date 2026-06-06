@@ -43,7 +43,6 @@
     ./modules/desktop/gnome-keyring
     # ./modules/desktop/dms
     # ./modules/desktop/noctalia
-    ./modules/desktop/quickshell
 
     # Apps
     ./modules/apps/nixcord

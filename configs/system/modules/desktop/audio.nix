@@ -23,7 +23,7 @@
   hardware = {
     bluetooth = {
       enable = true;
-      package = pkgsStable.bluez;
+      # package = pkgsStable.bluez;
       powerOnBoot = true;
       settings = {
         General = {

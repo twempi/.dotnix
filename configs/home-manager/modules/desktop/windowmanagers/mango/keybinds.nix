@@ -47,18 +47,18 @@ in {
         "SUPER,N,spawn,${editor}"
         "SUPER+SHIFT,B,spawn,${bluetooth}"
         "SUPER+SHIFT,N,spawn,${notiCenter}"
-        "SUPER,Escape,spawn,qs-power"
+        "SUPER,Escape,spawn,rofi-power"
 
         "SUPER,Z,spawn,${colorPicker}"
-        "SUPER+SHIFT,W,spawn,qs-wallpaper"
+        "SUPER+SHIFT,W,spawn,rofi-wallpaper"
         "SUPER+SHIFT,R,spawn,bash ${./reload.sh}"
 
         "SUPER+SHIFT,S,spawn,way-screenshot area"
         "NONE,Print,spawn,way-screenshot screen"
 
-        "SUPER,Space,spawn,qs-launcher"
-        "SUPER,U,spawn,qs-emoji"
-        "SUPER,Y,spawn,qs-clipboard"
+        "SUPER,Space,spawn,rofi-launcher"
+        "SUPER,U,spawn,rofi-emoji"
+        "SUPER,Y,spawn,rofi-clipboard"
 
         "SUPER,H,focusdir,left"
         "SUPER,L,focusdir,right"
@@ -74,17 +74,6 @@ in {
         "SUPER+SHIFT,L,resizewin,+50,0"
         "SUPER+SHIFT,J,resizewin,0,-50"
         "SUPER+SHIFT,K,resizewin,0,+50"
-
-        "SUPER+ALT,M,spawn,qs-manager toggle monitors"
-        "SUPER+ALT,S,spawn,qs-manager toggle stewart"
-        "SUPER+ALT,Q,spawn,qs-manager toggle music"
-        "SUPER+ALT,B,spawn,qs-manager toggle battery"
-        "SUPER+ALT,W,spawn,qs-manager toggle wallpaper"
-        "SUPER+ALT,C,spawn,qs-manager toggle calendar"
-        "SUPER+ALT,N,spawn,qs-manager toggle network"
-        "SUPER+ALT,T,spawn,qs-manager toggle focustime"
-        "SUPER+ALT,V,spawn,qs-manager toggle volume"
-        "SUPER+ALT,G,spawn,qs-manager toggle guide"
 
         "NONE,XF86AudioLowerVolume,spawn,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
         "NONE,XF86AudioRaiseVolume,spawn,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"

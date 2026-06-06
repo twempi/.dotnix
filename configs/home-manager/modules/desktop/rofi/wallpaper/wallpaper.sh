@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
 
-wallpapers_dir="$HOME/Pictures/wallpapers/"
+set -u
+
+wallpapers_dir="$HOME/Pictures/wallpapers"
 theme="$HOME/.config/rofi/themes/wallpaper.rasi"
+
+notify() {
+  notify-send "Wallpaper" "$1" --app-name=rofi-wallpaper 2>/dev/null || true
+}
+
+if [ ! -d "$wallpapers_dir" ]; then
+  notify "Directory not found: $wallpapers_dir"
+  exit 0
+fi
 
 rofi_cmd=(
   rofi -dmenu -i -show-icons \
+    -p "Wallpaper" \
     -theme "$theme"
 )
 
@@ -18,17 +30,38 @@ choice=$(
     done |
     "${rofi_cmd[@]}"
 )
+rofi_exit=$?
 
-[[ -z "$choice" ]] && exit 0
+if [ "$rofi_exit" -ne 0 ] || [ -z "$choice" ]; then
+  exit 0
+fi
 
 WALLPAPER="$wallpapers_dir/$choice"
 
-awww img "$WALLPAPER" \
+if [ ! -f "$WALLPAPER" ]; then
+  notify "Wallpaper not found: $choice"
+  exit 1
+fi
+
+lower_choice="$(printf '%s' "$choice" | tr '[:upper:]' '[:lower:]')"
+case "$lower_choice" in
+  *.jpg|*.jpeg|*.png|*.webp) ;;
+  *)
+    notify "Unsupported wallpaper type: $choice"
+    exit 1
+    ;;
+esac
+
+if awww img "$WALLPAPER" \
   --transition-type any \
   --transition-duration 2 \
   --transition-step 255 \
-  --transition-fps 60 &&
+  --transition-fps 60; then
   notify-send "Wallpaper Changed" -i "$WALLPAPER" --app-name=awww
+else
+  notify-send "Wallpaper Failed" "$choice" --app-name=awww 2>/dev/null || true
+  exit 1
+fi
 
 # matugen image "$WALLPAPER"
 
