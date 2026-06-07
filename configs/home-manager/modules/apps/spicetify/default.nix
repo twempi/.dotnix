@@ -12,12 +12,16 @@ in {
   programs.spicetify = {
     enable = true;
     wayland = true;
+    alwaysEnableDevTools = true;
+
+    spotifyLaunchFlags = " --remote-debugging-port=9222 --remote-debugging-address=127.0.0.1";
+
     enabledExtensions = with spicePkgs.extensions; [
       # adblock
       # autoSkipVideo
       keyboardShortcut
       hidePodcasts
-      # savePlaylists
+      savePlaylists
       fullScreen
     ];
 

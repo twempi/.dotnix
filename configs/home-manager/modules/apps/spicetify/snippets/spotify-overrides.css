@@ -1,6 +1,46 @@
-/* spicetify/spotify-overrides.css */
+/* Hide collaborator add button */
+button[aria-label^="Invite collaborators to"] {
+  display: none !important;
+}
 
-/* test: make the top bar device button easier to notice */
-button[aria-label="Connect to a device"] {
-  outline: 1px solid red !important;
+/* Hide TV mode button in the top right */
+#fullscreen-tv-button {
+  display: none !important;
+}
+
+/* Hide default Spotify fullscreen button */
+button[data-testid="fullscreen-mode-button"] {
+  display: none !important;
+}
+
+/* Hide mini player button */
+button[data-testid="pip-toggle-button"] {
+  display: none !important;
+}
+
+/* Hide ONLY Spotify's default lyrics button */
+button[data-testid="lyrics-button"] {
+  display: none !important;
+}
+
+/* Style Lyrics Plus once JS moves it into the player bar */
+button.lyricsplus-playerbar-button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  color: var(--spice-subtext) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+button.lyricsplus-playerbar-button svg {
+  width: 16px !important;
+  height: 16px !important;
 }

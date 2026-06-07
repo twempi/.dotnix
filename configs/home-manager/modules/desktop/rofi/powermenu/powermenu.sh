@@ -48,27 +48,31 @@ run_cmd() {
       systemctl reboot
       ;;
     --suspend)
-      mpc -q pause 2>/dev/null || true
-      amixer set Master mute 2>/dev/null || true
+      if command -v mpc >/dev/null; then
+        mpc -q pause 2>/dev/null || true
+      fi
+      if command -v amixer >/dev/null; then
+        amixer set Master mute 2>/dev/null || true
+      fi
       systemctl suspend
       ;;
     --logout)
       # Wayland compositors
-      if [[ -n "$SWAYSOCK" ]] && command -v swaymsg >/dev/null; then
+      if [[ -n "${SWAYSOCK:-}" ]] && command -v swaymsg >/dev/null; then
         swaymsg exit
-      elif [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] && command -v hyprctl >/dev/null; then
+      elif [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && command -v hyprctl >/dev/null; then
         hyprctl dispatch exit
       elif command -v mmsg >/dev/null; then
         mmsg -q
 
       # Fallbacks (X11 / legacy)
-      elif [[ "$DESKTOP_SESSION" == 'openbox' ]]; then
+      elif [[ "${DESKTOP_SESSION:-}" == 'openbox' ]] && command -v openbox >/dev/null; then
         openbox --exit
-      elif [[ "$DESKTOP_SESSION" == 'bspwm' ]]; then
+      elif [[ "${DESKTOP_SESSION:-}" == 'bspwm' ]] && command -v bspc >/dev/null; then
         bspc quit
-      elif [[ "$DESKTOP_SESSION" == 'i3' ]]; then
+      elif [[ "${DESKTOP_SESSION:-}" == 'i3' ]] && command -v i3-msg >/dev/null; then
         i3-msg exit
-      elif [[ "$DESKTOP_SESSION" == 'plasma' ]]; then
+      elif [[ "${DESKTOP_SESSION:-}" == 'plasma' ]] && command -v qdbus >/dev/null; then
         qdbus org.kde.ksmserver /KSMServer logout 0 0 0
       else
         notify-send "Logout failed" "No supported compositor/session detected"

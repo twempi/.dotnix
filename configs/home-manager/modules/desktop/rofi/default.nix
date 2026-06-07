@@ -345,26 +345,21 @@ in {
         body="Requested: $target_label"
 
         if [ -n "$pending_mode" ] && [ "$(normalize "$pending_mode")" != "unknown" ]; then
-          body="$body
-Pending mode: $pending_mode"
+          body="$body"$'\n'"Pending mode: $pending_mode"
         fi
 
         case "$(normalize "$pending_action")" in
           ""|unknown|noactionrequired|nothing)
-            body="$body
-No action required."
+            body="$body"$'\n'"No action required."
             ;;
           *logout*)
-            body="$body
-Log out and back in to fully apply the change."
+            body="$body"$'\n'"Log out and back in to fully apply the change."
             ;;
           *reboot*)
-            body="$body
-Reboot to fully apply the change."
+            body="$body"$'\n'"Reboot to fully apply the change."
             ;;
           *)
-            body="$body
-$pending_action"
+            body="$body"$'\n'"$pending_action"
             ;;
         esac
 
