@@ -59,7 +59,6 @@
     # CLI
     brightnessctl
     bluetui
-    impala
     oh-my-posh
     eza
     yazi

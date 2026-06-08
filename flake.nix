@@ -60,13 +60,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    dms = {
-      url = "github:AvengeMedia/DankMaterialShell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
+      url = "github:noctalia-dev/noctalia-shell/v5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -87,11 +82,6 @@
 
     t3code = {
       url = "github:rodeyseijkens/t3code-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    corecycler = {
-      url = "github:Daaboulex/linux-corecycler";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

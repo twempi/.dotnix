@@ -44,3 +44,18 @@ button.lyricsplus-playerbar-button svg {
   width: 16px !important;
   height: 16px !important;
 }
+
+/* Target only the Ctrl+K quick-search modal */
+.GenericModal:has(input[placeholder="What do you want to play?"]),
+.GenericModal__overlay > div:has(input[placeholder="What do you want to play?"]),
+dialog:has(input[placeholder="What do you want to play?"]) {
+  background: var(--spice-main) !important;
+  background-color: var(--spice-main) !important;
+}
+
+/* Fill inner empty area too */
+.GenericModal:has(input[placeholder="What do you want to play?"]) > div,
+.GenericModal__overlay > div:has(input[placeholder="What do you want to play?"]) > div,
+dialog:has(input[placeholder="What do you want to play?"]) > div {
+  background: var(--spice-main) !important;
+}
