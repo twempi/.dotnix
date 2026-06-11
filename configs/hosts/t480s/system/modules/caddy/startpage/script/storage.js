@@ -29,8 +29,8 @@ const DEFAULT_BOOKMARKS = [
 ];
 
 const DEFAULT_USERNAME = "edward";
-const DEFAULT_WEATHER_LOCATION = "Gurgaon";
-const DEFAULT_WEATHER_UNIT = "celsius";
+const DEFAULT_WEATHER_LOCATION = "San Luis Obispo";
+const DEFAULT_WEATHER_UNIT = "fahrenheit";
 const DEFAULT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 const DEFAULT_AI_MODE_ENABLED = false;
 const DEFAULT_AI_ROUTE_BADGE_MODE = "live";
