@@ -209,15 +209,11 @@ function updateSyntaxHighlight(rawValue) {
     ':h': ':help',
     ':ha': ':help_ai_router',
     ':hi': ':history',
-    ':to': ':tour',
     ':aim': ':aimode',
     ':n': ':netspeed',
     ':w': ':weather',
     ':ti': ':time',
     ':ve': ':version',
-    ':up': ':update',
-    ':ex': ':export',
-    ':im': ':import',
     ':re': ':reset',
     ':st': ':stylix'
   };
@@ -232,8 +228,8 @@ function updateSyntaxHighlight(rawValue) {
   const customTagPrefixes = customTags.map(t => t.prefix).filter(Boolean);
 
   const themeCommands = [':stylix'];
-  const knownCommands = [':help', ':help_ai_router', ':aimode', ':bookmarks', ':bm', ':ipconfig', ':ip', ':netspeed', ':speed', ':config', ':customize', ':custom', ':tags', ':dir', ':dirconfig', ':prompts', ':weather', ':time', ':update', ':export', ':import', ':reset', ':history', ':tour', ...themeCommands];
-  const versionCommands = [':version', ':ver', ':update'];
+  const knownCommands = [':help', ':help_ai_router', ':aimode', ':bookmarks', ':bm', ':ipconfig', ':ip', ':netspeed', ':speed', ':config', ':customize', ':custom', ':tags', ':dir', ':dirconfig', ':prompts', ':weather', ':time', ':reset', ':history', ...themeCommands];
+  const versionCommands = [':version', ':ver'];
   const knownSearch = /^(r|yt|alt|def|brave|ddg|ggl|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|ai):/;
   const knownSearchDynamic = customTagPrefixes.length
     ? new RegExp(`^(r|yt|alt|def|brave|ddg|ggl|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|ai|${customTagPrefixes.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')}):`)

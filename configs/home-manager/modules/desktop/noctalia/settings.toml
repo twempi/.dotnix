@@ -118,6 +118,9 @@ show_label = false
 [widget.notifications]
 hide_when_no_unread = true
 
+[widget.tray]
+hidden = [ "blueman", "nm-applet", "pasystray" ]
+
 [widget.workspaces]
 hide_when_empty = true
 minimal = true

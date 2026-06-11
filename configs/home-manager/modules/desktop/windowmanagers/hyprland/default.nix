@@ -5,8 +5,8 @@
   ...
 }: {
   imports = [
-    ./general-noctalia.nix
-    ./keybinds-noctalia.nix
+    ./general.nix
+    ./keybinds.nix
     ./env.nix
     ./windowrules.nix
   ];

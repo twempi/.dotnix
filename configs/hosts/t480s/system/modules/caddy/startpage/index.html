@@ -67,7 +67,7 @@
       </div>
 
       <div class="config-section">
-        <button class="btn-save btn-edit-bookmarks" id="btn-edit-bookmarks">Edit Bookmarks</button>
+        <button class="btn-save btn-edit-bookmarks" id="btn-edit-bookmarks">View Bookmarks</button>
       </div>
 
       <div class="config-section">
@@ -122,8 +122,6 @@
 
       <div class="config-buttons">
         <button class="btn-customize-link" id="btn-customize-from-config">Customize?</button>
-        <button class="btn-backup" id="btn-import-backup" title="Import backup">↑ Import</button>
-        <button class="btn-backup" id="btn-export-backup" title="Export backup">↓ Export</button>
         <button class="btn-cancel" id="btn-cancel-config">Cancel</button>
         <button class="btn-save" id="btn-save-config">Save</button>
       </div>
@@ -147,14 +145,10 @@
           <div class="help-cmd"><span>:prompts</span> → Edit terminal placeholder suggestions</div>
           <div class="help-cmd"><span>:ipconfig</span> → Show network info &amp; VPN status</div>
           <div class="help-cmd"><span>:netspeed</span> → Run internet speed test</div>
-          <div class="help-cmd"><span>:aimode</span> → Toggle AI mode (no <span>ai:</span> prefix needed)</div>
+          <div class="help-cmd"><span>:aimode</span> → Show AI mode status</div>
           <div class="help-cmd"><span>:version</span> → Show app version</div>
-          <div class="help-cmd"><span>:update</span> → Check for updates on GitHub</div>
           <div class="help-cmd"><span>:history</span> → Browse &amp; recall command history</div>
-          <div class="help-cmd"><span>:tour</span> → Replay the onboarding tour</div>
-          <div class="help-cmd"><span>:export</span> → Export all settings to JSON</div>
-          <div class="help-cmd"><span>:import</span> → Import settings from JSON</div>
-          <div class="help-cmd"><span>:reset</span> → Clear all settings, cache &amp; localStorage</div>
+          <div class="help-cmd"><span>:reset</span> → Clear local cache &amp; command history</div>
           <div class="help-cmd"><span>:help</span> → Show this help</div>
         </div>
       </div>
@@ -227,7 +221,6 @@
       </div>
 
       <div class="config-buttons">
-        <button class="btn-cancel" id="btn-restart-tour" style="margin-right:auto;">↺ Take the tour</button>
         <button class="btn-save" id="btn-close-help">Got it</button>
       </div>
     </div>
@@ -349,8 +342,8 @@
   <div class="config-modal" id="bookmarks-modal" lang="en" role="dialog" aria-labelledby="bookmarks-modal-title">
     <div class="config-content" style="max-width: 900px;">
       <div class="config-header-row">
-        <h2 id="bookmarks-modal-title">Manage Bookmarks</h2>
-        <button class="btn-toggle-editor" id="toggle-editor-btn">Edit as JSON</button>
+        <h2 id="bookmarks-modal-title">Bookmarks</h2>
+        <button class="btn-toggle-editor" id="toggle-editor-btn">View as JSON</button>
       </div>
 
       <!-- Tab switcher -->
@@ -372,7 +365,7 @@
 
       <div class="config-buttons">
         <button class="btn-cancel" id="btn-cancel-bookmarks">Cancel</button>
-        <button class="btn-save" id="btn-save-bookmarks">Save Bookmarks</button>
+        <button class="btn-save" id="btn-save-bookmarks">Read-only</button>
       </div>
     </div>
   </div>
@@ -554,10 +547,11 @@
 
   <script src="script/focus-grab.js"></script>
   <script src="version/version.js"></script>
-  <!-- load order matters: storage → utils → ui → modals → terminal → commands → main -->
+  <!-- load order matters: utils -> storage -> runtime settings -> modals -> commands -> terminal -> main -->
   <script src="script/utils.js"></script>
   <script src="script/ui.js"></script>
   <script src="script/storage.js"></script>
+  <script src="script/runtime-settings.js"></script>
   <script src="script/time-weather.js"></script>
   <script src="script/bookmarks.js"></script>
   <script src="script/modals/config.js"></script>
@@ -568,11 +562,9 @@
   <script src="script/modals/spell.js"></script>
   <script src="script/modals/customize.js"></script>
   <script src="script/modals/tags.js"></script>
-  <script src="script/modals/backup.js"></script>
   <script src="script/modals/dir.js"></script>
   <script src="script/modals/prompts.js"></script>
   <script src="script/modals/pronounce.js"></script>
-  <script src="script/modals/tour.js"></script>
   <script src="script/commands.js"></script>
   <script src="script/terminal.js"></script>
   <script src="script/script.js"></script>

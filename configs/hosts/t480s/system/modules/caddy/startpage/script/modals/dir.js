@@ -17,15 +17,11 @@ const DIR_EXCLUSIONS = `-inurl:(jsp|pl|php|html|aspx|htm|cf|shtml) intitle:index
 // Dir Extension Storage
 // ========================================
 function getStoredDirExtensions() {
-  try {
-    const stored = localStorage.getItem('dirExtensions');
-    return stored ? JSON.parse(stored) : {};
-  } catch (e) { return {}; }
+  return getStartpageSetting('dirExtensions', {});
 }
 
 function saveDirExtensions(exts) {
-  try { localStorage.setItem('dirExtensions', JSON.stringify(exts)); }
-  catch (e) { console.error('Failed to save dir extensions:', e); }
+  notifyCentralSettingsReadOnly();
 }
 
 function getDirCategoryExtensions(key) {
@@ -178,6 +174,11 @@ function copyDirCommand() {
 // ========================================
 function openDirConfigModal() {
   _renderDirConfigModal();
+  const saveBtn = document.getElementById('btn-save-dirconfig');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.title = CENTRAL_SETTINGS_HINT;
+  }
   document.getElementById('dirconfig-modal').classList.add('active');
 }
 
@@ -212,6 +213,7 @@ function _renderDirConfigModal() {
     resetBtn.textContent = '↺';
     resetBtn.title = 'Reset to defaults';
     resetBtn.style.opacity = isCustomized ? '1' : '0.35';
+    resetBtn.disabled = true;
     resetBtn.addEventListener('click', () => {
       _resetDirCategory(section, key);
       resetBtn.style.opacity = '0.35';
@@ -249,6 +251,7 @@ function _makeDirPill(ext, pillsWrap, resetBtn) {
   del.className = 'dirconfig-pill-del';
   del.textContent = '×';
   del.title = 'Remove';
+  del.disabled = true;
   del.addEventListener('click', () => {
     pill.remove();
     if (resetBtn) resetBtn.style.opacity = '1';
@@ -269,6 +272,8 @@ function _makeDirAddInput(pillsWrap, resetBtn) {
   input.placeholder = '+ add ext';
   input.spellcheck = false;
   input.maxLength = 12;
+  input.disabled = true;
+  input.title = CENTRAL_SETTINGS_HINT;
 
   const addExt = () => {
     const val = input.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -299,13 +304,5 @@ function _resetDirCategory(section, key) {
 }
 
 function saveDirConfig() {
-  const result = {};
-  document.querySelectorAll('#dirconfig-categories .dirconfig-category').forEach(section => {
-    const key = section.dataset.key;
-    const pills = [...section.querySelectorAll('.dirconfig-pill')].map(p => p.dataset.ext).filter(Boolean);
-    const defaults = (DIR_CATEGORIES[key]?.defaultExt || []).map(e => e.toLowerCase());
-    if (JSON.stringify(pills) !== JSON.stringify(defaults)) result[key] = pills;
-  });
-  saveDirExtensions(result);
-  closeDirConfigModal();
+  notifyCentralSettingsReadOnly();
 }

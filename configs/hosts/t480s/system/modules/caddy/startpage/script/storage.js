@@ -45,6 +45,26 @@ const SEARCH_ENGINE_LABELS = {
 };
 
 const DEFAULT_SHELF_BOOKMARKS = [];
+const CENTRAL_SETTINGS_HINT = "Edit /var/lib/startpage/settings.json on the t480s, then refresh.";
+
+function cloneSettingValue(value) {
+  if (value === undefined) return undefined;
+  return JSON.parse(JSON.stringify(value));
+}
+
+function getStartpageSetting(key, fallback) {
+  const settings = window.STARTPAGE_SETTINGS || {};
+  if (Object.prototype.hasOwnProperty.call(settings, key)) {
+    return cloneSettingValue(settings[key]);
+  }
+  return cloneSettingValue(fallback);
+}
+
+function notifyCentralSettingsReadOnly() {
+  if (typeof showToast === 'function') {
+    showToast(`Central settings are read-only here. ${CENTRAL_SETTINGS_HINT}`, 'info', 5000);
+  }
+}
 
 // ========================================
 // Syntax Colors — universal, theme-independent
@@ -67,18 +87,10 @@ function getDefaultSyntaxColors() {
 
 function getStoredSyntaxColors() {
   const defaults = getDefaultSyntaxColors();
-  try {
-    const stored = localStorage.getItem('syntaxColors');
-    if (!stored) return { ...defaults };
-    return { ...defaults, ...JSON.parse(stored) };
-  } catch (e) {
-    return { ...defaults };
-  }
+  return { ...defaults, ...getStartpageSetting('syntaxColors', {}) };
 }
 function saveSyntaxColors(colors) {
-  try {
-    localStorage.setItem('syntaxColors', JSON.stringify(colors));
-  } catch (e) { console.error('Failed to save syntax colors:', e); }
+  notifyCentralSettingsReadOnly();
 }
 function applySyntaxColors(colors) {
   const defaults = getDefaultSyntaxColors();
@@ -109,121 +121,82 @@ function applyDefaultBookmarkCategories(bookmarks) {
 }
 
 function getStoredBookmarks() {
-  try {
-    const stored = localStorage.getItem('bookmarks');
-    return stored ? applyDefaultBookmarkCategories(JSON.parse(stored)) : DEFAULT_BOOKMARKS;
-  } catch (e) {
-    console.error('Failed to parse bookmarks:', e);
-    return DEFAULT_BOOKMARKS;
-  }
+  return applyDefaultBookmarkCategories(getStartpageSetting('bookmarks', DEFAULT_BOOKMARKS));
 }
 function saveBookmarks(bookmarks) {
   if (!Array.isArray(bookmarks)) throw new Error('Invalid bookmarks data');
-  try {
-    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-  } catch (e) {
-    console.error('Failed to save bookmarks:', e);
-    showToast('Could not save bookmarks. Storage may be full.', 'error', 4000);
-  }
+  notifyCentralSettingsReadOnly();
 }
 
 // ========================================
 // Shelf Bookmarks (hidden, surface on filter)
 // ========================================
 function getStoredShelfBookmarks() {
-  try {
-    const stored = localStorage.getItem('shelfBookmarks');
-    return stored ? JSON.parse(stored) : DEFAULT_SHELF_BOOKMARKS;
-  } catch (e) {
-    console.error('Failed to parse shelf bookmarks:', e);
-    return DEFAULT_SHELF_BOOKMARKS;
-  }
+  return getStartpageSetting('shelfBookmarks', DEFAULT_SHELF_BOOKMARKS);
 }
 function saveShelfBookmarks(bookmarks) {
   if (!Array.isArray(bookmarks)) throw new Error('Invalid shelf bookmarks data');
-  try {
-    localStorage.setItem('shelfBookmarks', JSON.stringify(bookmarks));
-  } catch (e) {
-    console.error('Failed to save shelf bookmarks:', e);
-    showToast('Could not save shelf bookmarks. Storage may be full.', 'error', 4000);
-  }
+  notifyCentralSettingsReadOnly();
 }
 
 // ========================================
 // Username
 // ========================================
 function getStoredUsername() {
-  return localStorage.getItem('username') || DEFAULT_USERNAME;
+  return getStartpageSetting('username', DEFAULT_USERNAME);
 }
 function saveUsername(name) {
   if (!name || typeof name !== 'string') throw new Error('Invalid username');
-  try {
-    localStorage.setItem('username', name.trim());
-  } catch (e) {
-    console.error('Failed to save username:', e);
-  }
+  notifyCentralSettingsReadOnly();
 }
 
 // ========================================
 // Theme
 // ========================================
 function getStoredTheme() {
-  return DEFAULT_THEME;
+  return getStartpageSetting('theme', DEFAULT_THEME);
 }
 function saveTheme() {
-  try {
-    localStorage.setItem('theme', DEFAULT_THEME);
-  } catch (e) {
-    console.error('Failed to save theme:', e);
-  }
+  notifyCentralSettingsReadOnly();
 }
 
 // ========================================
 // Weather / Timezone
 // ========================================
 function getStoredWeatherLocation() {
-  return localStorage.getItem('weatherLocation') || DEFAULT_WEATHER_LOCATION;
+  return getStartpageSetting('weatherLocation', DEFAULT_WEATHER_LOCATION);
 }
 function saveWeatherLocation(location) {
-  try {
-    localStorage.setItem('weatherLocation', location);
-  } catch (e) { console.error(e); }
+  notifyCentralSettingsReadOnly();
 }
 function getStoredWeatherUnit() {
-  return localStorage.getItem('weatherUnit') || DEFAULT_WEATHER_UNIT;
+  return getStartpageSetting('weatherUnit', DEFAULT_WEATHER_UNIT);
 }
 function saveWeatherUnit(unit) {
-  try {
-    localStorage.setItem('weatherUnit', unit);
-  } catch (e) { console.error(e); }
+  notifyCentralSettingsReadOnly();
 }
 function getStoredTimezone() {
-  return localStorage.getItem('timezone') || DEFAULT_TIMEZONE;
+  return getStartpageSetting('timezone', DEFAULT_TIMEZONE);
 }
 function saveTimezone(tz) {
-  try {
-    localStorage.setItem('timezone', tz);
-  } catch (e) { console.error(e); }
+  notifyCentralSettingsReadOnly();
 }
 
 // ========================================
 // AI Router
 // ========================================
 function getStoredAiModeEnabled() {
-  const stored = localStorage.getItem('aiModeEnabled');
-  if (stored === null) return DEFAULT_AI_MODE_ENABLED;
-  return stored === 'true';
+  return getStartpageSetting('aiModeEnabled', DEFAULT_AI_MODE_ENABLED);
 }
 function saveAiModeEnabled(enabled) {
-  localStorage.setItem('aiModeEnabled', enabled ? 'true' : 'false');
+  notifyCentralSettingsReadOnly();
 }
 function getStoredAiRouteBadgeMode() {
-  const mode = (localStorage.getItem('aiRouteBadgeMode') || DEFAULT_AI_ROUTE_BADGE_MODE).toLowerCase();
+  const mode = String(getStartpageSetting('aiRouteBadgeMode', DEFAULT_AI_ROUTE_BADGE_MODE)).toLowerCase();
   return ['live', 'route', 'off'].includes(mode) ? mode : DEFAULT_AI_ROUTE_BADGE_MODE;
 }
 function saveAiRouteBadgeMode(mode) {
-  const normalized = String(mode || '').toLowerCase();
-  localStorage.setItem('aiRouteBadgeMode', ['live', 'route', 'off'].includes(normalized) ? normalized : DEFAULT_AI_ROUTE_BADGE_MODE);
+  notifyCentralSettingsReadOnly();
 }
 
 // ========================================
@@ -243,28 +216,20 @@ const OVERRIDEABLE_PREFIXES = {
 };
 
 function getStoredSearchOverrides() {
-  try {
-    const stored = localStorage.getItem('searchOverrides');
-    return stored ? JSON.parse(stored) : {};
-  } catch (e) { return {}; }
+  return getStartpageSetting('searchOverrides', {});
 }
 function saveSearchOverrides(overrides) {
-  try { localStorage.setItem('searchOverrides', JSON.stringify(overrides)); }
-  catch (e) { console.error('Failed to save search overrides:', e); }
+  notifyCentralSettingsReadOnly();
 }
 
 // ========================================
 // Custom Tags — user-defined prefix:url pairs
 // ========================================
 function getStoredCustomTags() {
-  try {
-    const stored = localStorage.getItem('customTags');
-    return stored ? JSON.parse(stored) : [];
-  } catch (e) { return []; }
+  return getStartpageSetting('customTags', []);
 }
 function saveCustomTags(tags) {
-  try { localStorage.setItem('customTags', JSON.stringify(tags)); }
-  catch (e) { console.error('Failed to save custom tags:', e); }
+  notifyCentralSettingsReadOnly();
 }
 function isValidSearchEngine(engine) {
   return SEARCH_ENGINE_IDS.includes(String(engine || '').toLowerCase());
@@ -281,10 +246,9 @@ function buildSearchUrl(engine, query) {
   return `https://search.brave.com/search?q=${q}`;
 }
 function getStoredSearchEngine() {
-  const stored = localStorage.getItem('searchEngine') || DEFAULT_SEARCH_ENGINE;
+  const stored = getStartpageSetting('searchEngine', DEFAULT_SEARCH_ENGINE);
   return isValidSearchEngine(stored) ? stored : DEFAULT_SEARCH_ENGINE;
 }
 function saveSearchEngine(engine) {
-  const normalized = String(engine || '').toLowerCase();
-  localStorage.setItem('searchEngine', isValidSearchEngine(normalized) ? normalized : DEFAULT_SEARCH_ENGINE);
+  notifyCentralSettingsReadOnly();
 }

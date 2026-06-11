@@ -4,6 +4,13 @@
 
 function openTagsModal() {
   _renderTagsModal();
+  ['btn-add-tag', 'btn-save-tags'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.disabled = true;
+      el.title = CENTRAL_SETTINGS_HINT;
+    }
+  });
   document.getElementById('tags-modal').classList.add('active');
 }
 
@@ -41,11 +48,14 @@ function _renderOverrides() {
     input.placeholder = def;
     input.value = overrides[key] || '';
     input.dataset.key = key;
+    input.readOnly = true;
+    input.title = CENTRAL_SETTINGS_HINT;
 
     const reset = document.createElement('button');
     reset.className = 'tags-reset-btn';
     reset.textContent = '↺';
     reset.title = 'Reset to default';
+    reset.disabled = true;
     reset.addEventListener('click', () => { input.value = ''; });
 
     row.appendChild(lbl);
@@ -75,7 +85,8 @@ function _renderCustomTagRow(list, tag, index) {
   prefixInput.spellcheck = false;
   prefixInput.placeholder = 'prefix';
   prefixInput.value = tag.prefix || '';
-  prefixInput.title = 'Prefix (no colon)';
+  prefixInput.title = CENTRAL_SETTINGS_HINT;
+  prefixInput.readOnly = true;
 
   const colon = document.createElement('span');
   colon.className = 'tags-colon';
@@ -87,12 +98,14 @@ function _renderCustomTagRow(list, tag, index) {
   urlInput.spellcheck = false;
   urlInput.placeholder = 'https://example.com/search?q=';
   urlInput.value = tag.url || '';
-  urlInput.title = 'URL — query appended at the end';
+  urlInput.title = CENTRAL_SETTINGS_HINT;
+  urlInput.readOnly = true;
 
   const del = document.createElement('button');
   del.className = 'tags-reset-btn tags-delete-btn';
   del.textContent = '✕';
   del.title = 'Remove';
+  del.disabled = true;
   del.addEventListener('click', () => {
     row.remove();
   });
@@ -105,28 +118,10 @@ function _renderCustomTagRow(list, tag, index) {
 }
 
 function addCustomTag() {
-  const list = document.getElementById('tags-custom-list');
-  const index = list.children.length;
-  _renderCustomTagRow(list, { prefix: '', url: '' }, index);
-  list.lastElementChild.querySelector('.tags-custom-prefix').focus();
+  notifyCentralSettingsReadOnly();
 }
 
 // ---- Save ----
 function saveTagsModal() {
-  const overrides = {};
-  document.querySelectorAll('#tags-overrides-grid .tags-override-input').forEach(input => {
-    const val = input.value.trim();
-    if (val) overrides[input.dataset.key] = val;
-  });
-  saveSearchOverrides(overrides);
-
-  const tags = [];
-  document.querySelectorAll('#tags-custom-list .tags-custom-row').forEach(row => {
-    const prefix = row.querySelector('.tags-custom-prefix').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-    const url    = row.querySelector('.tags-custom-url').value.trim();
-    if (prefix && url) tags.push({ prefix, url });
-  });
-  saveCustomTags(tags);
-
-  closeTagsModal();
+  notifyCentralSettingsReadOnly();
 }

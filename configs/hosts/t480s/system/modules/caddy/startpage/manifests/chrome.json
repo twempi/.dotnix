@@ -28,11 +28,10 @@
     "https://*.faviconkit.com/*",
     "https://icon.horse/*",
     "https://geticon.io/*",
-    "https://favicon.im/*",
-    "https://raw.githubusercontent.com/*"
+    "https://favicon.im/*"
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://geocoding-api.open-meteo.com https://api.open-meteo.com https://ipapi.co https://v4.ident.me https://v6.ident.me https://api.datamuse.com https://api.dictionaryapi.dev https://en.wiktionary.org https://www.cloudflare.com https://speed.cloudflare.com https://www.google.com https://icons.duckduckgo.com https://icon.horse https://geticon.io https://favicon.im https://raw.githubusercontent.com;"
+    "extension_pages": "script-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://geocoding-api.open-meteo.com https://api.open-meteo.com https://ipapi.co https://v4.ident.me https://v6.ident.me https://api.datamuse.com https://api.dictionaryapi.dev https://en.wiktionary.org https://www.cloudflare.com https://speed.cloudflare.com https://www.google.com https://icons.duckduckgo.com https://icon.horse https://geticon.io https://favicon.im;"
   },
   "web_accessible_resources": [
     {

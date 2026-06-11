@@ -6,6 +6,7 @@
   lua = lib.generators.mkLuaInline;
   toLua = lib.generators.toLua {};
   uwsmApp = "uwsm app --";
+  noctalia = "noctalia msg";
 
   modKey = key: lua ''mod .. " + ${key}"'';
   execCmd = command: lua "hl.dsp.exec_cmd(${toLua command})";
@@ -54,9 +55,6 @@ in {
     colorPicker = {
       _var = "${uwsmApp} ${pkgs.hyprpicker}/bin/hyprpicker -a";
     };
-    notiCenter = {
-      _var = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
-    };
 
     # terminal = { _var = "${pkgs.ghostty}/bin/ghostty"; };
     terminal = {
@@ -86,97 +84,99 @@ in {
     mod = {
       _var = "SUPER";
     };
+
     bind =
       [
-        # Basic
-        (bind (modKey "Q") (lua "hl.dsp.window.close()"))
-        (bind (modKey "SHIFT + Q") (execCmd forceKillActive))
-        (bind (modKey "V") (lua ''hl.dsp.window.float({ action = "toggle" })''))
-        (bind (modKey "F") (lua ''hl.dsp.window.fullscreen({ mode = "maximized" })''))
-        (bind (modKey "SHIFT + F") (lua ''hl.dsp.window.fullscreen({ mode = "fullscreen" })''))
+      # Basic
+      (bind (modKey "Q") (lua "hl.dsp.window.close()"))
+      (bind (modKey "SHIFT + Q") (execCmd forceKillActive))
+      (bind (modKey "V") (lua ''hl.dsp.window.float({ action = "toggle" })''))
+      (bind (modKey "F") (lua ''hl.dsp.window.fullscreen({ mode = "maximized" })''))
+      (bind (modKey "SHIFT + F") (lua ''hl.dsp.window.fullscreen({ mode = "fullscreen" })''))
 
-        (bind (modKey "return") (execLocal "terminal"))
-        (bind (modKey "B") (execLocal "browser"))
-        (bind (modKey "E") (execLocal "explorer1"))
-        (bind (modKey "SHIFT + E") (execLocal "explorer2"))
-        (bind (modKey "M") (execCmd "${uwsmApp} spotify"))
-        (bind (modKey "O") (execLocal "notes"))
-        (bind (modKey "N") (execLocal "editor"))
-        (bind (modKey "SHIFT + B") (execLocal "bluetooth"))
-        (bind (modKey "SHIFT + N") (execLocal "notiCenter"))
-        (bind (modKey "Escape") (execCmd "${uwsmApp} rofi-power"))
+      (bind (modKey "return") (execLocal "terminal"))
+      (bind (modKey "B") (execLocal "browser"))
+      (bind (modKey "E") (execLocal "explorer1"))
+      (bind (modKey "SHIFT + E") (execLocal "explorer2"))
+      (bind (modKey "M") (execCmd "${uwsmApp} spotify"))
+      (bind (modKey "O") (execLocal "notes"))
+      (bind (modKey "N") (execLocal "editor"))
+      (bind (modKey "SHIFT + B") (execLocal "bluetooth"))
+      (bind (modKey "SHIFT + N") (execCmd "${noctalia} panel-toggle control-center"))
+      (bind (modKey "Escape") (execCmd "${noctalia} panel-toggle session"))
 
-        (bind (modKey "Z") (execLocal "colorPicker"))
-        (bind (modKey "SHIFT + W") (execCmd "${uwsmApp} rofi-wallpaper"))
-        (bind (modKey "SHIFT + R") (execCmd "${./reload.sh}"))
+      (bind (modKey "Z") (execLocal "colorPicker"))
+      (bind (modKey "SHIFT + W") (execCmd "${noctalia} panel-toggle wallpaper"))
+      (bind (modKey "SHIFT + R") (execCmd "${noctalia} config-reload"))
+      (bind (modKey "Comma") (execCmd "${noctalia} settings-toggle"))
 
-        # Screenshots
-        (bind (modKey "SHIFT + S") (execCmd "way-screenshot area"))
-        (bind "Print" (execCmd "way-screenshot screen"))
+      # Screenshots
+      (bind (modKey "SHIFT + S") (execCmd "${noctalia} screenshot-region"))
+      (bind "Print" (execCmd "${noctalia} screenshot-fullscreen"))
 
-        # Launcher / emoji / clipboard
-        (bind (modKey "Space") (execCmd "${uwsmApp} rofi-launcher"))
-        (bind (modKey "U") (execCmd "${uwsmApp} rofi-emoji"))
-        (bind (modKey "Y") (execCmd "${uwsmApp} rofi-clipboard"))
+      # Launcher / emoji / clipboard
+      (bind (modKey "Space") (execCmd "${noctalia} panel-toggle launcher"))
+      (bind (modKey "U") (execCmd "${noctalia} panel-toggle launcher /emo"))
+      (bind (modKey "Y") (execCmd "${noctalia} panel-toggle clipboard"))
 
-        # Move focus with mod + HJKL(Vim keys)
-        (bind (modKey "H") (lua ''hl.dsp.focus({ direction = "left" })''))
-        (bind (modKey "L") (lua ''hl.dsp.focus({ direction = "right" })''))
-        (bind (modKey "J") (lua ''hl.dsp.focus({ direction = "down" })''))
-        (bind (modKey "K") (lua ''hl.dsp.focus({ direction = "up" })''))
+      # Move focus with mod + HJKL(Vim keys)
+      (bind (modKey "H") (lua ''hl.dsp.focus({ direction = "left" })''))
+      (bind (modKey "L") (lua ''hl.dsp.focus({ direction = "right" })''))
+      (bind (modKey "J") (lua ''hl.dsp.focus({ direction = "down" })''))
+      (bind (modKey "K") (lua ''hl.dsp.focus({ direction = "up" })''))
 
-        # Move windows with mod + CTRL + HJKL(Vim keys)
-        (bind (modKey "CTRL + H") (lua ''hl.dsp.window.move({ direction = "left" })''))
-        (bind (modKey "CTRL + L") (lua ''hl.dsp.window.move({ direction = "right" })''))
-        (bind (modKey "CTRL + J") (lua ''hl.dsp.window.move({ direction = "down" })''))
-        (bind (modKey "CTRL + K") (lua ''hl.dsp.window.move({ direction = "up" })''))
+      # Move windows with mod + CTRL + HJKL(Vim keys)
+      (bind (modKey "CTRL + H") (lua ''hl.dsp.window.move({ direction = "left" })''))
+      (bind (modKey "CTRL + L") (lua ''hl.dsp.window.move({ direction = "right" })''))
+      (bind (modKey "CTRL + J") (lua ''hl.dsp.window.move({ direction = "down" })''))
+      (bind (modKey "CTRL + K") (lua ''hl.dsp.window.move({ direction = "up" })''))
 
-        # Cycle through active workspaces
-        (bind (modKey "TAB") (lua ''hl.dsp.focus({ workspace = "e+1" })''))
-        (bind (modKey "SHIFT + TAB") (lua ''hl.dsp.focus({ workspace = "e-1" })''))
+      # Cycle through active workspaces
+      (bind (modKey "TAB") (lua ''hl.dsp.focus({ workspace = "e+1" })''))
+      (bind (modKey "SHIFT + TAB") (lua ''hl.dsp.focus({ workspace = "e-1" })''))
 
-        # Move windows with mouse
-        (bindWith (modKey "mouse:272") (lua "hl.dsp.window.drag()") {mouse = true;})
-        # Resize windows with mouse
-        (bindWith (modKey "mouse:273") (lua "hl.dsp.window.resize()") {mouse = true;})
+      # Move windows with mouse
+      (bindWith (modKey "mouse:272") (lua "hl.dsp.window.drag()") {mouse = true;})
+      # Resize windows with mouse
+      (bindWith (modKey "mouse:273") (lua "hl.dsp.window.resize()") {mouse = true;})
 
-        # Resize windows with mod + Shift + HJKL(vim keys)
-        (bindWith (modKey "SHIFT + H") (resize (-50) 0) {repeating = true;})
-        (bindWith (modKey "SHIFT + L") (resize 50 0) {repeating = true;})
-        (bindWith (modKey "SHIFT + J") (resize 0 (-50)) {repeating = true;})
-        (bindWith (modKey "SHIFT + K") (resize 0 50) {repeating = true;})
+      # Resize windows with mod + Shift + HJKL(vim keys)
+      (bindWith (modKey "SHIFT + H") (resize (-50) 0) {repeating = true;})
+      (bindWith (modKey "SHIFT + L") (resize 50 0) {repeating = true;})
+      (bindWith (modKey "SHIFT + J") (resize 0 (-50)) {repeating = true;})
+      (bindWith (modKey "SHIFT + K") (resize 0 50) {repeating = true;})
 
-        # Laptop multimedia keys for volume and LCD brightness
-        (bindWith "XF86AudioLowerVolume" (execCmd "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-") {
-          locked = true;
-          repeating = true;
-        })
-        (bindWith "XF86AudioRaiseVolume" (execCmd "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+") {
-          locked = true;
-          repeating = true;
-        })
-        (bindWith "XF86AudioMute" (execCmd "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") {
-          locked = true;
-          repeating = true;
-        })
-        (bindWith "XF86AudioMicMute" (execCmd "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle") {
-          locked = true;
-          repeating = true;
-        })
-        (bindWith "XF86MonBrightnessUp" (execCmd "brightnessctl set 5%+") {
-          locked = true;
-          repeating = true;
-        })
-        (bindWith "XF86MonBrightnessDown" (execCmd "brightnessctl set 5%-") {
-          locked = true;
-          repeating = true;
-        })
+      # Laptop multimedia keys for volume and LCD brightness
+      (bindWith "XF86AudioLowerVolume" (execCmd "${noctalia} volume-down") {
+        locked = true;
+        repeating = true;
+      })
+      (bindWith "XF86AudioRaiseVolume" (execCmd "${noctalia} volume-up") {
+        locked = true;
+        repeating = true;
+      })
+      (bindWith "XF86AudioMute" (execCmd "${noctalia} volume-mute") {
+        locked = true;
+        repeating = true;
+      })
+      (bindWith "XF86AudioMicMute" (execCmd "${noctalia} mic-mute") {
+        locked = true;
+        repeating = true;
+      })
+      (bindWith "XF86MonBrightnessUp" (execCmd "${noctalia} brightness-up") {
+        locked = true;
+        repeating = true;
+      })
+      (bindWith "XF86MonBrightnessDown" (execCmd "${noctalia} brightness-down") {
+        locked = true;
+        repeating = true;
+      })
 
-        # Requires playerctl
-        (bindWith "XF86AudioNext" (execCmd "playerctl next") {locked = true;})
-        (bindWith "XF86AudioPause" (execCmd "playerctl play-pause") {locked = true;})
-        (bindWith "XF86AudioPlay" (execCmd "playerctl play-pause") {locked = true;})
-        (bindWith "XF86AudioPrev" (execCmd "playerctl previous") {locked = true;})
+      # Requires an active MPRIS player
+      (bindWith "XF86AudioNext" (execCmd "${noctalia} media next") {locked = true;})
+      (bindWith "XF86AudioPause" (execCmd "${noctalia} media toggle") {locked = true;})
+      (bindWith "XF86AudioPlay" (execCmd "${noctalia} media toggle") {locked = true;})
+      (bindWith "XF86AudioPrev" (execCmd "${noctalia} media previous") {locked = true;})
       ]
       ++ builtins.concatLists (map workspaceBind [1 2 3 4 5 6 7 9 10])
       ++ keycodeWorkspaceBinds;

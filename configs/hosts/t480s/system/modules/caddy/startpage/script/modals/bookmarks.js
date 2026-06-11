@@ -18,6 +18,12 @@ function openBookmarksModal() {
     btn.addEventListener('click', () => _bmSwitchTab(btn.dataset.tab));
   });
 
+  const saveBtn = document.getElementById('btn-save-bookmarks');
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.title = CENTRAL_SETTINGS_HINT;
+  }
+
   document.getElementById('bookmarks-modal').classList.add('active');
 
   const handleEsc = (e) => {
@@ -55,7 +61,7 @@ function _bmSwitchTab(tab) {
     const textarea = document.getElementById('config-textarea');
     grid.classList.add('hidden');
     textarea.classList.add('hidden');
-    if (toggleBtn) toggleBtn.textContent = 'Edit as JSON';
+    if (toggleBtn) toggleBtn.textContent = 'View as JSON';
     _renderShelfEditor(getStoredShelfBookmarks());
   } else {
     const grid = document.getElementById('bookmarks-grid-editor');
@@ -64,7 +70,7 @@ function _bmSwitchTab(tab) {
     grid.classList.remove('hidden');
     textarea.classList.add('hidden');
     if (shelfEditor) shelfEditor.classList.add('hidden');
-    if (toggleBtn) toggleBtn.textContent = 'Edit as JSON';
+    if (toggleBtn) toggleBtn.textContent = 'View as JSON';
     renderGridEditor(getStoredBookmarks());
   }
 }
@@ -91,6 +97,8 @@ function _renderShelfEditor(bookmarks) {
   const addBtn = document.createElement('button');
   addBtn.className = 'shelf-add-btn';
   addBtn.textContent = '+ Add bookmark';
+  addBtn.disabled = true;
+  addBtn.title = CENTRAL_SETTINGS_HINT;
   addBtn.addEventListener('click', () => _shelfAddRow());
   shelfEditor.appendChild(addBtn);
 
@@ -116,6 +124,7 @@ function _shelfAddRow(bm = null, listEl = null) {
   titleInput.placeholder = 'Title';
   titleInput.value = bm?.title || '';
   titleInput.spellcheck = false;
+  titleInput.readOnly = true;
 
   const urlInput = document.createElement('input');
   urlInput.type = 'text';
@@ -123,11 +132,13 @@ function _shelfAddRow(bm = null, listEl = null) {
   urlInput.placeholder = 'https://...';
   urlInput.value = bm?.href || '';
   urlInput.spellcheck = false;
+  urlInput.readOnly = true;
 
   const removeBtn = document.createElement('button');
   removeBtn.className = 'shelf-remove-btn';
   removeBtn.textContent = '×';
   removeBtn.title = 'Remove';
+  removeBtn.disabled = true;
   removeBtn.addEventListener('click', () => row.remove());
 
   row.appendChild(titleInput);
@@ -181,6 +192,7 @@ function renderGridEditor(bookmarks) {
       titleInput.placeholder = 'Title';
       titleInput.value = bm.title || '';
       titleInput.spellcheck = false;
+      titleInput.readOnly = true;
 
       const categoryInput = document.createElement('input');
       categoryInput.type = 'text';
@@ -188,6 +200,7 @@ function renderGridEditor(bookmarks) {
       categoryInput.placeholder = 'Category';
       categoryInput.value = bm.category || '';
       categoryInput.spellcheck = false;
+      categoryInput.readOnly = true;
 
       const urlInput = document.createElement('input');
       urlInput.type = 'text';
@@ -195,6 +208,7 @@ function renderGridEditor(bookmarks) {
       urlInput.placeholder = 'https://...';
       urlInput.value = bm.href || '';
       urlInput.spellcheck = false;
+      urlInput.readOnly = true;
 
       cell.appendChild(titleInput);
       cell.appendChild(categoryInput);
@@ -227,7 +241,7 @@ function toggleEditorMode() {
         renderGridEditor(parsed);
         grid.classList.remove('hidden');
       }
-      btn.textContent = 'Edit as JSON';
+      btn.textContent = 'View as JSON';
     } catch {
       showAlert('Invalid JSON format. Please fix any syntax errors before switching.', { type: 'error', title: 'Invalid JSON' });
     }
@@ -235,10 +249,11 @@ function toggleEditorMode() {
     // visual editor → JSON
     const bookmarks = isShelf ? _collectShelfBookmarks() : collectGridBookmarks();
     textarea.value = JSON.stringify(bookmarks, null, 2);
+    textarea.readOnly = true;
     textarea.classList.remove('hidden');
     if (isShelf && shelfEditor) shelfEditor.classList.add('hidden');
     else grid.classList.add('hidden');
-    btn.textContent = 'Edit as Grid';
+    btn.textContent = 'View as Grid';
   }
 }
 
@@ -264,50 +279,5 @@ function collectGridBookmarks() {
 // Save
 // ========================================
 function saveBookmarksFromModal() {
-  if (_bmActiveTab === 'shelf') {
-    const textarea = document.getElementById('config-textarea');
-    // If currently in JSON mode, parse from textarea
-    if (!textarea.classList.contains('hidden')) {
-      try {
-        const parsed = JSON.parse(textarea.value);
-        if (!Array.isArray(parsed)) throw new Error();
-        saveShelfBookmarks(parsed);
-      } catch {
-        showAlert('Invalid JSON! Please fix it or switch back to list mode.', { type: 'error', title: 'Invalid JSON' });
-        return;
-      }
-    } else {
-      const bookmarks = _collectShelfBookmarks();
-      saveShelfBookmarks(bookmarks);
-    }
-    showToast('Shelf bookmarks saved', 'success');
-    closeBookmarksModal();
-    return;
-  }
-
-  const grid = document.getElementById('bookmarks-grid-editor');
-  const textarea = document.getElementById('config-textarea');
-  let bookmarks = null;
-  let bookmarkError = false;
-
-  if (!grid.classList.contains('hidden')) {
-    bookmarks = collectGridBookmarks();
-  } else {
-    try {
-      const parsed = JSON.parse(textarea.value);
-      if (Array.isArray(parsed)) bookmarks = parsed;
-      else bookmarkError = true;
-    } catch (e) {
-      bookmarkError = true;
-    }
-  }
-
-  if (bookmarks && !bookmarkError) {
-    saveBookmarks(bookmarks);
-    generateBookmarks();
-    showToast('Bookmarks saved', 'success');
-    closeBookmarksModal();
-  } else if (bookmarkError) {
-    showAlert('Invalid JSON! Please fix it or switch back to grid mode.', { type: 'error', title: 'Invalid JSON' });
-  }
+  notifyCentralSettingsReadOnly();
 }

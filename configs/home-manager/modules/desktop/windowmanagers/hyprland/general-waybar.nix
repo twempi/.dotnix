@@ -11,13 +11,13 @@
   autostart = [
     (exec "uwsm app -- awww-daemon")
     (exec "uwsm app -- ${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp")
-    (exec "${pkgs.systemd}/bin/systemctl --user stop swaync.service || true")
-    (exec "${pkgs.procps}/bin/pkill waybar || true")
-    (exec "uwsm app -- noctalia --daemon")
+    (exec "uwsm app -- ${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css")
     (execWithRules "uwsm app -- spotify" {workspace = "9 silent";})
     (execWithRules "uwsm app -- obsidian" {workspace = "10 silent";})
     (exec "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1")
     (exec "sleep 5 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1")
+    (exec "${pkgs.cliphist}/bin/cliphist wipe")
+    (exec "uwsm app -- ${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store")
   ];
 in {
   wayland.windowManager.hyprland.settings = {

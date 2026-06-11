@@ -10,33 +10,6 @@ function openVersion() {
   showAlert('Version: ' + ver, { title: 'Start Page', type: 'info' });
 }
 
-async function checkForUpdate() {
-  const REMOTE_URL = 'https://raw.githubusercontent.com/caffienerd/startpage/refs/heads/master/version/version.js';
-  const local = (typeof browser !== 'undefined' && browser.runtime?.getManifest?.()?.version) || (typeof chrome !== 'undefined' && chrome.runtime?.getManifest?.()?.version) || window.APP_VERSION || 'unknown';
-
-  showToast('Checking for updates...', 'info', 2500);
-
-  try {
-    const res = await fetch(REMOTE_URL + '?_=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    const match = text.match(/APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
-    if (!match) throw new Error('Could not parse remote version');
-    const remote = match[1];
-
-    if (remote === local) {
-      showAlert(`You're up to date!\n\nCurrent version: v${local}`, { title: 'No Updates', type: 'success' });
-    } else {
-      showAlert(
-        `New version available!\n\nInstalled:  v${local}\nLatest:     v${remote}\n\ngithub.com/caffienerd/startpage`,
-        { title: 'Update Available', type: 'warning' }
-      );
-    }
-  } catch (err) {
-    showAlert(`Could not reach GitHub.\n\n${err.message}`, { title: 'Update Check Failed', type: 'error' });
-  }
-}
-
 const AI_ROUTE_BADGE_NAV_DELAY_MS = 550;
 const AI_ROUTE_BADGE_HIDE_MS = 2600;
 
@@ -69,28 +42,16 @@ function handleSpecialCommands(value) {
   if (normalized === ":help") { openHelp(); clear(); return; }
   if (normalized === ":help_ai_router") { openAiRouterHelp(); clear(); return; }
   if (/^:aimode(\s+(on|off|toggle))?$/i.test(rawValue)) {
-    const match = rawValue.match(/^:aimode(?:\s+(on|off|toggle))?$/i);
-    const action = (match?.[1] || 'toggle').toLowerCase();
     const current = getStoredAiModeEnabled();
-    const next = action === 'toggle' ? !current : action === 'on';
-    saveAiModeEnabled(next);
-    if (!next) hideAiRouteBadge();
-    showToast(
-      next
-        ? 'AI mode enabled — plain text routes without ai: prefix'
-        : 'AI mode disabled — use ai: prefix for routing',
-      next ? 'success' : 'info',
-      3500
+    showAlert(
+      `AI mode is currently ${current ? 'enabled' : 'disabled'}.\n\n${CENTRAL_SETTINGS_HINT}`,
+      { title: 'AI Mode', type: 'info' }
     );
     clear();
     return;
   }
   if (normalized === ":version" || normalized === ":ver") { openVersion(); clear(); return; }
-  if (normalized === ":update") { checkForUpdate(); clear(); return; }
   if (normalized === ":history") { openHistory(); clear(); return; }
-  if (normalized === ":tour") { openTour(true); clear(); return; }
-  if (normalized === ":export") { exportBackup(); clear(); return; }
-  if (normalized === ":import") { importBackup(); clear(); return; }
   if (normalized === ":reset") { handleResetCommand(); clear(); return; }
   if (normalized === ":ipconfig" || normalized === ":ip") { openIPInfo(); clear(); return; }
   if (normalized === ":netspeed" || normalized === ":speed") { openSpeedTest(); clear(); return; }
@@ -118,7 +79,6 @@ function handleSpecialCommands(value) {
     });
     document.body.classList.add(`${targetTheme}-mode`);
     document.documentElement.classList.add(`${targetTheme}-mode`);
-    saveTheme(targetTheme);
     clear();
     return;
   }
@@ -445,18 +405,28 @@ function getAiUrlDestination(url) {
   }
 }
 
-// ---- :reset — wipe all localStorage + caches ----
+// ---- :reset — wipe local browser caches/history only ----
 async function handleResetCommand() {
   const confirmed = await showConfirm(
-    'This will clear ALL settings, bookmarks, themes, syntax colors, favicon cache, command history, and any other stored data.\n\nThe page will reload with factory defaults.',
-    { title: 'Reset Everything?', confirmLabel: 'Yes, reset', cancelLabel: 'Cancel' }
+    'This will clear local browser cache and command history only.\n\nCentral settings in /var/lib/startpage/settings.json will not be changed.',
+    { title: 'Reset Local Data?', confirmLabel: 'Reset local data', cancelLabel: 'Cancel' }
   );
   if (!confirmed) return;
 
-  // Wipe all localStorage
-  localStorage.clear();
+  const keysToRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (
+      key === 'terminal-history-v1' ||
+      key === FAVICON_CACHE_KEY ||
+      key.startsWith('weather_')
+    ) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach(key => localStorage.removeItem(key));
 
-  showToast('All data cleared — reloading...', 'success', 1500);
+  showToast('Local data cleared — reloading...', 'success', 1500);
   setTimeout(() => location.reload(), 1500);
 }
 

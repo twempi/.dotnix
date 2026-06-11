@@ -4,14 +4,13 @@
   colors,
   fontFamily,
   sansFontFamily ? fontFamily,
-  includeChromeManifest ? false,
 }: let
   color = name: "#${builtins.getAttr name colors}";
   cssFontFamily = builtins.toJSON sansFontFamily;
   cssMonoFontFamily = builtins.toJSON fontFamily;
 
   cacheInputs = {
-    inherit fontFamily sansFontFamily includeChromeManifest;
+    inherit fontFamily sansFontFamily;
     base00 = colors.base00;
     base01 = colors.base01;
     base02 = colors.base02;
@@ -86,12 +85,6 @@
     })();
   '';
 
-  manifestInstall =
-    if includeChromeManifest
-    then ''
-      cp ${source}/manifests/chrome.json "$out/manifest.json"
-    ''
-    else "";
 in
   pkgs.runCommand "stylix-terminal-startpage" {} ''
     mkdir -p "$out"
@@ -116,6 +109,4 @@ in
 
     cp ${stylixCss} "$out/stylix.css"
     cp ${localDefaultsJs} "$out/script/local-defaults.js"
-
-    ${manifestInstall}
   ''

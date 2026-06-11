@@ -15,14 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
   on('btn-edit-bookmarks',     () => openBookmarksModal());
   on('btn-tags-from-config',   () => { closeConfig(); openTagsModal(); });
   on('btn-customize-from-config', () => { closeConfig(); openCustomizeModal(); });
-  on('btn-import-backup',      () => importBackup());
-  on('btn-export-backup',      () => exportBackup());
   on('btn-cancel-config',      () => closeConfig());
   on('btn-save-config',        () => saveConfig());
 
   // ---- Help modal ----
   on('btn-close-help',         () => closeHelp());
-  on('btn-restart-tour',        () => { closeHelp(); localStorage.removeItem('tour-seen-v1'); openTour(true); });
 
   // ---- IP modal ----
   on('btn-close-ip',           () => closeIPInfo());

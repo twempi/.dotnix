@@ -18,6 +18,13 @@ const THEME_DEFS = [
 // ---- Open / Close ----
 function openCustomizeModal() {
   _renderCustomizeModal();
+  ['btn-reset-colors', 'btn-save-customize'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.disabled = true;
+      el.title = CENTRAL_SETTINGS_HINT;
+    }
+  });
   document.getElementById('customize-modal').classList.add('active');
   const first = document.querySelector('#customize-modal .customize-hex');
   if (first) first.focus();
@@ -57,6 +64,14 @@ function _renderCustomizeModal() {
     const swatch = row.querySelector('.customize-swatch');
     const hex    = row.querySelector('.customize-hex');
     const preview = row.querySelector('.customize-preview');
+    const resetBtn = row.querySelector('.customize-reset-btn');
+
+    swatch.disabled = true;
+    swatch.title = CENTRAL_SETTINGS_HINT;
+    hex.readOnly = true;
+    hex.title = CENTRAL_SETTINGS_HINT;
+    resetBtn.disabled = true;
+    resetBtn.title = CENTRAL_SETTINGS_HINT;
 
     swatch.addEventListener('input', () => {
       const v = swatch.value;
@@ -91,7 +106,7 @@ function _renderCustomizeModal() {
       }
     });
 
-    row.querySelector('.customize-reset-btn').addEventListener('click', () => {
+    resetBtn.addEventListener('click', () => {
       const def = getDefaultSyntaxColors()[key];
       swatch.value = def;
       hex.value = def.toUpperCase();
@@ -110,6 +125,8 @@ function _renderCustomizeModal() {
     const btn = document.createElement('button');
     btn.className = 'customize-theme-btn' + (value === currentTheme ? ' active-theme' : '');
     btn.textContent = label;
+    btn.disabled = true;
+    btn.title = CENTRAL_SETTINGS_HINT;
     btn.addEventListener('click', () => {
       _applyTheme(value);
       themeGrid.querySelectorAll('.customize-theme-btn').forEach(b => b.classList.remove('active-theme'));
@@ -135,33 +152,10 @@ function _applyTheme(theme) {
 
 // ---- Save ----
 function saveCustomize() {
-  const colors = { ...getStoredSyntaxColors() };
-
-  document.querySelectorAll('#customize-color-grid .customize-row').forEach(row => {
-    const key = row.dataset.key;
-    const hex = row.querySelector('.customize-hex').value.trim();
-    if (/^#[0-9a-f]{6}$/i.test(hex)) {
-      colors[key] = hex.toLowerCase();
-    }
-  });
-
-  saveSyntaxColors(colors);
-  applySyntaxColors(colors);
-  closeCustomizeModal();
-  showToast('Customization saved', 'success');
+  notifyCentralSettingsReadOnly();
 }
 
 // ---- Reset all syntax colors ----
 async function resetAllSyntaxColors() {
-  const confirmed = await showConfirm('Reset all syntax colors to defaults?', {
-    title: 'Reset Colors',
-    confirmLabel: 'Reset',
-    cancelLabel: 'Cancel'
-  });
-  if (!confirmed) return;
-  const defaults = getDefaultSyntaxColors();
-  saveSyntaxColors({ ...defaults });
-  applySyntaxColors(defaults);
-  _renderCustomizeModal();
-  showToast('Colors reset to defaults', 'info');
+  notifyCentralSettingsReadOnly();
 }

@@ -1,23 +1,13 @@
 {
-  config,
   inputs,
   lib,
   pkgs,
   ...
 }: let
   homePage = "https://t480s.tailae03d0.ts.net/";
+  startpageSource = ../../../../hosts/t480s/system/modules/caddy/startpage;
 
   heliumProfileDir = "Profile";
-
-  mkStylixStartpage = import ../../../../hosts/t480s/system/modules/caddy/startpage/lib/mkStylixStartpage.nix;
-  stylixStartpage = mkStylixStartpage {
-    inherit pkgs;
-    source = ../../../../hosts/t480s/system/modules/caddy/startpage;
-    colors = config.lib.stylix.colors;
-    fontFamily = config.stylix.fonts.monospace.name;
-    sansFontFamily = config.stylix.fonts.sansSerif.name;
-    includeChromeManifest = true;
-  };
 
   webStoreExtensions = [
     {
@@ -139,9 +129,49 @@
         '{ external_crx: $crx, external_version: $version }' > "$out"
     '';
 
-  localNewTabExtension = pkgs.runCommand "helium-startpage" {} ''
-    mkdir -p $out
-    cp -r ${stylixStartpage}/* $out/
+  localNewTabExtension = pkgs.runCommand "helium-startpage-redirect" {} ''
+    mkdir -p "$out/focus" "$out/icon"
+
+    cp -R ${startpageSource}/icon/* "$out/icon/"
+
+    cat > "$out/manifest.json" <<'EOF'
+    {
+      "manifest_version": 3,
+      "name": "Terminal Start Page Redirect",
+      "description": "Redirects new tabs to the hosted t480s startpage.",
+      "version": "1.0.0",
+      "chrome_url_overrides": {
+        "newtab": "focus/focus.html"
+      },
+      "icons": {
+        "16": "icon/16.png",
+        "32": "icon/32.png",
+        "48": "icon/48.png",
+        "128": "icon/128.png"
+      },
+      "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'none'"
+      }
+    }
+    EOF
+
+    cat > "$out/focus/focus.html" <<'EOF'
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>Start Page</title>
+      <style>html,body{margin:0;padding:0;width:100%;height:100%;background:#000;}</style>
+      <script src="focus.js"></script>
+    </head>
+    <body></body>
+    </html>
+    EOF
+
+    cat > "$out/focus/focus.js" <<'EOF'
+    window.location.replace(${builtins.toJSON homePage});
+    EOF
   '';
 
   allUnpackedExtensionPaths = map toString [localNewTabExtension];

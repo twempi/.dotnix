@@ -25,6 +25,7 @@
       enable = true;
 
       associations.added = {
+        "x-scheme-handler/discord" = ["vesktop.desktop"];
         "x-scheme-handler/obsidian" = ["obsidian.desktop"];
       };
 
@@ -60,6 +61,9 @@
         # Zoom
         "x-scheme-handler/zoommtg" = ["zoom-us.desktop"];
         "application/x-zoom" = ["zoom-us.desktop"];
+
+        # Discord / Vesktop
+        "x-scheme-handler/discord" = ["vesktop.desktop"];
 
         # Obsidian Web Clipper / obsidian:// links
         "x-scheme-handler/obsidian" = ["obsidian.desktop"];

@@ -97,6 +97,9 @@ window.addEventListener('pageshow', (e) => {
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
+  if (typeof loadStartpageSettings === 'function') {
+    await loadStartpageSettings();
+  }
   initPlaceholders();
   loadTheme();
   applySyntaxColors(getStoredSyntaxColors());

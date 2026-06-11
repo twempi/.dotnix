@@ -17,19 +17,16 @@ const DEFAULT_PROMPTS = [
 
 // ---- Storage ----
 function getStoredPrompts() {
-  try {
-    const stored = localStorage.getItem('terminalPrompts');
-    return stored ? JSON.parse(stored) : null; // null = use defaults
-  } catch (e) { return null; }
+  const prompts = getStartpageSetting('terminalPrompts', []);
+  return Array.isArray(prompts) && prompts.length ? prompts : null;
 }
 
 function savePrompts(prompts) {
-  try { localStorage.setItem('terminalPrompts', JSON.stringify(prompts)); }
-  catch (e) { console.error('Failed to save prompts:', e); }
+  notifyCentralSettingsReadOnly();
 }
 
 function clearStoredPrompts() {
-  localStorage.removeItem('terminalPrompts');
+  notifyCentralSettingsReadOnly();
 }
 
 // Returns whichever list is active (stored or defaults)
@@ -42,6 +39,15 @@ function openPromptsModal() {
   const textarea = document.getElementById('prompts-textarea');
   const prompts = getActivePrompts();
   textarea.value = prompts.join('\n');
+  textarea.readOnly = true;
+  textarea.title = CENTRAL_SETTINGS_HINT;
+  ['btn-reset-prompts', 'btn-save-prompts'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.disabled = true;
+      el.title = CENTRAL_SETTINGS_HINT;
+    }
+  });
   document.getElementById('prompts-modal').classList.add('active');
   textarea.focus();
 }
@@ -51,29 +57,10 @@ function closePromptsModal() {
 }
 
 function savePromptsModal() {
-  const textarea = document.getElementById('prompts-textarea');
-  const lines = textarea.value
-    .split('\n')
-    .map(l => l.trim())
-    .filter(l => l.length > 0);
-
-  if (lines.length === 0) {
-    // Empty → reset to defaults
-    clearStoredPrompts();
-  } else {
-    savePrompts(lines);
-  }
-
-  // Restart the placeholder animation with new prompts
-  const input = document.getElementById('terminal-input');
-  if (input) {
-    if (input._typingTimeout) clearTimeout(input._typingTimeout);
-    typePlaceholder(input, lines.length > 0 ? lines : DEFAULT_PROMPTS);
-  }
-
-  closePromptsModal();
+  notifyCentralSettingsReadOnly();
 }
 
 function resetPromptsModal() {
-  document.getElementById('prompts-textarea').value = DEFAULT_PROMPTS.join('\n');
+  document.getElementById('prompts-textarea').value = getActivePrompts().join('\n');
+  notifyCentralSettingsReadOnly();
 }

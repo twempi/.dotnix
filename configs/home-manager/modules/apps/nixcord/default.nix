@@ -1,10 +1,24 @@
 {
   config,
   inputs,
+  lib,
+  pkgs,
   ...
 }: let
   colors = config.lib.stylix.colors.withHashtag;
   font = config.stylix.fonts.monospace.name;
+  vesktopPackage = config.programs.nixcord.vesktop.package;
+  vesktopLauncher = pkgs.writeShellScriptBin "vesktop-launch" ''
+    args=()
+    for arg in "$@"; do
+      case "$arg" in
+        %f|%F|%u|%U) ;;
+        *) args+=("$arg") ;;
+      esac
+    done
+
+    exec ${lib.getExe vesktopPackage} "''${args[@]}"
+  '';
 in {
   imports = [
     inputs.nixcord.homeModules.nixcord
@@ -195,6 +209,23 @@ in {
         };
         youtubeAdblock.enable = true;
       };
+    };
+  };
+
+  xdg.desktopEntries.vesktop = {
+    name = "Vesktop";
+    genericName = "Internet Messenger";
+    exec = "${lib.getExe vesktopLauncher} %U";
+    icon = "vesktop";
+    categories = [
+      "Network"
+      "InstantMessaging"
+      "Chat"
+    ];
+    mimeType = ["x-scheme-handler/discord"];
+    settings = {
+      Keywords = "discord;vencord;electron;chat";
+      StartupWMClass = "Vesktop";
     };
   };
 }

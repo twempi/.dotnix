@@ -21,6 +21,12 @@ in {
         reverse_proxy 127.0.0.1:4918
       }
 
+      handle /settings.json {
+        header Cache-Control "no-store, max-age=0"
+        root * /var/lib/startpage
+        file_server
+      }
+
       handle {
         header Cache-Control "no-store, max-age=0"
         root * ${siteRoot}
@@ -28,6 +34,11 @@ in {
       }
     '';
   };
+
+  systemd.tmpfiles.rules = [
+    "d /var/lib/startpage 0750 edward caddy -"
+    "C /var/lib/startpage/settings.json 0640 edward caddy - ${./startpage/settings.default.json}"
+  ];
 
   networking.firewall.allowedTCPPorts = [80 443];
 }
