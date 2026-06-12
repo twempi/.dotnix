@@ -259,12 +259,6 @@ in {
       ExtensionInstallAllowlist = map (ext: ext.id) webStoreExtensions;
 
       SiteSearchSettings = [
-        {
-          featured = true;
-          name = "Nix Search";
-          shortcut = "ns";
-          url = "https://mynixos.com/search?q={searchTerms}";
-        }
       ];
 
       SpellcheckEnabled = true;

@@ -133,7 +133,12 @@
   "shelfBookmarks": [],
   "syntaxColors": {},
   "searchOverrides": {},
-  "customTags": [],
+  "customTags": [
+    {
+      "prefix": "ns",
+      "url": "https://nixsearch.thekoppe.com/?q=$q"
+    }
+  ],
   "dirExtensions": {},
   "terminalPrompts": [
     "search anything...",

@@ -47,7 +47,7 @@ return {
 					},
 				},
 				appearance = { nerd_font_variant = "mono" },
-				signature = { enabled = true },
+				signature = { enabled = false },
 				completion = {
 					menu = { border = "rounded" },
 					documentation = {
