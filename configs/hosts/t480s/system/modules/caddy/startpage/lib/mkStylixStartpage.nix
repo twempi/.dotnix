@@ -27,7 +27,15 @@
     builtins.hashString "sha256" (builtins.toJSON cacheInputs)
   );
 
+  baseCss = builtins.readFile (source + "/style.css");
   stylixBackground = color "base00";
+
+  baseCssStyle = pkgs.writeText "startpage-base-css.html" ''
+    <style id="startpage-base-css">
+    ${baseCss}
+    </style>
+    <link rel="stylesheet" href="stylix.css?v=${cacheKey}" />
+  '';
 
   stylixCss = pkgs.writeText "startpage-stylix.css" ''
     html.stylix-mode body {
@@ -86,7 +94,7 @@
   '';
 
 in
-  pkgs.runCommand "stylix-terminal-startpage" {} ''
+  pkgs.runCommand "stylix-terminal-startpage" {nativeBuildInputs = [pkgs.gawk];} ''
     mkdir -p "$out"
 
     cp ${source}/style.css "$out/style.css"
@@ -100,12 +108,19 @@ in
     sed 's|__STYLIX_BACKGROUND__|${stylixBackground}|g' \
       ${source}/focus/focus.js > "$out/focus/focus.js"
 
-    sed \
-      -e 's#<link rel="stylesheet" href="style.css" />#<link rel="stylesheet" href="style.css" />\
-  <link rel="stylesheet" href="stylix.css?v=${cacheKey}" />#' \
+    awk -v base_css_style="${baseCssStyle}" '
+      /<link rel="stylesheet" href="style[.]css"/ {
+        while ((getline line < base_css_style) > 0) {
+          print line
+        }
+        close(base_css_style)
+        next
+      }
+      { print }
+    ' ${source}/index.html | sed \
       -e 's#<script src="script/storage.js"></script>#<script src="script/storage.js"></script>\
   <script src="script/local-defaults.js?v=${cacheKey}"></script>#' \
-      ${source}/index.html > "$out/index.html"
+      > "$out/index.html"
 
     cp ${stylixCss} "$out/stylix.css"
     cp ${localDefaultsJs} "$out/script/local-defaults.js"
