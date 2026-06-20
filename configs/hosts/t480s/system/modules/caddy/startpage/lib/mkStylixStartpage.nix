@@ -53,8 +53,8 @@
       --color-error: ${color "base08"};
       --color-success: ${color "base0B"};
       --color-version: ${color "base0B"};
-      --font-family: ${cssFontFamily}, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --monospace-font-family: ${cssMonoFontFamily}, ui-monospace, "Cascadia Code", "Fira Code", "Fira Mono", "Consolas", "Menlo", monospace;
+      --font-family: "Inter", ${cssFontFamily}, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --monospace-font-family: "Source Code Pro", ${cssMonoFontFamily}, ui-monospace, "Cascadia Code", "Fira Code", "Fira Mono", "Consolas", "Menlo", monospace;
       color-scheme: dark;
     }
 

@@ -21,7 +21,7 @@ function getStoredDirExtensions() {
 }
 
 function saveDirExtensions(exts) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ dirExtensions: exts }, { successMessage: 'Directory extensions saved' });
 }
 
 function getDirCategoryExtensions(key) {
@@ -176,8 +176,8 @@ function openDirConfigModal() {
   _renderDirConfigModal();
   const saveBtn = document.getElementById('btn-save-dirconfig');
   if (saveBtn) {
-    saveBtn.disabled = true;
-    saveBtn.title = CENTRAL_SETTINGS_HINT;
+    saveBtn.disabled = false;
+    saveBtn.title = '';
   }
   document.getElementById('dirconfig-modal').classList.add('active');
 }
@@ -213,7 +213,7 @@ function _renderDirConfigModal() {
     resetBtn.textContent = '↺';
     resetBtn.title = 'Reset to defaults';
     resetBtn.style.opacity = isCustomized ? '1' : '0.35';
-    resetBtn.disabled = true;
+    resetBtn.disabled = false;
     resetBtn.addEventListener('click', () => {
       _resetDirCategory(section, key);
       resetBtn.style.opacity = '0.35';
@@ -251,7 +251,7 @@ function _makeDirPill(ext, pillsWrap, resetBtn) {
   del.className = 'dirconfig-pill-del';
   del.textContent = '×';
   del.title = 'Remove';
-  del.disabled = true;
+  del.disabled = false;
   del.addEventListener('click', () => {
     pill.remove();
     if (resetBtn) resetBtn.style.opacity = '1';
@@ -272,8 +272,8 @@ function _makeDirAddInput(pillsWrap, resetBtn) {
   input.placeholder = '+ add ext';
   input.spellcheck = false;
   input.maxLength = 12;
-  input.disabled = true;
-  input.title = CENTRAL_SETTINGS_HINT;
+  input.disabled = false;
+  input.title = '';
 
   const addExt = () => {
     const val = input.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -303,6 +303,23 @@ function _resetDirCategory(section, key) {
   });
 }
 
-function saveDirConfig() {
-  notifyCentralSettingsReadOnly();
+async function saveDirConfig() {
+  const dirExtensions = {};
+
+  document.querySelectorAll('.dirconfig-category').forEach(section => {
+    const key = section.dataset.key;
+    const exts = [...section.querySelectorAll('.dirconfig-pill')]
+      .map(pill => (pill.dataset.ext || '').trim().toLowerCase())
+      .filter(Boolean);
+    const defaults = (DIR_CATEGORIES[key]?.defaultExt || []).map(ext => String(ext).toLowerCase());
+    const changed = exts.length !== defaults.length || exts.some((ext, index) => ext !== defaults[index]);
+    if (changed && exts.length) dirExtensions[key] = exts;
+  });
+
+  try {
+    await saveDirExtensions(dirExtensions);
+    closeDirConfigModal();
+  } catch (_) {
+    // saveStartpageSettings already showed the error toast.
+  }
 }

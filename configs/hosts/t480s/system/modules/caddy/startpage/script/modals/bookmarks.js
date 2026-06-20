@@ -20,8 +20,9 @@ function openBookmarksModal() {
 
   const saveBtn = document.getElementById('btn-save-bookmarks');
   if (saveBtn) {
-    saveBtn.disabled = true;
-    saveBtn.title = CENTRAL_SETTINGS_HINT;
+    saveBtn.disabled = false;
+    saveBtn.title = '';
+    saveBtn.textContent = 'Save';
   }
 
   document.getElementById('bookmarks-modal').classList.add('active');
@@ -97,8 +98,8 @@ function _renderShelfEditor(bookmarks) {
   const addBtn = document.createElement('button');
   addBtn.className = 'shelf-add-btn';
   addBtn.textContent = '+ Add bookmark';
-  addBtn.disabled = true;
-  addBtn.title = CENTRAL_SETTINGS_HINT;
+  addBtn.disabled = false;
+  addBtn.title = '';
   addBtn.addEventListener('click', () => _shelfAddRow());
   shelfEditor.appendChild(addBtn);
 
@@ -124,7 +125,7 @@ function _shelfAddRow(bm = null, listEl = null) {
   titleInput.placeholder = 'Title';
   titleInput.value = bm?.title || '';
   titleInput.spellcheck = false;
-  titleInput.readOnly = true;
+  titleInput.readOnly = false;
 
   const urlInput = document.createElement('input');
   urlInput.type = 'text';
@@ -132,13 +133,13 @@ function _shelfAddRow(bm = null, listEl = null) {
   urlInput.placeholder = 'https://...';
   urlInput.value = bm?.href || '';
   urlInput.spellcheck = false;
-  urlInput.readOnly = true;
+  urlInput.readOnly = false;
 
   const removeBtn = document.createElement('button');
   removeBtn.className = 'shelf-remove-btn';
   removeBtn.textContent = '×';
   removeBtn.title = 'Remove';
-  removeBtn.disabled = true;
+  removeBtn.disabled = false;
   removeBtn.addEventListener('click', () => row.remove());
 
   row.appendChild(titleInput);
@@ -192,7 +193,7 @@ function renderGridEditor(bookmarks) {
       titleInput.placeholder = 'Title';
       titleInput.value = bm.title || '';
       titleInput.spellcheck = false;
-      titleInput.readOnly = true;
+      titleInput.readOnly = false;
 
       const categoryInput = document.createElement('input');
       categoryInput.type = 'text';
@@ -200,7 +201,7 @@ function renderGridEditor(bookmarks) {
       categoryInput.placeholder = 'Category';
       categoryInput.value = bm.category || '';
       categoryInput.spellcheck = false;
-      categoryInput.readOnly = true;
+      categoryInput.readOnly = false;
 
       const urlInput = document.createElement('input');
       urlInput.type = 'text';
@@ -208,7 +209,7 @@ function renderGridEditor(bookmarks) {
       urlInput.placeholder = 'https://...';
       urlInput.value = bm.href || '';
       urlInput.spellcheck = false;
-      urlInput.readOnly = true;
+      urlInput.readOnly = false;
 
       cell.appendChild(titleInput);
       cell.appendChild(categoryInput);
@@ -249,7 +250,7 @@ function toggleEditorMode() {
     // visual editor → JSON
     const bookmarks = isShelf ? _collectShelfBookmarks() : collectGridBookmarks();
     textarea.value = JSON.stringify(bookmarks, null, 2);
-    textarea.readOnly = true;
+    textarea.readOnly = false;
     textarea.classList.remove('hidden');
     if (isShelf && shelfEditor) shelfEditor.classList.add('hidden');
     else grid.classList.add('hidden');
@@ -278,6 +279,32 @@ function collectGridBookmarks() {
 // ========================================
 // Save
 // ========================================
-function saveBookmarksFromModal() {
-  notifyCentralSettingsReadOnly();
+async function saveBookmarksFromModal() {
+  const textarea = document.getElementById('config-textarea');
+  const inJsonMode = textarea && !textarea.classList.contains('hidden');
+
+  try {
+    let bookmarks;
+    if (inJsonMode) {
+      bookmarks = JSON.parse(textarea.value);
+      if (!Array.isArray(bookmarks)) throw new Error('Expected a JSON array');
+    } else {
+      bookmarks = _bmActiveTab === 'shelf' ? _collectShelfBookmarks() : collectGridBookmarks();
+    }
+
+    if (_bmActiveTab === 'shelf') {
+      await saveShelfBookmarks(bookmarks);
+    } else {
+      await saveBookmarks(bookmarks);
+    }
+
+    if (typeof generateBookmarks === 'function') generateBookmarks();
+    closeBookmarksModal();
+  } catch (err) {
+    if (err instanceof SyntaxError) {
+      showAlert('Invalid JSON format. Please fix any syntax errors before saving.', { type: 'error', title: 'Invalid JSON' });
+      return;
+    }
+    showAlert(err.message || 'Could not save bookmarks.', { type: 'error', title: 'Save Failed' });
+  }
 }

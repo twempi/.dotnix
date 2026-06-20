@@ -22,11 +22,11 @@ function getStoredPrompts() {
 }
 
 function savePrompts(prompts) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ terminalPrompts: prompts }, { successMessage: 'Prompts saved' });
 }
 
 function clearStoredPrompts() {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ terminalPrompts: [] }, { successMessage: 'Prompts reset' });
 }
 
 // Returns whichever list is active (stored or defaults)
@@ -39,13 +39,13 @@ function openPromptsModal() {
   const textarea = document.getElementById('prompts-textarea');
   const prompts = getActivePrompts();
   textarea.value = prompts.join('\n');
-  textarea.readOnly = true;
-  textarea.title = CENTRAL_SETTINGS_HINT;
+  textarea.readOnly = false;
+  textarea.title = '';
   ['btn-reset-prompts', 'btn-save-prompts'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.disabled = true;
-      el.title = CENTRAL_SETTINGS_HINT;
+      el.disabled = false;
+      el.title = '';
     }
   });
   document.getElementById('prompts-modal').classList.add('active');
@@ -56,11 +56,25 @@ function closePromptsModal() {
   document.getElementById('prompts-modal').classList.remove('active');
 }
 
-function savePromptsModal() {
-  notifyCentralSettingsReadOnly();
+async function savePromptsModal() {
+  const prompts = document.getElementById('prompts-textarea').value
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  try {
+    await savePrompts(prompts);
+    closePromptsModal();
+  } catch (_) {
+    // saveStartpageSettings already showed the error toast.
+  }
 }
 
-function resetPromptsModal() {
-  document.getElementById('prompts-textarea').value = getActivePrompts().join('\n');
-  notifyCentralSettingsReadOnly();
+async function resetPromptsModal() {
+  document.getElementById('prompts-textarea').value = DEFAULT_PROMPTS.join('\n');
+  try {
+    await clearStoredPrompts();
+  } catch (_) {
+    // saveStartpageSettings already showed the error toast.
+  }
 }

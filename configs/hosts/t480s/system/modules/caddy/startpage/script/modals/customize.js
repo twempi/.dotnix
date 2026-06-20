@@ -21,8 +21,8 @@ function openCustomizeModal() {
   ['btn-reset-colors', 'btn-save-customize'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.disabled = true;
-      el.title = CENTRAL_SETTINGS_HINT;
+      el.disabled = false;
+      el.title = '';
     }
   });
   document.getElementById('customize-modal').classList.add('active');
@@ -66,12 +66,12 @@ function _renderCustomizeModal() {
     const preview = row.querySelector('.customize-preview');
     const resetBtn = row.querySelector('.customize-reset-btn');
 
-    swatch.disabled = true;
-    swatch.title = CENTRAL_SETTINGS_HINT;
-    hex.readOnly = true;
-    hex.title = CENTRAL_SETTINGS_HINT;
-    resetBtn.disabled = true;
-    resetBtn.title = CENTRAL_SETTINGS_HINT;
+    swatch.disabled = false;
+    swatch.title = 'Pick color';
+    hex.readOnly = false;
+    hex.title = '';
+    resetBtn.disabled = false;
+    resetBtn.title = 'Reset';
 
     swatch.addEventListener('input', () => {
       const v = swatch.value;
@@ -125,8 +125,9 @@ function _renderCustomizeModal() {
     const btn = document.createElement('button');
     btn.className = 'customize-theme-btn' + (value === currentTheme ? ' active-theme' : '');
     btn.textContent = label;
-    btn.disabled = true;
-    btn.title = CENTRAL_SETTINGS_HINT;
+    btn.dataset.theme = value;
+    btn.disabled = false;
+    btn.title = '';
     btn.addEventListener('click', () => {
       _applyTheme(value);
       themeGrid.querySelectorAll('.customize-theme-btn').forEach(b => b.classList.remove('active-theme'));
@@ -147,15 +148,38 @@ function _applyTheme(theme) {
   });
   document.body.classList.add('stylix-mode');
   document.documentElement.classList.add('stylix-mode');
-  saveTheme(theme);
 }
 
 // ---- Save ----
-function saveCustomize() {
-  notifyCentralSettingsReadOnly();
+async function saveCustomize() {
+  const syntaxColors = {};
+
+  try {
+    document.querySelectorAll('#customize-modal .customize-hex').forEach(input => {
+      const key = input.dataset.key;
+      const value = input.value.trim().toLowerCase();
+      if (!/^#[0-9a-f]{6}$/i.test(value)) {
+        throw new Error(`Invalid color for ${key}`);
+      }
+      syntaxColors[key] = value;
+    });
+
+    const theme = document.querySelector('#customize-theme-grid .active-theme')?.dataset.theme || DEFAULT_THEME;
+    await saveStartpageSettings({ syntaxColors, theme }, { successMessage: 'Customization saved' });
+    applySyntaxColors(getStoredSyntaxColors());
+    closeCustomizeModal();
+  } catch (err) {
+    showAlert(err.message || 'Could not save customization.', { type: 'error', title: 'Save Failed' });
+  }
 }
 
 // ---- Reset all syntax colors ----
 async function resetAllSyntaxColors() {
-  notifyCentralSettingsReadOnly();
+  try {
+    await saveStartpageSettings({ syntaxColors: {} }, { successMessage: 'Syntax colors reset' });
+    applySyntaxColors(getDefaultSyntaxColors());
+    _renderCustomizeModal();
+  } catch (_) {
+    // saveStartpageSettings already showed the error toast.
+  }
 }

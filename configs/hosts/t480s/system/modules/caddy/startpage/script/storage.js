@@ -36,6 +36,7 @@ const DEFAULT_AI_MODE_ENABLED = false;
 const DEFAULT_AI_ROUTE_BADGE_MODE = "live";
 const DEFAULT_SEARCH_ENGINE = "brave"; // "brave" | "google" | "ddg" | "bing"
 const DEFAULT_THEME = "stylix";
+const STARTPAGE_SETTINGS_API_URL = "/api/settings";
 const SEARCH_ENGINE_IDS = ["brave", "google", "ddg", "bing"];
 const SEARCH_ENGINE_LABELS = {
   brave: "Brave",
@@ -45,7 +46,7 @@ const SEARCH_ENGINE_LABELS = {
 };
 
 const DEFAULT_SHELF_BOOKMARKS = [];
-const CENTRAL_SETTINGS_HINT = "Edit /var/lib/startpage/settings.json on the t480s, then refresh.";
+const CENTRAL_SETTINGS_HINT = "Open :config to edit central startpage settings.";
 
 function cloneSettingValue(value) {
   if (value === undefined) return undefined;
@@ -60,9 +61,56 @@ function getStartpageSetting(key, fallback) {
   return cloneSettingValue(fallback);
 }
 
-function notifyCentralSettingsReadOnly() {
-  if (typeof showToast === 'function') {
-    showToast(`Central settings are read-only here. ${CENTRAL_SETTINGS_HINT}`, 'info', 5000);
+function _normalizeSettingsForSave(settings) {
+  if (typeof normalizeStartpageSettings === 'function') {
+    return normalizeStartpageSettings(settings);
+  }
+  return settings;
+}
+
+async function saveStartpageSettings(patch, options = {}) {
+  const {
+    successMessage = 'Settings saved',
+    showSuccess = true
+  } = options;
+
+  const nextSettings = _normalizeSettingsForSave({
+    ...(window.STARTPAGE_SETTINGS || {}),
+    ...cloneSettingValue(patch),
+    _schemaVersion: 1
+  });
+
+  try {
+    const res = await fetch(STARTPAGE_SETTINGS_API_URL, {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(nextSettings)
+    });
+
+    let payload = null;
+    try {
+      payload = await res.json();
+    } catch (_) {
+      payload = {};
+    }
+
+    if (!res.ok || !payload.ok) {
+      throw new Error(payload.error || `HTTP ${res.status}`);
+    }
+
+    window.STARTPAGE_SETTINGS = _normalizeSettingsForSave(payload.settings || nextSettings);
+    if (showSuccess && typeof showToast === 'function') {
+      showToast(successMessage, 'success', 1800);
+    }
+    return window.STARTPAGE_SETTINGS;
+  } catch (err) {
+    if (typeof showToast === 'function') {
+      showToast(`Could not save settings: ${err.message}`, 'error', 5000);
+    }
+    throw err;
   }
 }
 
@@ -90,7 +138,7 @@ function getStoredSyntaxColors() {
   return { ...defaults, ...getStartpageSetting('syntaxColors', {}) };
 }
 function saveSyntaxColors(colors) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ syntaxColors: colors }, { successMessage: 'Syntax colors saved' });
 }
 function applySyntaxColors(colors) {
   const defaults = getDefaultSyntaxColors();
@@ -125,7 +173,7 @@ function getStoredBookmarks() {
 }
 function saveBookmarks(bookmarks) {
   if (!Array.isArray(bookmarks)) throw new Error('Invalid bookmarks data');
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ bookmarks }, { successMessage: 'Bookmarks saved' });
 }
 
 // ========================================
@@ -136,7 +184,7 @@ function getStoredShelfBookmarks() {
 }
 function saveShelfBookmarks(bookmarks) {
   if (!Array.isArray(bookmarks)) throw new Error('Invalid shelf bookmarks data');
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ shelfBookmarks: bookmarks }, { successMessage: 'Shelf bookmarks saved' });
 }
 
 // ========================================
@@ -147,7 +195,7 @@ function getStoredUsername() {
 }
 function saveUsername(name) {
   if (!name || typeof name !== 'string') throw new Error('Invalid username');
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ username: name }, { successMessage: 'Username saved' });
 }
 
 // ========================================
@@ -156,8 +204,8 @@ function saveUsername(name) {
 function getStoredTheme() {
   return getStartpageSetting('theme', DEFAULT_THEME);
 }
-function saveTheme() {
-  notifyCentralSettingsReadOnly();
+function saveTheme(theme = DEFAULT_THEME) {
+  return saveStartpageSettings({ theme }, { successMessage: 'Theme saved' });
 }
 
 // ========================================
@@ -167,19 +215,19 @@ function getStoredWeatherLocation() {
   return getStartpageSetting('weatherLocation', DEFAULT_WEATHER_LOCATION);
 }
 function saveWeatherLocation(location) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ weatherLocation: location }, { successMessage: 'Weather location saved' });
 }
 function getStoredWeatherUnit() {
   return getStartpageSetting('weatherUnit', DEFAULT_WEATHER_UNIT);
 }
 function saveWeatherUnit(unit) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ weatherUnit: unit }, { successMessage: 'Weather unit saved' });
 }
 function getStoredTimezone() {
   return getStartpageSetting('timezone', DEFAULT_TIMEZONE);
 }
 function saveTimezone(tz) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ timezone: tz }, { successMessage: 'Time zone saved' });
 }
 
 // ========================================
@@ -189,14 +237,14 @@ function getStoredAiModeEnabled() {
   return getStartpageSetting('aiModeEnabled', DEFAULT_AI_MODE_ENABLED);
 }
 function saveAiModeEnabled(enabled) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ aiModeEnabled: !!enabled }, { successMessage: 'AI mode saved' });
 }
 function getStoredAiRouteBadgeMode() {
   const mode = String(getStartpageSetting('aiRouteBadgeMode', DEFAULT_AI_ROUTE_BADGE_MODE)).toLowerCase();
   return ['live', 'route', 'off'].includes(mode) ? mode : DEFAULT_AI_ROUTE_BADGE_MODE;
 }
 function saveAiRouteBadgeMode(mode) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ aiRouteBadgeMode: mode }, { successMessage: 'AI route badge saved' });
 }
 
 // ========================================
@@ -219,7 +267,7 @@ function getStoredSearchOverrides() {
   return getStartpageSetting('searchOverrides', {});
 }
 function saveSearchOverrides(overrides) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ searchOverrides: overrides }, { successMessage: 'Search overrides saved' });
 }
 
 // ========================================
@@ -229,7 +277,7 @@ function getStoredCustomTags() {
   return getStartpageSetting('customTags', []);
 }
 function saveCustomTags(tags) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ customTags: tags }, { successMessage: 'Custom tags saved' });
 }
 function isValidSearchEngine(engine) {
   return SEARCH_ENGINE_IDS.includes(String(engine || '').toLowerCase());
@@ -250,5 +298,5 @@ function getStoredSearchEngine() {
   return isValidSearchEngine(stored) ? stored : DEFAULT_SEARCH_ENGINE;
 }
 function saveSearchEngine(engine) {
-  notifyCentralSettingsReadOnly();
+  return saveStartpageSettings({ searchEngine: engine }, { successMessage: 'Search engine saved' });
 }
