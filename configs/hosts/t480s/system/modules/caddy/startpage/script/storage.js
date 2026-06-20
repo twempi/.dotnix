@@ -21,7 +21,7 @@ const DEFAULT_BOOKMARKS = [
   { href: "https://animekai.to/updates?page=1", title: "animekai", category: "anime" },
   { href: "https://anilist.co/home", title: "anilist", category: "anime" },
   { href: "https://suwayomi.tailae03d0.ts.net:8080/library", title: "reader", category: "anime" },
-  { href: "https://mynixos.com/", title: "nix pakgs", category: "linux" },
+  { href: "https://nixsearch.thekoppe.com/", title: "nix pkgs", category: "linux" },
   { href: "https://nix-community.github.io/stylix/index.html", title: "stylix", category: "linux" },
   { href: "https://leetcode.com/problemset/", title: "leetcode", category: "coding" },
   { href: "https://neetcode.io/practice/practice/neetcode150", title: "neetcode", category: "coding" },
@@ -253,6 +253,7 @@ function saveAiRouteBadgeMode(mode) {
 const OVERRIDEABLE_PREFIXES = {
   'yt':     { label: 'YouTube',       default: 'https://www.youtube.com/results?search_query=' },
   'r':      { label: 'Reddit',        default: 'https://search.brave.com/search?q=site%3Areddit.com%20' },
+  'ns':     { label: 'Nix Search',    default: 'https://nixsearch.thekoppe.com/?q=' },
   'brave':  { label: 'Brave',         default: 'https://search.brave.com/search?q=' },
   'ddg':    { label: 'DuckDuckGo',    default: 'https://duckduckgo.com/?q=' },
   'bing':   { label: 'Bing',          default: 'https://www.bing.com/search?q=' },

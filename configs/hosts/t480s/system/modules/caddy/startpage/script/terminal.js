@@ -194,6 +194,7 @@ function updateSyntaxHighlight(rawValue) {
     'm': 'maps:',
     'c': 'cws:',
     'gg': 'ggl:',
+    'ns': 'ns:',
     'bi': 'bing:',
     'ai': 'ai:',
     'sp': 'spell:',
@@ -230,9 +231,9 @@ function updateSyntaxHighlight(rawValue) {
   const themeCommands = [':stylix'];
   const knownCommands = [':help', ':help_ai_router', ':aimode', ':bookmarks', ':bm', ':ipconfig', ':ip', ':netspeed', ':speed', ':config', ':customize', ':custom', ':tags', ':dir', ':dirconfig', ':prompts', ':weather', ':time', ':reset', ':history', ...themeCommands];
   const versionCommands = [':version', ':ver'];
-  const knownSearch = /^(r|yt|alt|def|brave|ddg|ggl|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|ai):/;
+  const knownSearch = /^(r|yt|alt|def|brave|ddg|ggl|ns|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|ai):/;
   const knownSearchDynamic = customTagPrefixes.length
-    ? new RegExp(`^(r|yt|alt|def|brave|ddg|ggl|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|ai|${customTagPrefixes.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')}):`)
+    ? new RegExp(`^(r|yt|alt|def|brave|ddg|ggl|ns|bing|amazon|imdb|the|syn|quote|maps|cws|spell|pronounce|ai|${customTagPrefixes.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')}):`)
     : knownSearch;
 
   // ---- DIR syntax: only match valid dir patterns (not 'directory', 'dir is broken', etc.) ----
@@ -596,6 +597,7 @@ function resolveUrl(rawValue, elements) {
   if (/^ddg:/i.test(value))    return `https://duckduckgo.com/?q=${enc(strip('ddg:'))}`;
   if (/^bing:/i.test(value))   return `https://www.bing.com/search?q=${enc(strip('bing:'))}`;
   if (/^ggl:/i.test(value))    return `https://www.google.com/search?q=${enc(strip('ggl:'))}`;
+  if (/^ns:/i.test(value))     return `https://nixsearch.thekoppe.com/?q=${enc(strip('ns:'))}`;
   if (/^amazon:/i.test(value)) return `https://www.amazon.com/s?k=${enc(strip('amazon:'))}`;
   if (/^imdb:/i.test(value))   return `https://www.imdb.com/find?q=${enc(strip('imdb:'))}`;
   if (/^alt:/i.test(value))    return `https://alternativeto.net/browse/search/?q=${enc(strip('alt:'))}`;
@@ -631,7 +633,7 @@ function openInNewTab(url, focus) {
 
 // ---- Enter key routing ----
 function handleEnterKey(rawValue, value, elements) {
-  const isSearch = value.match(/^(r|yt|alt|brave|ddg|ggl|bing|amazon|imdb|def|the|syn|quote|maps|cws|spell|pronounce|ai):/);
+  const isSearch = value.match(/^(r|yt|alt|brave|ddg|ggl|ns|bing|amazon|imdb|def|the|syn|quote|maps|cws|spell|pronounce|ai):/);
   const isCommand = value.startsWith(':');
   const isDirCmd = /^dir(\/[a-z]*)?(\/[a-z]*)?:/i.test(rawValue);
   const hasTrailingSpace = /\s$/.test(rawValue);

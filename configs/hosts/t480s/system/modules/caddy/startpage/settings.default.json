@@ -105,8 +105,8 @@
       "category": "anime"
     },
     {
-      "href": "https://mynixos.com/",
-      "title": "nix pakgs",
+      "href": "https://nixsearch.thekoppe.com/",
+      "title": "nix pkgs",
       "category": "linux"
     },
     {
@@ -133,12 +133,7 @@
   "shelfBookmarks": [],
   "syntaxColors": {},
   "searchOverrides": {},
-  "customTags": [
-    {
-      "prefix": "ns",
-      "url": "https://nixsearch.thekoppe.com/?q=$q"
-    }
-  ],
+  "customTags": [],
   "dirExtensions": {},
   "terminalPrompts": [
     "search anything...",
