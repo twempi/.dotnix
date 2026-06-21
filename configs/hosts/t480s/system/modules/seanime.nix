@@ -18,8 +18,8 @@
     wants = ["network-online.target"];
 
     serviceConfig = {
-      User = "YOUR_USERNAME";
-      WorkingDirectory = "/home/YOUR_USERNAME";
+      User = "edward";
+      WorkingDirectory = "/home/edward";
       ExecStart = "${pkgs.seanime}/bin/seanime";
       Restart = "on-failure";
       RestartSec = 5;
