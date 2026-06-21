@@ -10,5 +10,6 @@
     ./modules/vaultwarden.nix
     ./modules/headless.nix
     ./modules/immich.nix
+    ./modules/seanime.nix
   ];
 }

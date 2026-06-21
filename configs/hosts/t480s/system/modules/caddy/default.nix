@@ -27,6 +27,7 @@ in {
 
       handle /settings.json {
         header Cache-Control "no-store, max-age=0"
+        header Access-Control-Allow-Origin "*"
         root * /var/lib/startpage
         file_server
       }

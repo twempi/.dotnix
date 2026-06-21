@@ -36,7 +36,7 @@ const DEFAULT_AI_MODE_ENABLED = false;
 const DEFAULT_AI_ROUTE_BADGE_MODE = "live";
 const DEFAULT_SEARCH_ENGINE = "brave"; // "brave" | "google" | "ddg" | "bing"
 const DEFAULT_THEME = "stylix";
-const STARTPAGE_SETTINGS_API_URL = "/api/settings";
+const STARTPAGE_SETTINGS_API_URL = window.STARTPAGE_SETTINGS_API_URL || "/api/settings";
 const SEARCH_ENGINE_IDS = ["brave", "google", "ddg", "bing"];
 const SEARCH_ENGINE_LABELS = {
   brave: "Brave",

@@ -2,7 +2,7 @@
 // Runtime Settings
 // ========================================
 
-const STARTPAGE_SETTINGS_URL = '/settings.json';
+const STARTPAGE_SETTINGS_URL = window.STARTPAGE_SETTINGS_URL || '/settings.json';
 
 window.STARTPAGE_SETTINGS = {};
 

@@ -662,7 +662,7 @@ function handleEnterKey(rawValue, value, elements) {
     matched = true;
     const goToBookmark = (href) => {
       if (typeof showLoading === 'function') showLoading();
-      window.location.href = href;
+      navigateTopLevel(href);
     };
     if (getStoredAiModeEnabled()) {
       showAiRouteBadge(bookmarkMatch.title, rawValue.trim(), AI_ROUTE_BADGE_NAV_DELAY_MS).then(() => {

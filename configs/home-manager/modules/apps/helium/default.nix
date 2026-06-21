@@ -1,11 +1,21 @@
 {
+  config,
   inputs,
   lib,
   pkgs,
   ...
 }: let
-  homePage = "https://t480s.tailae03d0.ts.net/";
+  homePageOrigin = "https://t480s.tailae03d0.ts.net";
+  homePage = "${homePageOrigin}/";
   startpageSource = ../../../../hosts/t480s/system/modules/caddy/startpage;
+  mkStylixStartpage = import ../../../../hosts/t480s/system/modules/caddy/startpage/lib/mkStylixStartpage.nix;
+  startpageSite = mkStylixStartpage {
+    inherit pkgs;
+    source = startpageSource;
+    colors = config.lib.stylix.colors;
+    fontFamily = config.stylix.fonts.monospace.name;
+    sansFontFamily = config.stylix.fonts.sansSerif.name;
+  };
 
   heliumProfileDir = "Profile";
 
@@ -129,49 +139,32 @@
         '{ external_crx: $crx, external_version: $version }' > "$out"
     '';
 
-  localNewTabExtension = pkgs.runCommand "helium-startpage-redirect" {} ''
-    mkdir -p "$out/focus" "$out/icon"
+  localNewTabExtension = pkgs.runCommand "helium-startpage-extension" {nativeBuildInputs = [pkgs.jq];} ''
+    mkdir -p "$out"
 
-    cp -R ${startpageSource}/icon/* "$out/icon/"
+    cp -R ${startpageSite}/. "$out/"
+    chmod -R u+w "$out"
 
-    cat > "$out/manifest.json" <<'EOF'
-    {
-      "manifest_version": 3,
-      "name": "Terminal Start Page Redirect",
-      "description": "Redirects new tabs to the hosted t480s startpage.",
-      "version": "1.0.0",
-      "chrome_url_overrides": {
-        "newtab": "focus/focus.html"
-      },
-      "icons": {
-        "16": "icon/16.png",
-        "32": "icon/32.png",
-        "48": "icon/48.png",
-        "128": "icon/128.png"
-      },
-      "content_security_policy": {
-        "extension_pages": "script-src 'self'; object-src 'none'"
-      }
-    }
+    cat > "$out/script/extension-env.js" <<'EOF'
+    window.STARTPAGE_SETTINGS_URL = ${builtins.toJSON "${homePageOrigin}/settings.json"};
+    window.STARTPAGE_SETTINGS_API_URL = ${builtins.toJSON "${homePageOrigin}/api/settings"};
     EOF
 
-    cat > "$out/focus/focus.html" <<'EOF'
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      <title>Start Page</title>
-      <style>html,body{margin:0;padding:0;width:100%;height:100%;background:#000;}</style>
-      <script src="focus.js"></script>
-    </head>
-    <body></body>
-    </html>
-    EOF
+    substituteInPlace "$out/index.html" \
+      --replace-fail '<script src="script/storage.js"></script>' \
+        '<script src="script/extension-env.js"></script>
+      <script src="script/storage.js"></script>'
 
-    cat > "$out/focus/focus.js" <<'EOF'
-    window.location.replace(${builtins.toJSON homePage});
-    EOF
+    jq \
+      --arg origin ${builtins.toJSON homePageOrigin} \
+      --arg host ${builtins.toJSON "${homePageOrigin}/*"} \
+      '
+        .chrome_url_overrides.newtab = "focus/focus.html"
+        | .host_permissions = (((.host_permissions // []) + [$host]) | unique)
+        | .content_security_policy.extension_pages |= (
+            if contains($origin) then . else sub("connect-src "; "connect-src \($origin) ") end
+          )
+      ' ${startpageSource}/manifests/chrome.json > "$out/manifest.json"
   '';
 
   allUnpackedExtensionPaths = map toString [localNewTabExtension];
@@ -192,12 +185,14 @@
     homepage_is_newtabpage = false;
 
     session = {
-      restore_on_startup = 6;
-      startup_urls = [homePage];
+      restore_on_startup = 5;
+      startup_urls = [];
     };
 
     vertical_tabs = {
+      collapsed_state = true;
       enabled = true;
+      uncollapsed_width = 200;
     };
 
     autofill = {
@@ -246,11 +241,8 @@ in {
       MetricsReportingEnabled = false;
       PasswordManagerEnabled = true;
 
-      # Open a new tab at startup; the local extension provides the startpage.
-      RestoreOnStartup = 6;
-      RestoreOnStartupURLs = [
-        homePage
-      ];
+      # Open the extension-backed new tab page at startup.
+      RestoreOnStartup = 5;
 
       SearchSuggestEnabled = true;
       ShowHomeButton = false;

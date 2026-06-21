@@ -8,6 +8,33 @@ const THEMES = [
     'stylix'
 ];
 
+function isFramedStartpage() {
+    try {
+        return window.self !== window.top;
+    } catch (_) {
+        return true;
+    }
+}
+
+function navigateTopLevel(url) {
+    try {
+        const nextUrl = new URL(url, window.location.href);
+        if (nextUrl.protocol !== 'http:' && nextUrl.protocol !== 'https:') return;
+
+        if (isFramedStartpage()) {
+            window.parent.postMessage({
+                type: 'startpage:navigate',
+                href: nextUrl.href
+            }, '*');
+            return;
+        }
+
+        window.location.href = nextUrl.href;
+    } catch (e) {
+        console.error('Navigation failed', e);
+    }
+}
+
 /**
  * Remove bookmark matching styles from elements
  */

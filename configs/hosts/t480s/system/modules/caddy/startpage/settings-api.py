@@ -12,6 +12,7 @@ HOST = os.environ.get("STARTPAGE_SETTINGS_HOST", "127.0.0.1")
 PORT = int(os.environ.get("STARTPAGE_SETTINGS_PORT", "4919"))
 ALLOWED_ORIGIN = os.environ.get("STARTPAGE_SETTINGS_ORIGIN", "https://t480s.tailae03d0.ts.net")
 MAX_BODY_BYTES = 256 * 1024
+CHROME_EXTENSION_ID_CHARS = set("abcdefghijklmnop")
 
 SEARCH_ENGINES = {"brave", "google", "ddg", "bing"}
 BADGE_MODES = {"live", "route", "off"}
@@ -26,6 +27,24 @@ class SettingsError(Exception):
         super().__init__(message)
         self.status = status
         self.message = message
+
+
+def is_allowed_extension_origin(origin):
+    parsed = urlparse(origin)
+    extension_id = parsed.netloc
+    return (
+        parsed.scheme == "chrome-extension"
+        and len(extension_id) == 32
+        and all(ch in CHROME_EXTENSION_ID_CHARS for ch in extension_id)
+        and not parsed.path
+        and not parsed.params
+        and not parsed.query
+        and not parsed.fragment
+    )
+
+
+def is_allowed_origin(origin):
+    return origin == ALLOWED_ORIGIN or is_allowed_extension_origin(origin)
 
 
 def clean_string(value, field, *, allow_empty=False, allow_null=False, max_length=2048):
@@ -248,7 +267,17 @@ class SettingsHandler(BaseHTTPRequestHandler):
     server_version = "StartpageSettingsAPI/1.0"
 
     def do_OPTIONS(self):
-        self.send_json(405, {"ok": False, "error": "OPTIONS is not supported"}, extra_headers={"Allow": "PUT"})
+        try:
+            if urlparse(self.path).path != "/api/settings":
+                raise SettingsError(404, "not found")
+
+            origin = self.headers.get("Origin")
+            if not origin or not is_allowed_origin(origin):
+                raise SettingsError(403, "origin is not allowed")
+
+            self.send_empty(204, extra_headers=self.cors_headers(preflight=True))
+        except SettingsError as err:
+            self.send_json(err.status, {"ok": False, "error": err.message})
 
     def do_GET(self):
         self.send_json(405, {"ok": False, "error": "GET is not supported"}, extra_headers={"Allow": "PUT"})
@@ -275,11 +304,12 @@ class SettingsHandler(BaseHTTPRequestHandler):
 
     def validate_request_headers(self):
         origin = self.headers.get("Origin")
-        if origin and origin != ALLOWED_ORIGIN:
+        if origin and not is_allowed_origin(origin):
             raise SettingsError(403, "origin is not allowed")
 
+        is_extension_origin = bool(origin and is_allowed_extension_origin(origin))
         sec_fetch_site = self.headers.get("Sec-Fetch-Site")
-        if sec_fetch_site and sec_fetch_site.lower() not in {"same-origin", "none"}:
+        if sec_fetch_site and sec_fetch_site.lower() not in {"same-origin", "none"} and not is_extension_origin:
             raise SettingsError(403, "cross-site writes are not allowed")
 
         content_type = self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
@@ -300,13 +330,43 @@ class SettingsHandler(BaseHTTPRequestHandler):
 
         return json.loads(self.rfile.read(length).decode("utf-8"))
 
+    def cors_headers(self, *, preflight=False):
+        origin = self.headers.get("Origin")
+        if not origin or not is_allowed_origin(origin):
+            return {}
+
+        headers = {
+            "Access-Control-Allow-Origin": origin,
+            "Vary": "Origin",
+        }
+
+        if preflight:
+            headers.update({
+                "Access-Control-Allow-Methods": "PUT, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
+            })
+
+        return headers
+
+    def send_empty(self, status, *, extra_headers=None):
+        headers = dict(extra_headers or {})
+        self.send_response(status)
+        self.send_header("Cache-Control", "no-store, max-age=0")
+        self.send_header("Content-Length", "0")
+        for key, value in headers.items():
+            self.send_header(key, value)
+        self.end_headers()
+
     def send_json(self, status, payload, *, extra_headers=None):
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        headers = self.cors_headers()
+        headers.update(extra_headers or {})
+
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Cache-Control", "no-store, max-age=0")
         self.send_header("Content-Length", str(len(body)))
-        for key, value in (extra_headers or {}).items():
+        for key, value in headers.items():
             self.send_header(key, value)
         self.end_headers()
         self.wfile.write(body)

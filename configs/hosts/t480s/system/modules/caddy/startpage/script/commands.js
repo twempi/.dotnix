@@ -169,7 +169,7 @@ function showLoading() {
 function navigate(url) {
   try {
     showLoading();
-    window.location.href = url;
+    navigateTopLevel(url);
   } catch (e) { console.error('Navigation failed', e); }
 }
 
