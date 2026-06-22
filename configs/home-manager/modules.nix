@@ -34,6 +34,7 @@
     ./modules/cli/bat
     ./modules/cli/lazygit
     ./modules/cli/gowall
+    ./modules/cli/cyberdrop-dl
 
     # Shell
     ./modules/desktop/waybar
