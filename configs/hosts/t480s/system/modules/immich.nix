@@ -41,13 +41,6 @@ in {
 
   users.users.immich.extraGroups = ["video" "render"];
 
-  hardware.graphics = {
-    enable = true;
-    extraPackages = with pkgs; [
-      intel-media-driver
-    ];
-  };
-
   systemd.tmpfiles.rules = [
     "d ${immichMediaDir} 0700 immich immich - -"
   ];

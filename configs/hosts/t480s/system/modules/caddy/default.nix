@@ -88,6 +88,18 @@ in {
         "prefix": "ns",
         "url": "https://nixsearch.thekoppe.com/?q=$q",
     }
+    entertainment_bookmarks = [
+        {
+            "href": "http://t480s.tailae03d0.ts.net:8096/web/",
+            "title": "jellyfin",
+            "category": "tv",
+        },
+        {
+            "href": "https://open.spotify.com/",
+            "title": "spotify",
+            "category": "tv",
+        },
+    ]
 
     def write_settings(settings):
         data = json.dumps(settings, indent=2, ensure_ascii=False) + "\n"
@@ -137,6 +149,17 @@ in {
                 if bookmark.get("href") == old_bookmark_href or bookmark.get("title") == old_bookmark_title:
                     bookmark["href"] = new_bookmark_href
                     bookmark["title"] = new_bookmark_title
+                    changed = True
+
+            existing_hrefs = {
+                bookmark.get("href")
+                for bookmark in bookmarks
+                if isinstance(bookmark, dict)
+            }
+            for bookmark in entertainment_bookmarks:
+                if bookmark["href"] not in existing_hrefs:
+                    bookmarks.append(bookmark)
+                    existing_hrefs.add(bookmark["href"])
                     changed = True
 
         custom_tags = settings.get("customTags")

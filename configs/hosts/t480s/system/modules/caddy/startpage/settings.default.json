@@ -55,6 +55,16 @@
       "category": "fun"
     },
     {
+      "href": "http://t480s.tailae03d0.ts.net:8096/web/",
+      "title": "jellyfin",
+      "category": "tv"
+    },
+    {
+      "href": "https://open.spotify.com/",
+      "title": "spotify",
+      "category": "tv"
+    },
+    {
       "href": "https://reddit.com/r/unixporn/",
       "title": "unixp*rn",
       "category": "fun"

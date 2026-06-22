@@ -4,7 +4,15 @@
   hostname,
   lib,
   ...
-}: {
+}: let
+  entertainmentHosts = ["t480s"];
+  desktopHosts = ["desktop" "g14"];
+  graphicalHosts = entertainmentHosts ++ desktopHosts;
+  profileModule =
+    if builtins.elem hostname entertainmentHosts
+    then ../../../home-manager/profiles/entertainment.nix
+    else ../../../home-manager/profiles/desktop.nix;
+in {
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
@@ -17,14 +25,10 @@
     users.edward = {
       imports =
         [
-          (
-            if hostname == "t480s"
-            then ../../../home-manager/profiles/server.nix
-            else ../../../home-manager/profiles/desktop.nix
-          )
+          profileModule
           (../../../hosts + "/${hostname}/home/modules.nix")
         ]
-        ++ lib.optionals (hostname != "t480s") [
+        ++ lib.optionals (builtins.elem hostname graphicalHosts) [
           inputs.spicetify-nix.homeManagerModules.default
         ];
     };

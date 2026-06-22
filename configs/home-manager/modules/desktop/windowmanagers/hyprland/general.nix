@@ -8,17 +8,25 @@
   toLua = lib.generators.toLua {};
   exec = command: "  hl.exec_cmd(${toLua command})";
   execWithRules = command: rules: "  hl.exec_cmd(${toLua command}, ${toLua rules})";
-  autostart = [
-    (exec "uwsm app -- awww-daemon")
+  autostartCfg = config.dotnix.hyprland.autostart;
+  autostart =
+    [
+      (exec "uwsm app -- awww-daemon")
+      (exec "${pkgs.systemd}/bin/systemctl --user stop swaync.service || true")
+      (exec "${pkgs.procps}/bin/pkill waybar || true")
+    ]
+    ++ lib.optional autostartCfg.openrgb
     (exec "uwsm app -- ${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp")
-    (exec "${pkgs.systemd}/bin/systemctl --user stop swaync.service || true")
-    (exec "${pkgs.procps}/bin/pkill waybar || true")
+    ++ lib.optional autostartCfg.noctalia
     (exec "uwsm app -- noctalia --daemon")
+    ++ lib.optional autostartCfg.spotify
     (execWithRules "uwsm app -- spotify" {workspace = "9 silent";})
+    ++ lib.optional autostartCfg.obsidian
     (execWithRules "uwsm app -- obsidian" {workspace = "10 silent";})
-    (exec "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1")
-    (exec "sleep 5 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1")
-  ];
+    ++ lib.optionals (autostartCfg.startupVolume != null) [
+      (exec "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ ${autostartCfg.startupVolume}")
+      (exec "sleep 5 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ ${autostartCfg.startupVolume}")
+    ];
 in {
   wayland.windowManager.hyprland.settings = {
     on = {

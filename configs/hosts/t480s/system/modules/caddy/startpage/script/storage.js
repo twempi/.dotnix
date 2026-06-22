@@ -11,6 +11,8 @@ const DEFAULT_BOOKMARKS = [
   { href: "https://calendar.google.com/calendar/u/1/r", title: "calendar", category: "personal" },
   { href: "https://github.com/twempi", title: "github", category: "personal" },
   { href: "https://youtube.com/", title: "youtube", category: "fun" },
+  { href: "http://t480s.tailae03d0.ts.net:8096/web/", title: "jellyfin", category: "tv" },
+  { href: "https://open.spotify.com/", title: "spotify", category: "tv" },
   { href: "https://reddit.com/r/unixporn/", title: "unixp*rn", category: "fun" },
   { href: "https://wallhaven.cc/toplist?page=1", title: "wallhaven", category: "fun" },
   { href: "https://www.taobao.com/", title: "taobao", category: "fun" },

@@ -19,7 +19,7 @@ in {
       flareSolverrAsResponseFallback = true;
 
       webUIEnabled = true;
-      initialOpenInBrowserEnabled = true;
+      initialOpenInBrowserEnabled = false;
       webUIInterface = "browser";
       webUIFlavor = "WebUI";
       webUIChannel = "stable";
