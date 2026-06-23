@@ -15,20 +15,16 @@
     then config.sops.secrets.cachix_twempi_token.path
     else "/run/secrets/cachix_twempi_token";
 
-  cachixPushCurrentSystem = pkgs.writeShellApplication {
-    name = "cachix-push-current-system";
+  cachixDaemon = pkgs.writeShellApplication {
+    name = "cachix-daemon";
 
     runtimeInputs = [
       pkgs.cachix
       pkgs.coreutils
-      pkgs.nix
     ];
 
     text = ''
-      cache="${cacheName}"
       token_file="${tokenPath}"
-      state_dir="/var/lib/cachix-system-push"
-      last_file="$state_dir/${cacheName}-last-system"
 
       if [ ! -s "$token_file" ]; then
         echo "Missing Cachix token secret at $token_file" >&2
@@ -36,29 +32,57 @@
         exit 1
       fi
 
-      system_path="$(readlink -f /run/current-system)"
-
-      mkdir -p "$state_dir"
-
-      if [ -f "$last_file" ] && [ "$(cat "$last_file")" = "$system_path" ]; then
-        echo "Current system path already pushed to Cachix: $system_path"
-        exit 0
-      fi
-
       export CACHIX_AUTH_TOKEN
       CACHIX_AUTH_TOKEN="$(tr -d '\n' < "$token_file")"
 
-      echo "Pushing current system closure to Cachix cache: $cache"
-      nix path-info -r "$system_path" | cachix push "$cache"
+      exec cachix daemon run \
+        --no-remote-stop \
+        --socket /run/cachix-daemon/socket \
+        --omit-deriver \
+        "${cacheName}"
+    '';
+  };
 
-      printf '%s\n' "$system_path" > "$last_file"
+  cachixPostBuildHook = pkgs.writeShellApplication {
+    name = "cachix-post-build-hook";
+
+    runtimeInputs = [
+      pkgs.cachix
+      pkgs.coreutils
+    ];
+
+    text = ''
+      set +e
+
+      socket="/run/cachix-daemon/socket"
+      out_paths="''${OUT_PATHS:-}"
+      drv_path="''${DRV_PATH:-unknown derivation}"
+
+      if [ -z "$out_paths" ]; then
+        exit 0
+      fi
+
+      if [ ! -S "$socket" ]; then
+        echo "Cachix daemon socket missing at $socket; skipping upload for $drv_path" >&2
+        exit 0
+      fi
+
+      # OUT_PATHS is a space-separated list of Nix store paths.
+      # shellcheck disable=SC2086
+      cachix daemon push --socket "$socket" $out_paths
+      status="$?"
+
+      if [ "$status" -ne 0 ]; then
+        echo "Cachix daemon push failed with status $status for $drv_path" >&2
+      fi
+
+      exit 0
     '';
   };
 in {
   environment.systemPackages = with pkgs; [
     cachix
     sops
-    cachixPushCurrentSystem
   ];
 
   sops = lib.mkIf hasCachixSecret {
@@ -75,33 +99,30 @@ in {
     };
   };
 
-  systemd.services.cachix-push-current-system = {
-    description = "Push the current NixOS system closure to Cachix";
+  systemd.services.cachix-daemon = {
+    description = "Upload locally built Nix store paths to Cachix";
+    wantedBy = ["multi-user.target"];
     wants = ["network-online.target"];
     after = ["network-online.target"];
+    environment.HOME = "/var/lib/cachix-daemon";
+    restartTriggers = lib.optional hasCachixSecret secretFile;
 
     unitConfig.ConditionPathExists = tokenPath;
 
     serviceConfig = {
-      Type = "oneshot";
-      ExecStart = lib.getExe cachixPushCurrentSystem;
-      StateDirectory = "cachix-system-push";
-      Restart = "on-failure";
-      RestartSec = "2min";
-    };
-  };
-
-  systemd.paths.cachix-push-current-system = {
-    description = "Push the current NixOS system closure to Cachix after rebuilds";
-    wantedBy = ["multi-user.target"];
-
-    pathConfig = {
-      PathChanged = "/nix/var/nix/profiles/system";
-      Unit = "cachix-push-current-system.service";
+      Type = "simple";
+      ExecStart = lib.getExe cachixDaemon;
+      Restart = "always";
+      RestartSec = "10s";
+      RuntimeDirectory = "cachix-daemon";
+      RuntimeDirectoryMode = "0700";
+      StateDirectory = "cachix-daemon";
     };
   };
 
   nix.settings = {
+    post-build-hook = lib.getExe cachixPostBuildHook;
+
     extra-substituters = [
       "https://nix-community.cachix.org"
       "https://hyprland.cachix.org"
