@@ -1,25 +1,32 @@
 {pkgs, ...}: let
-  mkCyberdropWrapper = name:
-    pkgs.writeShellApplication {
-      inherit name;
+  cyberdrop-dl = pkgs.writeShellApplication {
+    name = "cyberdrop-dl";
 
-      runtimeInputs = [
-        pkgs.uv
-        pkgs.python313
-      ];
+    runtimeInputs = [
+      pkgs.uv
+      pkgs.python312
+    ];
 
-      text = ''
-        export UV_NO_MANAGED_PYTHON=1
-        export UV_PYTHON="${pkgs.python313}/bin/python3"
+    text = ''
+      export UV_NO_MANAGED_PYTHON=1
+      export UV_PYTHON="${pkgs.python312}/bin/python3"
 
-        exec uvx \
-          --from cyberdrop-dl-patched \
-          cyberdrop-dl-patched "$@"
-      '';
-    };
+      export LD_LIBRARY_PATH="${
+        pkgs.lib.makeLibraryPath [
+          pkgs.stdenv.cc.cc.lib
+          pkgs.zlib
+          pkgs.openssl
+          pkgs.curl
+        ]
+      }''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+      exec uvx \
+        --from cyberdrop-dl-patched \
+        cyberdrop-dl-patched "$@"
+    '';
+  };
 in {
   home.packages = [
-    (mkCyberdropWrapper "cyberdrop-dl")
-    (mkCyberdropWrapper "cyberdrop-dl-patched")
+    cyberdrop-dl
   ];
 }

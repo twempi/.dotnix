@@ -3,7 +3,6 @@
     ./modules/battery.nix
     ./modules/undervolt.nix
     ./modules/graphics.nix
-    ./modules/entertainment.nix
     ./modules/minecraft.nix
     ./modules/floccus-webdav.nix
     ./modules/caddy

@@ -195,8 +195,7 @@
 
       edward-t480s = mkHome {
         hostname = "t480s";
-        profile = "entertainment";
-        extraModules = desktopHomeModules;
+        profile = "server";
       };
     };
   };
