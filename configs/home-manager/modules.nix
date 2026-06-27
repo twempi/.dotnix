@@ -37,8 +37,10 @@
     ./modules/cli/cyberdrop-dl
 
     # Shell
-    ./modules/desktop/waybar
-    ./modules/desktop/swaync
+    # Superseded by Noctalia for Hyprland, Sway, and Mango.
+    # ./modules/desktop/waybar
+    # Superseded by Noctalia for notifications and control center.
+    # ./modules/desktop/swaync
     ./modules/desktop/rofi
     ./modules/desktop/defaults
     ./modules/desktop/gnome-keyring

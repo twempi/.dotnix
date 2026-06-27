@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   wayland.windowManager.sway = {
     config = {
       bars = [];
@@ -8,15 +12,13 @@
       startup = [
         {command = "awww-daemon";}
         {command = "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp";}
-        {command = "${pkgs.waybar}/bin/waybar -c ~/.config/waybar/sway.jsonc -s ~/.config/waybar/sway.css";}
+        {command = "${pkgs.systemd}/bin/systemctl --user stop swaync.service || true";}
+        {command = "${pkgs.procps}/bin/pkill waybar || true";}
+        {command = "${config.edward.noctalia.commands.sway} --daemon";}
 
         # Set volume to 100%
         {command = "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1";}
         {command = "sleep 5 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1";}
-
-        # Clipboard history
-        {command = "${pkgs.cliphist}/bin/cliphist wipe";}
-        {command = "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store";}
 
         {
           command = "${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_DATA_DIRS PATH DBUS_SESSION_BUS_ADDRESS";

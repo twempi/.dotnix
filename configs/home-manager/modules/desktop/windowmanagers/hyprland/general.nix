@@ -13,7 +13,7 @@
     (exec "uwsm app -- ${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp")
     (exec "${pkgs.systemd}/bin/systemctl --user stop swaync.service || true")
     (exec "${pkgs.procps}/bin/pkill waybar || true")
-    (exec "uwsm app -- noctalia --daemon")
+    (exec "uwsm app -- ${config.edward.noctalia.commands.hyprland} --daemon")
     (execWithRules "uwsm app -- spotify" {workspace = "9 silent";})
     (execWithRules "uwsm app -- obsidian" {workspace = "10 silent";})
     (exec "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1")

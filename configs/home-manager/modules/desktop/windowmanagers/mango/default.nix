@@ -1,5 +1,7 @@
 {
+  config,
   inputs,
+  pkgs,
   system,
   ...
 }: let
@@ -12,7 +14,8 @@ in {
     ./env.nix
     ./windowrules.nix
     ./keybinds.nix
-    ./screenshot.nix
+    # Superseded by Noctalia screenshot actions.
+    # ./screenshot.nix
   ];
 
   stylix.targets.mango.enable = true;
@@ -25,12 +28,11 @@ in {
       awww-daemon &
       openrgb --profile ~/.config/OpenRGB/black.orp &
 
-      waybar -c ~/.config/waybar/mango.jsonc -s ~/.config/waybar/mango.css &
+      ${pkgs.systemd}/bin/systemctl --user stop swaync.service || true
+      ${pkgs.procps}/bin/pkill waybar || true
+      ${config.edward.noctalia.commands.mango} --daemon &
 
       wpctl set-volume @DEFAULT_AUDIO_SINK@ 1 &
-
-      cliphist wipe &
-      wl-paste --type text --watch cliphist store &
     '';
   };
 

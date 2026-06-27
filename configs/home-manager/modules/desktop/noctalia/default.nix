@@ -2,9 +2,29 @@
   config,
   inputs,
   lib,
+  pkgs,
   ...
 }: let
-  userSettings = builtins.fromTOML (builtins.readFile ./settings.toml);
+  inherit (pkgs.stdenv.hostPlatform) system;
+
+  noctaliaPackage = inputs.noctalia.packages.${system}.default;
+  tomlFormat = pkgs.formats.toml {};
+  jsonFormat = pkgs.formats.json {};
+  windowManagers = [
+    "hyprland"
+    "sway"
+    "mango"
+  ];
+
+  baseSettings = builtins.fromTOML (builtins.readFile ./configs/base.toml);
+  wmSettings =
+    lib.genAttrs windowManagers (
+      wm:
+        import (./configs + "/${wm}.nix") {
+          inherit config lib pkgs;
+        }
+    );
+
   colors = config.lib.stylix.colors.withHashtag;
   terminalPalette = with colors; {
     normal = {
@@ -83,22 +103,67 @@
     osd.background_opacity = config.stylix.opacity.popups;
     notification.background_opacity = config.stylix.opacity.popups;
   };
+  stylixPaletteSource =
+    jsonFormat.generate "stylix-palette.json" {
+      dark = stylixPalette;
+      light = stylixPalette;
+    };
+  settingsFor = wm:
+    lib.recursiveUpdate
+    (lib.recursiveUpdate baseSettings stylixSettings)
+    wmSettings.${wm};
+  configSourceFor = wm: let
+    rawConfig = tomlFormat.generate "noctalia-${wm}-config.toml" (settingsFor wm);
+  in
+    if config.programs.noctalia.validateConfig
+    then
+      pkgs.runCommand "noctalia-${wm}-config" {} ''
+        ${lib.getExe noctaliaPackage} config validate ${rawConfig}
+        cp ${rawConfig} $out
+      ''
+    else rawConfig;
+  wrapperFor = wm:
+    pkgs.writeShellApplication {
+      name = "noctalia-${wm}";
+      text = ''
+        exec env \
+          NOCTALIA_CONFIG_HOME="${config.xdg.configHome}/noctalia-${wm}" \
+          NOCTALIA_STATE_HOME="${config.xdg.stateHome}/noctalia-${wm}" \
+          NOCTALIA_DATA_HOME="${config.xdg.dataHome}/noctalia-${wm}" \
+          ${lib.getExe noctaliaPackage} "$@"
+      '';
+    };
+  wrappers = lib.genAttrs windowManagers wrapperFor;
+  wrapperCommands = lib.mapAttrs (wm: package: "${package}/bin/noctalia-${wm}") wrappers;
+  configFiles =
+    lib.mkMerge (
+      map (wm: {
+        "noctalia-${wm}/noctalia/config.toml".source = configSourceFor wm;
+        "noctalia-${wm}/noctalia/palettes/stylix.json".source = stylixPaletteSource;
+      })
+      windowManagers
+    );
 in {
   imports = [
     inputs.noctalia.homeModules.default
   ];
 
-  programs.noctalia = {
-    enable = true;
-    systemd.enable = false;
+  options.edward.noctalia.commands = lib.mkOption {
+    type = lib.types.attrsOf lib.types.str;
+    default = {};
+    description = "Noctalia wrapper commands keyed by window manager.";
+  };
 
-    settings = lib.recursiveUpdate userSettings stylixSettings;
+  config = {
+    edward.noctalia.commands = wrapperCommands;
 
-    customPalettes = {
-      stylix = {
-        dark = stylixPalette;
-        light = stylixPalette;
-      };
+    programs.noctalia = {
+      enable = true;
+      systemd.enable = false;
     };
+
+    home.packages = builtins.attrValues wrappers;
+
+    xdg.configFile = configFiles;
   };
 }

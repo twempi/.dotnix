@@ -1,0 +1,127 @@
+[bar.default]
+border_width = 2.0
+center = [ "clock", "date" ]
+end = [ "tray", "bluetooth", "network", "volume", "brightness", "battery", "control-center", "notifications" ]
+font_weight = 400
+margin_edge = 4
+margin_ends = 4
+radius = 0
+start = [ "workspaces" ]
+
+[calendar]
+enabled = true
+
+    [calendar.account.personal_google]
+    type = "google"
+
+[desktop_widgets]
+enabled = false
+
+[location]
+auto_locate = true
+
+[lockscreen_widgets]
+enabled = false
+schema_version = 2
+widget_order = [ "lockscreen-login-box@DP-1" ]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 1280.0
+    cy = 1317.0
+    output = "DP-1"
+    rotation = 0.0
+    type = "login_box"
+
+[shell]
+corner_radius_scale = 0.5000000074505806
+
+    [shell.animation]
+    speed = 3.0
+
+    [shell.panel]
+    control_center_placement = "floating"
+    session_placement = "centered"
+    wallpaper_placement = "centered"
+
+    [shell.screenshot]
+    directory = "/home/edward/Pictures/Screenshots"
+    filename_pattern = "Screenshot-%Y-%m-%d_%H:%M:%S"
+
+    [[shell.session.actions]]
+    action = "lock"
+    enabled = true
+    shortcut = "l"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "logout"
+    enabled = true
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "suspend"
+    enabled = true
+    shortcut = "s"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "reboot"
+    enabled = true
+    shortcut = "r"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "shutdown"
+    enabled = true
+    shortcut = "p"
+    variant = "destructive"
+
+[theme.templates]
+enable_builtin_templates = false
+enable_community_templates = false
+
+[wallpaper]
+directory = "/home/edward/Pictures/wallpapers"
+
+    [wallpaper.default]
+    path = "/home/edward/Pictures/wallpapers/9.png"
+
+    [wallpaper.last]
+    path = "/home/edward/Pictures/wallpapers/9.png"
+
+    [wallpaper.monitors.DP-1]
+    path = "/home/edward/Pictures/wallpapers/9.png"
+
+[weather]
+unit = "imperial"
+
+[widget.bluetooth]
+show_label = true
+
+[widget.bongocat]
+script = "scripts/bongocat.lua"
+type = "scripted"
+
+[widget.control-center]
+glyph = "confucius"
+
+[widget.network]
+show_label = false
+
+[widget.notifications]
+hide_when_no_unread = true
+
+[widget.tray]
+hidden = [ "blueman", "nm-applet", "pasystray" ]
+
+[widget.workspaces]
+hide_when_empty = true
+minimal = true
+scale = 1.05

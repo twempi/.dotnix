@@ -1,8 +1,11 @@
 {
+  config,
   pkgs,
   lib,
   ...
-}: {
+}: let
+  noctalia = "${config.edward.noctalia.commands.sway} msg";
+in {
   wayland.windowManager.sway.config = {
     modifier = "Mod4";
     terminal = "${pkgs.foot}/bin/foot";
@@ -34,19 +37,19 @@
       "Mod4+O" = "exec ${pkgs.obsidian}/bin/obsidian";
       "Mod4+N" = "exec ${pkgs.foot}/bin/foot -e nvim";
       "Mod4+Shift+B" = "exec ${pkgs.foot}/bin/foot -e bluetui";
-      "Mod4+Shift+N" = "exec ${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
-      "Mod4+Escape" = "exec rofi-power";
-      "Mod4+Shift+W" = "exec rofi-wallpaper";
+      "Mod4+Shift+N" = "exec ${noctalia} panel-toggle control-center";
+      "Mod4+Escape" = "exec ${noctalia} panel-toggle session";
+      "Mod4+Shift+W" = "exec ${noctalia} panel-toggle wallpaper";
       "Mod4+Shift+R" = "exec ${./reload.sh}";
 
       # Screenshots
-      "Mod4+Shift+S" = "exec way-screenshot area";
-      "Print" = "exec way-screenshot screen";
+      "Mod4+Shift+S" = "exec ${noctalia} screenshot-region";
+      "Print" = "exec ${noctalia} screenshot-fullscreen";
 
       # Launcher / emoji / clipboard
-      "Mod4+Space" = "exec rofi-launcher";
-      "Mod4+U" = "exec rofi-emoji";
-      "Mod4+Y" = "exec rofi-clipboard";
+      "Mod4+Space" = "exec ${noctalia} panel-toggle launcher";
+      "Mod4+U" = "exec ${noctalia} panel-toggle launcher /emo";
+      "Mod4+Y" = "exec ${noctalia} panel-toggle clipboard";
 
       # Move focus
       "Mod4+H" = "focus left";
@@ -91,18 +94,18 @@
       "Mod4+Shift+K" = "resize grow height 50 px";
 
       # Multimedia keys
-      "XF86AudioLowerVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";
-      "XF86AudioRaiseVolume" = "exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
-      "XF86AudioMute" = "exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-      "XF86AudioMicMute" = "exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
-      "XF86MonBrightnessUp" = lib.mkDefault "exec brightnessctl set 5%+";
-      "XF86MonBrightnessDown" = lib.mkDefault "exec brightnessctl set 5%-";
+      "XF86AudioLowerVolume" = "exec ${noctalia} volume-down";
+      "XF86AudioRaiseVolume" = "exec ${noctalia} volume-up";
+      "XF86AudioMute" = "exec ${noctalia} volume-mute";
+      "XF86AudioMicMute" = "exec ${noctalia} mic-mute";
+      "XF86MonBrightnessUp" = lib.mkDefault "exec ${noctalia} brightness-up";
+      "XF86MonBrightnessDown" = lib.mkDefault "exec ${noctalia} brightness-down";
 
       # Media keys
-      "XF86AudioNext" = "exec playerctl next";
-      "XF86AudioPause" = "exec playerctl play-pause";
-      "XF86AudioPlay" = "exec playerctl play-pause";
-      "XF86AudioPrev" = "exec playerctl previous";
+      "XF86AudioNext" = "exec ${noctalia} media next";
+      "XF86AudioPause" = "exec ${noctalia} media toggle";
+      "XF86AudioPlay" = "exec ${noctalia} media toggle";
+      "XF86AudioPrev" = "exec ${noctalia} media previous";
     };
   };
 }

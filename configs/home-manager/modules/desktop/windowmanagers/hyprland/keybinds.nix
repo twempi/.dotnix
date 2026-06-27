@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   ...
@@ -6,7 +7,7 @@
   lua = lib.generators.mkLuaInline;
   toLua = lib.generators.toLua {};
   uwsmApp = "uwsm app --";
-  noctalia = "noctalia msg";
+  noctalia = "${config.edward.noctalia.commands.hyprland} msg";
 
   modKey = key: lua ''mod .. " + ${key}"'';
   execCmd = command: lua "hl.dsp.exec_cmd(${toLua command})";

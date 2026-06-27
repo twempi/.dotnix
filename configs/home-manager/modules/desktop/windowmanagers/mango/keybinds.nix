@@ -1,7 +1,11 @@
-{pkgs, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
   terminal = "${pkgs.kitty}/bin/kitty";
   colorPicker = "${pkgs.hyprpicker}/bin/hyprpicker -a";
-  notiCenter = "${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
+  noctalia = "${config.edward.noctalia.commands.mango} msg";
 
   browser = "helium";
   explorer1 = "${terminal} -e ${pkgs.yazi}/bin/yazi";
@@ -46,19 +50,19 @@ in {
         "SUPER,O,spawn,${notes}"
         "SUPER,N,spawn,${editor}"
         "SUPER+SHIFT,B,spawn,${bluetooth}"
-        "SUPER+SHIFT,N,spawn,${notiCenter}"
-        "SUPER,Escape,spawn,rofi-power"
+        "SUPER+SHIFT,N,spawn,${noctalia} panel-toggle control-center"
+        "SUPER,Escape,spawn,${noctalia} panel-toggle session"
 
         "SUPER,Z,spawn,${colorPicker}"
-        "SUPER+SHIFT,W,spawn,rofi-wallpaper"
+        "SUPER+SHIFT,W,spawn,${noctalia} panel-toggle wallpaper"
         "SUPER+SHIFT,R,spawn,bash ${./reload.sh}"
 
-        "SUPER+SHIFT,S,spawn,way-screenshot area"
-        "NONE,Print,spawn,way-screenshot screen"
+        "SUPER+SHIFT,S,spawn,${noctalia} screenshot-region"
+        "NONE,Print,spawn,${noctalia} screenshot-fullscreen"
 
-        "SUPER,Space,spawn,rofi-launcher"
-        "SUPER,U,spawn,rofi-emoji"
-        "SUPER,Y,spawn,rofi-clipboard"
+        "SUPER,Space,spawn,${noctalia} panel-toggle launcher"
+        "SUPER,U,spawn,${noctalia} panel-toggle launcher /emo"
+        "SUPER,Y,spawn,${noctalia} panel-toggle clipboard"
 
         "SUPER,H,focusdir,left"
         "SUPER,L,focusdir,right"
@@ -75,17 +79,17 @@ in {
         "SUPER+SHIFT,J,resizewin,0,-50"
         "SUPER+SHIFT,K,resizewin,0,+50"
 
-        "NONE,XF86AudioLowerVolume,spawn,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-        "NONE,XF86AudioRaiseVolume,spawn,${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-        "NONE,XF86AudioMute,spawn,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-        "NONE,XF86AudioMicMute,spawn,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-        "NONE,XF86MonBrightnessUp,spawn,${pkgs.brightnessctl}/bin/brightnessctl set 5%+"
-        "NONE,XF86MonBrightnessDown,spawn,${pkgs.brightnessctl}/bin/brightnessctl set 5%-"
+        "NONE,XF86AudioLowerVolume,spawn,${noctalia} volume-down"
+        "NONE,XF86AudioRaiseVolume,spawn,${noctalia} volume-up"
+        "NONE,XF86AudioMute,spawn,${noctalia} volume-mute"
+        "NONE,XF86AudioMicMute,spawn,${noctalia} mic-mute"
+        "NONE,XF86MonBrightnessUp,spawn,${noctalia} brightness-up"
+        "NONE,XF86MonBrightnessDown,spawn,${noctalia} brightness-down"
 
-        "NONE,XF86AudioNext,spawn,${pkgs.playerctl}/bin/playerctl next"
-        "NONE,XF86AudioPause,spawn,${pkgs.playerctl}/bin/playerctl play-pause"
-        "NONE,XF86AudioPlay,spawn,${pkgs.playerctl}/bin/playerctl play-pause"
-        "NONE,XF86AudioPrev,spawn,${pkgs.playerctl}/bin/playerctl previous"
+        "NONE,XF86AudioNext,spawn,${noctalia} media next"
+        "NONE,XF86AudioPause,spawn,${noctalia} media toggle"
+        "NONE,XF86AudioPlay,spawn,${noctalia} media toggle"
+        "NONE,XF86AudioPrev,spawn,${noctalia} media previous"
       ]
       ++ builtins.concatLists (map tagBind tagNumbers);
     # ++ keycodeTagBinds;
