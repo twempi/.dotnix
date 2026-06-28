@@ -1,9 +1,5 @@
-{pkgs, ...}: {
+{...}: {
   # Docker
-  environment.systemPackages = with pkgs; [
-    docker-compose
-  ];
-
   virtualisation.docker = {
     enable = false;
     rootless = {

@@ -5,6 +5,7 @@
     ./modules/editors/latex
     ./modules/editors/typst
     ./modules/editors/neovim
+    ./modules/editors/vscodium
 
     # Themes
     ./modules/theme/matugen
@@ -23,6 +24,13 @@
     ./modules/terminals/foot
 
     # Cli
+    ./modules/cli/core-packages
+    ./modules/cli/dev
+    ./modules/cli/docker
+    ./modules/cli/media-tools
+    ./modules/cli/ios
+    ./modules/cli/ani-cli
+    ./modules/cli/codex
     ./modules/cli/tmux
     ./modules/cli/fish
     ./modules/cli/ssh
@@ -36,7 +44,12 @@
     ./modules/cli/gowall
     ./modules/cli/cyberdrop-dl
 
-    # Shell
+    # Desktop
+    ./modules/desktop/audio
+    ./modules/desktop/wayland-tools
+    ./modules/desktop/gnome-apps
+    ./modules/desktop/networking
+    ./modules/desktop/bluetooth
     # Superseded by Noctalia for Hyprland, Sway, and Mango.
     # ./modules/desktop/waybar
     # Superseded by Noctalia for notifications and control center.
@@ -48,6 +61,25 @@
     ./modules/desktop/noctalia
 
     # Apps
+    ./modules/apps/obs-studio
+    ./modules/apps/pavucontrol
+    ./modules/apps/bleachbit
+    ./modules/apps/gimp
+    ./modules/apps/qbittorrent
+    ./modules/apps/zoom
+    ./modules/apps/gnome-clocks
+    ./modules/apps/gearlever
+    ./modules/apps/iloader
+    ./modules/apps/geogebra
+    ./modules/apps/telegram
+    ./modules/apps/blueman
+    ./modules/apps/pdfarranger
+    ./modules/apps/libreoffice
+    ./modules/apps/ltspice
+    ./modules/apps/minecraft
+    ./modules/apps/localsend
+    ./modules/apps/seahorse
+    ./modules/apps/switcheroo
     ./modules/apps/nixcord
     ./modules/apps/spicetify
     ./modules/apps/mpv

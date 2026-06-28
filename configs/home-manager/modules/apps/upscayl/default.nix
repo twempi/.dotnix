@@ -1,4 +1,8 @@
-{
+{pkgs, ...}: {
+  home.packages = [
+    pkgs.upscayl
+  ];
+
   home.file.".local/share/applications/upscayl.desktop".text = ''
     [Desktop Entry]
     Name=Upscayl

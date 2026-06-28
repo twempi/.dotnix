@@ -108,9 +108,15 @@
   }: let
     system = "x86_64-linux";
 
+    localPackageOverlay = final: prev: {
+      iloader = prev.callPackage ./configs/system/pkgs/iloader/default.nix {};
+      handy = prev.callPackage ./configs/system/pkgs/handy/default.nix {};
+    };
+
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
+      overlays = [localPackageOverlay];
     };
 
     pkgsStable = import inputs.nixpkgs-stable {
@@ -128,6 +134,9 @@
       home-manager.nixosModules.home-manager
       inputs.sops-nix.nixosModules.sops
       inputs.stylix.nixosModules.stylix
+      ({...}: {
+        nixpkgs.overlays = [localPackageOverlay];
+      })
     ];
 
     mkNixosHost = hostname: extraModules:

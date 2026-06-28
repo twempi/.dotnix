@@ -13,13 +13,6 @@
     wireplumber.enable = true;
   };
 
-  environment.systemPackages = with pkgs; [
-    paprefs
-    pasystray
-    playerctl
-    reaper
-  ];
-
   hardware = {
     bluetooth = {
       enable = true;

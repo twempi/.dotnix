@@ -25,14 +25,14 @@ in {
     package = mangoPackage;
 
     autostart_sh = ''
-      awww-daemon &
-      openrgb --profile ~/.config/OpenRGB/black.orp &
+      ${pkgs.awww}/bin/awww-daemon &
+      ${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp &
 
       ${pkgs.systemd}/bin/systemctl --user stop swaync.service || true
       ${pkgs.procps}/bin/pkill waybar || true
       ${config.edward.noctalia.commands.mango} --daemon &
 
-      wpctl set-volume @DEFAULT_AUDIO_SINK@ 1 &
+      ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1 &
     '';
   };
 

@@ -25,6 +25,10 @@ in {
   };
 
   config = {
+    home.packages = [
+      pkgs.obsidian
+    ];
+
     home.activation.obsidianStylixMinimalCss = lib.mkIf cfg.enable (lib.hm.dag.entryAfter ["writeBoundary"] ''
       obsidian_dir=${lib.escapeShellArg "${cfg.vaultPath}/.obsidian"}
       snippets_dir="$obsidian_dir/snippets"

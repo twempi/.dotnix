@@ -2,6 +2,7 @@
   inputs,
   system,
   hostname,
+  pkgsStable,
   lib,
   ...
 }: {
@@ -11,7 +12,7 @@
     backupFileExtension = "hm-backup";
 
     extraSpecialArgs = {
-      inherit inputs system hostname;
+      inherit inputs system hostname pkgsStable;
     };
 
     users.edward = {

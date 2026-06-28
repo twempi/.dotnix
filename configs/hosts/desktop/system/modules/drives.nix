@@ -1,5 +1,9 @@
-{
+{pkgs, ...}: {
   # Mounting additional drives
+  environment.systemPackages = [
+    pkgs.ntfs3g
+  ];
+
   fileSystems = let
     ntfsOptions = [
       "rw"

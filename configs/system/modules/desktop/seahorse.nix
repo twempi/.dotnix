@@ -1,3 +1,6 @@
-{pkgs, lib, config, ...}: {
-    programs.seahorse.enable = true;
-  }
+{lib, pkgs, ...}: {
+  programs.ssh.askPassword = lib.mkDefault "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
+  services.dbus.packages = [
+    pkgs.seahorse
+  ];
+}

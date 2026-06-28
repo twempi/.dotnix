@@ -36,7 +36,7 @@ in {
       "Mod4+M" = "exec spotify";
       "Mod4+O" = "exec ${pkgs.obsidian}/bin/obsidian";
       "Mod4+N" = "exec ${pkgs.foot}/bin/foot -e nvim";
-      "Mod4+Shift+B" = "exec ${pkgs.foot}/bin/foot -e bluetui";
+      "Mod4+Shift+B" = "exec ${pkgs.foot}/bin/foot -e ${pkgs.bluetui}/bin/bluetui";
       "Mod4+Shift+N" = "exec ${noctalia} panel-toggle control-center";
       "Mod4+Escape" = "exec ${noctalia} panel-toggle session";
       "Mod4+Shift+W" = "exec ${noctalia} panel-toggle wallpaper";

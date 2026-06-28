@@ -74,6 +74,8 @@ in {
   '';
 
   home.packages = [
+    pkgs.rofi
+
     /*
       Superseded by Noctalia shell panels.
     (pkgs.writeShellApplication {

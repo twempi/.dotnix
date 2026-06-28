@@ -9,11 +9,11 @@
   exec = command: "  hl.exec_cmd(${toLua command})";
   execWithRules = command: rules: "  hl.exec_cmd(${toLua command}, ${toLua rules})";
   autostart = [
-    (exec "uwsm app -- awww-daemon")
+    (exec "uwsm app -- ${pkgs.awww}/bin/awww-daemon")
     (exec "uwsm app -- ${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp")
     (exec "uwsm app -- ${pkgs.waybar}/bin/waybar -c ~/.config/waybar/hyprland.jsonc -s ~/.config/waybar/hyprland.css")
     (execWithRules "uwsm app -- spotify" {workspace = "9 silent";})
-    (execWithRules "uwsm app -- obsidian" {workspace = "10 silent";})
+    (execWithRules "uwsm app -- ${pkgs.obsidian}/bin/obsidian" {workspace = "10 silent";})
     (exec "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1")
     (exec "sleep 5 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1")
     (exec "${pkgs.cliphist}/bin/cliphist wipe")

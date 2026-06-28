@@ -1,6 +1,6 @@
 {
   imports = [
-    ../modules/core/packages.nix
+    ../modules/core/fonts.nix
     ../modules/core/home-manager.nix
     ../modules/core/bootloader.nix
     ../modules/core/shell.nix

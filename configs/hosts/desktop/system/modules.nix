@@ -8,6 +8,5 @@
     ./modules/packages.nix
     ./modules/polkit.nix
     ./modules/services.nix
-    # ./modules/corecycler.nix
   ];
 }
