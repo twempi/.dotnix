@@ -109,9 +109,15 @@
       light = stylixPalette;
     };
   settingsFor = wm:
-    lib.recursiveUpdate
-    (lib.recursiveUpdate baseSettings stylixSettings)
-    wmSettings.${wm};
+    let
+      settings =
+        lib.recursiveUpdate
+        (lib.recursiveUpdate baseSettings stylixSettings)
+        wmSettings.${wm};
+    in
+      lib.recursiveUpdate settings {
+        shell.session.actions = (settings.shell.session.actions or []) ++ config.edward.noctalia.extraSessionActions;
+      };
   configSourceFor = wm: let
     rawConfig = tomlFormat.generate "noctalia-${wm}-config.toml" (settingsFor wm);
   in
@@ -152,6 +158,12 @@ in {
     type = lib.types.attrsOf lib.types.str;
     default = {};
     description = "Noctalia wrapper commands keyed by window manager.";
+  };
+
+  options.edward.noctalia.extraSessionActions = lib.mkOption {
+    type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
+    default = [];
+    description = "Extra Noctalia session panel actions appended to each window-manager config.";
   };
 
   config = {

@@ -54,7 +54,8 @@
     # ./modules/desktop/waybar
     # Superseded by Noctalia for notifications and control center.
     # ./modules/desktop/swaync
-    ./modules/desktop/rofi
+    # Superseded by Noctalia for launcher, wallpaper, power, clipboard, emoji, and GPU picker.
+    # ./modules/desktop/rofi
     ./modules/desktop/defaults
     ./modules/desktop/gnome-keyring
     # ./modules/desktop/dms

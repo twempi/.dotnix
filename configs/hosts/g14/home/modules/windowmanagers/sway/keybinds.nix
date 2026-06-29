@@ -1,4 +1,9 @@
-{pkgs, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
+  sessionPanel = "${config.edward.noctalia.commands.sway} msg panel-toggle session";
   asusProfileNotify = pkgs.writeShellScriptBin "asus-profile-notify" ''
     #!${pkgs.bash}/bin/bash
 
@@ -24,7 +29,7 @@ in {
   wayland.windowManager.sway.config.keybindings = {
     "XF86KbdBrightnessUp" = "exec asusctl leds next";
     "XF86KbdBrightnessDown" = "exec asusctl leds prev";
-    "Mod4+XF86Launch1" = "exec rofi-gpu";
+    "Mod4+XF86Launch1" = "exec ${sessionPanel}";
     "XF86Launch4" = "exec ${pkgs.libnotify}/bin/notify-send 'ASUS profile' 'keybind test'";
   };
 }

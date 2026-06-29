@@ -6,10 +6,6 @@
       vulkan-tools
     ];
 
-    sessionVariables = {
-      LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
-    };
-
     file.".config/gowall/config.yml".text = ''
       themes:
         - name: "black to white"

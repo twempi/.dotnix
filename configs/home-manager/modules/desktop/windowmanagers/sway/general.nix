@@ -10,10 +10,7 @@
       defaultWorkspace = "workspace 1";
 
       startup = [
-        {command = "${pkgs.awww}/bin/awww-daemon";}
         {command = "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp";}
-        {command = "${pkgs.systemd}/bin/systemctl --user stop swaync.service || true";}
-        {command = "${pkgs.procps}/bin/pkill waybar || true";}
         {command = "${config.edward.noctalia.commands.sway} --daemon";}
 
         # Set volume to 100%

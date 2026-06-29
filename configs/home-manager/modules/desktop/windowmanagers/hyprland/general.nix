@@ -9,10 +9,7 @@
   exec = command: "  hl.exec_cmd(${toLua command})";
   execWithRules = command: rules: "  hl.exec_cmd(${toLua command}, ${toLua rules})";
   autostart = [
-    (exec "uwsm app -- ${pkgs.awww}/bin/awww-daemon")
     (exec "uwsm app -- ${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp")
-    (exec "${pkgs.systemd}/bin/systemctl --user stop swaync.service || true")
-    (exec "${pkgs.procps}/bin/pkill waybar || true")
     (exec "uwsm app -- ${config.edward.noctalia.commands.hyprland} --daemon")
     (execWithRules "uwsm app -- spotify" {workspace = "9 silent";})
     (execWithRules "uwsm app -- ${pkgs.obsidian}/bin/obsidian" {workspace = "10 silent";})

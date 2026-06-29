@@ -1,12 +1,5 @@
 {
   nix = {
-    gc = {
-      # Perform garbage collection weekly to maintain low disk usage
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
-
     settings = {
       # Optimize storage
       # You can also manually optimize the store via:

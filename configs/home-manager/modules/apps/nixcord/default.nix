@@ -175,7 +175,6 @@ in {
         experiments.enable = true;
         callTimer.enable = true;
         fakeNitro.enable = true;
-        friendsSince.enable = true;
         imageZoom = {
           enable = true;
           invertScroll = true;
@@ -188,7 +187,7 @@ in {
         pictureInPicture.enable = true;
         whoReacted.enable = true;
         biggerStreamPreview.enable = true;
-        ClearURLs.enable = true;
+        clearUrls.enable = true;
         fixImagesQuality.enable = true;
         fixSpotifyEmbeds = {
           enable = true;
