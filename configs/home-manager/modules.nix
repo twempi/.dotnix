@@ -96,5 +96,6 @@
     ./modules/apps/obsidian
     ./modules/apps/rars
     ./modules/apps/blanket
+    ./modules/apps/mcomix
   ];
 }
