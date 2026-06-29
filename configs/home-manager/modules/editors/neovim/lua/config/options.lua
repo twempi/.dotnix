@@ -22,9 +22,18 @@ vim.opt.cpoptions:append("I")
 vim.opt.expandtab = true
 vim.opt.cursorline = true
 
-if vim.env.SSH_CONNECTION then
-	vim.g.clipboard = "osc52"
-end
+vim.g.clipboard = {
+	name = "dotnix-system",
+	copy = {
+		["+"] = { "dotnix-copy" },
+		["*"] = { "dotnix-copy" },
+	},
+	paste = {
+		["+"] = { "dotnix-paste" },
+		["*"] = { "dotnix-paste" },
+	},
+	cache_enabled = 0,
+}
 
 vim.opt.clipboard = "unnamedplus"
 

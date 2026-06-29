@@ -95,6 +95,11 @@
       id = "cnjifjpddelmedmihgijeibhnjfabmlf";
       hash = "sha256-4BLH0QvZj3yL4tqv/WBdZKij1Vye4p26oy4b9oB25/M=";
     }
+
+    {
+      id = "bgpnjdahpmkaflfpbkdplndklnmghklp";
+      hash = lib.fakeHash;
+    }
   ];
 
   fetchExtension = {

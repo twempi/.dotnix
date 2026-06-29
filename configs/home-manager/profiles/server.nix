@@ -7,6 +7,7 @@
     ../modules/cli/btop
     ../modules/cli/fish
     ../modules/cli/ssh
+    ../modules/cli/clipboard
     ../modules/cli/tmux
     ../modules/cli/git/server.nix
     ../modules/theme/ohmyposh

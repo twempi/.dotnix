@@ -36,6 +36,8 @@
     config.wrappers.neovim.nvim-lib.mkPlugin
     "luasnip-latex-snippets"
     inputs.luasnip-latex-snippets-nvim;
+
+  dotnixClipboard = pkgs.callPackage ../../cli/clipboard/package.nix {};
 in {
   imports = [
     inputs.nixWrapperModules.homeModules.neovim
@@ -61,6 +63,10 @@ in {
       nodejs
       fd
       tree-sitter
+      dotnixClipboard
+      wl-clipboard
+      xclip
+      xsel
 
       # Lua
       lua-language-server

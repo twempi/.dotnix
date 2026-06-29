@@ -21,6 +21,9 @@
       # startup / launch behavior
       gtk-single-instance = true;
       quit-after-last-window-closed = false;
+      clipboard-read = "ask";
+      clipboard-write = "allow";
+      copy-on-select = false;
 
       keybind = [
         "ctrl+shift+k=new_split:up"

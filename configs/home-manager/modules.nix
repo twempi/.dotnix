@@ -31,6 +31,7 @@
     ./modules/cli/ios
     ./modules/cli/ani-cli
     ./modules/cli/codex
+    ./modules/cli/clipboard
     ./modules/cli/tmux
     ./modules/cli/fish
     ./modules/cli/ssh

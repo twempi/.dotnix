@@ -1,4 +1,6 @@
-{
+{pkgs, ...}: let
+  dotnixClipboard = pkgs.callPackage ../clipboard/package.nix {};
+in {
   stylix.targets.tmux.enable = true;
 
   programs.tmux = {
@@ -23,7 +25,8 @@
     resizeAmount = 1;
 
     extraConfig = ''
-      set -as terminal-features ",*:RGB"
+      set -as terminal-features ",*:RGB,*:clipboard"
+      set -g set-clipboard on
 
       # Status bar
       set-option -g status-position top
@@ -31,6 +34,8 @@
       # Simple binds
       bind-key q kill-pane
       bind-key v copy-mode
+      bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "${dotnixClipboard}/bin/dotnix-copy"
+      bind-key -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel "${dotnixClipboard}/bin/dotnix-copy"
 
       # Rename window/session
       bind-key r command-prompt -I "#W" "rename-window -- '%%'"

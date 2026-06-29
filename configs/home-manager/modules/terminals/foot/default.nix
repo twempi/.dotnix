@@ -19,6 +19,7 @@
     settings = {
       main = {
         pad = "10x10";
+        selection-target = "none";
       };
 
       scrollback = {
@@ -37,6 +38,10 @@
 
       csd = {
         preferred = "none";
+      };
+
+      security = {
+        osc52 = "copy-enabled";
       };
     };
   };
