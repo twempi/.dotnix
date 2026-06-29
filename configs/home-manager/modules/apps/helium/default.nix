@@ -98,7 +98,7 @@
 
     {
       id = "bgpnjdahpmkaflfpbkdplndklnmghklp";
-      hash = lib.fakeHash;
+      hash = "sha256-L4ts/TG52HaHah9ZZBnVKjT6+h8tUY9C/eYeZcx6cMM=";
     }
   ];
 
