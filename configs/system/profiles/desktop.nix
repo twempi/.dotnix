@@ -22,6 +22,7 @@
     ../modules/desktop/chromium.nix
     ../modules/desktop/seahorse.nix
     ../modules/desktop/login-manager.nix
+    ../modules/desktop/printing.nix
     ../modules/desktop/sway.nix
     ../modules/desktop/hyprland.nix
     ../modules/desktop/mango.nix
