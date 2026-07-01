@@ -75,14 +75,24 @@
     };
   configSourceFor = wm: let
     rawConfig = ./configs + "/${wm}.toml";
+    extraConfig = config.edward.noctalia.extraConfigText.${wm} or "";
+    mergedConfig =
+      if extraConfig == ""
+      then rawConfig
+      else
+        pkgs.writeText "noctalia-${wm}.toml" ''
+          ${builtins.readFile rawConfig}
+
+          ${extraConfig}
+        '';
   in
     if config.programs.noctalia.validateConfig
     then
       pkgs.runCommand "noctalia-${wm}-config" {} ''
-        ${lib.getExe noctaliaPackage} config validate ${rawConfig}
-        cp ${rawConfig} $out
+        ${lib.getExe noctaliaPackage} config validate ${mergedConfig}
+        cp ${mergedConfig} $out
       ''
-    else rawConfig;
+    else mergedConfig;
   wrapperFor = wm:
     pkgs.writeShellApplication {
       name = "noctalia-${wm}";
@@ -113,6 +123,12 @@ in {
     type = lib.types.attrsOf lib.types.str;
     default = {};
     description = "Noctalia wrapper commands keyed by window manager.";
+  };
+
+  options.edward.noctalia.extraConfigText = lib.mkOption {
+    type = lib.types.attrsOf lib.types.lines;
+    default = {};
+    description = "Extra Noctalia TOML appended to wrapper configs by window manager.";
   };
 
   config = {

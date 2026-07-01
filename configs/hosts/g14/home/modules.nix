@@ -5,6 +5,7 @@
     ./modules/windowmanagers/mango
     ./modules/refresh-rate
     ./modules/clamshell
+    ./modules/noctalia-gpu
     ./modules/fish
     ./modules/fastfetch
   ];
