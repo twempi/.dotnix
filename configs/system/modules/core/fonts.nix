@@ -12,7 +12,6 @@
       fira-code-symbols
       liberation_ttf
       mplus-outline-fonts.githubRelease
-      mplus-outline-fonts.githubRelease
       noto-fonts
       noto-fonts-cjk-sans
       noto-fonts-color-emoji

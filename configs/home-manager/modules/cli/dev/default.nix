@@ -22,6 +22,10 @@
       exec ${pkgsStable.python3}/bin/python3 "$@"
     '';
   };
+
+  pipxStable = pkgsStable.pipx.overridePythonAttrs (_: {
+    doCheck = false;
+  });
 in {
   home.packages = [
     pkgs.gcc
@@ -29,7 +33,7 @@ in {
     pkgs.zig
     pkgs.lua
     pythonStable
-    pkgsStable.pipx
+    pipxStable
     (pkgs.python313.withPackages (ps: [
       ps.pywal
       ps.watchdog

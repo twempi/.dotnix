@@ -1,5 +1,5 @@
 {pkgs, ...}: {
-  homePackages = with pkgs; [sioyek];
+  home.packages = with pkgs; [sioyek];
 
   stylix.targets.sioyek = {
     enable = true;

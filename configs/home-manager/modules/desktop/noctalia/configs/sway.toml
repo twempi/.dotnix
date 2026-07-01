@@ -1,0 +1,207 @@
+[bar.default]
+background_opacity = 1.0
+border_width = 0
+capsule = false
+capsule_opacity = 1.0
+center = []
+end = ["tray", "network", "disk", "cpu", "brightness", "ram", "volume", "battery", "clock", "notifications"]
+font_family = "IosevkaTerm Nerd Font Propo"
+font_weight = 900
+margin_edge = 0
+margin_ends = 0
+padding = 6
+radius = 0
+shadow = false
+start = ["workspaces"]
+thickness = 24
+widget_spacing = 4
+
+[calendar]
+enabled = true
+
+[calendar.account.personal_google]
+type = "google"
+
+[desktop_widgets]
+enabled = false
+
+[dock]
+background_opacity = 1.0
+
+[location]
+auto_locate = true
+
+[lockscreen_widgets]
+enabled = false
+schema_version = 2
+widget_order = ["lockscreen-login-box@DP-1"]
+
+[lockscreen_widgets.grid]
+cell_size = 16
+major_interval = 4
+visible = true
+
+[lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+box_height = 0.0
+box_width = 0.0
+cx = 1280.0
+cy = 1317.0
+output = "DP-1"
+rotation = 0.0
+type = "login_box"
+
+[notification]
+background_opacity = 1.0
+
+[osd]
+background_opacity = 1.0
+
+[shell]
+corner_radius_scale = 0.5000000074505806
+font_family = "DejaVu Sans"
+launch_apps_as_systemd_services = true
+settings_show_advanced = true
+
+[shell.animation]
+speed = 3.0
+
+[shell.panel]
+control_center_placement = "floating"
+session_placement = "centered"
+wallpaper_placement = "centered"
+
+[shell.screenshot]
+directory = "/home/edward/Pictures/Screenshots"
+filename_pattern = "Screenshot-%Y-%m-%d_%H:%M:%S"
+
+[[shell.session.actions]]
+action = "lock"
+enabled = true
+shortcut = "l"
+variant = "default"
+
+[[shell.session.actions]]
+action = "logout"
+enabled = true
+variant = "default"
+
+[[shell.session.actions]]
+action = "suspend"
+enabled = true
+shortcut = "s"
+variant = "default"
+
+[[shell.session.actions]]
+action = "reboot"
+enabled = true
+shortcut = "r"
+variant = "default"
+
+[[shell.session.actions]]
+action = "shutdown"
+enabled = true
+shortcut = "p"
+variant = "destructive"
+
+[theme]
+custom_palette = "stylix"
+mode = "dark"
+source = "custom"
+
+[theme.templates]
+enable_builtin_templates = false
+enable_community_templates = false
+
+[wallpaper]
+directory = "/home/edward/Pictures/wallpapers"
+
+[wallpaper.default]
+path = "/home/edward/Pictures/wallpapers/9.png"
+
+[wallpaper.last]
+path = "/home/edward/Pictures/wallpapers/9.png"
+
+[wallpaper.monitors.DP-1]
+path = "/home/edward/Pictures/wallpapers/9.png"
+
+[weather]
+unit = "imperial"
+
+[widget.battery]
+display_mode = "glyph"
+show_label = true
+warning_color = "error"
+
+[widget.bluetooth]
+show_label = true
+
+[widget.bongocat]
+script = "scripts/bongocat.lua"
+type = "scripted"
+
+[widget.brightness]
+scroll_step = 5
+show_label = true
+
+[widget.clock]
+format = "{:%a %d | %I:%M %p}"
+
+[widget.control-center]
+glyph = "confucius"
+
+[widget.cpu]
+display = "text"
+glyph = "cpu"
+show_label = true
+stat = "cpu_usage"
+type = "sysmon"
+
+[widget.disk]
+display = "text"
+glyph = "server"
+path = "/"
+show_label = true
+stat = "disk_pct"
+type = "sysmon"
+
+[widget.network]
+display = "text"
+glyph = "download"
+show_label = true
+stat = "net_rx"
+type = "sysmon"
+
+[widget.notifications]
+hide_when_no_unread = true
+
+[widget.ram]
+display = "text"
+glyph = "memory"
+show_label = true
+stat = "ram_used"
+type = "sysmon"
+
+[widget.tray]
+hidden = ["blueman", "nm-applet", "pasystray"]
+
+[widget.volume]
+device = "output"
+mute_color = "error"
+scroll_step = 5
+show_label = true
+type = "volume"
+
+[widget.workspaces]
+active_pill_size = 1.3
+display = "id"
+empty_color = "outline"
+focused_color = "primary"
+hide_when_empty = false
+inactive_pill_size = 1.0
+labels_only_when_occupied = false
+max_label_chars = 2
+minimal = false
+occupied_color = "secondary"
+pill_scale = 0.65
+scale = 1.05
+type = "workspaces"

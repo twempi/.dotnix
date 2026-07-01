@@ -1,11 +1,7 @@
 {
   pkgs,
-  inputs,
   ...
 }: {
-  imports = [
-    inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402
-  ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   environment.systemPackages = with pkgs; [ryzenadj];

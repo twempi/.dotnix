@@ -31,6 +31,7 @@
   in {
     type = "app";
     program = "${package}/bin/update-${name}";
+    meta.description = "Update the local ${name} package definition";
   };
 
   iloader = pkgs.callPackage ./iloader {};

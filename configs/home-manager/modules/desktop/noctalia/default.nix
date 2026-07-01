@@ -8,22 +8,12 @@
   inherit (pkgs.stdenv.hostPlatform) system;
 
   noctaliaPackage = inputs.noctalia.packages.${system}.default;
-  tomlFormat = pkgs.formats.toml {};
   jsonFormat = pkgs.formats.json {};
   windowManagers = [
     "hyprland"
     "sway"
     "mango"
   ];
-
-  baseSettings = builtins.fromTOML (builtins.readFile ./configs/base.toml);
-  wmSettings =
-    lib.genAttrs windowManagers (
-      wm:
-        import (./configs + "/${wm}.nix") {
-          inherit config lib pkgs;
-        }
-    );
 
   colors = config.lib.stylix.colors.withHashtag;
   terminalPalette = with colors; {
@@ -78,36 +68,12 @@
     // {
       terminal = terminalPalette;
     };
-  stylixSettings = {
-    shell = {
-      font_family = config.stylix.fonts.sansSerif.name;
-      launch_apps_as_systemd_services = true;
-      settings_show_advanced = true;
-    };
-
-    theme = {
-      mode =
-        if config.stylix.polarity == "light"
-        then "light"
-        else "dark";
-      source = "custom";
-      custom_palette = "stylix";
-    };
-
-    bar.default = {
-      background_opacity = config.stylix.opacity.desktop;
-      capsule_opacity = config.stylix.opacity.desktop;
-    };
-
-    dock.background_opacity = config.stylix.opacity.desktop;
-    osd.background_opacity = config.stylix.opacity.popups;
-    notification.background_opacity = config.stylix.opacity.popups;
-  };
   stylixPaletteSource =
     jsonFormat.generate "stylix-palette.json" {
       dark = stylixPalette;
       light = stylixPalette;
     };
+<<<<<<< HEAD
   settingsFor = wm:
     let
       settings =
@@ -124,8 +90,10 @@
         };
     in
       lib.recursiveUpdate settings extraSettings;
+=======
+>>>>>>> 4f91ef4 ( feat: ✨ updated system with new noctalia shell config)
   configSourceFor = wm: let
-    rawConfig = tomlFormat.generate "noctalia-${wm}-config.toml" (settingsFor wm);
+    rawConfig = ./configs + "/${wm}.toml";
   in
     if config.programs.noctalia.validateConfig
     then
@@ -166,6 +134,7 @@ in {
     description = "Noctalia wrapper commands keyed by window manager.";
   };
 
+<<<<<<< HEAD
   options.edward.noctalia.extraSessionActions = lib.mkOption {
     type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
     default = [];
@@ -178,6 +147,8 @@ in {
     description = "Extra Noctalia plugin ids enabled in each generated window-manager config.";
   };
 
+=======
+>>>>>>> 4f91ef4 ( feat: ✨ updated system with new noctalia shell config)
   config = {
     edward.noctalia.commands = wrapperCommands;
 

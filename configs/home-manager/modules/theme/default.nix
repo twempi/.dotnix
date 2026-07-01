@@ -2,7 +2,6 @@
 	imports = [
 		./gtk.nix
 		./qt5ct.nix
-		./defaultApps.nix
 	];
 
 	dconf = {
