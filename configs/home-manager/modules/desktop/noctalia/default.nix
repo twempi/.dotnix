@@ -114,10 +114,16 @@
         lib.recursiveUpdate
         (lib.recursiveUpdate baseSettings stylixSettings)
         wmSettings.${wm};
+      extraPlugins = config.edward.noctalia.extraEnabledPlugins;
+      extraSettings =
+        {
+          shell.session.actions = (settings.shell.session.actions or []) ++ config.edward.noctalia.extraSessionActions;
+        }
+        // lib.optionalAttrs (extraPlugins != []) {
+          plugins.enabled = lib.unique ((settings.plugins.enabled or []) ++ extraPlugins);
+        };
     in
-      lib.recursiveUpdate settings {
-        shell.session.actions = (settings.shell.session.actions or []) ++ config.edward.noctalia.extraSessionActions;
-      };
+      lib.recursiveUpdate settings extraSettings;
   configSourceFor = wm: let
     rawConfig = tomlFormat.generate "noctalia-${wm}-config.toml" (settingsFor wm);
   in
@@ -164,6 +170,12 @@ in {
     type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
     default = [];
     description = "Extra Noctalia session panel actions appended to each window-manager config.";
+  };
+
+  options.edward.noctalia.extraEnabledPlugins = lib.mkOption {
+    type = lib.types.listOf lib.types.str;
+    default = [];
+    description = "Extra Noctalia plugin ids enabled in each generated window-manager config.";
   };
 
   config = {
