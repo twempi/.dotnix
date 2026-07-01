@@ -4,7 +4,6 @@
   ...
 }: let
   sessionPanel = "${config.edward.noctalia.commands.sway} msg panel-toggle session";
-  gpuSwitcherPanel = "${config.edward.noctalia.commands.sway} msg panel-toggle edward/gpu-switcher:main";
   asusProfileNotify = pkgs.writeShellScriptBin "asus-profile-notify" ''
     #!${pkgs.bash}/bin/bash
 
@@ -31,9 +30,5 @@ in {
     "XF86KbdBrightnessUp" = "exec asusctl leds next";
     "XF86KbdBrightnessDown" = "exec asusctl leds prev";
     "Mod4+XF86Launch1" = "exec ${sessionPanel}";
-<<<<<<< HEAD
-    "XF86Launch4" = "exec ${gpuSwitcherPanel}";
-=======
->>>>>>> 4f91ef4 ( feat: ✨ updated system with new noctalia shell config)
   };
 }
