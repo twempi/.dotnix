@@ -5,14 +5,15 @@ min_noctalia = "5.0.0"
 author = "Edward"
 license = "MIT"
 dependencies = ["supergfxctl"]
-tags = ["gpu", "launcher", "g14"]
+tags = ["gpu", "panel", "g14"]
 icon = "device-desktop-cog"
 description = "Switch Zephyrus G14 GPU modes with supergfxctl."
 
-[[launcher_provider]]
-id = "gpu"
-entry = "launcher.luau"
-prefix = "/gpu"
-glyph = "device-desktop-cog"
-include_in_global_search = false
-debounce_ms = 100
+[[panel]]
+id = "switcher"
+entry = "panel.luau"
+width = 420
+height = 330
+placement = "floating"
+position = "center"
+open_near_click = false

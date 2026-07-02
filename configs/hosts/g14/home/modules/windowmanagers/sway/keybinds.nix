@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: let
-  gpuSwitcher = "${config.edward.noctalia.commands.sway} msg panel-toggle launcher /gpu";
+  gpuSwitcher = "${config.edward.noctalia.commands.sway} msg panel-toggle edward/g14-gpu:switcher";
   asusProfileNotify = pkgs.writeShellScriptBin "asus-profile-notify" ''
     #!${pkgs.bash}/bin/bash
 

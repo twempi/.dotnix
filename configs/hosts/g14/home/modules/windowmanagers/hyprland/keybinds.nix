@@ -4,7 +4,7 @@
   ...
 }: let
   toLua = lib.generators.toLua {};
-  gpuSwitcher = "${config.edward.noctalia.commands.hyprland} msg panel-toggle launcher /gpu";
+  gpuSwitcher = "${config.edward.noctalia.commands.hyprland} msg panel-toggle edward/g14-gpu:switcher";
 in {
   wayland.windowManager.hyprland.settings.bind = [
     {
