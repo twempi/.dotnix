@@ -61,6 +61,7 @@
     ./modules/desktop/gnome-keyring
     # ./modules/desktop/dms
     ./modules/desktop/noctalia
+    ./modules/desktop/webcam
 
     # Apps
     ./modules/apps/obs-studio

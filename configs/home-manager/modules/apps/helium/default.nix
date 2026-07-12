@@ -217,6 +217,7 @@ in {
   programs.helium = {
     enable = true;
     defaultBrowser = true;
+    package = inputs.helium-package.packages.${pkgs.stdenv.hostPlatform.system}.helium;
 
     extensions = [];
 
