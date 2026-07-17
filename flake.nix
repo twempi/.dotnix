@@ -121,6 +121,9 @@
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
+      config.permittedInsecurePackages = [
+        "electron-40.10.5"
+      ];
       overlays = [localPackageOverlay];
     };
 
