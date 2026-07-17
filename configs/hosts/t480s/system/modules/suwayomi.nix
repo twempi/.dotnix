@@ -1,5 +1,6 @@
 {pkgs, ...}: let
   suwayomiPort = 8080;
+  extensionStoreUrl = "https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json";
 
   suwayomiVersion = "2.3.2243";
 
@@ -37,11 +38,15 @@ in {
       initialOpenInBrowserEnabled = true;
       webUIInterface = "browser";
       webUIFlavor = "WebUI";
-      webUIChannel = "preview";
+      webUIChannel = "bundled";
       webUIUpdateCheckInterval = 23;
 
+      # Keep the legacy setting in sync with the v2.3 extension store setting.
       extensionRepos = [
-        "https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json"
+        extensionStoreUrl
+      ];
+      extensionStores = [
+        extensionStoreUrl
       ];
     };
   };
