@@ -1,8 +1,25 @@
 {pkgs, ...}: let
   suwayomiPort = 8080;
+
+  suwayomiVersion = "2.3.2243";
+
+  suwayomiLatest = pkgs.suwayomi-server.overrideAttrs (old: {
+    version = suwayomiVersion;
+
+    src = pkgs.fetchurl {
+      url = "https://github.com/Suwayomi/Suwayomi-Server/releases/download/v${suwayomiVersion}/Suwayomi-Server-v${suwayomiVersion}.jar";
+
+      # First rebuild will fail and print the correct sha256.
+      # Replace pkgs.lib.fakeHash with the printed sha256 hash.
+      hash = pkgs.lib.fakeHash;
+    };
+  });
 in {
   services.suwayomi-server = {
     enable = true;
+
+    # Use newer upstream Suwayomi instead of nixpkgs' currently stale 2.1.1867 package.
+    package = suwayomiLatest;
 
     # Tailscale Serve exposes it, so don't open this on LAN/Wi-Fi.
     openFirewall = false;
