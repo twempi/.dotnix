@@ -413,10 +413,15 @@ ul li a span {
   flex-direction: column;
 }
 
-#bookmarks-modal .bookmarks-grid-editor {
+#bookmarks-modal .bookmark-groups-editor {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  margin-top: 4px;
   overflow-y: auto;
-  flex: 1;
-  padding-right: 10px;
+  padding: 2px 10px 4px 2px;
 }
 
 @keyframes fadeIn {
@@ -527,37 +532,322 @@ ul li a span {
   border-color: var(--color-primary);
 }
 
-.bookmarks-grid-editor {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+/* Grouped Upfront bookmark editor */
+.bookmark-groups-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin-top: 10px;
 }
 
-.bookmark-edit-column {
+.bookmark-groups-toolbar > *:first-child {
+  min-width: 0;
+}
+
+.bookmark-groups-hint {
+  color: var(--text-color);
+  font-family: var(--monospace-font-family);
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.65;
+}
+
+.bookmark-group-card {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  padding: 12px;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-.bookmark-edit-cell {
-  background: rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  border-radius: 6px;
+.bookmark-group-card.is-dragging,
+.bookmark-row.is-dragging {
+  cursor: grabbing;
+  opacity: 0.55;
+}
+
+.bookmark-group-card.is-drop-target,
+.bookmark-group-list.is-drop-target,
+.bookmark-row.is-drop-target {
+  background: rgba(102, 126, 234, 0.12);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.16);
+}
+
+.bookmark-group-header {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(120px, 1fr) auto auto;
+}
+
+.bookmark-group-drag-handle,
+.bookmark-row-drag-handle {
+  align-items: center;
+  align-self: stretch;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--text-color);
+  cursor: grab;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: var(--monospace-font-family);
+  justify-content: center;
+  min-height: 30px;
+  opacity: 0.55;
+  padding: 0 6px;
+  touch-action: none;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.bookmark-group-drag-handle:hover,
+.bookmark-row-drag-handle:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.35);
+  opacity: 1;
+}
+
+.bookmark-group-name-input,
+.bookmark-row-title-input,
+.bookmark-row-url-input {
+  background: var(--terminal-bg);
   border: 1px solid var(--card-border);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-family: var(--monospace-font-family);
+  font-size: 13px;
+  min-width: 0;
+  padding: 7px 9px !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bookmark-group-name-input {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.bookmark-row-title-input {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.bookmark-group-count {
+  color: var(--text-color);
+  font-family: var(--monospace-font-family);
+  font-size: 11px;
+  opacity: 0.55;
+  white-space: nowrap;
+}
+
+.bookmark-group-actions,
+.bookmark-row-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.bookmark-move-btn,
+.bookmark-delete-group-btn,
+.bookmark-remove-btn,
+.bookmark-add-row-btn,
+.bookmark-add-group-btn,
+.bookmark-groups-toolbar [data-bm-action="add-group"] {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  color: var(--text-color);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--monospace-font-family);
+  font-size: 12px;
+  justify-content: center;
+  line-height: 1;
+  min-height: 30px;
+  padding: 5px 8px;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.bookmark-move-btn {
+  min-width: 30px;
+  padding: 5px;
+}
+
+.bookmark-move-btn:hover:not(:disabled),
+.bookmark-add-row-btn:hover,
+.bookmark-add-group-btn:hover,
+.bookmark-groups-toolbar [data-bm-action="add-group"]:hover {
+  background: rgba(102, 126, 234, 0.12);
+  border-color: rgba(102, 126, 234, 0.45);
+  color: var(--color-primary);
+}
+
+.bookmark-delete-group-btn:hover:not(:disabled),
+.bookmark-remove-btn:hover:not(:disabled) {
+  background: rgba(231, 76, 60, 0.1);
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.bookmark-move-btn:disabled,
+.bookmark-delete-group-btn:disabled,
+.bookmark-remove-btn:disabled,
+.bookmark-add-row-btn:disabled,
+.bookmark-add-group-btn:disabled,
+.bookmark-groups-toolbar [data-bm-action="add-group"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.bookmark-delete-group-btn,
+.bookmark-remove-btn {
+  color: var(--color-error);
+}
+
+.bookmark-group-list {
+  border: 1px dashed transparent;
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-height: 40px;
+  padding: 2px;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.bookmark-edit-cell input {
-  padding: 6px 8px !important;
-  font-size: 12px !important;
+.bookmark-group-empty-hint,
+.bookmark-editor-empty {
+  border: 1px dashed var(--card-border);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-family: var(--monospace-font-family);
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.65;
+  padding: 12px;
+  text-align: center;
 }
 
-.bookmark-edit-cell .bm-title-input {
-  font-weight: 700;
+.bookmark-row {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(120px, 0.8fr) minmax(180px, 1.6fr) auto;
+  padding: 7px;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bookmark-row .bookmark-row-drag-handle {
+  min-height: 28px;
+}
+
+.bookmark-add-row-btn {
+  align-self: flex-start;
+  border-color: rgba(102, 126, 234, 0.4);
   color: var(--color-primary);
+}
+
+.bookmark-add-group-btn,
+.bookmark-groups-toolbar [data-bm-action="add-group"] {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: rgba(102, 126, 234, 0.4);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.bookmark-groups-editor button:focus-visible,
+.bookmark-groups-editor input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.bookmark-groups-editor input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  outline: none;
+}
+
+@media (max-width: 700px) {
+  #bookmarks-modal .config-content {
+    padding: 24px 20px;
+    width: calc(100vw - 24px);
+  }
+
+  .bookmark-groups-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .bookmark-groups-toolbar .bookmark-add-group-btn,
+  .bookmark-groups-toolbar [data-bm-action="add-group"] {
+    width: 100%;
+  }
+
+  .bookmark-group-header {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .bookmark-group-count {
+    grid-column: 2;
+  }
+
+  .bookmark-group-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+
+  .bookmark-row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .bookmark-row .bookmark-row-drag-handle {
+    grid-row: 1 / span 2;
+  }
+
+  .bookmark-row-url-input {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .bookmark-row-actions {
+    flex-direction: column;
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (max-width: 440px) {
+  #bookmarks-modal .config-content {
+    padding: 20px 14px;
+    width: calc(100vw - 12px);
+  }
+
+  #bookmarks-modal .config-header-row {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .bookmark-group-card {
+    padding: 10px;
+  }
+
+  .bookmark-row {
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .bookmark-group-actions,
+  .bookmark-row-actions {
+    gap: 3px;
+  }
 }
 
 .hidden {

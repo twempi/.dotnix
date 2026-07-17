@@ -83,10 +83,20 @@ async function updateWeather() {
 // Browser detection (used by commands.js and terminal.js)
 // ========================================
 
-// Known brands to skip in userAgentData — these are noise, not real browser names
+// Normalize UA Client Hint brands before comparing them. Chromium deliberately
+// varies the punctuation in its GREASE "Not A Brand" entry.
+function _normalizeBrand(brand) {
+  return String(brand ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+// Known brands to skip in userAgentData — these are noise, not real browser names.
 const _GENERIC_BRANDS = new Set([
-  'chromium', 'google chrome', 'not a brand', 'not;a brand', 'not/a)brand',
-  'not_a brand', 'not?a_brand', 'not-a.brand',
+  'chromium',
+  'googlechrome',
+  'notabrand',
 ]);
 
 // UA string rules — most specific first
@@ -111,7 +121,7 @@ function getBrowser() {
   const brands = navigator.userAgentData?.brands;
   if (Array.isArray(brands)) {
     for (const { brand } of brands) {
-      if (!_GENERIC_BRANDS.has(brand.toLowerCase())) return brand;
+      if (!_GENERIC_BRANDS.has(_normalizeBrand(brand))) return brand;
     }
   }
 

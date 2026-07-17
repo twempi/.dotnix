@@ -1,9 +1,9 @@
 {
-  hardware.display.edid.modelines."AOC_27B1_65" =
-    "188.00 1920 2048 2248 2576 1080 1083 1088 1124 -hsync +vsync";
+  hardware.display.edid.enable = true;
 
-  hardware.display.outputs."HDMI-A-1".edid = "AOC_27B1_65.bin";
+  hardware.display.edid.modelines."AOC_27B1_70" =
+    "204.25 1920 2056 2256 2592 1080 1083 1088 1127 -hsync +vsync";
 
-  # Optional, but often useful for stubborn HDMI/AMD display paths:
+  hardware.display.outputs."HDMI-A-1".edid = "AOC_27B1_70.bin";
   hardware.display.outputs."HDMI-A-1".mode = "e";
 }
