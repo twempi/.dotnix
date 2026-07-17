@@ -9,9 +9,7 @@
     src = pkgs.fetchurl {
       url = "https://github.com/Suwayomi/Suwayomi-Server/releases/download/v${suwayomiVersion}/Suwayomi-Server-v${suwayomiVersion}.jar";
 
-      # First rebuild will fail and print the correct sha256.
-      # Replace pkgs.lib.fakeHash with the printed sha256 hash.
-      hash = pkgs.lib.fakeHash;
+      hash = "sha256-ghFBsy4XDUoC08vf7Vd+2PB70iOD/19BMuu1rkDpjdU=";
     };
   });
 in {
