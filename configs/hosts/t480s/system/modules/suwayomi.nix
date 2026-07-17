@@ -37,7 +37,7 @@ in {
       initialOpenInBrowserEnabled = true;
       webUIInterface = "browser";
       webUIFlavor = "WebUI";
-      webUIChannel = "stable";
+      webUIChannel = "preview";
       webUIUpdateCheckInterval = 23;
 
       extensionRepos = [
