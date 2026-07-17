@@ -8,6 +8,7 @@
     ../modules/core/nh.nix
     ../modules/core/cachix.nix
     ../modules/core/optimizations.nix
+    ../modules/core/insecure-packages.nix
 
     ../modules/networking/dns-over-tls.nix
     ../modules/networking/usbmuxd.nix
