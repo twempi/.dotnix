@@ -190,8 +190,8 @@
     homepage_is_newtabpage = false;
 
     session = {
-      restore_on_startup = 5;
-      startup_urls = [];
+      restore_on_startup = 4;
+      startup_urls = [homePage];
     };
 
     vertical_tabs = {
@@ -247,8 +247,9 @@ in {
       MetricsReportingEnabled = false;
       PasswordManagerEnabled = true;
 
-      # Open the extension-backed new tab page at startup.
-      RestoreOnStartup = 5;
+      # Open the hosted start page because extension overrides load after the initial tab.
+      RestoreOnStartup = 4;
+      RestoreOnStartupURLs = [homePage];
 
       SearchSuggestEnabled = true;
       ShowHomeButton = false;

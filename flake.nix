@@ -85,11 +85,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    t3code = {
-      url = "github:rodeyseijkens/t3code-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     minimal-grub-theme = {
       url = "github:twempi/minimal-grub-theme";
       inputs.nixpkgs.follows = "nixpkgs";

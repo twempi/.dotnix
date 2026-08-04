@@ -1,15 +1,22 @@
 {
+  lib,
   pkgs,
   ...
-}: {
+}: let
+  braveWithWaylandFlags = pkgs.brave.overrideAttrs (old: {
+    preFixup = (old.preFixup or "") + ''
+      gappsWrapperArgs+=(
+        --add-flags "--enable-features=UseOzonePlatform"
+        --add-flags "--ozone-platform=wayland"
+        --add-flags "--disable-features=WaylandFractionalScaleV1"
+      )
+    '';
+  });
+in {
   programs.chromium = {
     enable = true;
-    package = pkgs.brave;
-    commandLineArgs = [
-      "--enable-features=UseOzonePlatform"
-      "--ozone-platform=wayland"
-      "--disable-features=WaylandFractionalScaleV1"
-    ];
+    package = braveWithWaylandFlags;
+    commandLineArgs = lib.mkForce [];
     extensions = [
       {id = "cndibmoanboadcifjkjbdpjgfedanolh";} # better canvas
       {id = "fcjmgeodgobggcppooncdagfkogfffdm";} # imagus reborn
