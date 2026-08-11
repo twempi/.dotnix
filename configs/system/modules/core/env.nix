@@ -2,7 +2,6 @@
   environment = {
     localBinInPath = true;
     sessionVariables = {
-
       # Application Specific
       MOZ_ENABLE_WAYLAND = "1";
       MOZ_DISABLE_RDD_SANDBOX = "1";
@@ -10,5 +9,9 @@
       NIXOS_OZONE_WL = "1";
       PROTON_ENABLE_NGX_UPDATER = "1";
     };
+  };
+
+  programs.nix-ld = {
+    enable = true;
   };
 }

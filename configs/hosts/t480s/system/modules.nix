@@ -6,6 +6,7 @@
     ./modules/minecraft.nix
     ./modules/floccus-webdav.nix
     ./modules/caddy
+    ./modules/pihole.nix
     ./modules/suwayomi.nix
     ./modules/vaultwarden.nix
     ./modules/headless.nix

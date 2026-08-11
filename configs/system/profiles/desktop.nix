@@ -6,6 +6,7 @@
     ../modules/core/shell.nix
     ../modules/core/user.nix
     ../modules/core/nh.nix
+    ../modules/core/env.nix
     ../modules/core/cachix.nix
     ../modules/core/optimizations.nix
     ../modules/core/insecure-packages.nix

@@ -37,11 +37,11 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "iloader";
-  version = "2.2.6";
+  version = "2.3.1";
 
   src = fetchurl {
     url = "https://github.com/nab138/iloader/releases/download/v${finalAttrs.version}/iloader-linux-amd64.deb";
-    hash = "sha256-YWoeQjjoqLkaA1oNx2Eg7PwXaenWYKk73CdAKHISlWI=";
+    hash = "sha256-7HVqFGP+WDUIK6dASWX7hYgYVWUDDnCPouGuw4VQOoU=";
   };
 
   nativeBuildInputs = [

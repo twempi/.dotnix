@@ -150,7 +150,7 @@
         Comment=An i3-compatible Wayland compositor
         Exec=${lib.getExe g14StartSway}
         Type=Application
-        DesktopNames=sway;wlroots
+        DesktopNames=sway;wlroots;X-NIXOS-SYSTEMD-AWARE
       '')
       (pkgs.writeTextDir "share/wayland-sessions/mango.desktop" ''
         [Desktop Entry]

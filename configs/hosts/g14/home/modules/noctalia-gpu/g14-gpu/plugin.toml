@@ -1,7 +1,7 @@
 id = "edward/g14-gpu"
 name = "G14 GPU Switcher"
 version = "1.0.0"
-min_noctalia = "5.0.0"
+plugin_api = 3
 author = "Edward"
 license = "MIT"
 dependencies = ["supergfxctl"]
