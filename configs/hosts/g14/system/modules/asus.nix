@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     asusctl
     supergfxctl
@@ -13,6 +13,8 @@
     supergfxd.enable = true;
   };
 
-  systemd.services.asusd.restartTriggers = [ ./asusd.ron ];
-  systemd.services.supergfxd.path = [ pkgs.pciutils ];
+  # Ly converts SIGTERM into exit status 15; supergfxd requires a clean display-manager stop.
+  systemd.services.display-manager.serviceConfig.SuccessExitStatus = "15";
+  systemd.services.asusd.restartTriggers = [./asusd.ron];
+  systemd.services.supergfxd.path = [pkgs.pciutils];
 }
