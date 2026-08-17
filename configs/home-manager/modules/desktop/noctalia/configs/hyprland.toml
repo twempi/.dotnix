@@ -19,9 +19,6 @@ type = "google"
 [desktop_widgets]
 enabled = false
 
-[dock]
-background_opacity = 1.0
-
 [location]
 auto_locate = true
 
@@ -44,15 +41,8 @@ output = "DP-1"
 rotation = 0.0
 type = "login_box"
 
-[notification]
-background_opacity = 1.0
-
-[osd]
-background_opacity = 1.0
-
 [shell]
 corner_radius_scale = 0.5000000074505806
-font_family = "DejaVu Sans"
 launch_apps_as_systemd_services = true
 settings_show_advanced = true
 
@@ -96,11 +86,6 @@ action = "shutdown"
 enabled = true
 shortcut = "p"
 variant = "destructive"
-
-[theme]
-custom_palette = "stylix"
-mode = "dark"
-source = "custom"
 
 [theme.templates]
 enable_builtin_templates = false

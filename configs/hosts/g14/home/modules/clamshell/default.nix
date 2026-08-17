@@ -7,6 +7,7 @@
   hyprctl = "${inputs.hyprland.packages.${system}.hyprland}/bin/hyprctl";
   swaymsg = "${pkgs.sway}/bin/swaymsg";
   wlrRandr = "${pkgs.wlr-randr}/bin/wlr-randr";
+  g14RefreshRate = import ../refresh-rate/package.nix {inherit inputs pkgs system;};
 
   g14Clamshell = pkgs.writeShellApplication {
     name = "g14-clamshell";
@@ -57,7 +58,7 @@
 
         if [[ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
           for output in "''${internal_outputs[@]}"; do
-            "$hyprctl_cmd" keyword monitor "$output,disable" >/dev/null 2>&1 || true
+            "$hyprctl_cmd" eval "hl.monitor({ output = '$output', disabled = true })" >/dev/null 2>&1 || true
           done
         elif [[ -n "''${SWAYSOCK:-}" ]]; then
           for output in "''${internal_outputs[@]}"; do
@@ -73,7 +74,7 @@
       open_internal_outputs() {
         if [[ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
           for output in "''${internal_outputs[@]}"; do
-            "$hyprctl_cmd" keyword monitor "$output,2560x1600@60,0x0,1.5" >/dev/null 2>&1 || true
+            "$hyprctl_cmd" eval "hl.monitor({ output = '$output', disabled = false, mode = '2560x1600@60', position = '0x0', scale = 1.5 })" >/dev/null 2>&1 || true
           done
         elif [[ -n "''${SWAYSOCK:-}" ]]; then
           for output in "''${internal_outputs[@]}"; do
@@ -84,6 +85,8 @@
             "$wlr_randr_cmd" --output "$output" --on --mode 2560x1600@60.000Hz --pos 0,0 --scale 1.5 >/dev/null 2>&1 || true
           done
         fi
+
+        "${g14RefreshRate}/bin/g14-refresh-rate" --once
       }
 
       case "$mode" in

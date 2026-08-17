@@ -8,89 +8,56 @@
   inherit (pkgs.stdenv.hostPlatform) system;
 
   noctaliaPackage = inputs.noctalia.packages.${system}.default;
-  jsonFormat = pkgs.formats.json {};
   windowManagers = [
     "hyprland"
     "sway"
     "mango"
   ];
 
-  colors = config.lib.stylix.colors.withHashtag;
-  terminalPalette = with colors; {
-    normal = {
-      black = base00;
-      red = base08;
-      green = base0B;
-      yellow = base0A;
-      blue = base0D;
-      magenta = base0E;
-      cyan = base0C;
-      white = base05;
-    };
-
-    bright = {
-      black = base03;
-      red = base08;
-      green = base0B;
-      yellow = base0A;
-      blue = base0D;
-      magenta = base0E;
-      cyan = base0C;
-      white = base07;
-    };
-
-    foreground = base05;
-    background = base00;
-    cursor = base05;
-    cursorText = base00;
-    selectionFg = base04;
-    selectionBg = base01;
-  };
-  stylixPalette =
-    (with colors; {
-      mPrimary = base0D;
-      mOnPrimary = base00;
-      mSecondary = base0E;
-      mOnSecondary = base00;
-      mTertiary = base0C;
-      mOnTertiary = base00;
-      mError = base08;
-      mOnError = base00;
-      mSurface = base00;
-      mOnSurface = base05;
-      mHover = base0C;
-      mOnHover = base00;
-      mSurfaceVariant = base01;
-      mOnSurfaceVariant = base04;
-      mOutline = base03;
-      mShadow = base00;
-    })
-    // {
-      terminal = terminalPalette;
-    };
-  stylixPaletteSource =
-    jsonFormat.generate "stylix-palette.json" {
-      dark = stylixPalette;
-      light = stylixPalette;
-    };
+  stylixColors = config.lib.stylix.colors.withHashtag;
+  nativeStylixConfig = config.xdg.configFile."noctalia/config.toml".source;
+  nativeStylixPalette = config.xdg.configFile."noctalia/palettes/stylix.json".source;
   configSourceFor = wm: let
     rawConfig = ./configs + "/${wm}.toml";
+    resolvedRawConfig =
+      if lib.elem wm ["sway" "mango"]
+      then
+        pkgs.replaceVars rawConfig (
+          {
+            inherit
+              (stylixColors)
+              base09
+              base0A
+              base0B
+              base0C
+              base0D
+              base0E
+              ;
+          }
+          // lib.optionalAttrs (wm == "sway") {
+            inherit (stylixColors) base08;
+          }
+        )
+      else rawConfig;
     extraConfig = config.edward.noctalia.extraConfigText.${wm} or "";
     mergedConfig =
       if extraConfig == ""
-      then rawConfig
+      then resolvedRawConfig
       else
-        pkgs.writeText "noctalia-${wm}.toml" ''
-          ${builtins.readFile rawConfig}
-
-          ${extraConfig}
-        '';
+        pkgs.concatText "noctalia-${wm}.toml" [
+          resolvedRawConfig
+          (pkgs.writeText "noctalia-${wm}-extra.toml" "\n\n${extraConfig}\n")
+        ];
   in
     if config.programs.noctalia.validateConfig
     then
       pkgs.runCommand "noctalia-${wm}-config" {} ''
-        ${lib.getExe noctaliaPackage} config validate ${mergedConfig}
-        cp ${mergedConfig} $out
+        config_dir="$TMPDIR/noctalia-${wm}"
+        mkdir -p "$config_dir"
+        cp ${mergedConfig} "$config_dir/config.toml"
+        cp ${nativeStylixConfig} "$config_dir/stylix.toml"
+        ${lib.getExe noctaliaPackage} config validate "$config_dir"
+        cp ${mergedConfig} "$out"
       ''
     else mergedConfig;
   wrapperFor = wm:
@@ -106,14 +73,14 @@
     };
   wrappers = lib.genAttrs windowManagers wrapperFor;
   wrapperCommands = lib.mapAttrs (wm: package: "${package}/bin/noctalia-${wm}") wrappers;
-  configFiles =
-    lib.mkMerge (
-      map (wm: {
-        "noctalia-${wm}/noctalia/config.toml".source = configSourceFor wm;
-        "noctalia-${wm}/noctalia/palettes/stylix.json".source = stylixPaletteSource;
-      })
-      windowManagers
-    );
+  configFiles = lib.mkMerge (
+    map (wm: {
+      "noctalia-${wm}/noctalia/config.toml".source = configSourceFor wm;
+      "noctalia-${wm}/noctalia/stylix.toml".source = nativeStylixConfig;
+      "noctalia-${wm}/noctalia/palettes/stylix.json".source = nativeStylixPalette;
+    })
+    windowManagers
+  );
 in {
   imports = [
     inputs.noctalia.homeModules.default
@@ -133,6 +100,8 @@ in {
 
   config = {
     edward.noctalia.commands = wrapperCommands;
+
+    stylix.targets.noctalia.enable = true;
 
     programs.noctalia = {
       enable = true;

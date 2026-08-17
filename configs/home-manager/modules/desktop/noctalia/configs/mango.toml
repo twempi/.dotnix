@@ -29,9 +29,6 @@ type = "google"
 [desktop_widgets]
 enabled = false
 
-[dock]
-background_opacity = 1.0
-
 [location]
 auto_locate = true
 
@@ -54,15 +51,8 @@ output = "DP-1"
 rotation = 0.0
 type = "login_box"
 
-[notification]
-background_opacity = 1.0
-
-[osd]
-background_opacity = 1.0
-
 [shell]
 corner_radius_scale = 0.5000000074505806
-font_family = "DejaVu Sans"
 launch_apps_as_systemd_services = true
 settings_show_advanced = true
 
@@ -107,11 +97,6 @@ enabled = true
 shortcut = "p"
 variant = "destructive"
 
-[theme]
-custom_palette = "stylix"
-mode = "dark"
-source = "custom"
-
 [theme.templates]
 enable_builtin_templates = false
 enable_community_templates = false
@@ -131,7 +116,9 @@ path = "/home/edward/Pictures/wallpapers/9.png"
 [weather]
 unit = "imperial"
 
+# Resolved from the active Stylix palette by the Home Manager module.
 [widget.battery]
+color = "@base0B@"
 display_mode = "glyph"
 show_label = true
 warning_color = "error"
@@ -144,10 +131,12 @@ script = "scripts/bongocat.lua"
 type = "scripted"
 
 [widget.brightness]
+color = "@base0A@"
 scroll_step = 5
 show_label = true
 
 [widget.clock]
+color = "@base0A@"
 format = "{:%a %d %b  %H:%M}"
 tooltip_format = "{:%A, %d %B %Y}"
 
@@ -155,6 +144,7 @@ tooltip_format = "{:%A, %d %B %Y}"
 glyph = "confucius"
 
 [widget.cpu]
+color = "@base09@"
 display = "text"
 glyph = "cpu"
 show_label = true
@@ -162,6 +152,7 @@ stat = "cpu_usage"
 type = "sysmon"
 
 [widget.network]
+color = "@base0E@"
 show_label = true
 type = "network"
 
@@ -169,6 +160,7 @@ type = "network"
 hide_when_no_unread = true
 
 [widget.ram]
+color = "@base0C@"
 display = "text"
 glyph = "memory"
 show_label = true
@@ -179,6 +171,7 @@ type = "sysmon"
 hidden = ["blueman", "nm-applet", "pasystray"]
 
 [widget.volume]
+color = "@base0D@"
 device = "output"
 mute_color = "error"
 scroll_step = 5
