@@ -13,6 +13,7 @@ local state = {
   error = "",
   generation = 0,
   loading = false,
+  selectedIndex = 1,
   switching = false,
   switchingLabel = "",
   supported = "",
@@ -153,8 +154,21 @@ local function controlsEnabled()
   return not state.loading and not state.switching
 end
 
-local function modeButton(mode)
+local function selectCurrentForKeyboard()
+  local modes = supportedModes()
+  state.selectedIndex = 1
+
+  for index, mode in ipairs(modes) do
+    if normalize(state.current) == normalize(mode.mode) then
+      state.selectedIndex = index
+      return
+    end
+  end
+end
+
+local function modeButton(mode, index)
   local isCurrent = normalize(state.current) == normalize(mode.mode)
+  local isKeyboardSelected = index == state.selectedIndex
   local text = mode.label
 
   if isCurrent then
@@ -165,8 +179,8 @@ local function modeButton(mode)
     key = "mode-" .. mode.mode,
     text = text,
     glyph = mode.glyph,
-    variant = isCurrent and "primary" or "outline",
-    selected = isCurrent,
+    variant = isKeyboardSelected and "primary" or (isCurrent and "secondary" or "outline"),
+    selected = isKeyboardSelected,
     enabled = controlsEnabled() and not isCurrent,
     onClick = mode.callback,
     height = 42,
@@ -211,8 +225,12 @@ local function modeButtons()
     return children
   end
 
-  for _, mode in modes do
-    table.insert(children, modeButton(mode))
+  if state.selectedIndex < 1 or state.selectedIndex > #modes then
+    state.selectedIndex = 1
+  end
+
+  for index, mode in ipairs(modes) do
+    table.insert(children, modeButton(mode, index))
   end
 
   return children
@@ -306,6 +324,20 @@ local function render()
   }))
 end
 
+local function moveKeyboardSelection(delta)
+  if not controlsEnabled() or state.error ~= "" then
+    return
+  end
+
+  local modes = supportedModes()
+  if #modes == 0 then
+    return
+  end
+
+  state.selectedIndex = ((state.selectedIndex - 1 + delta) % #modes) + 1
+  render()
+end
+
 local function showError(message)
   local text = trim(message)
 
@@ -354,6 +386,7 @@ function refresh()
       state.supported = commandOutput(supportedResult)
       state.loading = false
       state.error = ""
+      selectCurrentForKeyboard()
       render()
     end) then
       if generation == state.generation then
@@ -434,6 +467,33 @@ local function selectMode(id)
     state.switchingLabel = ""
     state.error = "Failed to run supergfxctl --mode " .. selected.mode
     render()
+  end
+end
+
+local function activateKeyboardSelection()
+  if not controlsEnabled() or state.error ~= "" then
+    return
+  end
+
+  local modes = supportedModes()
+  local selected = modes[state.selectedIndex]
+
+  if selected ~= nil then
+    selectMode(selected.mode)
+  end
+end
+
+function onKey(chord, pressed)
+  if not pressed then
+    return
+  end
+
+  if chord == "Up" then
+    moveKeyboardSelection(-1)
+  elseif chord == "Down" then
+    moveKeyboardSelection(1)
+  elseif chord == "Return" then
+    activateKeyboardSelection()
   end
 end
 

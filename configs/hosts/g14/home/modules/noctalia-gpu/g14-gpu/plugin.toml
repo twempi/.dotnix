@@ -1,7 +1,7 @@
 id = "edward/g14-gpu"
 name = "G14 GPU Switcher"
 version = "1.0.0"
-plugin_api = 3
+plugin_api = 13
 author = "Edward"
 license = "MIT"
 dependencies = ["supergfxctl"]
@@ -17,3 +17,5 @@ height = 330
 placement = "floating"
 position = "center"
 open_near_click = false
+keyboard_focus = "exclusive"
+capture_keys = ["Up", "Down", "Return"]

@@ -101,7 +101,7 @@ in {
 
         touchpad = {
           "natural_scroll" = false;
-          "scroll_factor" = 1;
+          "scroll_factor" = 0.6;
         };
       };
     };

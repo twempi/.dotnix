@@ -8,7 +8,15 @@ capsule_opacity = 1.0
 capsule_padding = 8
 capsule_radius = 0
 center = []
-end = ["network", "brightness", "cpu", "ram", "volume", "battery", "clock"]
+end = [
+  "network",
+  "brightness",
+  "cpu",
+  "ram",
+  "volume",
+  "battery",
+  "clock",
+]
 font_family = "IosevkaTerm Nerd Font Propo"
 font_weight = 700
 margin_edge = 4
@@ -20,27 +28,34 @@ start = ["workspaces"]
 thickness = 26
 widget_spacing = 6
 
+
 [calendar]
 enabled = true
+
 
 [calendar.account.personal_google]
 type = "google"
 
+
 [desktop_widgets]
 enabled = false
 
+
 [location]
 auto_locate = true
+
 
 [lockscreen_widgets]
 enabled = false
 schema_version = 2
 widget_order = ["lockscreen-login-box@DP-1"]
 
+
 [lockscreen_widgets.grid]
 cell_size = 16
 major_interval = 4
 visible = true
+
 
 [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
 box_height = 0.0
@@ -51,22 +66,33 @@ output = "DP-1"
 rotation = 0.0
 type = "login_box"
 
+
 [shell]
 corner_radius_scale = 0.5000000074505806
 launch_apps_as_systemd_services = true
 settings_show_advanced = true
 
+
 [shell.animation]
 speed = 3.0
 
+
 [shell.panel]
 control_center_placement = "floating"
-session_placement = "centered"
-wallpaper_placement = "centered"
+
+# "centered" is no longer a placement value.
+# Floating panels use a separate position setting.
+session_placement = "floating"
+session_position = "center"
+
+wallpaper_placement = "floating"
+wallpaper_position = "center"
+
 
 [shell.screenshot]
 directory = "/home/edward/Pictures/Screenshots"
 filename_pattern = "Screenshot-%Y-%m-%d_%H:%M:%S"
+
 
 [[shell.session.actions]]
 action = "lock"
@@ -74,10 +100,12 @@ enabled = true
 shortcut = "l"
 variant = "default"
 
+
 [[shell.session.actions]]
 action = "logout"
 enabled = true
 variant = "default"
+
 
 [[shell.session.actions]]
 action = "suspend"
@@ -85,11 +113,13 @@ enabled = true
 shortcut = "s"
 variant = "default"
 
+
 [[shell.session.actions]]
 action = "reboot"
 enabled = true
 shortcut = "r"
 variant = "default"
+
 
 [[shell.session.actions]]
 action = "shutdown"
@@ -97,24 +127,31 @@ enabled = true
 shortcut = "p"
 variant = "destructive"
 
+
 [theme.templates]
 enable_builtin_templates = false
 enable_community_templates = false
 
+
 [wallpaper]
 directory = "/home/edward/Pictures/wallpapers"
+
 
 [wallpaper.default]
 path = "/home/edward/Pictures/wallpapers/9.png"
 
+
 [wallpaper.last]
 path = "/home/edward/Pictures/wallpapers/9.png"
+
 
 [wallpaper.monitors.DP-1]
 path = "/home/edward/Pictures/wallpapers/9.png"
 
+
 [weather]
 unit = "imperial"
+
 
 # Resolved from the active Stylix palette by the Home Manager module.
 [widget.battery]
@@ -123,72 +160,118 @@ display_mode = "glyph"
 show_label = true
 warning_color = "error"
 
+
 [widget.bluetooth]
 show_label = true
 
-[widget.bongocat]
-script = "scripts/bongocat.lua"
-type = "scripted"
+
+# The old scripted Bongo Cat definition was removed because:
+#
+# 1. "scripted" is no longer a recognized widget type.
+# 2. "bongocat" is not included in this bar's start, center, or end lists.
+#
+# To use the official Bongo Cat plugin, install/enable
+# "noctalia/bongocat", uncomment the following section, and add
+# "bongocat" to one of the bar lists.
+#
+# [widget.bongocat]
+# type = "noctalia/bongocat:cat"
+
 
 [widget.brightness]
 color = "@base0A@"
-scroll_step = 5
 show_label = true
+
+
+# Preserve the previous 5% scroll step using v5 widget actions.
+[widget.brightness.actions]
+scroll_up = "brightness-up current 5%"
+scroll_down = "brightness-down current 5%"
+
 
 [widget.clock]
 color = "@base0A@"
 format = "{:%a %d %b  %H:%M}"
 tooltip_format = "{:%A, %d %B %Y}"
 
+
 [widget.control-center]
 glyph = "confucius"
 
+
 [widget.cpu]
 color = "@base09@"
-display = "text"
 glyph = "cpu"
-show_label = true
 stat = "cpu_usage"
 type = "sysmon"
+
+# Equivalent to the old:
+# display = "text"
+# show_label = true
+visualization = "none"
+show_value = true
+show_glyph = true
+
 
 [widget.network]
 color = "@base0E@"
 show_label = true
 type = "network"
 
+
 [widget.notifications]
 hide_when_no_unread = true
 
+
 [widget.ram]
 color = "@base0C@"
-display = "text"
 glyph = "memory"
-show_label = true
 stat = "ram_pct"
 type = "sysmon"
 
+# Equivalent to the old:
+# display = "text"
+# show_label = true
+visualization = "none"
+show_value = true
+show_glyph = true
+
+
 [widget.tray]
 hidden = ["blueman", "nm-applet", "pasystray"]
+
 
 [widget.volume]
 color = "@base0D@"
 device = "output"
 mute_color = "error"
-scroll_step = 5
 show_label = true
 type = "volume"
 
+
+# Preserve the previous 5% scroll step using v5 widget actions.
+[widget.volume.actions]
+scroll_up = "volume-up 5%"
+scroll_down = "volume-down 5%"
+
+
 [widget.workspaces]
+type = "workspaces"
+
+# Replaces minimal = false.
+style = "regular"
+
+# Replaces display = "id".
+label_source = "id"
+show_labels = true
+
 active_pill_size = 1.4
-display = "id"
 empty_color = "outline"
 focused_color = "primary"
 hide_when_empty = true
 inactive_pill_size = 1.0
 labels_only_when_occupied = false
 max_label_chars = 2
-minimal = false
 occupied_color = "secondary"
 pill_scale = 0.7
 scale = 1.05
-type = "workspaces"
