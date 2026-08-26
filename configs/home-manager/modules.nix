@@ -99,5 +99,6 @@
     ./modules/apps/rars
     ./modules/apps/blanket
     ./modules/apps/mcomix
+    ./modules/apps/distrobox
   ];
 }
