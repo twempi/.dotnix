@@ -1,11 +1,17 @@
 {...}: {
   # Docker
   virtualisation.docker = {
-    enable = false;
+    enable = true;
     rootless = {
       enable = true;
       setSocketVariable = true;
     };
+  };
+
+  # Podman
+  virtualisation.podman = {
+    enable = true;
+    defaultNetwork.settings.dns_enabled = true;
   };
 
   # Tailscale

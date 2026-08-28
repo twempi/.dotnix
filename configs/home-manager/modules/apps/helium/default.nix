@@ -95,10 +95,15 @@
       id = "cnjifjpddelmedmihgijeibhnjfabmlf";
       hash = "sha256-4BLH0QvZj3yL4tqv/WBdZKij1Vye4p26oy4b9oB25/M=";
     }
-
+    # Auto Typer
     {
       id = "bgpnjdahpmkaflfpbkdplndklnmghklp";
       hash = "sha256-L4ts/TG52HaHah9ZZBnVKjT6+h8tUY9C/eYeZcx6cMM=";
+    }
+    # Jobright Autofill
+    {
+      id = "odcnpipkhjegpefkfplmedhmkmmhmoko";
+      hash = "sha256-PtfEgRIRT3Md+PPFyc5s4TGDxJw/P7/haXkYWZj2KD4=";
     }
   ];
 
