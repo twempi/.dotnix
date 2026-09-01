@@ -2,7 +2,7 @@
   wayland.windowManager.hyprland.settings.workspace_rule = [
     {
       workspace = "1";
-      monitor = "DP-2";
+      monitor = "DP-1";
       default = true;
     }
     {

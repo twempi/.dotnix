@@ -1,7 +1,7 @@
 {
   wayland.windowManager.hyprland.settings.monitor = [
     {
-      output = "DP-2";
+      output = "DP-1";
       mode = "2560x1440@180";
       position = "0x0";
       scale = 1;

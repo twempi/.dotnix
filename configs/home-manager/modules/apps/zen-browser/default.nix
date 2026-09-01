@@ -144,10 +144,6 @@
           id = "tasks-for-canvas";
           pinned = false;
         };
-        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = mkExtensionEntry {
-          id = "bitwarden-password-manager";
-          pinned = false;
-        };
       };
 
       Preferences = mkLockedAttrs {

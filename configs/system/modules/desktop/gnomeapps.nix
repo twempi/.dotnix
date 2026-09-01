@@ -6,6 +6,7 @@
     gst_all_1.gst-plugins-bad
     gst_all_1.gst-plugins-ugly
     gst_all_1.gst-libav
+    gnome-network-displays
   ];
   services.gvfs.enable = true;
   programs.gnome-disks.enable = true;
