@@ -1,9 +1,9 @@
 {pkgs, ...}: {
   stylix.targets.anki.enable = true;
 
-  programs.anki.profiles.edward = {
+  programs.anki = {
     enable = true;
-    sync = {
+    profiles.edward.sync = {
       autoSync = true;
       keyFile = "${./syncKey}";
       username = "edwarddan72@gmail.com";
