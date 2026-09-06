@@ -100,5 +100,6 @@
     ./modules/apps/blanket
     ./modules/apps/mcomix
     ./modules/apps/distrobox
+    ./modules/apps/t3code
   ];
 }
