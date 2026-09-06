@@ -72,6 +72,7 @@
     ./modules/apps/zoom
     ./modules/apps/gnome-clocks
     ./modules/apps/gearlever
+    ./modules/apps/handy
     ./modules/apps/iloader
     ./modules/apps/geogebra
     ./modules/apps/telegram

@@ -108,26 +108,18 @@
   }: let
     system = "x86_64-linux";
 
-    localPackageOverlay = final: prev: {
-      iloader = prev.callPackage ./configs/system/pkgs/iloader/default.nix {};
-      handy = prev.callPackage ./configs/system/pkgs/handy/default.nix {};
-    };
-
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
       config.permittedInsecurePackages = [
         "electron-40.10.5"
       ];
-      overlays = [localPackageOverlay];
     };
 
     pkgsStable = import inputs.nixpkgs-stable {
       inherit system;
       config.allowUnfree = true;
     };
-
-    localPkgs = import ./configs/system/pkgs {inherit pkgs;};
 
     specialArgsFor = hostname: {
       inherit inputs system hostname pkgsStable;
@@ -137,9 +129,6 @@
       home-manager.nixosModules.home-manager
       inputs.sops-nix.nixosModules.sops
       inputs.stylix.nixosModules.stylix
-      ({...}: {
-        nixpkgs.overlays = [localPackageOverlay];
-      })
     ];
 
     mkNixosHost = hostname: extraModules:
@@ -180,10 +169,6 @@
           ++ extraModules;
       };
   in {
-    packages.${system} = localPkgs.packages;
-
-    apps.${system} = localPkgs.apps;
-
     nixosConfigurations = {
       desktop = mkNixosHost "desktop" [];
 

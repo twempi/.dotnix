@@ -28,7 +28,7 @@ in {
   programs.nixcord = {
     enable = true;
     vesktop.enable = true;
-    discord.vencord.enable = false;
+    discord.vencord.enable = true;
 
     config = {
       frameless = true;
