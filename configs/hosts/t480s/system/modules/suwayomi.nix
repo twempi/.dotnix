@@ -39,7 +39,8 @@ in {
       webUIInterface = "browser";
       webUIFlavor = "WebUI";
       webUIChannel = "bundled";
-      webUIUpdateCheckInterval = 23;
+      # Disable scheduled WebUI update checks; retain bundled assets with the server release.
+      webUIUpdateCheckInterval = 0;
 
       # Keep the legacy setting in sync with the v2.3 extension store setting.
       extensionRepos = [
