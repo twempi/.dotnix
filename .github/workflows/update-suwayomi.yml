@@ -1,0 +1,92 @@
+name: Update Suwayomi Server
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-suwayomi
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check for an open Suwayomi update pull request
+        id: open-pr
+        run: |
+          if gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --json headRefName \
+            --jq '.[] | select(.headRefName | test("^automation/suwayomi-v")) | .headRefName' \
+            | grep -q .; then
+            echo "skip=true" >>"$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >>"$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Nix
+        if: steps.open-pr.outputs.skip != 'true'
+        uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
+
+      - name: Update the configured release
+        id: update
+        if: steps.open-pr.outputs.skip != 'true'
+        run: |
+          scripts/update-suwayomi.sh
+
+          if git diff --quiet -- configs/hosts/t480s/system/modules/suwayomi.nix; then
+            echo "changed=false" >>"$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          version="$(perl -ne 'print "$1\n" and exit if /^\s*suwayomiVersion\s*=\s*"([^"]+)"\s*;/' configs/hosts/t480s/system/modules/suwayomi.nix)"
+          test -n "$version"
+          echo "changed=true" >>"$GITHUB_OUTPUT"
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+
+      - name: Validate the update
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          nix flake check --no-build
+          nix build --no-link .#nixosConfigurations.t480s.config.services.suwayomi-server.package
+          git diff --check
+          test "$(git diff --name-only)" = "configs/hosts/t480s/system/modules/suwayomi.nix"
+
+      - name: Create an update pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.update.outputs.version }}
+        run: |
+          branch="automation/suwayomi-v${VERSION}"
+
+          if git ls-remote --exit-code origin "refs/heads/${branch}" >/dev/null; then
+            echo "Remote branch ${branch} already exists without an open update pull request." >&2
+            exit 1
+          fi
+
+          git switch --create "$branch"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add configs/hosts/t480s/system/modules/suwayomi.nix
+          git commit -m "chore(t480s): update Suwayomi Server to v${VERSION}"
+          git push --set-upstream origin "$branch"
+          gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$branch" \
+            --title "chore(t480s): update Suwayomi Server to v${VERSION}" \
+            --body "Updates Suwayomi Server from the official stable release. The release JAR hash was calculated with \`nix hash file --sri --type sha256\` and the affected package was built successfully."
