@@ -1,4 +1,4 @@
-{
+{pkgs, ...}: {
   environment = {
     localBinInPath = true;
     sessionVariables = {
@@ -13,5 +13,11 @@
 
   programs.nix-ld = {
     enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc
+      zlib
+      ncurses
+      libxml2
+    ];
   };
 }
