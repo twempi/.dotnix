@@ -81,6 +81,10 @@ async function saveStartpageSettings(patch, options = {}) {
   });
 
   try {
+    if (typeof canSaveStartpageSettings === 'function' && !canSaveStartpageSettings()) {
+      throw new Error('Settings are syncing. Reload the start page once syncing finishes.');
+    }
+
     const res = await fetch(STARTPAGE_SETTINGS_API_URL, {
       method: 'PUT',
       credentials: 'same-origin',
@@ -102,6 +106,9 @@ async function saveStartpageSettings(patch, options = {}) {
     }
 
     window.STARTPAGE_SETTINGS = _normalizeSettingsForSave(payload.settings || nextSettings);
+    if (typeof cacheStartpageSettings === 'function') {
+      cacheStartpageSettings(window.STARTPAGE_SETTINGS);
+    }
     if (showSuccess && typeof showToast === 'function') {
       showToast(successMessage, 'success', 1800);
     }

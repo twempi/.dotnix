@@ -426,6 +426,7 @@ async function handleResetCommand() {
     }
   }
   keysToRemove.forEach(key => localStorage.removeItem(key));
+  if (typeof clearStartpageSettingsCache === 'function') clearStartpageSettingsCache();
 
   showToast('Local data cleared — reloading...', 'success', 1500);
   setTimeout(() => location.reload(), 1500);

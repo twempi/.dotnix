@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "Terminal Start Page",
   "description": "A keyboard-driven terminal start page with AI routing, open directory search, and Stylix theming.",
-  "version": "7.1.5",
+  "version": "7.1.6",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAg5RBLl1VufLX76vNjzyT7OJgDRDTpYCk3WXsBNpsO/RA1qN1b4kTX5W64BMyGHCGnXveL/R1V5yHpAwFJ17LW0Qm2NT6ZYisk4fVCBYH8TfyiZxOwX6AOaov4yEcAgBwOwAIXhxV0BUnd8RXiQlHyaemZlKpfzJtnk86ull7Nl5UT1T12noUa9KkC2w+N3bjKV9S9HJLBMHYst9aewGqtDQ31o/X3vs+s0Rn9HV+7tAkv0yKVxE2um+dZVlwsVCQMz5acFaU376e36T65HaZrDyulvN0TquX9bVmmXuGZ8RgjEI5koVcKv/megkJUQL+oRUqSxw8LxNcYsMGJZRTJwIDAQAB",
   "chrome_url_overrides": {
     "newtab": "focus/focus.html"
   },

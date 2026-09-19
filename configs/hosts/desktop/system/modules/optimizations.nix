@@ -15,7 +15,8 @@
       "vm.swappiness" = 10;
       "vm.vfs_cache_pressure" = 50;
       "vm.max_map_count" = 2147483642;
-      "kernel.nmi_watchdog" = 0;
+      # "kernel.nmi_watchdog" = 0;
+      "kernel.nmi_watchdog" = 1;
     };
   };
 
@@ -24,11 +25,14 @@
 
   services = {
     irqbalance.enable = true;
+    # Disabled for idle-freeze stability testing; restore after a stable test period.
+    /*
     scx = {
       enable = true;
       package = pkgs.scx.full;
       scheduler = "scx_lavd";
     };
+    */
   };
 
   zramSwap = {

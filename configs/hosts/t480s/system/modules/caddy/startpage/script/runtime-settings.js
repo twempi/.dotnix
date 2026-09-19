@@ -3,8 +3,11 @@
 // ========================================
 
 const STARTPAGE_SETTINGS_URL = window.STARTPAGE_SETTINGS_URL || '/settings.json';
+const STARTPAGE_USE_LOCAL_SETTINGS_CACHE = window.STARTPAGE_USE_LOCAL_SETTINGS_CACHE === true;
+const STARTPAGE_SETTINGS_CACHE_KEY = 'startpage-central-settings-v1';
 
 window.STARTPAGE_SETTINGS = {};
+let _startpageSettingsCanSave = !STARTPAGE_USE_LOCAL_SETTINGS_CACHE;
 
 function _cloneSettingValue(value) {
   if (value === undefined) return undefined;
@@ -139,12 +142,67 @@ function normalizeStartpageSettings(raw) {
   };
 }
 
+function _readCachedStartpageSettings() {
+  if (!STARTPAGE_USE_LOCAL_SETTINGS_CACHE) return null;
+  try {
+    const raw = window.localStorage.getItem(STARTPAGE_SETTINGS_CACHE_KEY);
+    if (!raw) return null;
+    const cached = JSON.parse(raw);
+    return _isPlainObject(cached) ? cached : null;
+  } catch (err) {
+    console.warn(`Ignoring cached startpage settings: ${err.message}`);
+    return null;
+  }
+}
+
+function cacheStartpageSettings(raw) {
+  if (!STARTPAGE_USE_LOCAL_SETTINGS_CACHE) return;
+  try {
+    window.localStorage.setItem(
+      STARTPAGE_SETTINGS_CACHE_KEY,
+      JSON.stringify(normalizeStartpageSettings(raw))
+    );
+  } catch (err) {
+    console.warn(`Could not cache startpage settings: ${err.message}`);
+  }
+}
+
+function clearStartpageSettingsCache() {
+  if (!STARTPAGE_USE_LOCAL_SETTINGS_CACHE) return;
+  window.localStorage.removeItem(STARTPAGE_SETTINGS_CACHE_KEY);
+  _startpageSettingsCanSave = false;
+}
+
+function canSaveStartpageSettings() {
+  return _startpageSettingsCanSave;
+}
+
+async function _fetchStartpageSettings() {
+  const res = await fetch(STARTPAGE_SETTINGS_URL, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function _refreshStartpageSettingsCache() {
+  try {
+    cacheStartpageSettings(await _fetchStartpageSettings());
+  } catch (err) {
+    console.warn(`Could not refresh startpage settings: ${err.message}`);
+  }
+}
+
 async function loadStartpageSettings() {
+  if (STARTPAGE_USE_LOCAL_SETTINGS_CACHE) {
+    const cached = _readCachedStartpageSettings();
+    window.STARTPAGE_SETTINGS = normalizeStartpageSettings(cached || {});
+    _startpageSettingsCanSave = cached !== null;
+    void _refreshStartpageSettingsCache();
+    return window.STARTPAGE_SETTINGS;
+  }
+
   let raw = {};
   try {
-    const res = await fetch(STARTPAGE_SETTINGS_URL, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    raw = await res.json();
+    raw = await _fetchStartpageSettings();
   } catch (err) {
     console.warn(`Using bundled startpage settings fallback: ${err.message}`);
   }

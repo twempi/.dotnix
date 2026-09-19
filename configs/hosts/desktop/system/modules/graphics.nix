@@ -31,6 +31,8 @@
     videoDrivers = ["nvidia"];
   };
 
+  # Disabled for idle-freeze stability testing; restore after a stable test period.
+  /*
   services.lact = {
     enable = true;
     settings = {
@@ -53,7 +55,10 @@
       auto_switch_profiles = false;
     };
   };
+  */
 
+  # Disabled for idle-freeze stability testing; restore after a stable test period.
+  /*
   systemd.user.services.nvidia-powermizer-max = {
     description = "Prefer maximum NVIDIA performance mode";
     after = ["graphical-session.target"];
@@ -63,6 +68,7 @@
       ExecStart = "${config.hardware.nvidia.package.settings}/bin/nvidia-settings -a [gpu:0]/GPUPowerMizerMode=1";
     };
   };
+  */
 
   environment.sessionVariables = {
     LIBVA_DRIVER_NAME = "nvidia";

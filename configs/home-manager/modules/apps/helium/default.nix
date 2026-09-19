@@ -158,6 +158,7 @@
     cat > "$out/script/extension-env.js" <<'EOF'
     window.STARTPAGE_SETTINGS_URL = ${builtins.toJSON "${homePageOrigin}/settings.json"};
     window.STARTPAGE_SETTINGS_API_URL = ${builtins.toJSON "${homePageOrigin}/api/settings"};
+    window.STARTPAGE_USE_LOCAL_SETTINGS_CACHE = true;
     EOF
 
     substituteInPlace "$out/index.html" \
@@ -195,8 +196,8 @@
     homepage_is_newtabpage = false;
 
     session = {
-      restore_on_startup = 4;
-      startup_urls = [homePage];
+      restore_on_startup = 5;
+      startup_urls = [];
     };
 
     vertical_tabs = {
@@ -252,9 +253,8 @@ in {
       MetricsReportingEnabled = false;
       PasswordManagerEnabled = true;
 
-      # Open the hosted start page because extension overrides load after the initial tab.
-      RestoreOnStartup = 4;
-      RestoreOnStartupURLs = [homePage];
+      # Open the local extension through Chromium's New Tab Page.
+      RestoreOnStartup = 5;
 
       SearchSuggestEnabled = true;
       ShowHomeButton = false;
