@@ -49,7 +49,7 @@
           (pkgs.writeText "noctalia-${wm}-extra.toml" "\n\n${extraConfig}\n")
         ];
   in
-    if config.programs.noctalia.validateConfig
+    if config.programs.noctalia.checkConfig
     then
       pkgs.runCommand "noctalia-${wm}-config" {} ''
         config_dir="$TMPDIR/noctalia-${wm}"

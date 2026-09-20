@@ -112,15 +112,15 @@
     hash,
   }: let
     os =
-      if pkgs.stdenv.isDarwin
+      if pkgs.stdenv.hostPlatform.isDarwin
       then "mac"
       else "linux";
     arch =
-      if pkgs.stdenv.isAarch64
+      if pkgs.stdenv.hostPlatform.isAarch64
       then "arm64"
       else "x64";
     os_arch =
-      if pkgs.stdenv.isDarwin
+      if pkgs.stdenv.hostPlatform.isDarwin
       then "arm64"
       else "x86_64";
   in

@@ -70,7 +70,7 @@ in {
     # trackpad settings
     trackpad_accel_profile = 0;
     trackpad_accel_speed = 0.5;
-    disable_while_typing = 0;
+    trackpad_disable_while_typing = 0;
 
     syncobj_enable = 0;
 
