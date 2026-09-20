@@ -99,6 +99,11 @@
       url = "github:twempi/luasnip-latex-snippets.nvim";
       flake = false;
     };
+
+    pi = {
+      url = "github:lukasl-dev/pi.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {

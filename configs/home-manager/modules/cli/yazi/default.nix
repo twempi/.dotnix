@@ -44,7 +44,6 @@ in {
         show_symlink = true;
         scrolloff = 5;
         mouse_events = ["click" "scroll"];
-        title_format = "Yazi: {cwd}";
       };
 
       preview = {
@@ -56,7 +55,6 @@ in {
         image_delay = 30;
         image_filter = "triangle";
         image_quality = 90;
-        sixel_fraction = 15;
         ueberzug_scale = 1;
         ueberzug_offset = [0 0 0 0];
       };
@@ -64,8 +62,9 @@ in {
       opener = {
         edit = [
           {
-            run = ''$EDITOR "$@"'';
+            run = ''$EDITOR %s'';
             block = true;
+            desc = "$EDITOR";
             for = "unix";
           }
         ];
@@ -230,8 +229,8 @@ in {
         }
         {
           on = ["R" "b"];
-          run = ["plugin recycle-bin"];
-          desc = "Open Recycle Bin menu";
+          run = "plugin trash";
+          desc = "Open Trash";
         }
         {
           on = ["c" "p"];
@@ -255,14 +254,12 @@ in {
       "full-border" = pkgs.yaziPlugins.full-border;
       "bunny" = "${inputs.bunny-yazi}";
       "pref-by-location" = pref-by-location-plugin;
-      "recycle-bin" = pkgs.yaziPlugins.recycle-bin;
       "convert" = convert-plugin;
     };
 
     initLua = ''
       require("full-border"):setup()
       require("pref-by-location"):setup({})
-      require("recycle-bin"):setup()
 
       require("bunny"):setup({
         hops = {
