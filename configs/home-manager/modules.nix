@@ -44,6 +44,7 @@
     ./modules/cli/lazygit
     ./modules/cli/gowall
     ./modules/cli/cyberdrop-dl
+    ./modules/cli/pi
 
     # Desktop
     ./modules/desktop/audio
@@ -100,7 +101,7 @@
     ./modules/apps/rars
     ./modules/apps/blanket
     ./modules/apps/mcomix
-    ./modules/apps/distrobox
+    # ./modules/apps/distrobox
     ./modules/apps/t3code
   ];
 }

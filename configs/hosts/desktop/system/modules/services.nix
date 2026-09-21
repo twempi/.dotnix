@@ -8,6 +8,9 @@
     done
   '';
 in {
+  environment.systemPackages = with pkgs; [
+    openrgb
+  ];
   config = {
     services.udev.packages = [pkgs.openrgb];
     boot.kernelModules = ["i2c-dev"];

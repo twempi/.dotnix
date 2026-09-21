@@ -27,8 +27,8 @@ in {
   # stylix.targets.nixcord.enable = true;
   programs.nixcord = {
     enable = true;
+    discord.enable = false;
     vesktop.enable = true;
-    discord.vencord.enable = true;
 
     config = {
       frameless = true;
