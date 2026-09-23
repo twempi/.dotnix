@@ -13,6 +13,11 @@
     "sway"
     "mango"
   ];
+  terminalFor = {
+    hyprland = lib.getExe pkgs.kitty;
+    sway = lib.getExe pkgs.foot;
+    mango = lib.getExe pkgs.kitty;
+  };
 
   stylixColors = config.lib.stylix.colors.withHashtag;
   nativeStylixConfig = config.xdg.configFile."noctalia/config.toml".source;
@@ -65,6 +70,7 @@
       name = "noctalia-${wm}";
       text = ''
         exec env \
+          TERMINAL="${terminalFor.${wm}}" \
           NOCTALIA_CONFIG_HOME="${config.xdg.configHome}/noctalia-${wm}" \
           NOCTALIA_STATE_HOME="${config.xdg.stateHome}/noctalia-${wm}" \
           NOCTALIA_DATA_HOME="${config.xdg.dataHome}/noctalia-${wm}" \
@@ -109,6 +115,12 @@ in {
     };
 
     home.packages = builtins.attrValues wrappers;
+
+    xdg.desktopEntries.btop = {
+      name = "btop";
+      exec = lib.getExe pkgs.btop;
+      terminal = true;
+    };
 
     xdg.configFile = configFiles;
   };
