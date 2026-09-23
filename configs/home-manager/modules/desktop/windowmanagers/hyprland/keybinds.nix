@@ -49,7 +49,7 @@
       ]
     )
     9);
-  forceKillActive = "hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid // empty' | ${pkgs.findutils}/bin/xargs -r kill";
+  forceKillActive = "hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.pid // empty' | ${pkgs.findutils}/bin/xargs -r ${pkgs.procps}/bin/kill -KILL";
 in {
   wayland.windowManager.hyprland.settings = {
     # Apps

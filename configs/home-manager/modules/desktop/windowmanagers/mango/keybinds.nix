@@ -38,6 +38,7 @@ in {
     bind =
       [
         "SUPER,Q,killclient"
+        "SUPER+SHIFT,Q,killclient,force"
         "SUPER,V,togglefloating"
         "SUPER,F,togglemaximizescreen"
         "SUPER+SHIFT,F,togglefullscreen"

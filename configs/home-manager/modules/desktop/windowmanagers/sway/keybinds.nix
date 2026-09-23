@@ -24,7 +24,7 @@ in {
       "Mod4+F" = "fullscreen toggle";
 
       # Force kill
-      "Mod4+Shift+Q" = "exec ${pkgs.sway}/bin/swaymsg -t get_tree | ${pkgs.jq}/bin/jq -r '.. | select(.focused? == true) | .pid // empty' | xargs -r kill";
+      "Mod4+Shift+Q" = "exec ${pkgs.sway}/bin/swaymsg -t get_tree | ${pkgs.jq}/bin/jq -r '.. | select(.focused? == true) | .pid // empty' | ${pkgs.findutils}/bin/xargs -r ${pkgs.procps}/bin/kill -KILL";
 
       # Apps
       "Mod4+Return" = "exec ${pkgs.foot}/bin/foot";
