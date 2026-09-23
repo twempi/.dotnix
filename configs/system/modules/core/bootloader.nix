@@ -43,7 +43,7 @@ in {
     };
 
     plymouth = {
-      enable = true;
+      enable = false;
       theme = "mac-style";
       themePackages = [mac-style-load];
     };
