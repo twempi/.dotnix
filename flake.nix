@@ -85,6 +85,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    claude-code-nix = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     minimal-grub-theme = {
       url = "github:twempi/minimal-grub-theme";
       inputs.nixpkgs.follows = "nixpkgs";

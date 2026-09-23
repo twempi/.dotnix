@@ -105,6 +105,12 @@ in {
     keymap = {
       mgr.prepend_keymap = [
         {
+          on = ["<Enter>"];
+          run = "plugin smart-enter";
+          desc = "Enter the child directory, or open the file";
+        }
+
+        {
           run = "plugin bunny";
           on = [";"];
           desc = "Start bunny.yazi";
@@ -252,6 +258,7 @@ in {
 
     plugins = {
       "full-border" = pkgs.yaziPlugins.full-border;
+      "smart-enter" = pkgs.yaziPlugins.smart-enter;
       "bunny" = "${inputs.bunny-yazi}";
       "pref-by-location" = pref-by-location-plugin;
       "convert" = convert-plugin;
