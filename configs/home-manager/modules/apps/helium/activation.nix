@@ -38,13 +38,4 @@ lib.hm.dag.entryAfter ["writeBoundary"] ''
     printf '%s\n' "$local_state_fallback" > "$local_state_file"
   fi
 
-  sessions_dir="$HOME/.config/net.imput.helium/${heliumProfileDir}/Sessions"
-
-  if [ -d "$sessions_dir" ]; then
-    for session_file in "$sessions_dir"/Session_* "$sessions_dir"/Tabs_*; do
-      if [ -f "$session_file" ] && ${pkgs.binutils}/bin/strings "$session_file" | ${pkgs.gnugrep}/bin/grep -q 'http://0.0.0.1/'; then
-        run rm -f "$session_file"
-      fi
-    done
-  fi
 ''

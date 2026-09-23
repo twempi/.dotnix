@@ -132,8 +132,6 @@
         '{ external_crx: $crx, external_version: $version }' > "$out"
     '';
 in {
-  extensionIds = map (extension: extension.id) extensions;
-
   configFiles = lib.listToAttrs (
     map (extension: {
       name = "net.imput.helium/External Extensions/${extension.id}.json";

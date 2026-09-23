@@ -1,7 +1,7 @@
 {
   config,
-  homePageOrigin,
   pkgs,
+  startpageOrigin,
 }: let
   startpageSource = ../../../../../hosts/t480s/system/modules/caddy/startpage;
   mkStylixStartpage =
@@ -21,8 +21,8 @@ in
     chmod -R u+w "$out"
 
     cat > "$out/script/extension-env.js" <<'EOF'
-    window.STARTPAGE_SETTINGS_URL = ${builtins.toJSON "${homePageOrigin}/settings.json"};
-    window.STARTPAGE_SETTINGS_API_URL = ${builtins.toJSON "${homePageOrigin}/api/settings"};
+    window.STARTPAGE_SETTINGS_URL = ${builtins.toJSON "${startpageOrigin}/settings.json"};
+    window.STARTPAGE_SETTINGS_API_URL = ${builtins.toJSON "${startpageOrigin}/api/settings"};
     window.STARTPAGE_USE_LOCAL_SETTINGS_CACHE = true;
     EOF
 
@@ -32,8 +32,8 @@ in
       <script src="script/storage.js"></script>'
 
     jq \
-      --arg origin ${builtins.toJSON homePageOrigin} \
-      --arg host ${builtins.toJSON "${homePageOrigin}/*"} \
+      --arg origin ${builtins.toJSON startpageOrigin} \
+      --arg host ${builtins.toJSON "${startpageOrigin}/*"} \
       '
         .chrome_url_overrides.newtab = "focus/focus.html"
         | .host_permissions = (((.host_permissions // []) + [$host]) | unique)

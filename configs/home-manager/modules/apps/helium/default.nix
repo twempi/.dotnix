@@ -5,40 +5,55 @@
   pkgs,
   ...
 }: let
-  homePageOrigin = "https://t480s.tailae03d0.ts.net";
-  homePage = "${homePageOrigin}/";
+  startpageOrigin = "https://t480s.tailae03d0.ts.net";
   heliumProfileDir = "Profile";
 
   extensions = import ./extensions {
-    inherit config homePageOrigin lib pkgs;
+    inherit config lib pkgs startpageOrigin;
   };
 
-  profilePreferences = import ./preferences.nix {inherit homePage;};
+  heliumFlags = [
+    "--profile-directory=${heliumProfileDir}"
+    "--force-dark-mode"
+    "--load-extension=${lib.concatStringsSep "," (map toString extensions.unpackedPaths)}"
+  ];
+
+  heliumPackage = inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.helium;
+  helium = heliumPackage.override {flags = heliumFlags;};
+
+  profilePreferences = import ./preferences.nix;
 in {
-  imports = [inputs.helium.homeModules.helium];
+  imports = [inputs.helium.homeModules.default];
 
   programs.helium = {
     enable = true;
-    defaultBrowser = true;
-    package = inputs.helium-package.packages.${pkgs.stdenv.hostPlatform.system}.helium;
+    package = heliumPackage;
+    flags = heliumFlags;
+  };
 
-    extensions = [];
-
-    extraFlags = [
-      "--profile-directory=${heliumProfileDir}"
-      "--force-dark-mode"
-      "--load-extension=${lib.concatStringsSep "," (map toString extensions.unpackedPaths)}"
-    ];
-
-    extraPolicies = import ./policies.nix {
-      inherit homePage;
-      extensionIds = extensions.webStore.extensionIds;
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "text/html" = "helium.desktop";
+      "x-scheme-handler/http" = "helium.desktop";
+      "x-scheme-handler/https" = "helium.desktop";
     };
+  };
 
-    # The upstream HM module writes preferences to the Default profile only.
-    # Since this config launches Profile, leave this empty and use the
-    # activation hook below instead.
-    preferences = {};
+  xdg.desktopEntries.helium = {
+    name = "Helium";
+    exec = "${helium}/bin/helium %U";
+    icon = "helium";
+    terminal = false;
+    categories = [
+      "Network"
+      "WebBrowser"
+    ];
+    mimeType = [
+      "text/html"
+      "x-scheme-handler/http"
+      "x-scheme-handler/https"
+    ];
   };
 
   xdg.configFile = extensions.webStore.configFiles;
