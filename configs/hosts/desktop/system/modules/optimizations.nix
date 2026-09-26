@@ -1,7 +1,8 @@
 {pkgs, ...}: {
   # Optimizations
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    # kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages;
     kernelModules = ["ntsync"];
     kernelParams = [
       "nvidia-drm.modeset=1"
