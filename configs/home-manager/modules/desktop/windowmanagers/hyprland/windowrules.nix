@@ -1,4 +1,4 @@
-{...}: {
+{
   wayland.windowManager.hyprland.settings = {
     window_rule = [
       # Picture-in-Picture
@@ -56,17 +56,7 @@
 
       # Always-float apps
       {
-        match.class = "^(waypaper)$";
-        float = true;
-        center = true;
-      }
-      {
         match.class = "^(steam|Steam)$";
-        float = true;
-        center = true;
-      }
-      {
-        match.class = "^(io.github.kaii_lb.Overskride)$";
         float = true;
         center = true;
       }
@@ -95,7 +85,15 @@
         float = true;
         center = true;
       }
+      {
+        match.class = "^(md[.]obsidian[.]Obsidian)$";
+        match.initial_title = "^(Settings|Community plugins).*$";
+        float = true;
+        center = true;
+        size = "1100 750";
+      }
 
+      # Launch on workspace #
       {
         match.class = "^(Spotify|spotify)$";
         workspace = "9 silent";

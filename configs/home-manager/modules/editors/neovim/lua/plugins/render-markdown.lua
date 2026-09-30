@@ -1,6 +1,7 @@
 return {
 	{
 		"render-markdown.nvim",
+		enabled = false,
 		ft = { "markdown" },
 		after = function()
 			require("render-markdown").setup({

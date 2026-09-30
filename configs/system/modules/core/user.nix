@@ -1,6 +1,6 @@
 {
 	users.users.edward = {
 		isNormalUser = true;
-		extraGroups = [ "wheel" "input" "networkmanager" "docker" "video"];
+		extraGroups = [ "wheel" "input" "networkmanager" "docker" "video" "dialout"];
 	};
 }

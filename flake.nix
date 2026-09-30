@@ -100,6 +100,11 @@
       flake = false;
     };
 
+    vellum-nvim = {
+      url = "github:blackhat-7/vellum.nvim";
+      flake = false;
+    };
+
     pi = {
       url = "github:lukasl-dev/pi.nix";
       inputs.nixpkgs.follows = "nixpkgs";

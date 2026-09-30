@@ -118,7 +118,9 @@ in {
 
     xdg.desktopEntries.btop = {
       name = "btop";
+      comment = "Resource monitor for the terminal";
       exec = lib.getExe pkgs.btop;
+      icon = "btop";
       terminal = true;
     };
 
