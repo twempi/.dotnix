@@ -37,8 +37,8 @@ in {
     };
   };
 
-  # Starts the desktop Pi instance in the only directory exposed to its jail.
-  home.packages = lib.optionals (hostname == "desktop") [
+  # Starts Pi in the course directory exposed to its jail.
+  home.packages = lib.optionals (lib.elem hostname ["desktop" "g14"]) [
     (pkgs.writeShellApplication {
       name = "pi-learn";
       runtimeInputs = [config.programs.pi.coding-agent.finalPackage];
