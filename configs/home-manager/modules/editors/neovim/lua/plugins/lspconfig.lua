@@ -100,6 +100,18 @@ return {
 			},
 		})
 
+		local nixd_options = {
+			nixos = {
+				expr = nix_info.get("", "info", "nixdExtras", "nixosOptions"),
+			},
+		}
+
+		if nix_info.get(false, "info", "nixdExtras", "enableHomeManagerOptions") then
+			nixd_options["home-manager"] = {
+				expr = nix_info.get("", "info", "nixdExtras", "homeManagerOptions"),
+			}
+		end
+
 		vim.lsp.config("nixd", {
 			capabilities = capabilities,
 			on_attach = on_attach,
@@ -114,14 +126,7 @@ return {
 					formatting = {
 						command = { "alejandra" },
 					},
-					options = {
-						nixos = {
-							expr = nix_info.get("", "info", "nixdExtras", "nixosOptions"),
-						},
-						["home-manager"] = {
-							expr = nix_info.get("", "info", "nixdExtras", "homeManagerOptions"),
-						},
-					},
+					options = nixd_options,
 				},
 			},
 		})

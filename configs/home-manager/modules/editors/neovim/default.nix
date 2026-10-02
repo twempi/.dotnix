@@ -127,6 +127,9 @@ in {
           (builtins.getFlake "${inputs.self}").nixosConfigurations.${hostname}.options
         '';
 
+        # nixd crashes while completing `programs.*` for the desktop Home Manager profile.
+        enableHomeManagerOptions = hostname == "t480s";
+
         homeManagerOptions = ''
           (builtins.getFlake "${inputs.self}").homeConfigurations.${homeConfigName}.options
         '';

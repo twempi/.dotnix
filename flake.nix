@@ -80,6 +80,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    context7-plugin = {
+      url = "github:upstash/context7";
+      flake = false;
+    };
+
+    ponytail-plugin = {
+      url = "github:DietrichGebert/ponytail";
+      flake = false;
+    };
+
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";

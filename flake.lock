@@ -219,6 +219,22 @@
         "type": "github"
       }
     },
+    "context7-plugin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790940064,
+        "narHash": "sha256-5gckAd+rfGafB9KZPCS1jJqXjA2vF0VXoGHJngDFtUQ=",
+        "owner": "upstash",
+        "repo": "context7",
+        "rev": "bfa02ea67b5707fe0e0a673faa49d0f50b28c80b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "upstash",
+        "repo": "context7",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1765145449,
@@ -1257,6 +1273,22 @@
         "type": "github"
       }
     },
+    "ponytail-plugin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790958167,
+        "narHash": "sha256-UrS70y5cBDue+ztLdgbKyNZc0ja1kxx7/+jpWrwVYD4=",
+        "owner": "DietrichGebert",
+        "repo": "ponytail",
+        "rev": "6c97ffa48710714672214915ad092e3fc6e85516",
+        "type": "github"
+      },
+      "original": {
+        "owner": "DietrichGebert",
+        "repo": "ponytail",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -1284,6 +1316,7 @@
         "bunny-yazi": "bunny-yazi",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
+        "context7-plugin": "context7-plugin",
         "helium": "helium",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
@@ -1299,6 +1332,7 @@
         "nixpkgs-stable": "nixpkgs-stable",
         "noctalia": "noctalia",
         "pi": "pi",
+        "ponytail-plugin": "ponytail-plugin",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
         "stylix": "stylix",
