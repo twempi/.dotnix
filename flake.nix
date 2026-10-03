@@ -120,6 +120,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    spotify-player = {
+      url = "github:aome510/spotify-player";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     gesturelight = {
       url = "github:twempi/motion-activated-lamp-shade";
       inputs.nixpkgs.follows = "nixpkgs";
