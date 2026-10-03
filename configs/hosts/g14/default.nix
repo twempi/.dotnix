@@ -15,6 +15,7 @@
   networking = {
     nameservers = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
     networkmanager.enable = true;
+    networkmanager.wifi.powersave = true;
     hostName = "g14";
   };
 }

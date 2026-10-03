@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   pkgsStable,
   ...
@@ -17,7 +18,7 @@
     bluetooth = {
       enable = true;
       # package = pkgsStable.bluez;
-      powerOnBoot = true;
+      powerOnBoot = lib.mkDefault true;
       settings = {
         General = {
           Experimental = true;

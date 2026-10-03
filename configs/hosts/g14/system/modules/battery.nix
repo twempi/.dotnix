@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   environment.systemPackages = with pkgs; [ryzenadj];
@@ -9,9 +6,11 @@
   powerManagement.enable = true;
 
   services = {
-    power-profiles-daemon.enable = true;
+    power-profiles-daemon.enable = false;
     tlp.enable = false;
   };
+
+  hardware.bluetooth.powerOnBoot = false;
 
   hardware.amdgpu.initrd.enable = true;
 
