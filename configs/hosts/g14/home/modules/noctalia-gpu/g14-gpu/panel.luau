@@ -16,7 +16,6 @@ local state = {
   selectedIndex = 1,
   switching = false,
   switchingLabel = "",
-  supported = "",
 }
 
 local function trim(value)
@@ -117,17 +116,9 @@ local function notifySwitched(label, pendingMode, pendingAction)
   noctalia.notify("GPU mode switched", body)
 end
 
-local function supportedModes()
-  local modes = {}
-  local supportedNorm = normalize(state.supported)
-
-  for _, mode in MODES do
-    if supportedNorm:find(normalize(mode.mode), 1, true) then
-      table.insert(modes, mode)
-    end
-  end
-
-  return modes
+local function selectableModes()
+  -- AsusMuxDgpu can omit otherwise switchable modes from --supported.
+  return MODES
 end
 
 local function statusText()
@@ -155,7 +146,7 @@ local function controlsEnabled()
 end
 
 local function selectCurrentForKeyboard()
-  local modes = supportedModes()
+  local modes = selectableModes()
   state.selectedIndex = 1
 
   for index, mode in ipairs(modes) do
@@ -189,7 +180,7 @@ end
 
 local function modeButtons()
   local children = {}
-  local modes = supportedModes()
+  local modes = selectableModes()
 
   if state.loading then
     table.insert(children, ui.label({
@@ -373,26 +364,10 @@ function refresh()
 
     state.current = commandOutput(currentResult)
 
-    if not supergfx("--supported", function(supportedResult)
-      if generation ~= state.generation then
-        return
-      end
-
-      if supportedResult.exitCode ~= 0 then
-        showError(commandOutput(supportedResult))
-        return
-      end
-
-      state.supported = commandOutput(supportedResult)
-      state.loading = false
-      state.error = ""
-      selectCurrentForKeyboard()
-      render()
-    end) then
-      if generation == state.generation then
-        showError("Failed to run supergfxctl --supported")
-      end
-    end
+    state.loading = false
+    state.error = ""
+    selectCurrentForKeyboard()
+    render()
   end) then
     if generation == state.generation then
       showError("Failed to run supergfxctl --get")
@@ -475,7 +450,7 @@ local function activateKeyboardSelection()
     return
   end
 
-  local modes = supportedModes()
+  local modes = selectableModes()
   local selected = modes[state.selectedIndex]
 
   if selected ~= nil then

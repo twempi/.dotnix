@@ -8,6 +8,7 @@
     ./modules/packages.nix
     ./modules/polkit.nix
     ./modules/services.nix
+    ./modules/gesturelight.nix
   ];
 
   # `edward-desktop` is activated through the standalone Home Manager output.
