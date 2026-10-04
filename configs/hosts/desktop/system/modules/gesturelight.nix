@@ -4,6 +4,6 @@
   ];
   gesturelight = {
     enable = true;
-    url = "192.168.68.72";
+    url = "192.168.68.60";
   };
 }

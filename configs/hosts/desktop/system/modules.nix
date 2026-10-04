@@ -7,7 +7,7 @@
     ./modules/optimizations.nix
     ./modules/packages.nix
     ./modules/polkit.nix
-    ./modules/services.nix
+    ./modules/openrgb.nix
     ./modules/gesturelight.nix
   ];
 

@@ -88,6 +88,12 @@
       id = "odcnpipkhjegpefkfplmedhmkmmhmoko";
       hash = "sha256-PtfEgRIRT3Md+PPFyc5s4TGDxJw/P7/haXkYWZj2KD4=";
     }
+
+    # Apollo.Io
+    {
+      id = "alhgpfoeiimagjlnfekdhkjlkiomcapa";
+      hash = "sha256-azsuQ57mbAFQumWGMuesfX9pCEu/PerKCGCVQIXdrFk=";
+    }
   ];
 
   fetchExtension = {
