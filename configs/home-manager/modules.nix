@@ -105,5 +105,6 @@
     # ./modules/apps/distrobox
     ./modules/apps/t3code
     ./modules/apps/spotify-player
+    ./modules/apps/fritzing
   ];
 }

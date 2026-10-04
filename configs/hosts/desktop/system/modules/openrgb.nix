@@ -6,7 +6,7 @@
   services.hardware.openrgb = {
     enable = true;
     package = pkgs.openrgb;
-    startupProfile = "black.orp";
+    startupProfile = "profiles/black.json";
     motherboard = "amd";
   };
 }
