@@ -206,11 +206,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790729097,
-        "narHash": "sha256-Zkj6kI64e9P9Cu9rqL4+3hT5jsAQizshbqviik23+Gs=",
+        "lastModified": 1791389900,
+        "narHash": "sha256-JP0kbuYAdD5OAJTlneMa0avcUbokCMtg0aSnYkF+EO8=",
         "owner": "sadjow",
         "repo": "codex-cli-nix",
-        "rev": "0cce411a817357ae6d875fd6cc76f8f155e9b12b",
+        "rev": "e39c62375e580c398d06b8d9337b1dc4c09a3326",
         "type": "github"
       },
       "original": {
@@ -1402,6 +1402,23 @@
         "type": "github"
       }
     },
+    "rea-plugin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791452401,
+        "narHash": "sha256-ZkORZi9hfQgQvtWsQRmArmQ4y/qnAcP3gPq5tcs/VL0=",
+        "owner": "morluto",
+        "repo": "rea",
+        "rev": "6fee42689ae6e95a0182e0d4d0f55644e73e72be",
+        "type": "github"
+      },
+      "original": {
+        "owner": "morluto",
+        "ref": "rea-agents-6.0.0",
+        "repo": "rea",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "bunny-yazi": "bunny-yazi",
@@ -1425,6 +1442,7 @@
         "noctalia": "noctalia",
         "pi": "pi",
         "ponytail-plugin": "ponytail-plugin",
+        "rea-plugin": "rea-plugin",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
         "spotify-player": "spotify-player",

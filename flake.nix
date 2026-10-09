@@ -90,6 +90,11 @@
       flake = false;
     };
 
+    rea-plugin = {
+      url = "github:morluto/rea/rea-agents-6.0.0";
+      flake = false;
+    };
+
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";

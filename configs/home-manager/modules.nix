@@ -66,6 +66,7 @@
     ./modules/desktop/webcam
 
     # Apps
+    ./modules/apps/arduino-ide
     ./modules/apps/obs-studio
     ./modules/apps/pavucontrol
     ./modules/apps/bleachbit
