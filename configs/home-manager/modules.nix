@@ -32,6 +32,7 @@
     ./modules/cli/ani-cli
     ./modules/cli/codex
     ./modules/cli/claude-code
+    ./modules/cli/mcp
     ./modules/cli/clipboard
     ./modules/cli/tmux
     ./modules/cli/fish

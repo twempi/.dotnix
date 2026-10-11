@@ -1,10 +1,9 @@
 {
-  hostname,
   inputs,
-  lib,
   pkgs,
   ...
 }: let
+  # Upstream has no flake.nix; build from the pinned rea-plugin input.
   rea = pkgs.buildNpmPackage {
     pname = "rea-agents";
     version = "6.0.0";
@@ -18,10 +17,11 @@
     npmPackFlags = ["--ignore-scripts"];
   };
 in {
-  home.packages = lib.optionals (hostname == "desktop") [rea];
+  home.packages = [rea];
 
   programs.codex = {
     enable = true;
+    enableMcpIntegration = true;
     package = inputs.codex-cli-nix.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     plugins = [
@@ -29,7 +29,7 @@ in {
       (inputs.context7-plugin + "/plugins/codex/context7")
     ];
 
-    settings = lib.optionalAttrs (hostname == "desktop") {
+    settings = {
       mcp_servers.rea = {
         command = "${rea}/bin/rea";
         args = ["mcp"];
@@ -37,7 +37,7 @@ in {
       };
     };
 
-    skills = lib.optionalAttrs (hostname == "desktop") {
+    skills = {
       reverse-engineer-anything = "${rea}/lib/node_modules/rea-agents/skills/reverse-engineer-anything";
     };
   };
