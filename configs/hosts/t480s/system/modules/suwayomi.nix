@@ -1,24 +1,15 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  inputs,
+  ...
+}: let
   suwayomiPort = 8080;
   extensionStoreUrl = "https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json";
-
-  suwayomiVersion = "2.3.2243";
-
-  suwayomiLatest = pkgs.suwayomi-server.overrideAttrs (old: {
-    version = suwayomiVersion;
-
-    src = pkgs.fetchurl {
-      url = "https://github.com/Suwayomi/Suwayomi-Server/releases/download/v${suwayomiVersion}/Suwayomi-Server-v${suwayomiVersion}.jar";
-
-      hash = "sha256-ghFBsy4XDUoC08vf7Vd+2PB70iOD/19BMuu1rkDpjdU=";
-    };
-  });
 in {
   services.suwayomi-server = {
     enable = true;
 
-    # Use newer upstream Suwayomi instead of nixpkgs' currently stale 2.1.1867 package.
-    package = suwayomiLatest;
+    package = inputs.suwayomi.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     # Tailscale Serve exposes it, so don't open this on LAN/Wi-Fi.
     openFirewall = false;

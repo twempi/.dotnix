@@ -134,6 +134,11 @@
       url = "github:twempi/motion-activated-lamp-shade";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    suwayomi = {
+      url = "github:twempi/suwayomi-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
