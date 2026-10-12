@@ -1447,6 +1447,7 @@
         "spicetify-nix": "spicetify-nix",
         "spotify-player": "spotify-player",
         "stylix": "stylix",
+        "suwayomi": "suwayomi",
         "tt-schemes": "tt-schemes",
         "vellum-nvim": "vellum-nvim",
         "zen-browser": "zen-browser"
@@ -1567,6 +1568,26 @@
       "original": {
         "owner": "nix-community",
         "repo": "stylix",
+        "type": "github"
+      }
+    },
+    "suwayomi": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791740289,
+        "narHash": "sha256-+5bOMSJYD/ZOPl2isBWQU6vxesEGt9T3ENVAIOY+MjA=",
+        "owner": "twempi",
+        "repo": "suwayomi-flake",
+        "rev": "725b48c7709461335fcfbafe1c8b367d2c10a35a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "twempi",
+        "repo": "suwayomi-flake",
         "type": "github"
       }
     },
