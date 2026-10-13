@@ -139,6 +139,16 @@
       url = "github:twempi/suwayomi-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    canvas-local-archive = {
+      url = "github:twempi/canvas-scraper";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    artcraft = {
+      url = "github:devitek/artcraft-nixos";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {

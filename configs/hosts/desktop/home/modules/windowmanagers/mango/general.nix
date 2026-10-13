@@ -1,6 +1,6 @@
 {
   wayland.windowManager.mango.settings = {
-    monitorrule = [
+    monitor_rule = [
       # Main 1440p monitor
       "name:^DP-2$,width:2560,height:1440,refresh:180,x:0,y:0,scale:1.0,vrr:0"
 

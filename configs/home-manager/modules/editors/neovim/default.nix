@@ -14,6 +14,16 @@ in {
     ./plugins.nix
   ];
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      typescript-language-server = prev.typescript-language-server.overrideAttrs (old: {
+        pnpmDeps = old.pnpmDeps.overrideAttrs {
+          outputHash = "sha256-xR/EF60lVBsITKgH7wCM2wHM46PFQevD51KfCENSUH4=";
+        };
+      });
+    })
+  ];
+
   wrappers.neovim = {
     enable = true;
     binName = "nvim";

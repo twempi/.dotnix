@@ -88,12 +88,16 @@ in {
         "NONE,XF86MonBrightnessDown,spawn,${noctalia} brightness-down"
 
         "NONE,XF86AudioNext,spawn,${noctalia} media next"
-        "NONE,XF86AudioPause,spawn,${noctalia} media toggle"
-        "NONE,XF86AudioPlay,spawn,${noctalia} media toggle"
         "NONE,XF86AudioPrev,spawn,${noctalia} media previous"
       ]
       ++ builtins.concatLists (map tagBind tagNumbers);
     # ++ keycodeTagBinds;
+
+    # Play and Pause share a keycode; match their distinct key symbols.
+    binds = [
+      "NONE,XF86AudioPause,spawn,${noctalia} media toggle"
+      "NONE,XF86AudioPlay,spawn,${noctalia} media toggle"
+    ];
 
     mousebind = [
       "SUPER,btn_left,moveresize,curmove"

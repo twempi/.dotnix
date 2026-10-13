@@ -11,6 +11,7 @@
 
     addons = with pkgs; [
       ankiAddons.review-heatmap
+      ankiAddons.anki-connect
     ];
   };
 }

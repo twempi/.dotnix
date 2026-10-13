@@ -108,5 +108,6 @@
     ./modules/apps/t3code
     ./modules/apps/spotify-player
     ./modules/apps/fritzing
+    ./modules/apps/artcraft
   ];
 }

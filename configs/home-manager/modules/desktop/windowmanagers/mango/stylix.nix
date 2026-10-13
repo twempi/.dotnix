@@ -14,17 +14,17 @@ in {
     in {
       wayland.windowManager.mango.settings =
         {
-          rootcolor = lib.mkDefault (mkMangoColor colors.base00 "ff");
-          bordercolor = lib.mkDefault (mkMangoColor colors.base03 "ff");
-          focuscolor = lib.mkDefault (mkMangoColor colors.base0D "ff");
-          urgentcolor = lib.mkDefault (mkMangoColor colors.base08 "ff");
-          maximizescreencolor = lib.mkDefault (mkMangoColor colors.base0B "ff");
-          scratchpadcolor = lib.mkDefault (mkMangoColor colors.base0D "ff");
-          globalcolor = lib.mkDefault (mkMangoColor colors.base0E "ff");
-          overlaycolor = lib.mkDefault (mkMangoColor colors.base0C "ff");
-          splitcolor = lib.mkDefault (mkMangoColor colors.base09 "ff");
-          dropcolor = lib.mkDefault (mkMangoColor colors.base0B "55");
-          shadowscolor = lib.mkDefault (mkMangoColor colors.base00 "99");
+          root_color = lib.mkDefault (mkMangoColor colors.base00 "ff");
+          border_color = lib.mkDefault (mkMangoColor colors.base03 "ff");
+          focus_color = lib.mkDefault (mkMangoColor colors.base0D "ff");
+          urgent_color = lib.mkDefault (mkMangoColor colors.base08 "ff");
+          maximized_screen_color = lib.mkDefault (mkMangoColor colors.base0B "ff");
+          scratchpad_color = lib.mkDefault (mkMangoColor colors.base0D "ff");
+          global_color = lib.mkDefault (mkMangoColor colors.base0E "ff");
+          overlay_color = lib.mkDefault (mkMangoColor colors.base0C "ff");
+          split_color = lib.mkDefault (mkMangoColor colors.base09 "ff");
+          drop_color = lib.mkDefault (mkMangoColor colors.base0B "55");
+          shadows_color = lib.mkDefault (mkMangoColor colors.base00 "99");
         }
         // lib.optionalAttrs (cursor != null) {
           cursor_theme = lib.mkDefault cursor.name;

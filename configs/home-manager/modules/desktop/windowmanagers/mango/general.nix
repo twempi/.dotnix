@@ -5,11 +5,11 @@ let
     9;
 in {
   wayland.windowManager.mango.settings = {
-    gappih = 4;
-    gappiv = 4;
-    gappoh = 4;
-    gappov = 4;
-    borderpx = 2;
+    gap_inner_horizontal = 4;
+    gap_inner_vertical = 4;
+    gap_outer_horizontal = 4;
+    gap_outer_vertical = 4;
+    border_px = 2;
     border_radius = 0;
     focused_opacity = 1.0;
     unfocused_opacity = 0.9;
@@ -42,8 +42,8 @@ in {
     zoom_initial_ratio = 0.4;
     zoom_end_ratio = 0.8;
 
-    fadein_begin_opacity = 0.5;
-    fadeout_begin_opacity = 0.3;
+    fade_in_begin_opacity = 0.5;
+    fade_out_begin_opacity = 0.3;
 
     animation_duration_move = 500;
     animation_duration_open = 400;
@@ -56,10 +56,10 @@ in {
     animation_curve_tag = "0.46,1.0,0.29,1";
     animation_curve_close = "0.08,0.92,0,1";
     animation_curve_focus = "0.46,1.0,0.29,1";
-    animation_curve_opafadeout = "0.5,0.5,0.5,0.5";
-    animation_curve_opafadein = "0.46,1.0,0.29,1";
+    animation_curve_opacity_fade_out = "0.5,0.5,0.5,0.5";
+    animation_curve_opacity_fade_in = "0.46,1.0,0.29,1";
 
-    numlockon = 1;
+    numlock_on = 1;
     xkb_rules_layout = "us";
     trackpad_natural_scrolling = 0;
 
@@ -72,8 +72,8 @@ in {
     trackpad_accel_speed = 0.5;
     trackpad_disable_while_typing = 0;
 
-    syncobj_enable = 0;
+    sync_obj_enable = 0;
 
-    tagrule = tagRules;
+    tag_rule = tagRules;
   };
 }

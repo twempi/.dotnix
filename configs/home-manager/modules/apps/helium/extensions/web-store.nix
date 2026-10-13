@@ -94,6 +94,11 @@
       id = "alhgpfoeiimagjlnfekdhkjlkiomcapa";
       hash = "sha256-azsuQ57mbAFQumWGMuesfX9pCEu/PerKCGCVQIXdrFk=";
     }
+    # Canvas Local Archive
+    {
+      id = "pihjpoobjgmlfacpemennkjibihkmebm";
+      hash = "sha256-ls3ryJGNDUauN/7Gemk1ChsTa1B4Zk2QJiMqyEv2an4=";
+    }
   ];
 
   fetchExtension = {
