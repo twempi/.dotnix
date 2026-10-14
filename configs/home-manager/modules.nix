@@ -30,10 +30,10 @@
     ./modules/cli/media-tools
     ./modules/cli/ios
     ./modules/cli/ani-cli
-    ./modules/cli/codex
-    ./modules/cli/claude-code
-    ./modules/cli/rea
-    ./modules/cli/mcp
+    ./modules/cli/ai/codex
+    ./modules/cli/ai/claude-code
+    ./modules/cli/ai/rea
+    ./modules/cli/ai/mcp
     ./modules/cli/clipboard
     ./modules/cli/tmux
     ./modules/cli/fish
@@ -47,7 +47,7 @@
     ./modules/cli/lazygit
     ./modules/cli/gowall
     ./modules/cli/cyberdrop-dl
-    ./modules/cli/pi
+    ./modules/cli/ai/pi
 
     # Desktop
     ./modules/desktop/audio
