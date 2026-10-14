@@ -142,7 +142,6 @@
 
     canvas-local-archive = {
       url = "github:twempi/canvas-scraper";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     artcraft = {
