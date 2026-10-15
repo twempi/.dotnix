@@ -2,7 +2,7 @@
   stylix.targets.ghostty.enable = false;
 
   programs.ghostty = {
-    enable = true;
+    enable = false;
 
     settings = {
       font-family = "Geist Mono";

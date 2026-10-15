@@ -16,6 +16,7 @@
     ./modules/desktop/windowmanagers/hyprland
     ./modules/desktop/windowmanagers/sway
     ./modules/desktop/windowmanagers/mango
+    ./modules/desktop/windowmanagers/niri
 
     # Terminal
     ./modules/terminals/ghostty

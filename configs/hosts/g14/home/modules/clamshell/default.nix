@@ -7,6 +7,7 @@
   hyprctl = "${inputs.hyprland.packages.${system}.hyprland}/bin/hyprctl";
   swaymsg = "${pkgs.sway}/bin/swaymsg";
   wlrRandr = "${pkgs.wlr-randr}/bin/wlr-randr";
+  niri = "${inputs.niri.packages.${system}.niri-unstable}/bin/niri";
   g14RefreshRate = import ../refresh-rate/package.nix {inherit inputs pkgs system;};
 
   g14Clamshell = pkgs.writeShellApplication {
@@ -17,6 +18,7 @@
       hyprctl_cmd="${hyprctl}"
       swaymsg_cmd="${swaymsg}"
       wlr_randr_cmd="${wlrRandr}"
+      niri_cmd="${niri}"
       internal_outputs=(eDP-1 eDP-2)
 
       hdmi_connected() {
@@ -64,6 +66,10 @@
           for output in "''${internal_outputs[@]}"; do
             "$swaymsg_cmd" output "$output" disable >/dev/null 2>&1 || true
           done
+        elif [[ -n "''${NIRI_SOCKET:-}" ]]; then
+          for output in "''${internal_outputs[@]}"; do
+            "$niri_cmd" msg output "$output" off >/dev/null 2>&1 || true
+          done
         else
           for output in "''${internal_outputs[@]}"; do
             "$wlr_randr_cmd" --output "$output" --off >/dev/null 2>&1 || true
@@ -79,6 +85,10 @@
         elif [[ -n "''${SWAYSOCK:-}" ]]; then
           for output in "''${internal_outputs[@]}"; do
             "$swaymsg_cmd" output "$output" enable mode 2560x1600@60.000Hz pos 0 0 scale 1.5 >/dev/null 2>&1 || true
+          done
+        elif [[ -n "''${NIRI_SOCKET:-}" ]]; then
+          for output in "''${internal_outputs[@]}"; do
+            "$niri_cmd" msg output "$output" on >/dev/null 2>&1 || true
           done
         else
           for output in "''${internal_outputs[@]}"; do
@@ -156,5 +166,15 @@ in {
       "fold,spawn,${g14Clamshell}/bin/g14-clamshell close"
       "unfold,spawn,${g14Clamshell}/bin/g14-clamshell open"
     ];
+  };
+
+  programs.niri.settings = {
+    spawn-at-startup = [
+      {command = ["${g14Clamshell}/bin/g14-clamshell" "auto"];}
+    ];
+    switch-events = {
+      lid-close.action.spawn = ["${g14Clamshell}/bin/g14-clamshell" "close"];
+      lid-open.action.spawn = ["${g14Clamshell}/bin/g14-clamshell" "open"];
+    };
   };
 }

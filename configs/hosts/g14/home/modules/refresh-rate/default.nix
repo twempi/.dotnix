@@ -28,6 +28,10 @@ in {
     ${sessionStart}
   '';
 
+  programs.niri.settings.spawn-at-startup = [
+    {command = ["${g14RefreshRate}/bin/g14-refresh-rate" "--session-start"];}
+  ];
+
   systemd.user.services.g14-refresh-rate = {
     Unit = {
       Description = "Set G14 internal panel refresh rate from AC state";

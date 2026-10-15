@@ -14,6 +14,7 @@ pkgs.writeShellApplication {
     pkgs.coreutils
     pkgs.sway
     inputs.hyprland.packages.${system}.hyprland
+    inputs.niri.packages.${system}.niri-unstable
     pkgs.wlr-randr
     pkgs.dbus
     pkgs.systemd
@@ -140,6 +141,10 @@ pkgs.writeShellApplication {
           printf 'mango\n'
           return 0
           ;;
+        *niri*)
+          printf 'niri\n'
+          return 0
+          ;;
       esac
 
       if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
@@ -148,6 +153,8 @@ pkgs.writeShellApplication {
         printf 'sway\n'
       elif [ -n "''${MANGO_INSTANCE_SIGNATURE:-}" ]; then
         printf 'mango\n'
+      elif [ -n "''${NIRI_SOCKET:-}" ]; then
+        printf 'niri\n'
       else
         printf 'Could not identify the active compositor\n' >&2
         return 1
@@ -178,6 +185,14 @@ pkgs.writeShellApplication {
         | jq -r --arg pattern "$output_pattern" 'first(.[] | select(.enabled == true and (.name | test($pattern))) | .name) // empty'
     }
 
+    internal_output_niri() {
+      local outputs
+
+      outputs="$(niri msg --json outputs 2>/dev/null)" || return 1
+      printf '%s\n' "$outputs" \
+        | jq -r --arg pattern "$output_pattern" 'first(.[] | select(.current_mode != null and (.name | test($pattern))) | .name) // empty'
+    }
+
     internal_output() {
       local compositor="$1"
 
@@ -190,6 +205,9 @@ pkgs.writeShellApplication {
           ;;
         mango)
           internal_output_mango
+          ;;
+        niri)
+          internal_output_niri
           ;;
         *)
           return 1
@@ -236,6 +254,13 @@ pkgs.writeShellApplication {
       wlr-randr --output "$output" --mode "$resolution@$hz"
     }
 
+    apply_niri() {
+      local output="$1"
+      local hz="$2"
+
+      niri msg output "$output" mode "$resolution@$hz"
+    }
+
     apply_refresh_rate() {
       local compositor="$1"
       local output="$2"
@@ -250,6 +275,9 @@ pkgs.writeShellApplication {
           ;;
         mango)
           apply_mango "$output" "$hz"
+          ;;
+        niri)
+          apply_niri "$output" "$hz"
           ;;
         *)
           return 1
@@ -304,6 +332,7 @@ pkgs.writeShellApplication {
         HYPRLAND_INSTANCE_SIGNATURE \
         SWAYSOCK \
         MANGO_INSTANCE_SIGNATURE \
+        NIRI_SOCKET \
         XDG_CURRENT_DESKTOP \
         XDG_SESSION_TYPE
 

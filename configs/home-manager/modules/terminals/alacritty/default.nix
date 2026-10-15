@@ -1,7 +1,7 @@
 {lib, ...}: {
   stylix.targets.alacritty.enable = true;
   programs.alacritty = {
-    enable = true;
+    enable = false;
 
     settings = {
       general.live_config_reload = true;

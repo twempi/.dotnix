@@ -12,20 +12,28 @@
     "hyprland"
     "sway"
     "mango"
+    "niri"
   ];
   terminalFor = {
     hyprland = lib.getExe pkgs.kitty;
     sway = lib.getExe pkgs.foot;
     mango = lib.getExe pkgs.kitty;
+    niri = lib.getExe pkgs.foot;
   };
 
   stylixColors = config.lib.stylix.colors.withHashtag;
   nativeStylixConfig = config.xdg.configFile."noctalia/config.toml".source;
   nativeStylixPalette = config.xdg.configFile."noctalia/palettes/stylix.json".source;
   configSourceFor = wm: let
-    rawConfig = ./configs + "/${wm}.toml";
+    rawConfig =
+      ./configs
+      + "/${
+        if wm == "niri"
+        then "sway"
+        else wm
+      }.toml";
     resolvedRawConfig =
-      if lib.elem wm ["sway" "mango"]
+      if lib.elem wm ["sway" "mango" "niri"]
       then
         pkgs.replaceVars rawConfig (
           {
@@ -39,7 +47,7 @@
               base0E
               ;
           }
-          // lib.optionalAttrs (wm == "sway") {
+          // lib.optionalAttrs (lib.elem wm ["sway" "niri"]) {
             inherit (stylixColors) base08;
           }
         )

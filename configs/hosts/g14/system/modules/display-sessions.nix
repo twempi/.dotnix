@@ -178,5 +178,6 @@ in {
 
   services.displayManager.sessionPackages = lib.mkForce [
     g14WaylandSessions
+    config.programs.niri.package
   ];
 }

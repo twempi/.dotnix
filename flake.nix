@@ -168,6 +168,8 @@
 
     desktopHomeModules = [
       inputs.spicetify-nix.homeManagerModules.default
+      inputs.niri.homeModules.config
+      inputs.niri.homeModules.stylix
     ];
 
     mkHome = {

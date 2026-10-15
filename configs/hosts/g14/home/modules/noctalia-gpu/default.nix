@@ -3,6 +3,7 @@
     "hyprland"
     "sway"
     "mango"
+    "niri"
   ];
 
   pluginName = "g14-gpu";
