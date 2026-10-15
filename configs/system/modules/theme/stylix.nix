@@ -2,6 +2,7 @@
   lib,
   pkgs,
   inputs,
+  config,
   options,
   ...
 }: let
@@ -36,17 +37,22 @@ in {
 
       fonts = {
         monospace = {
-          package = pkgs.fira-code;
-          name = "Fira Code";
+          package = pkgs.iosevka;
+          name = "Iosevka";
         };
-        sansSerif = {
-          package = pkgs.dejavu_fonts;
-          name = "DejaVu Sans";
-        };
-        serif = {
-          package = pkgs.dejavu_fonts;
-          name = "DejaVu Serif";
-        };
+        serif = config.stylix.fonts.monospace;
+        sansSerif = config.stylix.fonts.monospace;
+        emoji = config.stylix.fonts.monospace;
+
+        # sansSerif = {
+        #   package = pkgs.dejavu_fonts;
+        #   name = "DejaVu Sans";
+        # };
+        # serif = {
+        #   package = pkgs.dejavu_fonts;
+        #   name = "DejaVu Serif";
+        # };
+
         sizes = {
           terminal = 11;
           applications = 11;

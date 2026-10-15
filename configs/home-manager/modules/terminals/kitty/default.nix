@@ -1,14 +1,10 @@
-{pkgs, ...}: {
+{
   stylix.targets.kitty = {
     enable = true;
 
     fonts = {
       enable = true;
       override = {
-        monospace = {
-          package = pkgs.geist-font;
-          name = "Geist Mono";
-        };
         sizes = {
           terminal = 12;
         };

@@ -13,7 +13,9 @@
       context7 = inputs.context7-plugin + "/plugins/claude/context7";
     };
 
-    # The Codex context7 plugin bundles this skill; the Claude one is MCP-only.
-    skills.context7-mcp = inputs.context7-plugin + "/plugins/codex/context7/skills/context7-mcp";
+    skills = {
+      context7-mcp = inputs.context7-plugin + "/plugins/codex/context7/skills/context7-mcp";
+      andrej-karpathy-skills = ./../skills/andrej-karpathy-skills.md;
+    };
   };
 }
