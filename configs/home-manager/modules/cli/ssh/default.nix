@@ -3,17 +3,30 @@
 
   programs.ssh = {
     enable = true;
-
     enableDefaultConfig = false;
 
     settings = {
       "github.com" = {
-        host = "github.com";
-        user = "git";
-        identityFile = ["~/.ssh/id_ed25519"];
-        addKeysToAgent = "yes";
-        # optionally:
-        identitiesOnly = true;
+        HostName = "github.com";
+        User = "git";
+        IdentityFile = ["~/.ssh/id_ed25519"];
+        AddKeysToAgent = "yes";
+        IdentitiesOnly = true;
+      };
+
+      desktop = {
+        HostName = "100.103.126.2";
+        User = "edward";
+      };
+
+      g14 = {
+        HostName = "100.113.111.52";
+        User = "edward";
+      };
+
+      t480s = {
+        HostName = "100.107.176.54";
+        User = "edward";
       };
     };
   };
