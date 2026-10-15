@@ -1,28 +1,4 @@
-{
-  config,
-  inputs,
-  pkgs,
-  ...
-}: let
-  luasnip-latex-snippets-nvim =
-    config.wrappers.neovim.nvim-lib.mkPlugin
-    "luasnip-latex-snippets"
-    inputs.luasnip-latex-snippets-nvim;
-
-  vellumRenderer = pkgs.importNpmLock.buildNodeModules {
-    npmRoot = "${inputs.vellum-nvim}/render";
-    nodejs = pkgs.nodejs;
-    derivationArgs.env.PUPPETEER_SKIP_DOWNLOAD = "true";
-  };
-
-  vellum-nvim = (config.wrappers.neovim.nvim-lib.mkPlugin "vellum.nvim" inputs.vellum-nvim).overrideAttrs (old: {
-    postInstall =
-      (old.postInstall or "")
-      + ''
-        ln -s ${vellumRenderer}/node_modules "$out/render/node_modules"
-      '';
-  });
-in {
+{pkgs, ...}: {
   wrappers.neovim.specs = {
     lze = {
       lazy = false;
@@ -90,7 +66,6 @@ in {
         mini-splitjoin
 
         vimtex
-        vellum-nvim
       ];
     };
   };

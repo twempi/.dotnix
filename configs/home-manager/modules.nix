@@ -95,7 +95,7 @@
     ./modules/apps/zathura
     ./modules/apps/anki
     ./modules/apps/chromium
-    ./modules/apps/zen-browser
+    # ./modules/apps/zen-browser
     ./modules/apps/upscayl
     ./modules/apps/syncthing
     # ./modules/apps/sioyek

@@ -9,7 +9,7 @@ in {
   services.suwayomi-server = {
     enable = true;
 
-    package = inputs.suwayomi.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    package = inputs.twempi.packages.${pkgs.stdenv.hostPlatform.system}.suwayomi-server;
 
     # Tailscale Serve exposes it, so don't open this on LAN/Wi-Fi.
     openFirewall = false;

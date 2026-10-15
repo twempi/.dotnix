@@ -1,6 +1,6 @@
 {inputs, ...}: {
   imports = [
-    inputs.gesturelight.nixosModules.default
+    inputs.twempi.nixosModules.gesturelight
   ];
   gesturelight = {
     enable = true;

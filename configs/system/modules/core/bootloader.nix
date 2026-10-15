@@ -13,7 +13,7 @@
   mac-style-load = pkgs.callPackage "${mac-style-src}/package.nix" {};
 in {
   imports = [
-    inputs.minimal-grub-theme.nixosModules.default
+    inputs.twempi.nixosModules.minimal-grub-theme
   ];
   stylix.targets.grub.enable = false;
 

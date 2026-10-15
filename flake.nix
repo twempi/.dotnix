@@ -42,12 +42,6 @@
       flake = false;
     };
 
-    zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
-
     hyprland.url = "github:hyprwm/Hyprland";
 
     mangowm = {
@@ -100,24 +94,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    minimal-grub-theme = {
-      url = "github:twempi/minimal-grub-theme";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     librepods = {
       url = "github:kavishdevar/librepods/linux/rust";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    luasnip-latex-snippets-nvim = {
-      url = "github:twempi/luasnip-latex-snippets.nvim";
-      flake = false;
-    };
-
-    vellum-nvim = {
-      url = "github:blackhat-7/vellum.nvim";
-      flake = false;
     };
 
     pi = {
@@ -130,22 +109,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    gesturelight = {
-      url = "github:twempi/motion-activated-lamp-shade";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    suwayomi = {
-      url = "github:twempi/suwayomi-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    canvas-local-archive = {
-      url = "github:twempi/canvas-scraper";
-    };
-
     artcraft = {
       url = "github:devitek/artcraft-nixos";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    twempi = {
+      url = "github:twempi/nix-inputs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    niri = {
+      url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -160,9 +135,6 @@
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
-      config.permittedInsecurePackages = [
-        "electron-40.10.5"
-      ];
     };
 
     pkgsStable = import inputs.nixpkgs-stable {
