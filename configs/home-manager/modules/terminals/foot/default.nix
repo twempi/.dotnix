@@ -1,16 +1,7 @@
-{pkgs, ...}: {
+{
   stylix.targets.foot = {
     enable = true;
     colors.enable = true;
-    fonts = {
-      enable = true;
-      override = {
-        monospace = {
-          name = "Geist Mono";
-          package = pkgs.geist-font;
-        };
-      };
-    };
   };
 
   programs.foot = {

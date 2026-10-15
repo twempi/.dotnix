@@ -3,6 +3,7 @@
   inputs,
   hostname,
   pkgs,
+  pkgsStable,
   ...
 }: let
   homeConfigName = "${config.home.username}-${hostname}";
@@ -12,16 +13,6 @@ in {
     inputs.nixWrapperModules.homeModules.neovim
     ./stylix.nix
     ./plugins.nix
-  ];
-
-  nixpkgs.overlays = [
-    (final: prev: {
-      typescript-language-server = prev.typescript-language-server.overrideAttrs (old: {
-        pnpmDeps = old.pnpmDeps.overrideAttrs {
-          outputHash = "sha256-xR/EF60lVBsITKgH7wCM2wHM46PFQevD51KfCENSUH4=";
-        };
-      });
-    })
   ];
 
   wrappers.neovim = {
@@ -107,7 +98,7 @@ in {
       shellcheck
 
       # Typescript
-      typescript-language-server
+      pkgsStable.typescript-language-server
       prettier
       prettierd
       eslint_d

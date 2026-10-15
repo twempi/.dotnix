@@ -44,6 +44,8 @@
 
     hyprland.url = "github:hyprwm/Hyprland";
 
+    niri.url = "github:sodiboo/niri-flake";
+
     mangowm = {
       url = "github:mangowm/mango";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -116,11 +118,6 @@
 
     twempi = {
       url = "github:twempi/nix-inputs";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    niri = {
-      url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

@@ -28,6 +28,7 @@
     ../modules/desktop/sway.nix
     ../modules/desktop/hyprland.nix
     ../modules/desktop/mango.nix
+    ../modules/desktop/niri.nix
 
     ../modules/apps/appimage.nix
     ../modules/apps/handy.nix

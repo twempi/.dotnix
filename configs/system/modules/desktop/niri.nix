@@ -2,18 +2,17 @@
   inputs,
   pkgs,
   ...
-}: {
+}: let
+  system = pkgs.stdenv.hostPlatform.system;
+  niriPackage = inputs.niri.packages.${system}.niri-unstable;
+in {
   imports = [
     inputs.niri.nixosModules.niri
   ];
 
-  nixpkgs.overlays = [
-    inputs.niri.overlays.niri
-  ];
-
   programs.niri = {
     enable = true;
-    package = pkgs.niri-unstable;
+    package = niriPackage;
   };
 
   niri-flake.cache.enable = true;
