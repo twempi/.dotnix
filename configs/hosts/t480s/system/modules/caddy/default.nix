@@ -1,12 +1,14 @@
 {
   config,
+  inputs,
   pkgs,
   ...
 }: let
-  mkStylixStartpage = import ./startpage/lib/mkStylixStartpage.nix;
+  startpageSource = inputs.twempi.inputs.startpage-src;
+  mkStylixStartpage = import "${startpageSource}/lib/mkStylixStartpage.nix";
   siteRoot = mkStylixStartpage {
     inherit pkgs;
-    source = ./startpage;
+    source = startpageSource;
     colors = config.lib.stylix.colors;
     fontFamily = config.stylix.fonts.monospace.name;
     sansFontFamily = config.stylix.fonts.sansSerif.name;
@@ -54,7 +56,7 @@ in {
       Type = "simple";
       User = "edward";
       Group = "caddy";
-      ExecStart = "${pkgs.python3}/bin/python ${./startpage/settings-api.py}";
+      ExecStart = "${pkgs.python3}/bin/python ${startpageSource}/settings-api.py";
       NoNewPrivileges = true;
       PrivateTmp = true;
       ProtectSystem = "strict";
@@ -66,7 +68,7 @@ in {
 
   systemd.tmpfiles.rules = [
     "d /var/lib/startpage 0750 edward caddy -"
-    "C /var/lib/startpage/settings.json 0640 edward caddy - ${./startpage/settings.default.json}"
+    "C /var/lib/startpage/settings.json 0640 edward caddy - ${startpageSource}/settings.default.json"
   ];
 
   system.activationScripts.migrateStartpageNixSearchSettings.text = ''

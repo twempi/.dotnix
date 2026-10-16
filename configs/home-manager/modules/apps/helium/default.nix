@@ -9,7 +9,7 @@
   heliumProfileDir = "Profile";
 
   extensions = import ./extensions {
-    inherit config lib pkgs startpageOrigin;
+    inherit config inputs lib pkgs startpageOrigin;
   };
 
   heliumFlags = [
