@@ -6,6 +6,5 @@
     ./modules/windowmanagers/niri
     ./modules/fish
     ./modules/graphics-tools
-    ./modules/ollama
   ];
 }

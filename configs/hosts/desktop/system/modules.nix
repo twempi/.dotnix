@@ -3,6 +3,7 @@
     ./modules/aoc-q27g3xmn.nix
     ./modules/boot.nix
     ./modules/drives.nix
+    ./modules/olloma.nix
     ./modules/graphics.nix
     ./modules/optimizations.nix
     ./modules/packages.nix
