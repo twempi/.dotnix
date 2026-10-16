@@ -9,6 +9,7 @@
 
     # Themes
     ./modules/theme/matugen
+    ./modules/theme/switcher
     ./modules/theme/fontconfig
     ./modules/theme/ohmyposh
 
