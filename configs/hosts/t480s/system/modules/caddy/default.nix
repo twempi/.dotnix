@@ -54,7 +54,7 @@ in {
     };
     serviceConfig = {
       Type = "simple";
-      User = "edward";
+      User = "startpage";
       Group = "caddy";
       ExecStart = "${pkgs.python3}/bin/python ${startpageSource}/settings-api.py";
       NoNewPrivileges = true;
@@ -66,104 +66,18 @@ in {
     };
   };
 
+  users.users.startpage = {
+    isSystemUser = true;
+    group = "caddy";
+  };
+
   systemd.tmpfiles.rules = [
-    "d /var/lib/startpage 0750 edward caddy -"
-    "C /var/lib/startpage/settings.json 0640 edward caddy - ${startpageSource}/settings.default.json"
+    "d /var/lib/startpage 0750 startpage caddy -"
+    "C /var/lib/startpage/settings.json 0640 startpage caddy - ${startpageSource}/settings.default.json"
+    # Hand existing settings over from the old edward-owned file.
+    "z /var/lib/startpage/settings.json 0640 startpage caddy -"
   ];
 
-  system.activationScripts.migrateStartpageNixSearchSettings.text = ''
-    ${pkgs.python3}/bin/python <<'PY'
-    import json
-    import os
-    import sys
-    import tempfile
-    from pathlib import Path
-    import grp
-    import pwd
-
-    settings_path = Path("/var/lib/startpage/settings.json")
-    old_bookmark_href = "https://mynixos.com/"
-    new_bookmark_href = "https://nixsearch.thekoppe.com/"
-    old_bookmark_title = "nix pakgs"
-    new_bookmark_title = "nix pkgs"
-    old_default_ns_tag = {
-        "prefix": "ns",
-        "url": "https://nixsearch.thekoppe.com/?q=$q",
-    }
-
-    def write_settings(settings):
-        data = json.dumps(settings, indent=2, ensure_ascii=False) + "\n"
-        fd, temp_path = tempfile.mkstemp(
-            prefix=f".{settings_path.name}.",
-            suffix=".tmp",
-            dir=str(settings_path.parent),
-            text=True,
-        )
-
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as fh:
-                fh.write(data)
-                fh.flush()
-                os.fsync(fh.fileno())
-
-            uid = pwd.getpwnam("edward").pw_uid
-            gid = grp.getgrnam("caddy").gr_gid
-            os.chown(temp_path, uid, gid)
-            os.chmod(temp_path, 0o640)
-            os.replace(temp_path, settings_path)
-
-            dir_fd = os.open(settings_path.parent, os.O_RDONLY)
-            try:
-                os.fsync(dir_fd)
-            finally:
-                os.close(dir_fd)
-        except Exception:
-            try:
-                os.unlink(temp_path)
-            except FileNotFoundError:
-                pass
-            raise
-
-    def main():
-        if not settings_path.exists():
-            return
-
-        settings = json.loads(settings_path.read_text(encoding="utf-8"))
-        changed = False
-
-        bookmarks = settings.get("bookmarks")
-        if isinstance(bookmarks, list):
-            for bookmark in bookmarks:
-                if not isinstance(bookmark, dict):
-                    continue
-                if bookmark.get("href") == old_bookmark_href or bookmark.get("title") == old_bookmark_title:
-                    bookmark["href"] = new_bookmark_href
-                    bookmark["title"] = new_bookmark_title
-                    changed = True
-
-        custom_tags = settings.get("customTags")
-        if isinstance(custom_tags, list):
-            filtered_tags = [
-                tag for tag in custom_tags
-                if not (
-                    isinstance(tag, dict)
-                    and tag.get("prefix") == old_default_ns_tag["prefix"]
-                    and tag.get("url") == old_default_ns_tag["url"]
-                )
-            ]
-            if len(filtered_tags) != len(custom_tags):
-                settings["customTags"] = filtered_tags
-                changed = True
-
-        if changed:
-            write_settings(settings)
-
-    try:
-        main()
-    except Exception as err:
-        print(f"warning: could not migrate startpage Nix Search settings: {err}", file=sys.stderr)
-    PY
-  '';
-
-  networking.firewall.allowedTCPPorts = [80 443];
+  # Only reachable over Tailscale; not exposed on LAN/Wi-Fi.
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [80 443];
 }
