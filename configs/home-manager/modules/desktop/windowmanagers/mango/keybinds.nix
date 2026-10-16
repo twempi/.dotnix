@@ -46,6 +46,7 @@ in {
 
         "SUPER,Z,spawn,${colorPicker}"
         "SUPER+SHIFT,W,spawn,${noctalia} panel-toggle wallpaper"
+        "SUPER+SHIFT,T,spawn,theme-switch --pick"
         "SUPER+SHIFT,R,spawn,bash ${./reload.sh}"
 
         "SUPER+SHIFT,S,spawn,${noctalia} screenshot-region"

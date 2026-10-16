@@ -40,6 +40,7 @@ in {
       "Mod4+Shift+N" = "exec ${noctalia} panel-toggle control-center";
       "Mod4+Escape" = "exec ${noctalia} panel-toggle session";
       "Mod4+Shift+W" = "exec ${noctalia} panel-toggle wallpaper";
+      "Mod4+Shift+T" = "exec theme-switch --pick";
       "Mod4+Shift+R" = "exec ${./reload.sh}";
 
       # Screenshots

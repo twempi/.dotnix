@@ -1,5 +1,6 @@
 {pkgs, ...}: {
   imports = [
+    ../../amane
     ./general.nix
     ./keybinds.nix
     ./windowrules.nix

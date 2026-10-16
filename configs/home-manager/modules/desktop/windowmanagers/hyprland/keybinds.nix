@@ -108,6 +108,7 @@ in {
 
       (bind (modKey "Z") (execLocal "colorPicker"))
       (bind (modKey "SHIFT + W") (execCmd "${noctalia} panel-toggle wallpaper"))
+      (bind (modKey "SHIFT + T") (execCmd "theme-switch --pick"))
       (bind (modKey "SHIFT + R") (execCmd "${noctalia} config-reload"))
       (bind (modKey "Comma") (execCmd "${noctalia} settings-toggle"))
 

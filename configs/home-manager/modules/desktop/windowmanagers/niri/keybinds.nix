@@ -5,7 +5,6 @@
   ...
 }: let
   inherit (config.lib.niri) actions;
-  noctalia = args: actions.spawn ([config.edward.noctalia.commands.niri "msg"] ++ args);
   workspaces = lib.range 1 9;
   workspaceBinds = builtins.listToAttrs (lib.concatMap (i: [
       {
@@ -30,12 +29,16 @@ in {
         action.spawn = ["${pkgs.foot}/bin/foot"];
       };
       "Mod+D" = {
-        hotkey-overlay.title = "Run an Application: Noctalia launcher";
-        action = noctalia ["panel-toggle" "launcher"];
+        hotkey-overlay.title = "Run an Application: amane launcher";
+        action.spawn = ["amane" "ipc" "call" "launcher" "toggle"];
       };
       "Super+Alt+L" = {
-        hotkey-overlay.title = "Lock the Screen: Noctalia";
-        action = noctalia ["session" "lock"];
+        hotkey-overlay.title = "Lock the Screen: amane";
+        action.spawn = ["amane" "ipc" "call" "lock"];
+      };
+      "Mod+Shift+T" = {
+        hotkey-overlay.title = "Switch Theme";
+        action.spawn = ["theme-switch" "--pick"];
       };
 
       "XF86AudioRaiseVolume" = {

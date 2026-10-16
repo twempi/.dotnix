@@ -1,7 +1,9 @@
 {
   ...
 }: {
-  stylix.targets.chromium.enable = true;
+  # The BrowserThemeColor policy would override Helium's per-profile theme
+  # colour, which Home Manager sets so the theme switcher can change it.
+  stylix.targets.chromium.enable = false;
 
   programs.chromium = {
     enable = true;
