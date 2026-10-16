@@ -1,14 +1,10 @@
-{
-  inputs,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./general.nix
     ./keybinds.nix
     ./windowrules.nix
   ];
 
-  programs.niri.package = inputs.niri.packages.${pkgs.stdenv.hostPlatform.system}.niri-unstable;
+  programs.niri.package = pkgs.niri;
   stylix.targets.niri.enable = true;
 }

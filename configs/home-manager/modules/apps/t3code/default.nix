@@ -12,7 +12,6 @@
               done
             '';
         });
-        # reuse the existing resource monitor so it doesn't get rebuilt
         t3code-resource-monitor = prev.t3code.resourceMonitor;
       };
     })
@@ -24,12 +23,12 @@
       codex = {
         driver = "codex";
         enabled = true;
-        config.binaryPath = "/home/edward/.nix-profile/bin/codex";
+        config.binaryPath = "/etc/profiles/per-user/edward/bin/codex";
       };
       claudeAgent = {
         driver = "claudeAgent";
         enabled = true;
-        config.binaryPath = "/home/edward/.nix-profile/bin/claude";
+        config.binaryPath = "/etc/profiles/per-user/edward/bin/claude";
       };
     };
   };
