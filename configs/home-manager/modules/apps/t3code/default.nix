@@ -23,12 +23,12 @@
       codex = {
         driver = "codex";
         enabled = true;
-        config.binaryPath = "/etc/profiles/per-user/edward/bin/codex";
+        config.binaryPath = "/home/edward/.nix-profile/bin/codex";
       };
       claudeAgent = {
         driver = "claudeAgent";
         enabled = true;
-        config.binaryPath = "/etc/profiles/per-user/edward/bin/claude";
+        config.binaryPath = "/home/edward/.nix-profile/bin/claude";
       };
     };
   };

@@ -40,11 +40,11 @@
       center-focused-column = "on-overflow";
     };
 
-    # Sort keys keep workspace 10 after workspace 9.
-    workspaces = builtins.listToAttrs (map (i: {
-      name = lib.fixedWidthNumber 2 i;
-      value.name = toString i;
-    }) (lib.range 1 10));
+    # # Sort keys keep workspace 10 after workspace 9.
+    # workspaces = builtins.listToAttrs (map (i: {
+    #   name = lib.fixedWidthNumber 2 i;
+    #   value.name = toString i;
+    # }) (lib.range 1 10));
 
     prefer-no-csd = true;
     screenshot-path = "${config.home.homeDirectory}/Pictures/Screenshots/Screenshot-%Y-%m-%d_%H:%M:%S.png";
