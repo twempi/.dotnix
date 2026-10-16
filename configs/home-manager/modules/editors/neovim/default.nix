@@ -7,7 +7,6 @@
   ...
 }: let
   homeConfigName = "${config.home.username}-${hostname}";
-  dotnixClipboard = pkgs.callPackage ../../cli/clipboard/package.nix {};
 in {
   imports = [
     inputs.nixWrapperModules.homeModules.neovim
@@ -35,7 +34,6 @@ in {
       nodejs
       fd
       tree-sitter
-      dotnixClipboard
       wl-clipboard
       xclip
       xsel

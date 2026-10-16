@@ -3,7 +3,7 @@
     inputs.twempi.nixosModules.gesturelight
   ];
   gesturelight = {
-    enable = true;
+    enable =  false;
     url = "192.168.68.60";
   };
 }

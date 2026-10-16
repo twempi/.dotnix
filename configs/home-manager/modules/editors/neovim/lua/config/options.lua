@@ -22,18 +22,19 @@ vim.opt.cpoptions:append("I")
 vim.opt.expandtab = true
 vim.opt.cursorline = true
 
-vim.g.clipboard = {
-	name = "dotnix-system",
-	copy = {
-		["+"] = { "dotnix-copy" },
-		["*"] = { "dotnix-copy" },
-	},
-	paste = {
-		["+"] = { "dotnix-paste" },
-		["*"] = { "dotnix-paste" },
-	},
-	cache_enabled = 0,
-}
+-- Locally Neovim auto-detects wl-clipboard/xclip. Over SSH, copy via OSC 52 so
+-- the local terminal sets its clipboard; paste with the terminal's own paste.
+if vim.env.SSH_TTY then
+	local osc52 = require("vim.ui.clipboard.osc52")
+	local function paste_register()
+		return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+	end
+	vim.g.clipboard = {
+		name = "osc52-copy",
+		copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+		paste = { ["+"] = paste_register, ["*"] = paste_register },
+	}
+end
 
 vim.opt.clipboard = "unnamedplus"
 

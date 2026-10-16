@@ -1,8 +1,5 @@
-{pkgs, ...}: let
-  dotnixClipboard = pkgs.callPackage ./package.nix {};
-in {
+{pkgs, ...}: {
   home.packages = with pkgs; [
-    dotnixClipboard
     wl-clipboard
     xclip
     xsel

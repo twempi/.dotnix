@@ -1,6 +1,4 @@
-{pkgs, ...}: let
-  dotnixClipboard = pkgs.callPackage ../clipboard/package.nix {};
-in {
+{...}: {
   stylix.targets.tmux.enable = true;
 
   programs.tmux = {
@@ -34,8 +32,8 @@ in {
       # Simple binds
       bind-key q kill-pane
       bind-key v copy-mode
-      bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "${dotnixClipboard}/bin/dotnix-copy"
-      bind-key -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel "${dotnixClipboard}/bin/dotnix-copy"
+      bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+      bind-key -T copy-mode-vi Enter send-keys -X copy-selection-and-cancel
 
       # Rename window/session
       bind-key r command-prompt -I "#W" "rename-window -- '%%'"
