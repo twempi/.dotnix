@@ -1675,11 +1675,11 @@
     "startpage-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1792116509,
-        "narHash": "sha256-VS0/NJGRFpYMgyjKTeMenYNF2BWA1EMcT3LIxUrP3GU=",
+        "lastModified": 1792117658,
+        "narHash": "sha256-AFOV3yLgbduSZOo3LB0QGrZ8KalzxYuiIQGf1LKWmQ8=",
         "owner": "twempi",
         "repo": "startpage",
-        "rev": "e59c7ba4112f3c655b8e9461c0715bdbb5955d27",
+        "rev": "f052a733ecc7ac94961627143aec7a20a0665cbb",
         "type": "github"
       },
       "original": {
@@ -2049,11 +2049,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1792116545,
-        "narHash": "sha256-oShHuVsKYoxwiwcYEwv1dAZVsURsQxWLg5ny1xClgEg=",
+        "lastModified": 1792117686,
+        "narHash": "sha256-tshj5SbNGFSIAR9U9sUcREBc6ObG+tSbnu9XLRFvZYY=",
         "owner": "twempi",
         "repo": "nix-inputs",
-        "rev": "c6c04c151cf326a7f5f0190b41aa4a6b27907182",
+        "rev": "4b0e122184a01f2dbf4506380a245098ccb1e54e",
         "type": "github"
       },
       "original": {
