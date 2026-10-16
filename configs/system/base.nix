@@ -1,10 +1,7 @@
 {...}: {
   i18n.defaultLocale = "en_US.UTF-8";
 
-  time = {
-    timeZone = "America/Los_Angeles";
-    hardwareClockInLocalTime = true;
-  };
+  time.timeZone = "America/Los_Angeles";
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
@@ -12,8 +9,5 @@
 
   system.stateVersion = "25.05";
 
-  hardware = {
-    enableRedistributableFirmware = true;
-    enableAllFirmware = true;
-  };
+  hardware.enableRedistributableFirmware = true;
 }

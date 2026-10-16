@@ -13,7 +13,6 @@ in {
     hyprland = {
       enable = true;
       withUWSM = true;
-      xwayland.enable = true;
 
       package = hyprPackage;
       portalPackage = hyprPortal;

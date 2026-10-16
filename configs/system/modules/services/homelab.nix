@@ -1,11 +1,8 @@
 {...}: {
-  # Docker
-  virtualisation.docker = {
+  # Docker (rootless only; no root daemon and no docker group)
+  virtualisation.docker.rootless = {
     enable = true;
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-    };
+    setSocketVariable = true;
   };
 
   # Podman

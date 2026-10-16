@@ -1,8 +1,6 @@
 {pkgs, ...}: {
   # Optimizations
   boot = {
-    # kernelPackages = pkgs.linuxPackages_latest;
-    kernelPackages = pkgs.linuxPackages;
     kernelModules = ["ntsync"];
     kernelParams = [
       "nvidia-drm.modeset=1"
@@ -16,7 +14,6 @@
       "vm.swappiness" = 10;
       "vm.vfs_cache_pressure" = 50;
       "vm.max_map_count" = 2147483642;
-      # "kernel.nmi_watchdog" = 0;
       "kernel.nmi_watchdog" = 1;
     };
   };
@@ -43,17 +40,14 @@
     priority = 100;
   };
 
+  # The governor itself comes from powerManagement.cpuFreqGovernor above.
   systemd.services.cpu-max-performance = {
-    description = "Force maximum CPU performance policy";
+    description = "Force maximum CPU energy preference and boost";
     wantedBy = ["multi-user.target"];
     serviceConfig.Type = "oneshot";
     script = ''
       for policy in /sys/devices/system/cpu/cpufreq/policy*; do
         [ -d "$policy" ] || continue
-
-        if [ -w "$policy/scaling_governor" ]; then
-          echo performance > "$policy/scaling_governor"
-        fi
 
         if [ -w "$policy/energy_performance_preference" ]; then
           echo performance > "$policy/energy_performance_preference"

@@ -5,7 +5,7 @@
     enable = true;
     profiles.edward.sync = {
       autoSync = true;
-      keyFile = "${./syncKey}";
+      keyFile = "/run/secrets/anki_sync_key";
       username = "edwarddan72@gmail.com";
     };
 

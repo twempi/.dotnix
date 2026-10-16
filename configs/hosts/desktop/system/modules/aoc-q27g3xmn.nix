@@ -1,6 +1,4 @@
-{ config, pkgs, ... }:
-
-let
+{pkgs, ...}: let
   # This points to the EDID file you just created next to configuration.nix
   aocEdid = ./aoc-q27g3xmn.bin;
 in {
@@ -18,7 +16,7 @@ in {
   ];
 
   # Make sure you're using the NVIDIA driver
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = ["nvidia"];
 
   # Optional: if you also use Xorg at all, this helps there too:
   services.xserver.screenSection = ''

@@ -14,39 +14,14 @@ in {
     accelerationDevices = ["/dev/dri/renderD128"];
   };
 
-  systemd.services.tailscale-serve-immich = {
+  systemd.services.tailscale-serve-immich = import ./tailscale-serve-service.nix {
+    inherit pkgs;
+    name = "immich";
     description = "Expose Immich as a Tailscale Service";
-    after = ["tailscaled.service"];
-    wants = ["tailscaled.service"];
-    wantedBy = ["multi-user.target"];
-
-    restartIfChanged = true;
-
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      TimeoutStartSec = 30;
-    };
-
-    script = ''
-      set -euo pipefail
-
-      ${pkgs.util-linux}/bin/flock -w 120 /run/tailscale-serve.lock \
-        ${pkgs.tailscale}/bin/tailscale serve --yes --bg \
-          --service=svc:immich \
-          --https=${toString immichPort} \
-          http://127.0.0.1:${toString immichPort}
-    '';
+    port = immichPort;
   };
 
   users.users.immich.extraGroups = ["video" "render"];
-
-  hardware.graphics = {
-    enable = true;
-    extraPackages = with pkgs; [
-      intel-media-driver
-    ];
-  };
 
   systemd.tmpfiles.rules = [
     "d ${immichMediaDir} 0700 immich immich - -"

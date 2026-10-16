@@ -23,16 +23,6 @@
     "SUPER,${key},view,${tagString}"
     "SUPER+SHIFT,${key},tagsilent,${tagString}"
   ];
-  keycodeTagBinds = builtins.concatLists (builtins.genList (i: let
-      tag = i + 1;
-      code = i + 10;
-      tagString = toString tag;
-      codeString = toString code;
-    in [
-      "SUPER,code:${codeString},view,${tagString}"
-      "SUPER+SHIFT,code:${codeString},tagsilent,${tagString}"
-    ])
-    9);
 in {
   wayland.windowManager.mango.settings = {
     bind =

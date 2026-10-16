@@ -49,28 +49,10 @@ in {
     openFirewall = false;
   };
 
-  systemd.services.tailscale-serve-suwayomi = {
+  systemd.services.tailscale-serve-suwayomi = import ./tailscale-serve-service.nix {
+    inherit pkgs;
+    name = "suwayomi";
     description = "Expose Suwayomi as a Tailscale Service";
-    after = ["tailscaled.service"];
-    wants = ["tailscaled.service"];
-    wantedBy = ["multi-user.target"];
-
-    restartIfChanged = true;
-
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      TimeoutStartSec = 30;
-    };
-
-    script = ''
-      set -euo pipefail
-
-      ${pkgs.util-linux}/bin/flock -w 120 /run/tailscale-serve.lock \
-        ${pkgs.tailscale}/bin/tailscale serve --yes --bg \
-          --service=svc:suwayomi \
-          --https=${toString suwayomiPort} \
-          http://127.0.0.1:${toString suwayomiPort}
-    '';
+    port = suwayomiPort;
   };
 }

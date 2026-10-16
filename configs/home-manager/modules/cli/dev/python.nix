@@ -1,22 +1,10 @@
-{
-  pkgs,
-  pkgsStable,
-  ...
-}: let
-  pythonStable = pkgs.writeShellApplication {
-    name = "python3-stable";
-    text = ''
-      exec ${pkgsStable.python3}/bin/python3 "$@"
-    '';
-  };
-
-  pipxStable = pkgsStable.pipx.overridePythonAttrs (_: {
+{pkgs, ...}: let
+  pipxNoCheck = pkgs.pipx.overridePythonAttrs (_: {
     doCheck = false;
   });
 in {
   home.packages = [
-    pythonStable
-    pipxStable
+    pipxNoCheck
     (pkgs.python313.withPackages (ps: [
       ps.pywal
       ps.watchdog

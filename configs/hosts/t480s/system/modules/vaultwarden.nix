@@ -27,29 +27,11 @@ in {
     };
   };
 
-  systemd.services.tailscale-serve-vaultwarden = {
+  systemd.services.tailscale-serve-vaultwarden = import ./tailscale-serve-service.nix {
+    inherit pkgs;
+    name = "vaultwarden";
     description = "Expose Vaultwarden as a Tailscale Service";
-    after = ["tailscaled.service"];
-    wants = ["tailscaled.service"];
-    wantedBy = ["multi-user.target"];
-
-    restartIfChanged = true;
-
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      TimeoutStartSec = 30;
-    };
-
-    script = ''
-      set -euo pipefail
-
-      ${pkgs.util-linux}/bin/flock -w 120 /run/tailscale-serve.lock \
-        ${pkgs.tailscale}/bin/tailscale serve --yes --bg \
-          --service=svc:vaultwarden \
-          --https=${toString vaultwardenPort} \
-          http://127.0.0.1:${toString vaultwardenPort}
-    '';
+    port = vaultwardenPort;
   };
 
   systemd.tmpfiles.rules = [

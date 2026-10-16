@@ -39,9 +39,9 @@
       gc = "git commit";
       ga = "git add";
       gpl = "git pull";
-      gpom = "git pull origin master";
+      gpom = "git pull origin main";
       gpu = "git push";
-      gpuom = "git push origin master";
+      gpuom = "git push origin main";
       gd = "git diff --output-indicator-new=' ' --output-indicator-old=' '";
       gch = "git checkout";
       gnb = "git checkout -b";
@@ -51,7 +51,7 @@
       gr = "git remote";
       gcl = "git clone";
       gl = "git log --graph --abbrev-commit --decorate --format=format:'%C(bold green)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold yellow)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all";
-      gt = "git ls-tree -r master --name-only";
+      gt = "git ls-tree -r main --name-only";
       grm = "git remote";
       gb = "git branch";
       gf = "git fetch";

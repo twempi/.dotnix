@@ -30,6 +30,7 @@
     ../modules/desktop/mango.nix
     ../modules/desktop/niri.nix
 
+    ../modules/apps/anki.nix
     ../modules/apps/appimage.nix
     ../modules/apps/handy.nix
     ../modules/apps/helium.nix
@@ -37,4 +38,8 @@
     ../modules/apps/idescriptor.nix
     ../modules/apps/bt-dualboot.nix
   ];
+
+  # Windows dual-boot keeps the hardware clock in local time.
+  time.hardwareClockInLocalTime = true;
+  hardware.enableAllFirmware = true;
 }
