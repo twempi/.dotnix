@@ -3,13 +3,14 @@
     ./modules/aoc-q27g3xmn.nix
     ./modules/boot.nix
     ./modules/drives.nix
-    ./modules/olloma.nix
+    ./modules/ollama.nix
     ./modules/graphics.nix
     ./modules/optimizations.nix
     ./modules/packages.nix
     ./modules/polkit.nix
     ./modules/openrgb.nix
     ./modules/gesturelight.nix
+    ./modules/comfyui-flux
   ];
 
   # `edward-desktop` is activated through the standalone Home Manager output.

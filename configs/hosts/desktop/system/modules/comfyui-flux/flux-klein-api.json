@@ -1,0 +1,120 @@
+{
+  "1": {
+    "class_type": "UnetLoaderGGUF",
+    "inputs": {
+      "unet_name": "PornMaster_Flux2Klein_v4_Turbo_Q4_K.gguf"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoaderGGUF",
+    "inputs": {
+      "clip_name": "Qwen3-VL-8B-Q4_K_M.gguf",
+      "type": "flux2"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "A photograph of a red ceramic mug on a wooden desk beside a green houseplant, soft window light, detailed natural textures."
+    }
+  },
+  "5": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "conditioning": [
+        "4",
+        0
+      ]
+    }
+  },
+  "6": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 42
+    }
+  },
+  "7": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "8": {
+    "class_type": "Flux2Scheduler",
+    "inputs": {
+      "steps": 4,
+      "width": 768,
+      "height": 768
+    }
+  },
+  "9": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": {
+      "width": 768,
+      "height": 768,
+      "batch_size": 1
+    }
+  },
+  "10": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "6",
+        0
+      ],
+      "guider": [
+        "5",
+        0
+      ],
+      "sampler": [
+        "7",
+        0
+      ],
+      "sigmas": [
+        "8",
+        0
+      ],
+      "latent_image": [
+        "9",
+        0
+      ]
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "10",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "11",
+        0
+      ],
+      "filename_prefix": "flux-klein"
+    }
+  }
+}

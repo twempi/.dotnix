@@ -41,6 +41,10 @@ in {
       OLLAMA_FLASH_ATTENTION = "1";
       OLLAMA_KV_CACHE_TYPE = "q8_0";
     };
+
+    loadModels = [
+      "hf.co/rectangleworm/PornMaster_Klein-9b:Q4_K_M"
+    ];
   };
 
   services.open-webui = {
