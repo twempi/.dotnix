@@ -33,7 +33,6 @@
     ../modules/apps/appimage.nix
     ../modules/apps/handy.nix
     ../modules/apps/helium.nix
-    ../modules/apps/librepods.nix
     ../modules/apps/idescriptor.nix
     ../modules/apps/bt-dualboot.nix
   ];
