@@ -4,7 +4,7 @@
     ./modules/battery.nix
     ./modules/graphics.nix
     ./modules/display-sessions.nix
-    ./modules/waydroid.nix
+    # ./modules/waydroid.nix
   ];
 
   # `edward-g14` is activated through the standalone Home Manager output.
