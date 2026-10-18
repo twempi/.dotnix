@@ -2,7 +2,6 @@
   windowManagers = [
     "hyprland"
     "sway"
-    "mango"
     "niri"
   ];
 

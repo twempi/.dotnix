@@ -15,7 +15,6 @@ pkgs.writeShellApplication {
     pkgs.sway
     inputs.hyprland.packages.${system}.hyprland
     inputs.niri.packages.${system}.niri-unstable
-    pkgs.wlr-randr
     pkgs.dbus
     pkgs.systemd
   ];
@@ -137,10 +136,6 @@ pkgs.writeShellApplication {
           printf 'sway\n'
           return 0
           ;;
-        *mango*)
-          printf 'mango\n'
-          return 0
-          ;;
         *niri*)
           printf 'niri\n'
           return 0
@@ -151,8 +146,6 @@ pkgs.writeShellApplication {
         printf 'hyprland\n'
       elif [ -n "''${SWAYSOCK:-}" ]; then
         printf 'sway\n'
-      elif [ -n "''${MANGO_INSTANCE_SIGNATURE:-}" ]; then
-        printf 'mango\n'
       elif [ -n "''${NIRI_SOCKET:-}" ]; then
         printf 'niri\n'
       else
@@ -177,14 +170,6 @@ pkgs.writeShellApplication {
         | jq -r --arg pattern "$output_pattern" 'first(.[] | select(.active == true and (.name | test($pattern))) | .name) // empty'
     }
 
-    internal_output_mango() {
-      local outputs
-
-      outputs="$(wlr-randr --json 2>/dev/null)" || return 1
-      printf '%s\n' "$outputs" \
-        | jq -r --arg pattern "$output_pattern" 'first(.[] | select(.enabled == true and (.name | test($pattern))) | .name) // empty'
-    }
-
     internal_output_niri() {
       local outputs
 
@@ -202,9 +187,6 @@ pkgs.writeShellApplication {
           ;;
         sway)
           internal_output_sway
-          ;;
-        mango)
-          internal_output_mango
           ;;
         niri)
           internal_output_niri
@@ -247,13 +229,6 @@ pkgs.writeShellApplication {
       fi
     }
 
-    apply_mango() {
-      local output="$1"
-      local hz="$2"
-
-      wlr-randr --output "$output" --mode "$resolution@$hz"
-    }
-
     apply_niri() {
       local output="$1"
       local hz="$2"
@@ -272,9 +247,6 @@ pkgs.writeShellApplication {
           ;;
         sway)
           apply_sway "$output" "$hz"
-          ;;
-        mango)
-          apply_mango "$output" "$hz"
           ;;
         niri)
           apply_niri "$output" "$hz"
@@ -331,7 +303,6 @@ pkgs.writeShellApplication {
         WAYLAND_DISPLAY \
         HYPRLAND_INSTANCE_SIGNATURE \
         SWAYSOCK \
-        MANGO_INSTANCE_SIGNATURE \
         NIRI_SOCKET \
         XDG_CURRENT_DESKTOP \
         XDG_SESSION_TYPE

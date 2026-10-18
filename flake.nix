@@ -49,11 +49,6 @@
 
     niri.url = "github:sodiboo/niri-flake";
 
-    mangowm = {
-      url = "github:mangowm/mango";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -126,7 +121,7 @@
 
     amane.url = "github:MystiaFin/amane";
 
-    comfyui-nix.url = "github:utensils/comfyui-nix";
+    # comfyui-nix.url = "github:utensils/comfyui-nix";
   };
 
   outputs = inputs @ {

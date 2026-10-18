@@ -16,7 +16,6 @@
     # Window Managers
     ./modules/desktop/windowmanagers/hyprland
     ./modules/desktop/windowmanagers/sway
-    ./modules/desktop/windowmanagers/mango
     ./modules/desktop/windowmanagers/niri
 
     # Terminal
@@ -57,7 +56,7 @@
     ./modules/desktop/gnome-apps
     ./modules/desktop/networking
     ./modules/desktop/bluetooth
-    # Superseded by Noctalia for Hyprland, Sway, and Mango.
+    # Superseded by Noctalia for Hyprland, Sway, and Niri.
     # ./modules/desktop/waybar
     # Superseded by Noctalia for notifications and control center.
     # ./modules/desktop/swaync

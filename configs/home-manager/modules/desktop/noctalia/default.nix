@@ -11,13 +11,11 @@
   windowManagers = [
     "hyprland"
     "sway"
-    "mango"
     "niri"
   ];
   terminalFor = {
     hyprland = lib.getExe pkgs.kitty;
     sway = lib.getExe pkgs.foot;
-    mango = lib.getExe pkgs.kitty;
     niri = lib.getExe pkgs.foot;
   };
 
@@ -33,7 +31,7 @@
         else wm
       }.toml";
     resolvedRawConfig =
-      if lib.elem wm ["sway" "mango" "niri"]
+      if lib.elem wm ["sway" "niri"]
       then
         pkgs.replaceVars rawConfig (
           {

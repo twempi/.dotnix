@@ -1,7 +1,6 @@
 {config, ...}: {
   imports = [
     ./configs/sway-jsonc.nix
-    ./configs/mango-jsonc.nix
   ];
 
   programs.waybar.enable = true;
@@ -9,7 +8,6 @@
   xdg.configFile."waybar/hyprland.jsonc".source = ./hyprland.jsonc;
   xdg.configFile."waybar/hyprland.css".source = ./hyprland.css;
   xdg.configFile."waybar/sway.css".source = ./sway.css;
-  xdg.configFile."waybar/mango.css".source = ./mango.css;
 
   xdg.configFile."waybar/scripts" = {
     source = ./scripts;

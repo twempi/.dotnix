@@ -94,7 +94,7 @@ All current hosts are <mark>`x86_64-linux` .</mark>
 
 It has: 
 
-- An AMD processor • An NVIDIA graphics card • Hyprland, Sway, and MangoWC available • Hyprland through UWSM as its primary desktop session 
+- An AMD processor • An NVIDIA graphics card • Hyprland and Sway available • Hyprland through UWSM as its primary desktop session 
 
 If a task does not name a host, assume `desktop` and state that assumption. 
 
@@ -104,7 +104,7 @@ If a task does not name a host, assume `desktop` and state that assumption.
 
 It has: 
 
-- Hyprland, Sway, and MangoWC available • Sway as its primary desktop session 
+- Hyprland and Sway available • Sway as its primary desktop session 
 
 Treat laptop power management, graphics switching, display behavior, suspend, battery, and hardware controls as host-specific unless the existing imports clearly establish shared behavior. 
 

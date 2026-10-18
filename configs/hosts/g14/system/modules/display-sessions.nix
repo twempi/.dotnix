@@ -111,17 +111,6 @@
     '';
   };
 
-  g14StartMango = pkgs.writeShellApplication {
-    name = "g14-start-mango";
-
-    text = ''
-      ${exportDrmDevices}
-      export WLR_DRM_NO_ATOMIC=1
-
-      exec ${config.programs.mango.package}/bin/mango "$@"
-    '';
-  };
-
   g14WaylandSessions = pkgs.symlinkJoin {
     name = "g14-wayland-sessions";
 
@@ -152,23 +141,12 @@
         Type=Application
         DesktopNames=sway;wlroots;X-NIXOS-SYSTEMD-AWARE
       '')
-      (pkgs.writeTextDir "share/wayland-sessions/mango.desktop" ''
-        [Desktop Entry]
-        Encoding=UTF-8
-        Name=Mango
-        DesktopNames=mango;wlroots
-        Comment=mango WM
-        Exec=${lib.getExe g14StartMango}
-        Icon=mango
-        Type=Application
-      '')
     ];
 
     passthru.providedSessions = [
       "hyprland"
       "hyprland-uwsm"
       "sway"
-      "mango"
     ];
   };
 in {

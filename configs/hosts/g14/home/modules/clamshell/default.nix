@@ -157,17 +157,6 @@ in {
     };
   };
 
-  wayland.windowManager.mango = {
-    autostart_sh = ''
-      ${g14Clamshell}/bin/g14-clamshell auto &
-    '';
-
-    settings.switchbind = [
-      "fold,spawn,${g14Clamshell}/bin/g14-clamshell close"
-      "unfold,spawn,${g14Clamshell}/bin/g14-clamshell open"
-    ];
-  };
-
   programs.niri.settings = {
     spawn-at-startup = [
       {command = ["${g14Clamshell}/bin/g14-clamshell" "auto"];}

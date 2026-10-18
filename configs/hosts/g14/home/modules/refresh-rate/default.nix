@@ -24,10 +24,6 @@ in {
     }
   ];
 
-  wayland.windowManager.mango.autostart_sh = ''
-    ${sessionStart}
-  '';
-
   programs.niri.settings.spawn-at-startup = [
     {command = ["${g14RefreshRate}/bin/g14-refresh-rate" "--session-start"];}
   ];

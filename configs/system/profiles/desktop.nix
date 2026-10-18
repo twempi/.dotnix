@@ -27,7 +27,6 @@
     ../modules/desktop/printing.nix
     ../modules/desktop/sway.nix
     ../modules/desktop/hyprland.nix
-    ../modules/desktop/mango.nix
     ../modules/desktop/niri.nix
 
     ../modules/apps/anki.nix
