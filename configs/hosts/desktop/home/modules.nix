@@ -24,7 +24,6 @@ in {
       desktop-hyprland
       desktop-sway
       desktop-niri
-      desktop-fish
       desktop-graphics-tools
     ];
 

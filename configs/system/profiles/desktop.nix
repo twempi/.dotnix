@@ -4,13 +4,7 @@ in {
   flake.modules.nixos.profile-desktop = {
     imports = with nixos; [
       fonts
-      home-manager
-      bootloader
-      shell
-      user
-      nh
       env
-      cachix
       optimizations
       insecure-packages
 
@@ -19,6 +13,7 @@ in {
       localsend
 
       homelab
+      remote-access
       services
 
       wayland

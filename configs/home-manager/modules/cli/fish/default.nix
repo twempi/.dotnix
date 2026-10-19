@@ -1,5 +1,6 @@
 {
   flake.modules.homeManager.fish = {
+    hostname,
     lib,
     pkgs,
     ...
@@ -13,6 +14,10 @@
       # syntaxHighlighting.enable = true;
 
       shellAliases = {
+        nrs = "sudo nixos-rebuild switch --flake ~/.dotnix#${hostname}";
+        nrb = "sudo nixos-rebuild boot --flake ~/.dotnix#${hostname}";
+        # The theme switcher appends its restore step where it is installed.
+        hms = lib.mkDefault "home-manager switch --flake ~/.dotnix#edward-${hostname}";
         syu = "nix flake update --flake ~/.dotnix && nrs && hms";
 
         # Nvim
@@ -63,6 +68,7 @@
 
         # notes
         notes = "cd ~/Documents/notes/";
+        school = "cd ~/Documents/school";
 
         # ani-cli
         ani = "ani-cli";

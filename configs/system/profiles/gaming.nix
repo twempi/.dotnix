@@ -4,7 +4,6 @@ in {
   flake.modules.nixos.profile-gaming = {
     imports = with nixos; [
       games
-      minecraft
     ];
   };
 }

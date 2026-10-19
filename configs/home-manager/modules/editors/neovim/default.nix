@@ -124,14 +124,14 @@
           nixpkgs = ''import ${pkgs.path} {}'';
 
           nixosOptions = ''
-            (builtins.getFlake "${inputs.self}").nixosConfigurations.${hostname}.options
+            (builtins.getFlake "${config.home.homeDirectory}/.dotnix").nixosConfigurations.${hostname}.options
           '';
 
           # nixd crashes while completing `programs.*` for the desktop Home Manager profile.
           enableHomeManagerOptions = hostname == "t480s";
 
           homeManagerOptions = ''
-            (builtins.getFlake "${inputs.self}").homeConfigurations.${homeConfigName}.options
+            (builtins.getFlake "${config.home.homeDirectory}/.dotnix").homeConfigurations.${homeConfigName}.options
           '';
         };
 

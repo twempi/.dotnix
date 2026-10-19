@@ -9,8 +9,7 @@ in {
     modules = [nixos.desktop];
   };
 
-  # Host modules are listed in ./system/modules.nix.
-  flake.modules.nixos.desktop = {
+  flake.modules.nixos.desktop = {lib, ...}: {
     imports = with nixos; [
       base
       stylix
@@ -18,12 +17,24 @@ in {
       profile-gaming
 
       ./_hardware-configuration.nix
+
+      desktop-aoc-q27g3xmn
+      desktop-boot
+      desktop-drives
+      desktop-graphics
+      desktop-optimizations
+      desktop-packages
+      desktop-polkit
+      desktop-openrgb
+      desktop-gesturelight
+      # desktop-ollama
+      # desktop-comfyui-flux
     ];
 
-    networking = {
-      nameservers = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
-      networkmanager.enable = true;
-      hostName = "desktop";
-    };
+    networking.hostName = "desktop";
+
+    # `edward-desktop` is activated through the standalone Home Manager output.
+    # Do not let the NixOS generation overwrite its home files during boot.
+    home-manager.users = lib.mkForce {};
   };
 }

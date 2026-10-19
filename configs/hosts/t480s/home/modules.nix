@@ -19,7 +19,6 @@ in {
   flake.modules.homeManager.t480s = {
     imports = with homeManager; [
       profile-server
-      t480s-fish
       t480s-fastfetch
     ];
 

@@ -33,7 +33,8 @@ Change the configuration carefully, minimally, and in a way that fits the existi
 - `flake.lock` records pinned flake inputs and may be updated only when an input change is required.
 - `configs/system` contains shared NixOS base configuration, profiles, and modules.
 - `configs/home-manager` contains shared Home Manager base configuration, profiles, modules, and desktop application/tool configuration.
-- `configs/hosts/<host>` contains host-specific NixOS imports, hardware configuration, system modules, and Home Manager overrides. `default.nix` defines the NixOS output and the `nixos.<host>` module, `system/modules.nix` lists the host's system modules, and `home/modules.nix` defines the Home Manager output and the `homeManager.<host>` module.
+- `configs/hosts/<host>` contains host-specific NixOS imports, hardware configuration, system modules, and Home Manager overrides. `default.nix` defines the NixOS output and the `nixos.<host>` module, including the host's system modules, and `home/modules.nix` defines the Home Manager output and the `homeManager.<host>` module.
+- Home Manager reaches each host differently. `desktop` and `g14` use only the standalone `edward-<host>` output; their NixOS generations force `home-manager.users` empty. `t480s` also applies `homeManager.t480s` through its NixOS generation, so a Home Manager change there affects both `t480s` and `edward-t480s`.
 
 Current NixOS hosts are `desktop`, `g14`, and `t480s`. Current Home Manager outputs are `edward-desktop`, `edward-g14`, and `edward-t480s`. All hosts are `x86_64-linux`.
 
@@ -76,7 +77,7 @@ Important services include:
 
 Treat changes to these services as potentially disruptive. Keep them host-specific unless Edward explicitly requests shared behavior.
 
-Current state: SSH and Tailscale are also enabled on `desktop` and `g14` through `configs/system/modules/services/homelab.nix`, which the shared desktop profile imports. `t480s` has its own copy in `configs/system/modules/networking/remote-access.nix`. A change to `homelab.nix` affects `desktop` and `g14`, not `t480s`.
+Current state: SSH and Tailscale come from `configs/system/modules/networking/remote-access.nix` on all three hosts. `t480s` imports it directly and `desktop` and `g14` get it through the shared desktop profile, so a change there affects every host. Put a server-only SSH or Tailscale setting in `configs/hosts/t480s/default.nix`. `homelab.nix` now holds only Docker and Podman.
 
 Do not treat `t480s` as a desktop-first machine merely because desktop environments or window managers are available in its imports.
 
@@ -152,6 +153,21 @@ home-manager build --flake .#edward-t480s
 ```
 
 Local packages are not exposed as flake outputs. To build one, build the NixOS host or Home Manager output that consumes it.
+
+List the named modules:
+
+```
+nix eval .#modules.nixos --apply builtins.attrNames
+nix eval .#modules.homeManager --apply builtins.attrNames
+```
+
+Format changed files:
+
+```
+nix fmt -- <files>
+```
+
+Always pass paths. With no arguments, alejandra reads stdin and waits.
 
 Inspect failed services:
 
@@ -232,7 +248,13 @@ Distinguish pre-existing user changes from changes made during the current task.
 
 When a flake is inside a Git repository, untracked files may not be included in the flake source copied into the Nix store.
 
-If a newly created file is referenced by the configuration but Nix reports that it does not exist:
+import-tree only sees files in that copy, so an untracked `.nix` file is silently skipped. Depending on what the file does, the symptom is:
+
+- a missing attribute such as `attribute 'g14-example' missing`, when the file defines a new named module;
+- no error at all, when the file only adds to an existing named module (for example a new `hyprland/*.nix`). Its settings are just absent from the build;
+- a missing-path error, when a `_`-prefixed helper is referenced by path.
+
+If a newly created file seems to be ignored or missing:
 
 1. Check whether the file is untracked.
 2. Report that the Git-backed flake cannot currently see it.
@@ -249,8 +271,8 @@ If a module for a feature already exists, edit it. If a change is only for one m
 Do not place a host-specific workaround in a shared module merely because the shared module is easy to find. Do not create a second module for a feature that already has a clear owner.
 
 - Host-specific overrides go under `configs/hosts/<host>/home/modules` and `configs/hosts/<host>/system/modules`, named `<host>-<name>`.
-- Home Manager modules go under `configs/home-manager/modules/<category>/<name>/default.nix`, or as a single file where neighboring modules do that. Import them by name from the relevant profile or `configs/home-manager/modules.nix`.
-- NixOS modules go under `configs/system/modules/<category>/<name>.nix`. Import them by name through a system profile, shared host configuration, or a host-specific `system/modules.nix`.
+- Home Manager modules go under `configs/home-manager/modules/<category>/<name>/default.nix`, or as a single file where neighboring modules do that. Import them by name from the relevant profile in `configs/home-manager/profiles`.
+- NixOS modules go under `configs/system/modules/<category>/<name>.nix`. Import them by name through a system profile or the host's `default.nix`.
 - A file joins a module just by defining it, and several files may define the same name (for example every `hyprland/*.nix` defines `homeManager.hyprland`). A `.nix` file that should not join the tree must have a `_` prefix.
 - Modules get `inputs` from the enclosing flake-parts module, not from `specialArgs`. `hostname` is a Home Manager module argument set by each `homeManager.<host>` module.
 - Named modules carry no import key, so do not import the same named module twice in one configuration.
@@ -276,7 +298,7 @@ A change under `configs/system` may affect multiple NixOS hosts. A change under 
 
 Before changing a shared file:
 
-1. Inspect all import paths that reference it.
+1. Find every list that imports its module by name (for example `rg -w <name> configs`), including profiles that are themselves imported by name, and every other file that defines the same module name.
 2. Determine which NixOS hosts and Home Manager outputs are affected.
 3. Prefer a host-specific override when the requested behavior is host-specific.
 4. Report the expected cross-host impact.
@@ -285,9 +307,9 @@ Do not silently move host-specific behavior into a shared module. Do not broaden
 
 ## Formatting and Static Analysis
 
-Use the repository's existing formatter when available. The flake defines no `formatter` output. `alejandra`, `statix`, and `deadnix` are installed through the Neovim module (`configs/home-manager/modules/editors/neovim/default.nix`).
+The flake's `formatter` output is `alejandra`, so `nix fmt -- <files>` works even where `alejandra` is not on `PATH`. `alejandra`, `statix`, and `deadnix` are also installed through the Neovim module (`configs/home-manager/modules/editors/neovim/default.nix`).
 
-Prefer `alejandra` for changed Nix files. Format only files changed during the task unless a broader formatting operation was explicitly requested.
+Format only files changed during the task unless a broader formatting operation was explicitly requested.
 
 `statix` and `deadnix` are advisory. Use their read-only or check modes first. Do not run `statix fix` or `deadnix --edit` unless Edward explicitly requests automatic fixes and every resulting change will be reviewed.
 
@@ -299,7 +321,7 @@ Use the narrowest relevant validation first, followed by broader validation afte
 
 - Nix syntax or expression change: format the changed file, then run a targeted evaluation. Run `nix flake check` when the change can affect flake evaluation.
 - NixOS system change: `nixos-rebuild build --flake .#<host>`.
-- Home Manager change: `home-manager build --flake .#edward-<host>`.
+- Home Manager change: `home-manager build --flake .#edward-<host>`. If `t480s` is affected, also run `nixos-rebuild build --flake .#t480s`.
 - Local package change: there are no flake package outputs to build. Build each NixOS host or Home Manager output that consumes the package.
 - Flake or input change: `nix flake check`, then build every directly affected output.
 

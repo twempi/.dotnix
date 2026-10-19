@@ -27,7 +27,6 @@ in {
       g14-refresh-rate
       g14-clamshell
       g14-noctalia-gpu
-      g14-fish
       g14-fastfetch
     ];
 

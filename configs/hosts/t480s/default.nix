@@ -9,28 +9,31 @@ in {
     modules = [nixos.t480s];
   };
 
-  # Host modules are listed in ./system/modules.nix.
   flake.modules.nixos.t480s = {
     imports = with nixos; [
       base
       stylix
       remote-access
-      bootloader
-      user
-      shell
-      nh
-      home-manager
-      cachix
 
       ./_hardware-configuration.nix
+
+      t480s-battery
+      t480s-undervolt
+      t480s-graphics
+      t480s-minecraft
+      t480s-floccus-webdav
+      t480s-caddy
+      t480s-pihole
+      t480s-suwayomi
+      t480s-vaultwarden
+      t480s-headless
+      t480s-immich
+      # t480s-seanime
+      # t480s-jellyfin
     ];
 
     home-manager.users.edward.imports = [homeManager.t480s];
 
-    networking = {
-      nameservers = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
-      networkmanager.enable = true;
-      hostName = "t480s";
-    };
+    networking.hostName = "t480s";
   };
 }

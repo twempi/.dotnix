@@ -1,6 +1,7 @@
 {inputs, ...}: {
   flake.modules.homeManager.switcher = {
     config,
+    hostname,
     lib,
     pkgs,
     ...
@@ -146,6 +147,8 @@
     });
 
     home.packages = [themeSwitch];
+
+    programs.fish.shellAliases.hms = "home-manager switch --flake ~/.dotnix#edward-${hostname} && theme-switch --restore";
 
     # Activating a specialisation creates a generation without the
     # specialisation directory, so keep a GC-rooted link to the last base one.
