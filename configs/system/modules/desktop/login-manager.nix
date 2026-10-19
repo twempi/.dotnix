@@ -1,13 +1,15 @@
 {
-  services.displayManager.ly = {
-    enable = true;
-    settings = {
-      save = true;
-      load = true;
+  flake.modules.nixos.login-manager = {
+    services.displayManager.ly = {
+      enable = true;
+      settings = {
+        save = true;
+        load = true;
 
-      # # Animation
-      # animation = "matrix";
-      # animation_timeout_sec = 0;
+        # # Animation
+        # animation = "matrix";
+        # animation_timeout_sec = 0;
+      };
     };
   };
 }

@@ -1,115 +1,120 @@
-{
-  imports = [
-    # Other
-    ./modules/theme
-    ./modules/editors/latex
-    ./modules/editors/typst
-    ./modules/editors/neovim
-    ./modules/editors/vscodium
+{config, ...}: let
+  inherit (config.flake.modules) homeManager;
+in {
+  # Feature modules for the desktop profile (desktop and g14).
+  flake.modules.homeManager.profile-desktop = {
+    imports = with homeManager; [
+      # Other
+      theme
+      latex
+      typst
+      neovim
+      vscodium
 
-    # Themes
-    ./modules/theme/matugen
-    ./modules/theme/switcher
-    ./modules/theme/fontconfig
-    ./modules/theme/ohmyposh
+      # Themes
+      matugen
+      switcher
+      fontconfig
+      ohmyposh
 
-    # Window Managers
-    ./modules/desktop/windowmanagers/hyprland
-    ./modules/desktop/windowmanagers/sway
-    ./modules/desktop/windowmanagers/niri
+      # Window Managers
+      hyprland
+      sway
+      niri
 
-    # Terminal
-    ./modules/terminals/ghostty
-    ./modules/terminals/kitty
-    ./modules/terminals/alacritty
-    ./modules/terminals/foot
+      # Terminal
+      ghostty
+      kitty
+      alacritty
+      foot
 
-    # Cli
-    ./modules/cli/core-packages
-    ./modules/cli/dev
-    ./modules/cli/docker
-    ./modules/cli/media-tools
-    ./modules/cli/ios
-    ./modules/cli/ani-cli
-    ./modules/cli/ai/codex
-    ./modules/cli/ai/claude-code
-    ./modules/cli/ai/rea
-    ./modules/cli/ai/mcp
-    ./modules/cli/clipboard
-    ./modules/cli/tmux
-    ./modules/cli/fish
-    ./modules/cli/ssh
-    ./modules/cli/yt-dlp
-    ./modules/cli/git
-    ./modules/cli/yazi
-    ./modules/cli/fastfetch
-    ./modules/cli/btop
-    ./modules/cli/bat
-    ./modules/cli/lazygit
-    ./modules/cli/gowall
-    ./modules/cli/cyberdrop-dl
-    ./modules/cli/ai/pi
+      # Cli
+      core-packages
+      dev
+      docker
+      media-tools
+      ios
+      ani-cli
+      codex
+      claude-code
+      rea
+      mcp
+      clipboard
+      tmux
+      fish
+      ssh
+      yt-dlp
+      git
+      yazi
+      fastfetch
+      btop
+      bat
+      lazygit
+      gowall
+      cyberdrop-dl
+      pi
 
-    # Desktop
-    ./modules/desktop/audio
-    ./modules/desktop/wayland-tools
-    ./modules/desktop/gnome-apps
-    ./modules/desktop/networking
-    ./modules/desktop/bluetooth
-    # Superseded by Noctalia for Hyprland, Sway, and Niri.
-    # ./modules/desktop/waybar
-    # Superseded by Noctalia for notifications and control center.
-    # ./modules/desktop/swaync
-    # Superseded by Noctalia for launcher, wallpaper, power, clipboard, emoji, and GPU picker.
-    # ./modules/desktop/rofi
-    ./modules/desktop/defaults
-    ./modules/desktop/gnome-keyring
-    # ./modules/desktop/dms
-    ./modules/desktop/noctalia
-    ./modules/desktop/webcam
+      # Desktop
+      audio
+      wayland-tools
+      gnome-apps
+      networking
+      bluetooth
+      # Superseded by Noctalia for Hyprland, Sway, and Niri.
+      # waybar
+      # Superseded by Noctalia for notifications and control center.
+      # swaync
+      # Superseded by Noctalia for launcher, wallpaper, power, clipboard, emoji, and GPU picker.
+      # rofi
+      defaults
+      gnome-keyring
+      # dms
+      noctalia
+      webcam
 
-    # Apps
-    ./modules/apps/arduino-ide
-    ./modules/apps/obs-studio
-    ./modules/apps/pavucontrol
-    ./modules/apps/bleachbit
-    ./modules/apps/gimp
-    ./modules/apps/qbittorrent
-    ./modules/apps/zoom
-    ./modules/apps/gnome-clocks
-    ./modules/apps/gearlever
-    ./modules/apps/handy
-    ./modules/apps/iloader
-    ./modules/apps/geogebra
-    ./modules/apps/telegram
-    ./modules/apps/blueman
-    ./modules/apps/pdfarranger
-    ./modules/apps/libreoffice
-    ./modules/apps/ltspice
-    ./modules/apps/minecraft
-    ./modules/apps/localsend
-    ./modules/apps/seahorse
-    ./modules/apps/switcheroo
-    ./modules/apps/nixcord
-    ./modules/apps/spicetify
-    ./modules/apps/mpv
-    ./modules/apps/zathura
-    ./modules/apps/anki
-    ./modules/apps/chromium
-    # ./modules/apps/zen-browser
-    ./modules/apps/upscayl
-    ./modules/apps/syncthing
-    # ./modules/apps/sioyek
-    ./modules/apps/sunsetr
-    ./modules/apps/helium
-    ./modules/apps/obsidian
-    ./modules/apps/rars
-    ./modules/apps/blanket
-    ./modules/apps/mcomix
-    # ./modules/apps/distrobox
-    ./modules/apps/t3code
-    ./modules/apps/spotify-player
-    ./modules/apps/fritzing
-    ./modules/apps/artcraft
-  ];
+      # Apps
+      arduino-ide
+      obs-studio
+      pavucontrol
+      bleachbit
+      gimp
+      qbittorrent
+      zoom
+      gnome-clocks
+      gearlever
+      handy
+      iloader
+      geogebra
+      telegram
+      blueman
+      pdfarranger
+      libreoffice
+      ltspice
+      minecraft
+      localsend
+      seahorse
+      switcheroo
+      nixcord
+      spicetify
+      mpv
+      zathura
+      anki
+      chromium
+      # zen-browser
+      upscayl
+      syncthing
+      # sioyek
+      sunsetr
+      helium
+      obsidian
+      rars
+      blanket
+      mcomix
+      # distrobox
+      t3code
+      spotify-player
+      fritzing
+      artcraft
+    ];
+  };
 }

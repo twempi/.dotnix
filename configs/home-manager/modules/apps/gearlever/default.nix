@@ -1,5 +1,7 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    gearlever
-  ];
+{
+  flake.modules.homeManager.gearlever = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      gearlever
+    ];
+  };
 }

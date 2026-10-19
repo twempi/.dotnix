@@ -1,5 +1,7 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    geogebra
-  ];
+{
+  flake.modules.homeManager.geogebra = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      geogebra
+    ];
+  };
 }

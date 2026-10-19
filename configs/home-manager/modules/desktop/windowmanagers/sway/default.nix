@@ -1,29 +1,25 @@
-{...}: {
-  imports = [
-    ./general.nix
-    ./keybinds.nix
-    ./windowrules.nix
-  ];
+{
+  flake.modules.homeManager.sway = {...}: {
+    stylix.targets.sway.enable = true;
 
-  stylix.targets.sway.enable = true;
+    # sway
+    wayland.windowManager.sway = {
+      systemd.enable = true;
+      enable = true;
+      # package = pkgs.swayfx;
+      xwayland = true;
+      checkConfig = true;
+      extraOptions = ["--unsupported-gpu"];
+    };
 
-  # sway
-  wayland.windowManager.sway = {
-    systemd.enable = true;
-    enable = true;
-    # package = pkgs.swayfx;
-    xwayland = true;
-    checkConfig = true;
-    extraOptions = ["--unsupported-gpu"];
-  };
-
-  home.sessionVariables = {
-    NIXOS_OZONE_WL = 1;
-    MOZ_ENABLE_WAYLAND = 1;
-    # XDG_CURRENT_DESKTOP = "sway";
-    # XDG_SESSION_DESKTOP = "sway";
-    XDG_SESSION_TYPE = "wayland";
-    GDK_BACKEND = "wayland,x11";
-    QT_QPA_PLATFORM = "wayland;xcb";
+    home.sessionVariables = {
+      NIXOS_OZONE_WL = 1;
+      MOZ_ENABLE_WAYLAND = 1;
+      # XDG_CURRENT_DESKTOP = "sway";
+      # XDG_SESSION_DESKTOP = "sway";
+      XDG_SESSION_TYPE = "wayland";
+      GDK_BACKEND = "wayland,x11";
+      QT_QPA_PLATFORM = "wayland;xcb";
+    };
   };
 }

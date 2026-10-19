@@ -1,5 +1,7 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    localsend
-  ];
+{
+  flake.modules.homeManager.localsend = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      localsend
+    ];
+  };
 }

@@ -1,62 +1,68 @@
-{config, pkgs, ...}: let
-  gitWithLibsecret = (pkgs.git.override {withLibsecret = true;}).overrideAttrs (_: {
-    doInstallCheck = false;
-  });
-in {
-  programs.git = {
-    enable = true;
-    package = gitWithLibsecret;
-
-    settings = {
-      user = {
-        name = "midboob";
-        email = "edwarddan72@gmail.com";
-      };
-
-      credential.helper = "${gitWithLibsecret}/bin/git-credential-libsecret";
-
-      core = {
-        compression = 9;
-        editor = "nvim";
-        whitespace = "error";
-      };
-
-      init.defaultBranch = "main";
-
-      status = {
-        branch = true;
-        short = true;
-        showStash = true;
-        showUntrackedFiles = "all";
-      };
-
-      diff = {
-        context = 3;
-        renames = "copies";
-      };
-
-      log = {
-        abbrevCommit = true;
-        graphColors = "blue,yellow,cyan,magenta,green,red";
-      };
-
-      safe = {
-        directory = [
-          "${config.home.homeDirectory}/Documents/notes"
-        ];
-      };
-
-      pull.rebase = true;
-      rebase.autoStash = true;
-      commit.template = "${./template}";
-    };
-  };
-
-  programs.gh = {
-    enable = true;
-    gitCredentialHelper = {
+{
+  flake.modules.homeManager.git = {
+    config,
+    pkgs,
+    ...
+  }: let
+    gitWithLibsecret = (pkgs.git.override {withLibsecret = true;}).overrideAttrs (_: {
+      doInstallCheck = false;
+    });
+  in {
+    programs.git = {
       enable = true;
-      hosts = ["https://github.com" "https://gist.github.com"];
+      package = gitWithLibsecret;
+
+      settings = {
+        user = {
+          name = "midboob";
+          email = "edwarddan72@gmail.com";
+        };
+
+        credential.helper = "${gitWithLibsecret}/bin/git-credential-libsecret";
+
+        core = {
+          compression = 9;
+          editor = "nvim";
+          whitespace = "error";
+        };
+
+        init.defaultBranch = "main";
+
+        status = {
+          branch = true;
+          short = true;
+          showStash = true;
+          showUntrackedFiles = "all";
+        };
+
+        diff = {
+          context = 3;
+          renames = "copies";
+        };
+
+        log = {
+          abbrevCommit = true;
+          graphColors = "blue,yellow,cyan,magenta,green,red";
+        };
+
+        safe = {
+          directory = [
+            "${config.home.homeDirectory}/Documents/notes"
+          ];
+        };
+
+        pull.rebase = true;
+        rebase.autoStash = true;
+        commit.template = "${./template}";
+      };
+    };
+
+    programs.gh = {
+      enable = true;
+      gitCredentialHelper = {
+        enable = true;
+        hosts = ["https://github.com" "https://gist.github.com"];
+      };
     };
   };
 }

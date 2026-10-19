@@ -1,6 +1,8 @@
-{...}: {
-  networking.firewall = {
-    allowedTCPPorts = [53317];
-    allowedUDPPorts = [53317];
+{
+  flake.modules.nixos.localsend = {...}: {
+    networking.firewall = {
+      allowedTCPPorts = [53317];
+      allowedUDPPorts = [53317];
+    };
   };
 }

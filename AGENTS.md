@@ -26,11 +26,14 @@ Change the configuration carefully, minimally, and in a way that fits the existi
 
 ## Project Structure
 
-- `flake.nix` defines inputs, NixOS hosts, and standalone Home Manager configurations.
+- `flake.nix` defines inputs and hands every `.nix` file under `configs/` to flake-parts through import-tree.
+- Every `.nix` file under `configs/` is a flake-parts module. Feature files export a named module, `flake.modules.nixos.<name>` or `flake.modules.homeManager.<name>`; host files also define `flake.nixosConfigurations.<host>` and `flake.homeConfigurations.edward-<host>`.
+- import-tree skips any path containing `/_`. Plain helper files (`import`ed or `callPackage`d) and `_hardware-configuration.nix` files use that prefix.
+- `configs/flake-parts.nix` declares systems, the unfree-enabled `pkgs` used by standalone Home Manager, and the `formatter` output.
 - `flake.lock` records pinned flake inputs and may be updated only when an input change is required.
 - `configs/system` contains shared NixOS base configuration, profiles, and modules.
 - `configs/home-manager` contains shared Home Manager base configuration, profiles, modules, and desktop application/tool configuration.
-- `configs/hosts/<host>` contains host-specific NixOS imports, hardware configuration, system modules, and Home Manager overrides.
+- `configs/hosts/<host>` contains host-specific NixOS imports, hardware configuration, system modules, and Home Manager overrides. `default.nix` defines the NixOS output and the `nixos.<host>` module, `system/modules.nix` lists the host's system modules, and `home/modules.nix` defines the Home Manager output and the `homeManager.<host>` module.
 
 Current NixOS hosts are `desktop`, `g14`, and `t480s`. Current Home Manager outputs are `edward-desktop`, `edward-g14`, and `edward-t480s`. All hosts are `x86_64-linux`.
 
@@ -96,7 +99,7 @@ When examining logs, commands, environment variables, or generated files, redact
 
 ## Protected and High-Risk Files
 
-Never edit any `hardware-configuration.nix` file unless Edward explicitly requests it.
+Never edit any `hardware-configuration.nix` or `_hardware-configuration.nix` file unless Edward explicitly requests it.
 
 Do not modify the following without a confirmed need and a clear understanding of the impact:
 
@@ -245,11 +248,15 @@ If a module for a feature already exists, edit it. If a change is only for one m
 
 Do not place a host-specific workaround in a shared module merely because the shared module is easy to find. Do not create a second module for a feature that already has a clear owner.
 
-- Host-specific overrides go under `configs/hosts/<host>/home/modules` and `configs/hosts/<host>/system/modules`.
-- Home Manager modules go under `configs/home-manager/modules/<category>/<name>/default.nix`, or as a single file where neighboring modules do that. Import them from the relevant profile or `configs/home-manager/modules.nix`.
-- NixOS modules go under `configs/system/modules/<category>/<name>.nix`. Import them through a system profile, shared host configuration, or a host-specific `system/modules.nix`.
+- Host-specific overrides go under `configs/hosts/<host>/home/modules` and `configs/hosts/<host>/system/modules`, named `<host>-<name>`.
+- Home Manager modules go under `configs/home-manager/modules/<category>/<name>/default.nix`, or as a single file where neighboring modules do that. Import them by name from the relevant profile or `configs/home-manager/modules.nix`.
+- NixOS modules go under `configs/system/modules/<category>/<name>.nix`. Import them by name through a system profile, shared host configuration, or a host-specific `system/modules.nix`.
+- A file joins a module just by defining it, and several files may define the same name (for example every `hyprland/*.nix` defines `homeManager.hyprland`). A `.nix` file that should not join the tree must have a `_` prefix.
+- Modules get `inputs` from the enclosing flake-parts module, not from `specialArgs`. `hostname` is a Home Manager module argument set by each `homeManager.<host>` module.
+- Named modules carry no import key, so do not import the same named module twice in one configuration.
+- Definition order follows import depth. When the order of a `lines` or list option matters (for example user config after a stylix theme include), state it with `lib.mkBefore`/`lib.mkAfter` rather than relying on import order.
 - Create a new module only when the existing structure does not already provide a clear owner.
-- Local packages are not exposed as flake outputs. They live beside the module that uses them, for example `configs/hosts/g14/home/modules/refresh-rate/package.nix`.
+- Local packages are not exposed as flake outputs. They live beside the module that uses them, for example `configs/hosts/g14/home/modules/refresh-rate/_package.nix`.
 
 Style:
 

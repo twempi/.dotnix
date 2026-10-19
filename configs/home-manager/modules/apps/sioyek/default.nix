@@ -1,18 +1,20 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [sioyek];
+{
+  flake.modules.homeManager.sioyek = {pkgs, ...}: {
+    home.packages = with pkgs; [sioyek];
 
-  stylix.targets.sioyek = {
-    enable = true;
-    colors.enable = true;
-  };
+    stylix.targets.sioyek = {
+      enable = true;
+      colors.enable = true;
+    };
 
-  programs.sioyek = {
-    enable = true;
-    # config = {
-    # startup_commands = {
-    # };
-    # };
-    # keybinds = {
-    # };
+    programs.sioyek = {
+      enable = true;
+      # config = {
+      # startup_commands = {
+      # };
+      # };
+      # keybinds = {
+      # };
+    };
   };
 }

@@ -1,4 +1,6 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [blanket];
-  services.blanket.enable = true;
+{
+  flake.modules.homeManager.blanket = {pkgs, ...}: {
+    home.packages = with pkgs; [blanket];
+    services.blanket.enable = true;
+  };
 }

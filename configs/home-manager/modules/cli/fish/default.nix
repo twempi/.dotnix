@@ -1,75 +1,82 @@
-{pkgs, ...}: {
-  stylix.targets.fish.enable = true;
+{
+  flake.modules.homeManager.fish = {
+    lib,
+    pkgs,
+    ...
+  }: {
+    stylix.targets.fish.enable = true;
 
-  programs.fish = {
-    enable = true;
-    # enableCompletion = true;
-    # autosuggestion.enable = true;
-    # syntaxHighlighting.enable = true;
+    programs.fish = {
+      enable = true;
+      # enableCompletion = true;
+      # autosuggestion.enable = true;
+      # syntaxHighlighting.enable = true;
 
-    shellAliases = {
-      syu = "nix flake update --flake ~/.dotnix && nrs && hms";
+      shellAliases = {
+        syu = "nix flake update --flake ~/.dotnix && nrs && hms";
 
-      # Nvim
-      v = "nvim";
-      vi = "nvim";
-      vim = "nvim";
+        # Nvim
+        v = "nvim";
+        vi = "nvim";
+        vim = "nvim";
 
-      # Tmux
-      t = "tmux";
+        # Tmux
+        t = "tmux";
 
-      # Yazi
-      y = "yazi";
+        # Yazi
+        y = "yazi";
 
-      # Eza
-      ls = "eza --icons=auto --classify --group-directories-first --header --time-style=long-iso";
-      la = "eza -la --icons=auto --classify --group-directories-first --header --time-style=long-iso";
-      tree = "eza --tree --icons=auto --classify --group-directories-first --header --time-style=long-iso";
+        # Eza
+        ls = "eza --icons=auto --classify --group-directories-first --header --time-style=long-iso";
+        la = "eza -la --icons=auto --classify --group-directories-first --header --time-style=long-iso";
+        tree = "eza --tree --icons=auto --classify --group-directories-first --header --time-style=long-iso";
 
-      # Common commands
-      cp = "cp -iv";
-      mv = "mv -iv";
-      rm = "rm -vI";
-      bc = "bc -ql";
-      mkd = "mkdir -pv";
+        # Common commands
+        cp = "cp -iv";
+        mv = "mv -iv";
+        rm = "rm -vI";
+        bc = "bc -ql";
+        mkd = "mkdir -pv";
 
-      # Git
-      g = "git";
-      gs = "git status";
-      gc = "git commit";
-      ga = "git add";
-      gpl = "git pull";
-      gpom = "git pull origin main";
-      gpu = "git push";
-      gpuom = "git push origin main";
-      gd = "git diff --output-indicator-new=' ' --output-indicator-old=' '";
-      gch = "git checkout";
-      gnb = "git checkout -b";
-      gac = "git add . && git commit";
-      grs = "git restore --staged .";
-      gre = "git restore";
-      gr = "git remote";
-      gcl = "git clone";
-      gl = "git log --graph --abbrev-commit --decorate --format=format:'%C(bold green)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold yellow)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all";
-      gt = "git ls-tree -r main --name-only";
-      grm = "git remote";
-      gb = "git branch";
-      gf = "git fetch";
+        # Git
+        g = "git";
+        gs = "git status";
+        gc = "git commit";
+        ga = "git add";
+        gpl = "git pull";
+        gpom = "git pull origin main";
+        gpu = "git push";
+        gpuom = "git push origin main";
+        gd = "git diff --output-indicator-new=' ' --output-indicator-old=' '";
+        gch = "git checkout";
+        gnb = "git checkout -b";
+        gac = "git add . && git commit";
+        grs = "git restore --staged .";
+        gre = "git restore";
+        gr = "git remote";
+        gcl = "git clone";
+        gl = "git log --graph --abbrev-commit --decorate --format=format:'%C(bold green)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold yellow)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all";
+        gt = "git ls-tree -r main --name-only";
+        grm = "git remote";
+        gb = "git branch";
+        gf = "git fetch";
 
-      # notes
-      notes = "cd ~/Documents/notes/";
+        # notes
+        notes = "cd ~/Documents/notes/";
 
-      # ani-cli
-      ani = "ani-cli";
+        # ani-cli
+        ani = "ani-cli";
 
-      # shut down
-      die = "sudo shutdown now";
+        # shut down
+        die = "sudo shutdown now";
+      };
+
+      # After the stylix theme source, so these settings win.
+      interactiveShellInit = lib.mkAfter ''
+        set fish_greeting
+        fish_vi_key_bindings
+        fastfetch
+      '';
     };
-
-    interactiveShellInit = ''
-      set fish_greeting
-      fish_vi_key_bindings
-      fastfetch
-    '';
   };
 }

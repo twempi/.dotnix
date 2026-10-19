@@ -1,13 +1,17 @@
-{...}: {
-  i18n.defaultLocale = "en_US.UTF-8";
+{inputs, ...}: {
+  flake.modules.nixos.base = {
+    imports = [inputs.sops-nix.nixosModules.sops];
 
-  time.timeZone = "America/Los_Angeles";
+    i18n.defaultLocale = "en_US.UTF-8";
 
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+    time.timeZone = "America/Los_Angeles";
 
-  nixpkgs.config.allowUnfree = true;
+    nix.settings.experimental-features = ["nix-command" "flakes"];
 
-  system.stateVersion = "25.05";
+    nixpkgs.config.allowUnfree = true;
 
-  hardware.enableRedistributableFirmware = true;
+    system.stateVersion = "25.05";
+
+    hardware.enableRedistributableFirmware = true;
+  };
 }

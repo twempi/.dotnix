@@ -1,14 +1,16 @@
 {
-  programs.fish = {
-    enable = true;
+  flake.modules.homeManager.g14-fish = {
+    programs.fish = {
+      enable = true;
 
-		shellAliases = {
-			nrs = "sudo nixos-rebuild switch --flake ~/.dotnix#g14";
-			nrb = "sudo nixos-rebuild boot --flake ~/.dotnix#g14";
+      shellAliases = {
+        nrs = "sudo nixos-rebuild switch --flake ~/.dotnix#g14";
+        nrb = "sudo nixos-rebuild boot --flake ~/.dotnix#g14";
 
-      hms = "home-manager switch --flake ~/.dotnix#edward-g14 && theme-switch --restore";
+        hms = "home-manager switch --flake ~/.dotnix#edward-g14 && theme-switch --restore";
 
-      school = "cd /home/edward/Documents/school";
+        school = "cd /home/edward/Documents/school";
+      };
     };
   };
 }

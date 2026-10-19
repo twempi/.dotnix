@@ -1,44 +1,46 @@
 {
-  stylix.targets.ghostty.enable = false;
+  flake.modules.homeManager.ghostty = {
+    stylix.targets.ghostty.enable = false;
 
-  programs.ghostty = {
-    enable = false;
+    programs.ghostty = {
+      enable = false;
 
-    settings = {
-      font-family = "Geist Mono";
-      font-size = 12;
+      settings = {
+        font-family = "Geist Mono";
+        font-size = 12;
 
-      background-opacity = 0.8;
-      background-blur = true;
+        background-opacity = 0.8;
+        background-blur = true;
 
-      window-decoration = "auto";
-      window-padding-balance = true;
-      window-padding-x = 10;
-      window-padding-y = 10;
-      window-inherit-working-directory = false;
-      confirm-close-surface = false;
+        window-decoration = "auto";
+        window-padding-balance = true;
+        window-padding-x = 10;
+        window-padding-y = 10;
+        window-inherit-working-directory = false;
+        confirm-close-surface = false;
 
-      # startup / launch behavior
-      gtk-single-instance = true;
-      quit-after-last-window-closed = false;
-      clipboard-read = "ask";
-      clipboard-write = "allow";
-      copy-on-select = false;
+        # startup / launch behavior
+        gtk-single-instance = true;
+        quit-after-last-window-closed = false;
+        clipboard-read = "ask";
+        clipboard-write = "allow";
+        copy-on-select = false;
 
-      keybind = [
-        "ctrl+shift+k=new_split:up"
-        "ctrl+shift+j=new_split:down"
-        "ctrl+shift+l=new_split:right"
-        "ctrl+shift+h=new_split:left"
-        "ctrl+shift+n=new_tab"
-      ];
+        keybind = [
+          "ctrl+shift+k=new_split:up"
+          "ctrl+shift+j=new_split:down"
+          "ctrl+shift+l=new_split:right"
+          "ctrl+shift+h=new_split:left"
+          "ctrl+shift+n=new_tab"
+        ];
+      };
+
+      clearDefaultKeybinds = false;
+      installVimSyntax = true;
+      installBatSyntax = true;
+      enableBashIntegration = true;
+      enableZshIntegration = true;
+      enableFishIntegration = true;
     };
-
-    clearDefaultKeybinds = false;
-    installVimSyntax = true;
-    installBatSyntax = true;
-    enableBashIntegration = true;
-    enableZshIntegration = true;
-    enableFishIntegration = true;
   };
 }

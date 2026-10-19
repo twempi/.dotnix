@@ -1,15 +1,12 @@
 {
-	imports = [
-		./gtk.nix
-		./qt5ct.nix
-	];
-
-	dconf = {
-		enable = true;
-		settings = {
-			"org/gnome/desktop/interface" = {
-				color-scheme = "prefer-dark";
-			};
-		};
-	};
+  flake.modules.homeManager.theme = {
+    dconf = {
+      enable = true;
+      settings = {
+        "org/gnome/desktop/interface" = {
+          color-scheme = "prefer-dark";
+        };
+      };
+    };
+  };
 }

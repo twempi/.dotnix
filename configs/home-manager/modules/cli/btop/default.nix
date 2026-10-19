@@ -1,9 +1,11 @@
-{lib, ...}: {
-  programs.btop = {
-    enable = true;
-    settings = {
-      color_theme = lib.mkForce "TTY";
-      vim_keys = true;
+{
+  flake.modules.homeManager.btop = {lib, ...}: {
+    programs.btop = {
+      enable = true;
+      settings = {
+        color_theme = lib.mkForce "TTY";
+        vim_keys = true;
+      };
     };
   };
 }

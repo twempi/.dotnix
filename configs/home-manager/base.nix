@@ -1,18 +1,20 @@
 {
-  home = {
-    username = "edward";
-    homeDirectory = "/home/edward";
-    stateVersion = "25.05";
-    sessionPath = [
-      "$HOME/.local/bin"
-    ];
-  };
+  flake.modules.homeManager.base = {
+    home = {
+      username = "edward";
+      homeDirectory = "/home/edward";
+      stateVersion = "25.05";
+      sessionPath = [
+        "$HOME/.local/bin"
+      ];
+    };
 
-  xdg.userDirs = {
-    enable = true;
-    createDirectories = true;
-    setSessionVariables = true;
-  };
+    xdg.userDirs = {
+      enable = true;
+      createDirectories = true;
+      setSessionVariables = true;
+    };
 
-  news.display = "silent";
+    news.display = "silent";
+  };
 }

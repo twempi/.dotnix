@@ -1,8 +1,10 @@
 {inputs, ...}: {
-  imports = [inputs.artcraft.homeManagerModules.default];
+  flake.modules.homeManager.artcraft = {...}: {
+    imports = [inputs.artcraft.homeManagerModules.default];
 
-  programs.artcraft = {
-    enable = true;
-    apps = ["photocraft" "cadcraft" "vectorcraft"];
+    programs.artcraft = {
+      enable = true;
+      apps = ["photocraft" "cadcraft" "vectorcraft"];
+    };
   };
 }

@@ -1,10 +1,16 @@
-{ pkgs, config, ...}: {
-  programs.oh-my-posh = {
-    enable = true;
-    enableFishIntegration = true;
-    enableZshIntegration = true;
-    enableBashIntegration = true;
+{
+  flake.modules.homeManager.ohmyposh = {
+    pkgs,
+    config,
+    ...
+  }: {
+    programs.oh-my-posh = {
+      enable = true;
+      enableFishIntegration = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
 
-    settings = builtins.fromTOML (builtins.readFile ./config.toml);
+      settings = builtins.fromTOML (builtins.readFile ./config.toml);
     };
+  };
 }

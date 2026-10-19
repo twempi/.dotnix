@@ -1,296 +1,294 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: let
-  pref-by-location-plugin = pkgs.fetchFromGitHub {
-    owner = "boydaihungst";
-    repo = "pref-by-location.yazi";
-    rev = "a2fbb054c0e1adc1099833c93a31855b119fbbba";
-    sha256 = "1d9gadn2mmq5xjx4jh03d7nqy871wcgcwk2z6ak349mslnc93cr1";
-  };
-
-  convert-plugin = pkgs.fetchFromGitHub {
-    owner = "twempi";
-    repo = "convert.yazi";
-    rev = "97946adfc3ab769c4586a9c1780c475c6699f820";
-    sha256 = "sha256-cD4s1NXz09+DmBcYb95OMUez1RMiro7Y4YzRPKI0wtA=";
-  };
-
-  pdfViewer = "${pkgs.zathura}/bin/zathura";
-  videoPlayer = "${pkgs.mpv}/bin/mpv";
-in {
-  stylix.targets.yazi.enable = true;
-
-  programs.yazi = {
-    enable = true;
-
-    enableZshIntegration = true;
-    enableBashIntegration = true;
-    enableFishIntegration = true;
-
-    shellWrapperName = "y";
-
-    settings = {
-      mgr = {
-        ratio = [1 4 3];
-        sort_by = "alphabetical";
-        sort_sensitive = false;
-        sort_reverse = false;
-        sort_dir_first = true;
-        sort_translit = false;
-        linemode = "none";
-        show_hidden = true;
-        show_symlink = true;
-        scrolloff = 5;
-        mouse_events = ["click" "scroll"];
-      };
-
-      preview = {
-        wrap = "yes";
-        tab_size = 2;
-        max_width = 600;
-        max_height = 900;
-        cache_dir = "";
-        image_delay = 30;
-        image_filter = "triangle";
-        image_quality = 90;
-        ueberzug_scale = 1;
-        ueberzug_offset = [0 0 0 0];
-      };
-
-      opener = {
-        edit = [
-          {
-            run = ''$EDITOR %s'';
-            block = true;
-            desc = "$EDITOR";
-            for = "unix";
-          }
-        ];
-
-        pdf = [
-          {
-            run = ''${pdfViewer} %s'';
-            orphan = true;
-            desc = "Open PDF";
-            for = "linux";
-          }
-        ];
-
-        play = [
-          {
-            run = ''${videoPlayer} %s'';
-            orphan = true;
-            desc = "Play video";
-            for = "linux";
-          }
-        ];
-      };
-
-      open = {
-        prepend_rules = [
-          {
-            mime = "application/pdf";
-            use = "pdf";
-          }
-          {
-            mime = "video/*";
-            use = "play";
-          }
-        ];
-      };
+{inputs, ...}: {
+  flake.modules.homeManager.yazi = {pkgs, ...}: let
+    pref-by-location-plugin = pkgs.fetchFromGitHub {
+      owner = "boydaihungst";
+      repo = "pref-by-location.yazi";
+      rev = "a2fbb054c0e1adc1099833c93a31855b119fbbba";
+      sha256 = "1d9gadn2mmq5xjx4jh03d7nqy871wcgcwk2z6ak349mslnc93cr1";
     };
 
-    keymap = {
-      mgr.prepend_keymap = [
-        {
-          on = ["<Enter>"];
-          run = "plugin smart-enter";
-          desc = "Enter the child directory, or open the file";
-        }
-
-        {
-          run = "plugin bunny";
-          on = [";"];
-          desc = "Start bunny.yazi";
-        }
-
-        {
-          run = ["hidden toggle" "plugin pref-by-location -- save"];
-          on = ["."];
-          desc = "Toggle the visibility of hidden files";
-        }
-
-        {
-          on = ["m" "s"];
-          run = ["linemode size" "plugin pref-by-location -- save"];
-          desc = "Linemode: size";
-        }
-        {
-          on = ["m" "p"];
-          run = ["linemode permissions" "plugin pref-by-location -- save"];
-          desc = "Linemode: permissions";
-        }
-        {
-          on = ["m" "b"];
-          run = ["linemode btime" "plugin pref-by-location -- save"];
-          desc = "Linemode: btime";
-        }
-        {
-          on = ["m" "m"];
-          run = ["linemode mtime" "plugin pref-by-location -- save"];
-          desc = "Linemode: mtime";
-        }
-        {
-          on = ["m" "o"];
-          run = ["linemode owner" "plugin pref-by-location -- save"];
-          desc = "Linemode: owner";
-        }
-        {
-          on = ["m" "n"];
-          run = ["linemode none" "plugin pref-by-location -- save"];
-          desc = "Linemode: none";
-        }
-
-        {
-          on = ["," "t"];
-          run = "plugin pref-by-location -- toggle";
-          desc = "Toggle auto-save preferences";
-        }
-        {
-          on = ["," "d"];
-          run = "plugin pref-by-location -- disable";
-          desc = "Disable auto-save preferences";
-        }
-        {
-          on = ["," "R"];
-          run = ["plugin pref-by-location -- reset"];
-          desc = "Reset preference of cwd";
-        }
-        {
-          on = ["," "m"];
-          run = ["sort mtime --reverse=no" "linemode mtime" "plugin pref-by-location -- save"];
-          desc = "Sort by modified time";
-        }
-        {
-          on = ["," "M"];
-          run = ["sort mtime --reverse" "linemode mtime" "plugin pref-by-location -- save"];
-          desc = "Sort by modified time (reverse)";
-        }
-        {
-          on = ["," "b"];
-          run = ["sort btime --reverse=no" "linemode btime" "plugin pref-by-location -- save"];
-          desc = "Sort by birth time";
-        }
-        {
-          on = ["," "B"];
-          run = ["sort btime --reverse" "linemode btime" "plugin pref-by-location -- save"];
-          desc = "Sort by birth time (reverse)";
-        }
-        {
-          on = ["," "e"];
-          run = ["sort extension --reverse=no" "plugin pref-by-location -- save"];
-          desc = "Sort by extension";
-        }
-        {
-          on = ["," "E"];
-          run = ["sort extension --reverse" "plugin pref-by-location -- save"];
-          desc = "Sort by extension (reverse)";
-        }
-        {
-          on = ["," "a"];
-          run = ["sort alphabetical --reverse=no" "plugin pref-by-location -- save"];
-          desc = "Sort alphabetically";
-        }
-        {
-          on = ["," "A"];
-          run = ["sort alphabetical --reverse" "plugin pref-by-location -- save"];
-          desc = "Sort alphabetically (reverse)";
-        }
-        {
-          on = ["," "n"];
-          run = ["sort natural --reverse=no" "plugin pref-by-location -- save"];
-          desc = "Sort naturally";
-        }
-        {
-          on = ["," "N"];
-          run = ["sort natural --reverse" "plugin pref-by-location -- save"];
-          desc = "Sort naturally (reverse)";
-        }
-        {
-          on = ["," "s"];
-          run = ["sort size --reverse=no" "linemode size" "plugin pref-by-location -- save"];
-          desc = "Sort by size";
-        }
-        {
-          on = ["," "S"];
-          run = ["sort size --reverse" "linemode size" "plugin pref-by-location -- save"];
-          desc = "Sort by size (reverse)";
-        }
-        {
-          on = ["," "r"];
-          run = ["sort random --reverse=no" "plugin pref-by-location -- save"];
-          desc = "Sort randomly";
-        }
-        {
-          on = ["R" "b"];
-          run = "plugin trash";
-          desc = "Open Trash";
-        }
-        {
-          on = ["c" "p"];
-          run = "plugin convert -- --extension='png'";
-          desc = "Convert selected files to PNG";
-        }
-        {
-          on = ["c" "j"];
-          run = "plugin convert -- --extension='jpg'";
-          desc = "Convert selected files to JPG";
-        }
-        {
-          on = ["c" "w"];
-          run = "plugin convert -- --extension='webp'";
-          desc = "Convert selected files to WebP";
-        }
-      ];
+    convert-plugin = pkgs.fetchFromGitHub {
+      owner = "twempi";
+      repo = "convert.yazi";
+      rev = "97946adfc3ab769c4586a9c1780c475c6699f820";
+      sha256 = "sha256-cD4s1NXz09+DmBcYb95OMUez1RMiro7Y4YzRPKI0wtA=";
     };
 
-    plugins = {
-      "full-border" = pkgs.yaziPlugins.full-border;
-      "smart-enter" = pkgs.yaziPlugins.smart-enter;
-      "bunny" = "${inputs.bunny-yazi}";
-      "pref-by-location" = pref-by-location-plugin;
-      "convert" = convert-plugin;
+    pdfViewer = "${pkgs.zathura}/bin/zathura";
+    videoPlayer = "${pkgs.mpv}/bin/mpv";
+  in {
+    stylix.targets.yazi.enable = true;
+
+    programs.yazi = {
+      enable = true;
+
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      enableFishIntegration = true;
+
+      shellWrapperName = "y";
+
+      settings = {
+        mgr = {
+          ratio = [1 4 3];
+          sort_by = "alphabetical";
+          sort_sensitive = false;
+          sort_reverse = false;
+          sort_dir_first = true;
+          sort_translit = false;
+          linemode = "none";
+          show_hidden = true;
+          show_symlink = true;
+          scrolloff = 5;
+          mouse_events = ["click" "scroll"];
+        };
+
+        preview = {
+          wrap = "yes";
+          tab_size = 2;
+          max_width = 600;
+          max_height = 900;
+          cache_dir = "";
+          image_delay = 30;
+          image_filter = "triangle";
+          image_quality = 90;
+          ueberzug_scale = 1;
+          ueberzug_offset = [0 0 0 0];
+        };
+
+        opener = {
+          edit = [
+            {
+              run = ''$EDITOR %s'';
+              block = true;
+              desc = "$EDITOR";
+              for = "unix";
+            }
+          ];
+
+          pdf = [
+            {
+              run = ''${pdfViewer} %s'';
+              orphan = true;
+              desc = "Open PDF";
+              for = "linux";
+            }
+          ];
+
+          play = [
+            {
+              run = ''${videoPlayer} %s'';
+              orphan = true;
+              desc = "Play video";
+              for = "linux";
+            }
+          ];
+        };
+
+        open = {
+          prepend_rules = [
+            {
+              mime = "application/pdf";
+              use = "pdf";
+            }
+            {
+              mime = "video/*";
+              use = "play";
+            }
+          ];
+        };
+      };
+
+      keymap = {
+        mgr.prepend_keymap = [
+          {
+            on = ["<Enter>"];
+            run = "plugin smart-enter";
+            desc = "Enter the child directory, or open the file";
+          }
+
+          {
+            run = "plugin bunny";
+            on = [";"];
+            desc = "Start bunny.yazi";
+          }
+
+          {
+            run = ["hidden toggle" "plugin pref-by-location -- save"];
+            on = ["."];
+            desc = "Toggle the visibility of hidden files";
+          }
+
+          {
+            on = ["m" "s"];
+            run = ["linemode size" "plugin pref-by-location -- save"];
+            desc = "Linemode: size";
+          }
+          {
+            on = ["m" "p"];
+            run = ["linemode permissions" "plugin pref-by-location -- save"];
+            desc = "Linemode: permissions";
+          }
+          {
+            on = ["m" "b"];
+            run = ["linemode btime" "plugin pref-by-location -- save"];
+            desc = "Linemode: btime";
+          }
+          {
+            on = ["m" "m"];
+            run = ["linemode mtime" "plugin pref-by-location -- save"];
+            desc = "Linemode: mtime";
+          }
+          {
+            on = ["m" "o"];
+            run = ["linemode owner" "plugin pref-by-location -- save"];
+            desc = "Linemode: owner";
+          }
+          {
+            on = ["m" "n"];
+            run = ["linemode none" "plugin pref-by-location -- save"];
+            desc = "Linemode: none";
+          }
+
+          {
+            on = ["," "t"];
+            run = "plugin pref-by-location -- toggle";
+            desc = "Toggle auto-save preferences";
+          }
+          {
+            on = ["," "d"];
+            run = "plugin pref-by-location -- disable";
+            desc = "Disable auto-save preferences";
+          }
+          {
+            on = ["," "R"];
+            run = ["plugin pref-by-location -- reset"];
+            desc = "Reset preference of cwd";
+          }
+          {
+            on = ["," "m"];
+            run = ["sort mtime --reverse=no" "linemode mtime" "plugin pref-by-location -- save"];
+            desc = "Sort by modified time";
+          }
+          {
+            on = ["," "M"];
+            run = ["sort mtime --reverse" "linemode mtime" "plugin pref-by-location -- save"];
+            desc = "Sort by modified time (reverse)";
+          }
+          {
+            on = ["," "b"];
+            run = ["sort btime --reverse=no" "linemode btime" "plugin pref-by-location -- save"];
+            desc = "Sort by birth time";
+          }
+          {
+            on = ["," "B"];
+            run = ["sort btime --reverse" "linemode btime" "plugin pref-by-location -- save"];
+            desc = "Sort by birth time (reverse)";
+          }
+          {
+            on = ["," "e"];
+            run = ["sort extension --reverse=no" "plugin pref-by-location -- save"];
+            desc = "Sort by extension";
+          }
+          {
+            on = ["," "E"];
+            run = ["sort extension --reverse" "plugin pref-by-location -- save"];
+            desc = "Sort by extension (reverse)";
+          }
+          {
+            on = ["," "a"];
+            run = ["sort alphabetical --reverse=no" "plugin pref-by-location -- save"];
+            desc = "Sort alphabetically";
+          }
+          {
+            on = ["," "A"];
+            run = ["sort alphabetical --reverse" "plugin pref-by-location -- save"];
+            desc = "Sort alphabetically (reverse)";
+          }
+          {
+            on = ["," "n"];
+            run = ["sort natural --reverse=no" "plugin pref-by-location -- save"];
+            desc = "Sort naturally";
+          }
+          {
+            on = ["," "N"];
+            run = ["sort natural --reverse" "plugin pref-by-location -- save"];
+            desc = "Sort naturally (reverse)";
+          }
+          {
+            on = ["," "s"];
+            run = ["sort size --reverse=no" "linemode size" "plugin pref-by-location -- save"];
+            desc = "Sort by size";
+          }
+          {
+            on = ["," "S"];
+            run = ["sort size --reverse" "linemode size" "plugin pref-by-location -- save"];
+            desc = "Sort by size (reverse)";
+          }
+          {
+            on = ["," "r"];
+            run = ["sort random --reverse=no" "plugin pref-by-location -- save"];
+            desc = "Sort randomly";
+          }
+          {
+            on = ["R" "b"];
+            run = "plugin trash";
+            desc = "Open Trash";
+          }
+          {
+            on = ["c" "p"];
+            run = "plugin convert -- --extension='png'";
+            desc = "Convert selected files to PNG";
+          }
+          {
+            on = ["c" "j"];
+            run = "plugin convert -- --extension='jpg'";
+            desc = "Convert selected files to JPG";
+          }
+          {
+            on = ["c" "w"];
+            run = "plugin convert -- --extension='webp'";
+            desc = "Convert selected files to WebP";
+          }
+        ];
+      };
+
+      plugins = {
+        "full-border" = pkgs.yaziPlugins.full-border;
+        "smart-enter" = pkgs.yaziPlugins.smart-enter;
+        "bunny" = "${inputs.bunny-yazi}";
+        "pref-by-location" = pref-by-location-plugin;
+        "convert" = convert-plugin;
+      };
+
+      initLua = ''
+        require("full-border"):setup()
+        require("pref-by-location"):setup({})
+
+        require("bunny"):setup({
+          hops = {
+            { key = "/", path = "/" },
+            { key = "t", path = "/tmp" },
+            { key = "h", path = "~", desc = "Home" },
+            { key = "d", path = "~/Downloads/", desc = "Downloads" },
+            { key = "D", path = "~/Documents", desc = "Documents" },
+            { key = "c", path = "~/.config", desc = "Config" },
+            { key = "n", path = "~/.dotnix", desc = "Nix Config" },
+            { key = "p", path = "~/Pictures", desc = "Pictures" },
+            { key = { "l", "s" }, path = "~/.local/share", desc = "Local share" },
+            { key = { "l", "b" }, path = "~/.local/bin", desc = "Local bin" },
+            { key = { "l", "t" }, path = "~/.local/state", desc = "Local state" },
+            { key = { "s", "s" }, path = "/mnt/Storage", desc = "Storage" },
+            { key = { "s", "p" }, path = "/mnt/Storage/Pictures", desc = "Storage Pictures" },
+            { key = { "s", "D" }, path = "/mnt/Storage/Documents", desc = "Storage Documents" },
+          },
+          desc_strategy = "path",
+          ephemeral = true,
+          tabs = true,
+          notify = false,
+          fuzzy_cmd = "fzf",
+        })
+      '';
     };
-
-    initLua = ''
-      require("full-border"):setup()
-      require("pref-by-location"):setup({})
-
-      require("bunny"):setup({
-        hops = {
-          { key = "/", path = "/" },
-          { key = "t", path = "/tmp" },
-          { key = "h", path = "~", desc = "Home" },
-          { key = "d", path = "~/Downloads/", desc = "Downloads" },
-          { key = "D", path = "~/Documents", desc = "Documents" },
-          { key = "c", path = "~/.config", desc = "Config" },
-          { key = "n", path = "~/.dotnix", desc = "Nix Config" },
-          { key = "p", path = "~/Pictures", desc = "Pictures" },
-          { key = { "l", "s" }, path = "~/.local/share", desc = "Local share" },
-          { key = { "l", "b" }, path = "~/.local/bin", desc = "Local bin" },
-          { key = { "l", "t" }, path = "~/.local/state", desc = "Local state" },
-          { key = { "s", "s" }, path = "/mnt/Storage", desc = "Storage" },
-          { key = { "s", "p" }, path = "/mnt/Storage/Pictures", desc = "Storage Pictures" },
-          { key = { "s", "D" }, path = "/mnt/Storage/Documents", desc = "Storage Documents" },
-        },
-        desc_strategy = "path",
-        ephemeral = true,
-        tabs = true,
-        notify = false,
-        fuzzy_cmd = "fzf",
-      })
-    '';
   };
 }

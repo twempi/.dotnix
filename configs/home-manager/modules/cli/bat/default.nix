@@ -1,7 +1,9 @@
 {
-  stylix.targets.bat.enable = true;
+  flake.modules.homeManager.bat = {
+    stylix.targets.bat.enable = true;
 
-  programs.bat = {
-    enable = true;
+    programs.bat = {
+      enable = true;
+    };
   };
 }

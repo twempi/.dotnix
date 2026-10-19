@@ -1,65 +1,75 @@
-{
-  lib,
-  pkgs,
-  inputs,
-  config,
-  options,
-  ...
-}: let
-  systemIntegration = lib.optionalAttrs (lib.hasAttrByPath ["stylix" "homeManagerIntegration"] options) {
-    homeManagerIntegration = {
-      autoImport = true;
-      followSystem = true;
+{inputs, ...}: let
+  # Shared by NixOS and standalone Home Manager.
+  stylixConfig = {
+    lib,
+    pkgs,
+    config,
+    options,
+    ...
+  }: let
+    systemIntegration = lib.optionalAttrs (lib.hasAttrByPath ["stylix" "homeManagerIntegration"] options) {
+      homeManagerIntegration = {
+        autoImport = true;
+        followSystem = true;
+      };
     };
+  in {
+    stylix =
+      {
+        enable = true;
+        autoEnable = false;
+
+        base16Scheme = inputs.tt-schemes + "/base16/rose-pine.yaml";
+        # base16Scheme = inputs.tt-schemes + "/base16/everforest-dark-medium.yaml";
+        # base16Scheme = inputs.tt-schemes + "/base16/catppuccin-mocha.yaml";
+        # base16Scheme = inputs.tt-schemes + "/base16/gruvbox-material-dark-medium.yaml";
+        # base16Scheme = inputs.tt-schemes + "/base16/tokyo-night-moon.yaml";
+        # base16Scheme = inputs.tt-schemes + "/base16/ocean.yaml";
+        # base16Scheme = inputs.tt-schemes + "/base16/black-metal-dark-funeral.yaml";
+        # base16Scheme = inputs.tt-schemes + "/base16/grayscale-dark.yaml";
+
+        polarity = "dark";
+
+        cursor = {
+          package = pkgs.quintom-cursor-theme;
+          name = "Quintom_Ink";
+          size = 24;
+        };
+
+        fonts = {
+          monospace = {
+            package = pkgs.iosevka;
+            name = "Iosevka";
+          };
+          serif = config.stylix.fonts.monospace;
+          sansSerif = config.stylix.fonts.monospace;
+          emoji = config.stylix.fonts.monospace;
+
+          # sansSerif = {
+          #   package = pkgs.dejavu_fonts;
+          #   name = "DejaVu Sans";
+          # };
+          # serif = {
+          #   package = pkgs.dejavu_fonts;
+          #   name = "DejaVu Serif";
+          # };
+
+          sizes = {
+            terminal = 11;
+            applications = 11;
+            desktop = 11;
+            popups = 11;
+          };
+        };
+      }
+      // systemIntegration;
   };
 in {
-  stylix =
-    {
-      enable = true;
-      autoEnable = false;
+  flake.modules.nixos.stylix = {
+    imports = [inputs.stylix.nixosModules.stylix stylixConfig];
+  };
 
-      base16Scheme = inputs.tt-schemes + "/base16/rose-pine.yaml";
-      # base16Scheme = inputs.tt-schemes + "/base16/everforest-dark-medium.yaml";
-      # base16Scheme = inputs.tt-schemes + "/base16/catppuccin-mocha.yaml";
-      # base16Scheme = inputs.tt-schemes + "/base16/gruvbox-material-dark-medium.yaml";
-      # base16Scheme = inputs.tt-schemes + "/base16/tokyo-night-moon.yaml";
-      # base16Scheme = inputs.tt-schemes + "/base16/ocean.yaml";
-      # base16Scheme = inputs.tt-schemes + "/base16/black-metal-dark-funeral.yaml";
-      # base16Scheme = inputs.tt-schemes + "/base16/grayscale-dark.yaml";
-
-      polarity = "dark";
-
-      cursor = {
-        package = pkgs.quintom-cursor-theme;
-        name = "Quintom_Ink";
-        size = 24;
-      };
-
-      fonts = {
-        monospace = {
-          package = pkgs.iosevka;
-          name = "Iosevka";
-        };
-        serif = config.stylix.fonts.monospace;
-        sansSerif = config.stylix.fonts.monospace;
-        emoji = config.stylix.fonts.monospace;
-
-        # sansSerif = {
-        #   package = pkgs.dejavu_fonts;
-        #   name = "DejaVu Sans";
-        # };
-        # serif = {
-        #   package = pkgs.dejavu_fonts;
-        #   name = "DejaVu Serif";
-        # };
-
-        sizes = {
-          terminal = 11;
-          applications = 11;
-          desktop = 11;
-          popups = 11;
-        };
-      };
-    }
-    // systemIntegration;
+  flake.modules.homeManager.stylix = {
+    imports = [inputs.stylix.homeModules.stylix stylixConfig];
+  };
 }

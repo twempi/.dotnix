@@ -1,18 +1,22 @@
-{...}: {
-  imports = [
-    ../base.nix
-    ../modules/cli/core-packages
-    ../modules/cli/docker
-    ../modules/cli/bat
-    ../modules/cli/btop
-    ../modules/cli/fish
-    ../modules/cli/ssh
-    ../modules/cli/clipboard
-    ../modules/cli/tmux
-    ../modules/cli/git/server.nix
-    ../modules/theme/ohmyposh
-    ../modules/editors/neovim
-    ../modules/apps/syncthing
-    ../modules/cli/yazi
-  ];
+{config, ...}: let
+  inherit (config.flake.modules) homeManager;
+in {
+  flake.modules.homeManager.profile-server = {
+    imports = with homeManager; [
+      base
+      core-packages
+      docker
+      bat
+      btop
+      fish
+      ssh
+      clipboard
+      tmux
+      git-server
+      ohmyposh
+      neovim
+      syncthing
+      yazi
+    ];
+  };
 }

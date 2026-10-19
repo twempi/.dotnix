@@ -1,21 +1,32 @@
-{inputs, ...}: {
-  imports = [
-    inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402
+{
+  config,
+  inputs,
+  ...
+}: let
+  inherit (config.flake.modules) nixos;
+in {
+  flake.nixosConfigurations.g14 = inputs.nixpkgs.lib.nixosSystem {
+    modules = [nixos.g14];
+  };
 
-    ../../system/base.nix
-    ../../system/modules/theme/stylix.nix
-    ../../system/profiles/desktop.nix
-    ../../system/profiles/gaming.nix
+  # Host modules are listed in ./system/modules.nix.
+  flake.modules.nixos.g14 = {
+    imports = with nixos; [
+      inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402
 
-    ./hardware-configuration.nix
+      base
+      stylix
+      profile-desktop
+      profile-gaming
 
-    ./system/modules.nix
-  ];
+      ./_hardware-configuration.nix
+    ];
 
-  networking = {
-    nameservers = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
-    networkmanager.enable = true;
-    networkmanager.wifi.powersave = true;
-    hostName = "g14";
+    networking = {
+      nameservers = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
+      networkmanager.enable = true;
+      networkmanager.wifi.powersave = true;
+      hostName = "g14";
+    };
   };
 }

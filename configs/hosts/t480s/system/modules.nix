@@ -1,17 +1,21 @@
-{
-  imports = [
-    ./modules/battery.nix
-    ./modules/undervolt.nix
-    ./modules/graphics.nix
-    ./modules/minecraft.nix
-    ./modules/floccus-webdav.nix
-    ./modules/caddy
-    ./modules/pihole.nix
-    ./modules/suwayomi.nix
-    ./modules/vaultwarden.nix
-    ./modules/headless.nix
-    ./modules/immich.nix
-    # ./modules/seanime.nix
-    # ./modules/jellyfin.nix
-  ];
+{config, ...}: let
+  inherit (config.flake.modules) nixos;
+in {
+  flake.modules.nixos.t480s = {
+    imports = with nixos; [
+      t480s-battery
+      t480s-undervolt
+      t480s-graphics
+      t480s-minecraft
+      t480s-floccus-webdav
+      t480s-caddy
+      t480s-pihole
+      t480s-suwayomi
+      t480s-vaultwarden
+      t480s-headless
+      t480s-immich
+      # t480s-seanime
+      # t480s-jellyfin
+    ];
+  };
 }

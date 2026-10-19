@@ -1,3 +1,5 @@
 {
-  fonts.fontconfig.enable = true;
+  flake.modules.homeManager.fontconfig = {
+    fonts.fontconfig.enable = true;
+  };
 }

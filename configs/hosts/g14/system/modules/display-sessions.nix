@@ -1,161 +1,163 @@
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}: let
-  g14DrmDevices = pkgs.writeShellApplication {
-    name = "g14-drm-devices";
+  flake.modules.nixos.g14-display-sessions = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
+    g14DrmDevices = pkgs.writeShellApplication {
+      name = "g14-drm-devices";
 
-    text = ''
-      cards=()
-      ordered=()
+      text = ''
+        cards=()
+        ordered=()
 
-      add_card() {
-        local candidate="$1"
-        local existing
+        add_card() {
+          local candidate="$1"
+          local existing
 
-        for existing in "''${ordered[@]}"; do
-          if [[ "$existing" == "$candidate" ]]; then
-            return
+          for existing in "''${ordered[@]}"; do
+            if [[ "$existing" == "$candidate" ]]; then
+              return
+            fi
+          done
+
+          ordered+=("$candidate")
+        }
+
+        has_connector_prefix() {
+          local card="$1"
+          local prefix="$2"
+          local connector_path
+          local connector_name
+
+          for connector_path in /sys/class/drm/"$card"-*; do
+            [[ -e "$connector_path" ]] || continue
+            [[ -d "$connector_path" ]] || continue
+
+            connector_name="''${connector_path##*/}"
+            connector_name="''${connector_name#"$card"-}"
+
+            if [[ "$connector_name" == "$prefix"* ]]; then
+              return 0
+            fi
+          done
+
+          return 1
+        }
+
+        for sys_card in /sys/class/drm/card[0-9]; do
+          [[ -e "$sys_card" ]] || continue
+
+          card="''${sys_card##*/}"
+          [[ -e "/dev/dri/$card" ]] || continue
+
+          cards+=("$card")
+        done
+
+        for card in "''${cards[@]}"; do
+          if has_connector_prefix "$card" "eDP-"; then
+            add_card "$card"
           fi
         done
 
-        ordered+=("$candidate")
-      }
-
-      has_connector_prefix() {
-        local card="$1"
-        local prefix="$2"
-        local connector_path
-        local connector_name
-
-        for connector_path in /sys/class/drm/"$card"-*; do
-          [[ -e "$connector_path" ]] || continue
-          [[ -d "$connector_path" ]] || continue
-
-          connector_name="''${connector_path##*/}"
-          connector_name="''${connector_name#"$card"-}"
-
-          if [[ "$connector_name" == "$prefix"* ]]; then
-            return 0
+        for card in "''${cards[@]}"; do
+          if has_connector_prefix "$card" "HDMI-A-"; then
+            add_card "$card"
           fi
         done
 
-        return 1
-      }
-
-      for sys_card in /sys/class/drm/card[0-9]; do
-        [[ -e "$sys_card" ]] || continue
-
-        card="''${sys_card##*/}"
-        [[ -e "/dev/dri/$card" ]] || continue
-
-        cards+=("$card")
-      done
-
-      for card in "''${cards[@]}"; do
-        if has_connector_prefix "$card" "eDP-"; then
+        for card in "''${cards[@]}"; do
           add_card "$card"
-        fi
-      done
+        done
 
-      for card in "''${cards[@]}"; do
-        if has_connector_prefix "$card" "HDMI-A-"; then
-          add_card "$card"
-        fi
-      done
+        output=""
+        for card in "''${ordered[@]}"; do
+          if [[ -n "$output" ]]; then
+            output+=":"
+          fi
 
-      for card in "''${cards[@]}"; do
-        add_card "$card"
-      done
+          output+="/dev/dri/$card"
+        done
 
-      output=""
-      for card in "''${ordered[@]}"; do
-        if [[ -n "$output" ]]; then
-          output+=":"
-        fi
+        printf '%s\n' "$output"
+      '';
+    };
 
-        output+="/dev/dri/$card"
-      done
-
-      printf '%s\n' "$output"
+    exportDrmDevices = ''
+      drm_devices="$(${lib.getExe g14DrmDevices})"
+      if [[ -n "$drm_devices" ]]; then
+        export AQ_DRM_DEVICES="$drm_devices"
+        export WLR_DRM_DEVICES="$drm_devices"
+      fi
     '';
-  };
 
-  exportDrmDevices = ''
-    drm_devices="$(${lib.getExe g14DrmDevices})"
-    if [[ -n "$drm_devices" ]]; then
-      export AQ_DRM_DEVICES="$drm_devices"
-      export WLR_DRM_DEVICES="$drm_devices"
-    fi
-  '';
+    g14StartHyprland = pkgs.writeShellApplication {
+      name = "g14-start-hyprland";
 
-  g14StartHyprland = pkgs.writeShellApplication {
-    name = "g14-start-hyprland";
+      text = ''
+        ${exportDrmDevices}
 
-    text = ''
-      ${exportDrmDevices}
+        exec ${config.programs.hyprland.package}/bin/start-hyprland "$@"
+      '';
+    };
 
-      exec ${config.programs.hyprland.package}/bin/start-hyprland "$@"
-    '';
-  };
+    g14StartSway = pkgs.writeShellApplication {
+      name = "g14-start-sway";
 
-  g14StartSway = pkgs.writeShellApplication {
-    name = "g14-start-sway";
+      text = ''
+        ${exportDrmDevices}
 
-    text = ''
-      ${exportDrmDevices}
+        exec ${config.programs.sway.package}/bin/sway "$@"
+      '';
+    };
 
-      exec ${config.programs.sway.package}/bin/sway "$@"
-    '';
-  };
+    g14WaylandSessions = pkgs.symlinkJoin {
+      name = "g14-wayland-sessions";
 
-  g14WaylandSessions = pkgs.symlinkJoin {
-    name = "g14-wayland-sessions";
+      paths = [
+        (pkgs.writeTextDir "share/wayland-sessions/hyprland.desktop" ''
+          [Desktop Entry]
+          Name=Hyprland
+          Comment=An intelligent dynamic tiling Wayland compositor
+          Exec=${lib.getExe g14StartHyprland}
+          Type=Application
+          DesktopNames=Hyprland
+          Keywords=tiling;wayland;compositor;
+        '')
+        (pkgs.writeTextDir "share/wayland-sessions/hyprland-uwsm.desktop" ''
+          [Desktop Entry]
+          Name=Hyprland (uwsm-managed)
+          Comment=An intelligent dynamic tiling Wayland compositor
+          Exec=${lib.getExe config.programs.uwsm.package} start -e -D Hyprland hyprland.desktop
+          TryExec=${lib.getExe config.programs.uwsm.package}
+          DesktopNames=Hyprland
+          Type=Application
+        '')
+        (pkgs.writeTextDir "share/wayland-sessions/sway.desktop" ''
+          [Desktop Entry]
+          Name=Sway
+          Comment=An i3-compatible Wayland compositor
+          Exec=${lib.getExe g14StartSway}
+          Type=Application
+          DesktopNames=sway;wlroots;X-NIXOS-SYSTEMD-AWARE
+        '')
+      ];
 
-    paths = [
-      (pkgs.writeTextDir "share/wayland-sessions/hyprland.desktop" ''
-        [Desktop Entry]
-        Name=Hyprland
-        Comment=An intelligent dynamic tiling Wayland compositor
-        Exec=${lib.getExe g14StartHyprland}
-        Type=Application
-        DesktopNames=Hyprland
-        Keywords=tiling;wayland;compositor;
-      '')
-      (pkgs.writeTextDir "share/wayland-sessions/hyprland-uwsm.desktop" ''
-        [Desktop Entry]
-        Name=Hyprland (uwsm-managed)
-        Comment=An intelligent dynamic tiling Wayland compositor
-        Exec=${lib.getExe config.programs.uwsm.package} start -e -D Hyprland hyprland.desktop
-        TryExec=${lib.getExe config.programs.uwsm.package}
-        DesktopNames=Hyprland
-        Type=Application
-      '')
-      (pkgs.writeTextDir "share/wayland-sessions/sway.desktop" ''
-        [Desktop Entry]
-        Name=Sway
-        Comment=An i3-compatible Wayland compositor
-        Exec=${lib.getExe g14StartSway}
-        Type=Application
-        DesktopNames=sway;wlroots;X-NIXOS-SYSTEMD-AWARE
-      '')
+      passthru.providedSessions = [
+        "hyprland"
+        "hyprland-uwsm"
+        "sway"
+      ];
+    };
+  in {
+    environment.systemPackages = [
+      g14DrmDevices
     ];
 
-    passthru.providedSessions = [
-      "hyprland"
-      "hyprland-uwsm"
-      "sway"
+    services.displayManager.sessionPackages = lib.mkForce [
+      g14WaylandSessions
+      config.programs.niri.package
     ];
   };
-in {
-  environment.systemPackages = [
-    g14DrmDevices
-  ];
-
-  services.displayManager.sessionPackages = lib.mkForce [
-    g14WaylandSessions
-    config.programs.niri.package
-  ];
 }

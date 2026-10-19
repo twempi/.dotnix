@@ -1,3 +1,5 @@
 {
-  services.gnome-keyring.enable = true;
+  flake.modules.homeManager.gnome-keyring = {
+    services.gnome-keyring.enable = true;
+  };
 }

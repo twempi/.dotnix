@@ -1,6 +1,12 @@
-{lib, pkgs, ...}: {
-  programs.ssh.askPassword = lib.mkDefault "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
-  services.dbus.packages = [
-    pkgs.seahorse
-  ];
+{
+  flake.modules.nixos.seahorse = {
+    lib,
+    pkgs,
+    ...
+  }: {
+    programs.ssh.askPassword = lib.mkDefault "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
+    services.dbus.packages = [
+      pkgs.seahorse
+    ];
+  };
 }

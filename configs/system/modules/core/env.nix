@@ -1,22 +1,24 @@
-{pkgs, ...}: {
-  environment = {
-    localBinInPath = true;
-    sessionVariables = {
-      # Application Specific
-      MOZ_ENABLE_WAYLAND = "1";
-      MOZ_DISABLE_RDD_SANDBOX = "1";
-      MOZ_DBUS_REMOTE = "1";
-      PROTON_ENABLE_NGX_UPDATER = "1";
+{
+  flake.modules.nixos.env = {pkgs, ...}: {
+    environment = {
+      localBinInPath = true;
+      sessionVariables = {
+        # Application Specific
+        MOZ_ENABLE_WAYLAND = "1";
+        MOZ_DISABLE_RDD_SANDBOX = "1";
+        MOZ_DBUS_REMOTE = "1";
+        PROTON_ENABLE_NGX_UPDATER = "1";
+      };
     };
-  };
 
-  programs.nix-ld = {
-    enable = true;
-    libraries = with pkgs; [
-      stdenv.cc.cc
-      zlib
-      ncurses
-      libxml2
-    ];
+    programs.nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        stdenv.cc.cc
+        zlib
+        ncurses
+        libxml2
+      ];
+    };
   };
 }

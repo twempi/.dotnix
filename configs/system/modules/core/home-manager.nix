@@ -1,33 +1,12 @@
-{
-  inputs,
-  system,
-  hostname,
-  pkgsStable,
-  lib,
-  ...
-}: {
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    backupFileExtension = "hm-backup";
+{inputs, ...}: {
+  # Hosts that manage edward through NixOS set `home-manager.users.edward`.
+  flake.modules.nixos.home-manager = {
+    imports = [inputs.home-manager.nixosModules.home-manager];
 
-    extraSpecialArgs = {
-      inherit inputs system hostname pkgsStable;
-    };
-
-    users.edward = {
-      imports =
-        [
-          (
-            if hostname == "t480s"
-            then ../../../home-manager/profiles/server.nix
-            else ../../../home-manager/profiles/desktop.nix
-          )
-          (../../../hosts + "/${hostname}/home/modules.nix")
-        ]
-        ++ lib.optionals (hostname != "t480s") [
-          inputs.spicetify-nix.homeManagerModules.default
-        ];
+    home-manager = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      backupFileExtension = "hm-backup";
     };
   };
 }

@@ -1,58 +1,56 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: let
-  suwayomiPort = 8080;
-  extensionStoreUrl = "https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json";
-in {
-  services.suwayomi-server = {
-    enable = true;
+{inputs, ...}: {
+  flake.modules.nixos.t480s-suwayomi = {pkgs, ...}: let
+    suwayomiPort = 8080;
+    extensionStoreUrl = "https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json";
+  in {
+    services.suwayomi-server = {
+      enable = true;
 
-    package = inputs.twempi.packages.${pkgs.stdenv.hostPlatform.system}.suwayomi-server;
+      package = inputs.twempi.packages.${pkgs.stdenv.hostPlatform.system}.suwayomi-server;
 
-    # Tailscale Serve exposes it, so don't open this on LAN/Wi-Fi.
-    openFirewall = false;
+      # Tailscale Serve exposes it, so don't open this on LAN/Wi-Fi.
+      openFirewall = false;
 
-    settings.server = {
-      ip = "127.0.0.1";
-      port = suwayomiPort;
+      settings.server = {
+        ip = "127.0.0.1";
+        port = suwayomiPort;
 
-      flareSolverrEnabled = true;
-      flareSolverrUrl = "http://127.0.0.1:8191";
-      flareSolverrTimeout = 60;
-      flareSolverrSessionName = "suwayomi";
-      flareSolverrSessionTtl = 15;
-      flareSolverrAsResponseFallback = true;
+        flareSolverrEnabled = true;
+        flareSolverrUrl = "http://127.0.0.1:8191";
+        flareSolverrTimeout = 60;
+        flareSolverrSessionName = "suwayomi";
+        flareSolverrSessionTtl = 15;
+        flareSolverrAsResponseFallback = true;
 
-      webUIEnabled = true;
-      initialOpenInBrowserEnabled = true;
-      webUIInterface = "browser";
-      webUIFlavor = "WebUI";
-      webUIChannel = "bundled";
-      # Disable scheduled WebUI update checks; retain bundled assets with the server release.
-      webUIUpdateCheckInterval = 0;
+        webUIEnabled = true;
+        initialOpenInBrowserEnabled = true;
+        webUIInterface = "browser";
+        webUIFlavor = "WebUI";
+        webUIChannel = "bundled";
+        # Disable scheduled WebUI update checks; retain bundled assets with the server release.
+        webUIUpdateCheckInterval = 0;
 
-      # Keep the legacy setting in sync with the v2.3 extension store setting.
-      extensionRepos = [
-        extensionStoreUrl
-      ];
-      extensionStores = [
-        extensionStoreUrl
-      ];
+        # Keep the legacy setting in sync with the v2.3 extension store setting.
+        extensionRepos = [
+          extensionStoreUrl
+        ];
+        extensionStores = [
+          extensionStoreUrl
+        ];
+      };
     };
-  };
 
-  services.flaresolverr = {
-    enable = true;
-    port = 8191;
-    openFirewall = false;
-  };
+    services.flaresolverr = {
+      enable = true;
+      port = 8191;
+      openFirewall = false;
+    };
 
-  systemd.services.tailscale-serve-suwayomi = import ./tailscale-serve-service.nix {
-    inherit pkgs;
-    name = "suwayomi";
-    description = "Expose Suwayomi as a Tailscale Service";
-    port = suwayomiPort;
+    systemd.services.tailscale-serve-suwayomi = import ./_tailscale-serve-service.nix {
+      inherit pkgs;
+      name = "suwayomi";
+      description = "Expose Suwayomi as a Tailscale Service";
+      port = suwayomiPort;
+    };
   };
 }

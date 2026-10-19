@@ -1,44 +1,48 @@
-{
-  imports = [
-    ../modules/core/fonts.nix
-    ../modules/core/home-manager.nix
-    ../modules/core/bootloader.nix
-    ../modules/core/shell.nix
-    ../modules/core/user.nix
-    ../modules/core/nh.nix
-    ../modules/core/env.nix
-    ../modules/core/cachix.nix
-    ../modules/core/optimizations.nix
-    ../modules/core/insecure-packages.nix
+{config, ...}: let
+  inherit (config.flake.modules) nixos;
+in {
+  flake.modules.nixos.profile-desktop = {
+    imports = with nixos; [
+      fonts
+      home-manager
+      bootloader
+      shell
+      user
+      nh
+      env
+      cachix
+      optimizations
+      insecure-packages
 
-    ../modules/networking/dns-over-tls.nix
-    ../modules/networking/usbmuxd.nix
-    ../modules/networking/localsend.nix
+      dns-over-tls
+      usbmuxd
+      localsend
 
-    ../modules/services/homelab.nix
-    ../modules/services/services.nix
+      homelab
+      services
 
-    ../modules/desktop/wayland.nix
-    ../modules/desktop/audio.nix
-    ../modules/desktop/gnomeapps.nix
-    ../modules/desktop/chromium.nix
-    ../modules/desktop/seahorse.nix
-    ../modules/desktop/login-manager.nix
-    ../modules/desktop/printing.nix
-    ../modules/desktop/sway.nix
-    ../modules/desktop/hyprland.nix
-    ../modules/desktop/niri.nix
+      wayland
+      audio
+      gnomeapps
+      chromium
+      seahorse
+      login-manager
+      printing
+      sway
+      hyprland
+      niri
 
-    ../modules/apps/anki.nix
-    ../modules/apps/appimage.nix
-    ../modules/apps/handy.nix
-    ../modules/apps/helium.nix
-    ../modules/apps/librepods.nix
-    ../modules/apps/idescriptor.nix
-    ../modules/apps/bt-dualboot.nix
-  ];
+      anki
+      appimage
+      handy
+      helium
+      librepods
+      idescriptor
+      bt-dualboot
+    ];
 
-  # Windows dual-boot keeps the hardware clock in local time.
-  time.hardwareClockInLocalTime = true;
-  hardware.enableAllFirmware = true;
+    # Windows dual-boot keeps the hardware clock in local time.
+    time.hardwareClockInLocalTime = true;
+    hardware.enableAllFirmware = true;
+  };
 }

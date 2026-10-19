@@ -1,5 +1,7 @@
-{pkgs, ...}: {
-  wayland.windowManager.sway.config.keybindings = {
-    "Ctrl+backslash" = "exec ${pkgs.handy}/bin/handy --toggle-transcription";
+{
+  flake.modules.homeManager.desktop-sway = {pkgs, ...}: {
+    wayland.windowManager.sway.config.keybindings = {
+      "Ctrl+backslash" = "exec ${pkgs.handy}/bin/handy --toggle-transcription";
+    };
   };
 }

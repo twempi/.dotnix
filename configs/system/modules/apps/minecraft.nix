@@ -1,1 +1,3 @@
-{...}: {}
+{
+  flake.modules.nixos.minecraft = {...}: {};
+}

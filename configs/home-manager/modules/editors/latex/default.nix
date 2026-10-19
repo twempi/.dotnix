@@ -1,12 +1,14 @@
 {
-  pkgs,
-  config,
-  lib,
-  ...
-}: {
-  home.packages = with pkgs; [
-    texliveFull
-    latexrun
-    texlivePackages.latexmk
-  ];
+  flake.modules.homeManager.latex = {
+    pkgs,
+    config,
+    lib,
+    ...
+  }: {
+    home.packages = with pkgs; [
+      texliveFull
+      latexrun
+      texlivePackages.latexmk
+    ];
+  };
 }

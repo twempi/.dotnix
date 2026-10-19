@@ -1,17 +1,19 @@
 {
-  services.tailscale = {
-    enable = true;
-  };
-
-  services.openssh = {
-    enable = true;
-    ports = [22];
-    settings = {
-      PasswordAuthentication = true;
-      AllowUsers = null;
-      PermitRootLogin = "prohibit-password";
+  flake.modules.nixos.remote-access = {
+    services.tailscale = {
+      enable = true;
     };
-  };
 
-  networking.firewall.allowedTCPPorts = [22];
+    services.openssh = {
+      enable = true;
+      ports = [22];
+      settings = {
+        PasswordAuthentication = true;
+        AllowUsers = null;
+        PermitRootLogin = "prohibit-password";
+      };
+    };
+
+    networking.firewall.allowedTCPPorts = [22];
+  };
 }

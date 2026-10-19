@@ -1,10 +1,9 @@
-{pkgs, ...}: {
-  imports = [
-    ./nautilus.nix
-  ];
-  home.packages = with pkgs; [
-    nautilus
-    eog
-    gnome-calculator
-  ];
+{
+  flake.modules.homeManager.gnome-apps = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      nautilus
+      eog
+      gnome-calculator
+    ];
+  };
 }

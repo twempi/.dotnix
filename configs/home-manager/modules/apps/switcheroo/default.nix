@@ -1,5 +1,7 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    switcheroo
-  ];
+{
+  flake.modules.homeManager.switcheroo = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      switcheroo
+    ];
+  };
 }

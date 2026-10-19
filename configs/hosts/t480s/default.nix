@@ -1,23 +1,36 @@
 {
-  imports = [
-    ../../system/base.nix
-    ../../system/modules/theme/stylix.nix
-    ../../system/modules/networking/remote-access.nix
-    ../../system/modules/core/bootloader.nix
-    ../../system/modules/core/user.nix
-    ../../system/modules/core/shell.nix
-    ../../system/modules/core/nh.nix
-    ../../system/modules/core/home-manager.nix
-    ../../system/modules/core/cachix.nix
+  config,
+  inputs,
+  ...
+}: let
+  inherit (config.flake.modules) nixos homeManager;
+in {
+  flake.nixosConfigurations.t480s = inputs.nixpkgs.lib.nixosSystem {
+    modules = [nixos.t480s];
+  };
 
-    ./hardware-configuration.nix
+  # Host modules are listed in ./system/modules.nix.
+  flake.modules.nixos.t480s = {
+    imports = with nixos; [
+      base
+      stylix
+      remote-access
+      bootloader
+      user
+      shell
+      nh
+      home-manager
+      cachix
 
-    ./system/modules.nix
-  ];
+      ./_hardware-configuration.nix
+    ];
 
-  networking = {
-    nameservers = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
-    networkmanager.enable = true;
-    hostName = "t480s";
+    home-manager.users.edward.imports = [homeManager.t480s];
+
+    networking = {
+      nameservers = ["1.1.1.1" "1.0.0.1" "8.8.8.8"];
+      networkmanager.enable = true;
+      hostName = "t480s";
+    };
   };
 }

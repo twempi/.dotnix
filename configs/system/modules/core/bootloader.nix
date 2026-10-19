@@ -1,59 +1,57 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: let
-  mac-style-src = pkgs.fetchFromGitHub {
-    owner = "twempi";
-    repo = "plymouth-theme";
-    rev = "1a6c7077b7da3f61e8b06051d4facac7e0e34bbd";
-    sha256 = "sha256-+Sy6M2Q14/ZbzURoezZDmND6LVOto3Ct9+CsvGA8JeY=";
-  };
+{inputs, ...}: {
+  flake.modules.nixos.bootloader = {pkgs, ...}: let
+    mac-style-src = pkgs.fetchFromGitHub {
+      owner = "twempi";
+      repo = "plymouth-theme";
+      rev = "1a6c7077b7da3f61e8b06051d4facac7e0e34bbd";
+      sha256 = "sha256-+Sy6M2Q14/ZbzURoezZDmND6LVOto3Ct9+CsvGA8JeY=";
+    };
 
-  mac-style-load = pkgs.callPackage "${mac-style-src}/package.nix" {};
-in {
-  imports = [
-    inputs.twempi.nixosModules.minimal-grub-theme
-  ];
-  stylix.targets.grub.enable = false;
+    mac-style-load = pkgs.callPackage "${mac-style-src}/package.nix" {};
+  in {
+    imports = [
+      inputs.twempi.nixosModules.minimal-grub-theme
+    ];
+    stylix.targets.grub.enable = false;
 
-  boot = {
-    loader = {
-      efi.canTouchEfiVariables = true;
+    boot = {
+      loader = {
+        efi.canTouchEfiVariables = true;
 
-      grub = {
-        enable = true;
-        devices = ["nodev"];
-        efiSupport = true;
-        useOSProber = true;
-        configurationLimit = 8;
-
-        gfxmodeEfi = "auto";
-        gfxpayloadEfi = "keep";
-
-        minimalTheme = {
+        grub = {
           enable = true;
-          fontSize = 28;
-          fontRange = "0x20-0x7e,0xa0-0xff,0x2010-0x2026";
-          timeout = 5;
+          devices = ["nodev"];
+          efiSupport = true;
+          useOSProber = true;
+          configurationLimit = 8;
+
+          gfxmodeEfi = "auto";
+          gfxpayloadEfi = "keep";
+
+          minimalTheme = {
+            enable = true;
+            fontSize = 28;
+            fontRange = "0x20-0x7e,0xa0-0xff,0x2010-0x2026";
+            timeout = 5;
+          };
         };
+
+        timeout = 5;
       };
 
-      timeout = 5;
-    };
+      plymouth = {
+        enable = false;
+        theme = "mac-style";
+        themePackages = [mac-style-load];
+      };
 
-    plymouth = {
-      enable = false;
-      theme = "mac-style";
-      themePackages = [mac-style-load];
+      consoleLogLevel = 3;
+      initrd.verbose = false;
+      kernelParams = [
+        "quiet"
+        "udev.log_level=3"
+        "systemd.show_status=auto"
+      ];
     };
-
-    consoleLogLevel = 3;
-    initrd.verbose = false;
-    kernelParams = [
-      "quiet"
-      "udev.log_level=3"
-      "systemd.show_status=auto"
-    ];
   };
 }

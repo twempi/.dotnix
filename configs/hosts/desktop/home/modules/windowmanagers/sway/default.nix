@@ -1,6 +1,4 @@
 {
-  imports = [
-    ./general.nix
-    ./keybinds.nix
-  ];
+  flake.modules.homeManager.desktop-sway = {
+  };
 }

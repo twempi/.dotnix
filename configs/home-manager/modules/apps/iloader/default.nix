@@ -1,5 +1,7 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
-    iloader
-  ];
+{
+  flake.modules.homeManager.iloader = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      iloader
+    ];
+  };
 }

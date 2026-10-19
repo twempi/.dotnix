@@ -1,7 +1,4 @@
 {
-  imports = [
-    ./general.nix
-    ./keybinds.nix
-    ./windowrules.nix
-  ];
+  flake.modules.homeManager.desktop-hyprland = {
+  };
 }

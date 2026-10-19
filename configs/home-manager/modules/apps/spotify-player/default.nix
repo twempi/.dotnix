@@ -1,12 +1,10 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: {
-  stylix.targets.spotify-player.colors.enable = true;
+{inputs, ...}: {
+  flake.modules.homeManager.spotify-player = {pkgs, ...}: {
+    stylix.targets.spotify-player.colors.enable = true;
 
-  programs.spotify-player = {
-    enable = true;
-    package = inputs.spotify-player.defaultPackage.${pkgs.stdenv.hostPlatform.system};
+    programs.spotify-player = {
+      enable = true;
+      package = inputs.spotify-player.defaultPackage.${pkgs.stdenv.hostPlatform.system};
+    };
   };
 }

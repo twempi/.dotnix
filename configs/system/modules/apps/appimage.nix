@@ -1,10 +1,12 @@
-{pkgs, ...}: {
-  environment.systemPackages = with pkgs; [
-    appimage-run
-  ];
+{
+  flake.modules.nixos.appimage = {pkgs, ...}: {
+    environment.systemPackages = with pkgs; [
+      appimage-run
+    ];
 
-  programs.appimage = {
-    enable = true;
-    binfmt = true;
+    programs.appimage = {
+      enable = true;
+      binfmt = true;
+    };
   };
 }

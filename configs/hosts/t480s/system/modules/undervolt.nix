@@ -1,11 +1,13 @@
 {
-  services.undervolt = {
-    enable = true;
+  flake.modules.nixos.t480s-undervolt = {
+    services.undervolt = {
+      enable = true;
 
-    coreOffset = -100;
-    uncoreOffset = -100;
-    gpuOffset = -45;
-    analogioOffset = -45;
-    useTimer = true;
+      coreOffset = -100;
+      uncoreOffset = -100;
+      gpuOffset = -45;
+      analogioOffset = -45;
+      useTimer = true;
+    };
   };
 }

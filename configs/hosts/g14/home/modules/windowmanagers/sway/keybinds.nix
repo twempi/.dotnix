@@ -1,34 +1,36 @@
 {
-  config,
-  pkgs,
-  ...
-}: let
-  gpuSwitcher = "${config.edward.noctalia.commands.sway} msg panel-toggle edward/g14-gpu:switcher";
-  asusProfileNotify = pkgs.writeShellScriptBin "asus-profile-notify" ''
-    #!${pkgs.bash}/bin/bash
+  flake.modules.homeManager.g14-sway = {
+    config,
+    pkgs,
+    ...
+  }: let
+    gpuSwitcher = "${config.edward.noctalia.commands.sway} msg panel-toggle edward/g14-gpu:switcher";
+    asusProfileNotify = pkgs.writeShellScriptBin "asus-profile-notify" ''
+      #!${pkgs.bash}/bin/bash
 
-    ${pkgs.asusctl}/bin/asusctl profile next
+      ${pkgs.asusctl}/bin/asusctl profile next
 
-    profile="$(
-      ${pkgs.asusctl}/bin/asusctl profile get 2>/dev/null \
-        | head -n1 \
-        | sed 's/^Active profile:[[:space:]]*//'
-    )"
+      profile="$(
+        ${pkgs.asusctl}/bin/asusctl profile get 2>/dev/null \
+          | head -n1 \
+          | sed 's/^Active profile:[[:space:]]*//'
+      )"
 
-    if [ -z "$profile" ]; then
-      profile="Profile changed"
-    fi
+      if [ -z "$profile" ]; then
+        profile="Profile changed"
+      fi
 
-    ${pkgs.libnotify}/bin/notify-send "ASUS profile" "$profile"
-  '';
-in {
-  home.packages = [
-    asusProfileNotify
-  ];
+      ${pkgs.libnotify}/bin/notify-send "ASUS profile" "$profile"
+    '';
+  in {
+    home.packages = [
+      asusProfileNotify
+    ];
 
-  wayland.windowManager.sway.config.keybindings = {
-    "XF86KbdBrightnessUp" = "exec asusctl leds next";
-    "XF86KbdBrightnessDown" = "exec asusctl leds prev";
-    "Mod4+XF86Launch1" = "exec ${gpuSwitcher}";
+    wayland.windowManager.sway.config.keybindings = {
+      "XF86KbdBrightnessUp" = "exec asusctl leds next";
+      "XF86KbdBrightnessDown" = "exec asusctl leds prev";
+      "Mod4+XF86Launch1" = "exec ${gpuSwitcher}";
+    };
   };
 }

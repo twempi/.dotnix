@@ -1,21 +1,16 @@
-{config, ...}: {
-  imports = [
-    ./general.nix
-    ./keybinds.nix
-    ./env.nix
-    ./windowrules.nix
-  ];
+{
+  flake.modules.homeManager.hyprland = {config, ...}: {
+    stylix.targets.hyprland.enable = true;
 
-  stylix.targets.hyprland.enable = true;
+    # hyprland
+    wayland.windowManager.hyprland = {
+      enable = true;
+      systemd.enable = false;
+      configType = "lua";
+      package = null;
+      portalPackage = null;
+    };
 
-  # hyprland
-  wayland.windowManager.hyprland = {
-    enable = true;
-    systemd.enable = false;
-    configType = "lua";
-    package = null;
-    portalPackage = null;
+    home.sessionVariables.HYPRLAND_CONFIG = "${config.xdg.configHome}/hypr/hyprland.lua";
   };
-
-  home.sessionVariables.HYPRLAND_CONFIG = "${config.xdg.configHome}/hypr/hyprland.lua";
 }
