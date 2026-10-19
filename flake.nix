@@ -101,11 +101,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    librepods = {
-      url = "github:kavishdevar/librepods/linux/rust";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     pi = {
       url = "github:lukasl-dev/pi.nix";
       inputs.nixpkgs.follows = "nixpkgs";

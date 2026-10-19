@@ -36,7 +36,6 @@ in {
       appimage
       handy
       helium
-      librepods
       idescriptor
       bt-dualboot
     ];

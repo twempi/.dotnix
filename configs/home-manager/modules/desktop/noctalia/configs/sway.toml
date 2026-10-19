@@ -1,27 +1,13 @@
 [bar.default]
 background_opacity = 1.0
 border_width = 0
-
-# Enable themed backgrounds for bar modules.
 capsule = true
 capsule_fill = "surface_variant"
 capsule_foreground = "on_surface_variant"
 capsule_opacity = 1.0
 capsule_radius = 4.0
-
 center = []
-end = [
-  "tray",
-  "network",
-  "disk",
-  "cpu",
-  "brightness",
-  "ram",
-  "volume",
-  "battery",
-  "clock",
-  "notifications",
-]
+end = [ "tray", "network", "disk", "cpu", "brightness", "ram", "volume", "battery", "clock", "notifications" ]
 font_family = "IosevkaTerm Nerd Font Propo"
 font_weight = 900
 margin_edge = 0
@@ -29,271 +15,365 @@ margin_ends = 0
 padding = 6
 radius = 0
 shadow = false
-start = ["workspaces"]
+start = [ "workspaces" ]
 thickness = 24
-widget_spacing = 4
-
+widget_spacing = 10
 
 [calendar]
 enabled = true
 
-
-[calendar.account.personal_google]
-type = "google"
-
+    [calendar.account.personal_google]
+    type = "google"
 
 [desktop_widgets]
 enabled = false
 
+[dock]
+background_opacity = 1.0
 
 [location]
 auto_locate = true
 
-
 [lockscreen_widgets]
 enabled = false
 schema_version = 2
-widget_order = ["lockscreen-login-box@DP-1"]
+widget_order = [
+    "lockscreen-login-box@HDMI-A-2",
+    "lockscreen-login-box@DP-4",
+    "lockscreen-login-box@HDMI-A-1",
+    "lockscreen-login-box@DP-2",
+    "lockscreen-login-box@DP-1"
+]
 
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
 
-[lockscreen_widgets.grid]
-cell_size = 16
-major_interval = 4
-visible = true
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 1280.0
+    cy = 1317.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "login_box"
 
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
+        center_password_text = false
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
 
-[lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
-box_height = 0.0
-box_width = 0.0
-cx = 1280.0
-cy = 1317.0
-output = "DP-1"
-rotation = 0.0
-type = "login_box"
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-2"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 1280.0
+    cy = 1321.0
+    output = "DP-2"
+    placement_height = 0.0
+    placement_width = 0.0
+    rotation = 0.0
+    type = "login_box"
 
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-2".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-4"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1280.0
+    cy = 1258.0
+    output = "DP-4"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-4".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 960.0
+    cy = 961.0
+    output = "HDMI-A-1"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-2"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 960.0
+    cy = 898.0
+    output = "HDMI-A-2"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-2".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[notification]
+background_opacity = 1.0
+
+[osd]
+background_opacity = 1.0
 
 [shell]
 corner_radius_scale = 0.5000000074505806
+font_family = "Iosevka"
 launch_apps_as_systemd_services = true
 settings_show_advanced = true
 
+    [shell.animation]
+    speed = 3.0
 
-[shell.animation]
-speed = 3.0
+    [shell.launcher]
+    categories = false
+    compact = true
+    fetch_exchange_rates = false
+    layout = "simple"
+    search_position = "top"
 
+        [shell.launcher.providers.calculator]
+        global = false
 
-[shell.panel]
-control_center_placement = "floating"
+    [shell.panel]
+    control_center_placement = "floating"
+    session_placement = "floating"
+    session_position = "center"
+    wallpaper_placement = "floating"
+    wallpaper_position = "center"
 
-# "centered" is no longer a placement value.
-# Use floating placement + center position instead.
-session_placement = "floating"
-session_position = "center"
+    [shell.screenshot]
+    directory = "/home/edward/Pictures/Screenshots"
+    filename_pattern = "Screenshot-%Y-%m-%d_%H:%M:%S"
 
-wallpaper_placement = "floating"
-wallpaper_position = "center"
+    [[shell.session.actions]]
+    action = "lock"
+    enabled = true
+    shortcut = "l"
+    variant = "default"
 
+    [[shell.session.actions]]
+    action = "logout"
+    enabled = true
+    variant = "default"
 
-[shell.screenshot]
-directory = "/home/edward/Pictures/Screenshots"
-filename_pattern = "Screenshot-%Y-%m-%d_%H:%M:%S"
+    [[shell.session.actions]]
+    action = "suspend"
+    enabled = true
+    shortcut = "s"
+    variant = "default"
 
+    [[shell.session.actions]]
+    action = "reboot"
+    enabled = true
+    shortcut = "r"
+    variant = "default"
 
-[[shell.session.actions]]
-action = "lock"
-enabled = true
-shortcut = "l"
-variant = "default"
+    [[shell.session.actions]]
+    action = "shutdown"
+    enabled = true
+    shortcut = "p"
+    variant = "destructive"
 
+[theme]
+custom_palette = "stylix"
+mode = "dark"
+source = "custom"
 
-[[shell.session.actions]]
-action = "logout"
-enabled = true
-variant = "default"
-
-
-[[shell.session.actions]]
-action = "suspend"
-enabled = true
-shortcut = "s"
-variant = "default"
-
-
-[[shell.session.actions]]
-action = "reboot"
-enabled = true
-shortcut = "r"
-variant = "default"
-
-
-[[shell.session.actions]]
-action = "shutdown"
-enabled = true
-shortcut = "p"
-variant = "destructive"
-
-
-[theme.templates]
-enable_builtin_templates = false
-enable_community_templates = false
-
+    [theme.templates]
+    enable_builtin_templates = false
+    enable_community_templates = false
 
 [wallpaper]
 directory = "/home/edward/Pictures/wallpapers"
 
+    [wallpaper.default]
+    path = "/home/edward/Pictures/wallpapers/9.png"
 
-[wallpaper.default]
-path = "/home/edward/Pictures/wallpapers/9.png"
+    [wallpaper.last]
+    path = "/home/edward/Pictures/wallpapers/9.png"
 
-
-[wallpaper.last]
-path = "/home/edward/Pictures/wallpapers/9.png"
-
-
-[wallpaper.monitors.DP-1]
-path = "/home/edward/Pictures/wallpapers/9.png"
-
+    [wallpaper.monitors.DP-1]
+    path = "/home/edward/Pictures/wallpapers/9.png"
 
 [weather]
 unit = "imperial"
 
-
 # Resolved from the active Stylix palette by the Home Manager module.
 [widget.battery]
+capsule = false
 color = "@base0B@"
 display_mode = "glyph"
 show_label = true
 warning_color = "error"
 
-
 [widget.bluetooth]
 show_label = true
 
-
-# The old scripted Bongo Cat widget was removed here.
-#
-# It wasn't present in your bar's start/center/end lists anyway, and
-# type = "scripted" is no longer a valid v5 widget type.
-#
-# The official v5 Bongo Cat is a plugin:
-#
-# [widget.bongocat]
-# type = "noctalia/bongocat:cat"
-#
-# Then add "bongocat" to start/center/end after installing/enabling
-# the official noctalia/bongocat plugin.
-
-
 [widget.brightness]
+capsule = false
 color = "@base0A@"
 show_label = true
 
-
-[widget.brightness.actions]
-scroll_up = "brightness-up current 5%"
-scroll_down = "brightness-down current 5%"
-
+    [widget.brightness.actions]
+    scroll_down = "brightness-down current 5%"
+    scroll_up = "brightness-up current 5%"
 
 [widget.clock]
+capsule = false
 color = "@base0A@"
 format = "{:%a %d | %I:%M %p}"
-
 
 [widget.control-center]
 glyph = "confucius"
 
-
 [widget.cpu]
+capsule = false
 color = "@base09@"
 glyph = "cpu"
+show_glyph = true
+show_value = true
 stat = "cpu_usage"
 type = "sysmon"
-
-# v5 sysmon display configuration
 visualization = "none"
-show_value = true
-show_glyph = true
-
 
 [widget.disk]
+capsule = false
 color = "@base08@"
 glyph = "server"
 path = "/"
+show_glyph = true
+show_value = true
 stat = "disk_used_pct"
 type = "sysmon"
-
 visualization = "none"
-show_value = true
-show_glyph = true
-
 
 [widget.network]
+capsule = false
 color = "@base0E@"
 glyph = "download"
+show_glyph = true
+show_value = true
 stat = "net_rx"
 type = "sysmon"
-
 visualization = "none"
-show_value = true
-show_glyph = true
-
 
 [widget.notifications]
+capsule = false
 color = "@base0E@"
 hide_when_no_unread = true
 
-
 [widget.ram]
+capsule = false
 color = "@base0C@"
 glyph = "memory"
+show_glyph = true
+show_tooltip = false
+show_value = true
 stat = "ram_used"
 type = "sysmon"
-
 visualization = "none"
-show_value = true
-show_glyph = true
-
 
 [widget.tray]
-hidden = ["blueman", "nm-applet", "pasystray"]
-
+hidden = [ "blueman", "nm-applet", "pasystray" ]
 
 [widget.volume]
+capsule = false
 color = "@base0D@"
 device = "output"
 mute_color = "error"
 show_label = true
 type = "volume"
 
-
-[widget.volume.actions]
-scroll_up = "volume-up 5%"
-scroll_down = "volume-down 5%"
-
+    [widget.volume.actions]
+    scroll_down = "volume-down 5%"
+    scroll_up = "volume-up 5%"
 
 [widget.workspaces]
-type = "workspaces"
-style = "regular"
-
-# Disable the outer capsule around the whole workspace widget.
-# The individual workspace indicators still retain their own backgrounds.
-capsule = false
-
-# Make individual workspace pills completely square.
-capsule_radius = 0.0
-
 active_pill_size = 1.3
-
-# v5 workspace label settings.
-label_source = "id"
-show_labels = true
-
+capsule = false
+capsule_radius = 0.0
 empty_color = "outline"
 focused_color = "primary"
+font_scale = 1.2
 hide_when_empty = false
 inactive_pill_size = 1.0
+label_source = "id"
 labels_only_when_occupied = false
 max_label_chars = 2
 occupied_color = "secondary"
-pill_scale = 0.65
+pill_scale = 1.0
 scale = 1.05
+show_labels = true
+style = "regular"
+type = "workspaces"
