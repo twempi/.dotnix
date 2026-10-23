@@ -24,5 +24,8 @@
     systemd.tmpfiles.rules = [
       "d ${downloadsDir} 2770 qbittorrent media - -"
     ];
+
+    # Admin UIs stay off the LAN. The peer port stays closed until a VPN with port forwarding exists.
+    networking.firewall.interfaces.tailscale0.allowedTCPPorts = [8989 9696 8081];
   };
 }
