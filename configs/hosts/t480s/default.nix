@@ -30,6 +30,7 @@ in {
       t480s-immich
       # t480s-seanime
       t480s-jellyfin
+      t480s-media-downloads
     ];
 
     home-manager.users.edward.imports = [homeManager.t480s];

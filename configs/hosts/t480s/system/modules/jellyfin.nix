@@ -24,11 +24,13 @@
       };
     };
 
-    users.users.jellyfin.extraGroups = ["render" "video"];
+    users.groups.media = {};
+    users.users.jellyfin.extraGroups = ["render" "video" "media"];
+    users.users.edward.extraGroups = ["media"];
 
-    # edward manages the files; jellyfin reads them through the group. setgid keeps new show folders in that group.
+    # Shared through the media group with Sonarr and qBittorrent. setgid keeps new show folders in that group.
     systemd.tmpfiles.rules = [
-      "d ${libraryDir} 2750 edward jellyfin - -"
+      "d ${libraryDir} 2770 edward media - -"
     ];
 
     networking.firewall.interfaces = {
