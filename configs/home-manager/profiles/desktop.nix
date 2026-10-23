@@ -105,7 +105,7 @@ in {
       # zen-browser
       upscayl
       syncthing
-      # sioyek
+      sioyek
       sunsetr
       helium
       obsidian
