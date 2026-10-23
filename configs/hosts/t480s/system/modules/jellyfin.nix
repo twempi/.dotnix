@@ -28,8 +28,7 @@
 
     # edward manages the files; jellyfin reads them through the group. setgid keeps new show folders in that group.
     systemd.tmpfiles.rules = [
-      "d ${libraryDir} 0750 edward jellyfin - -"
-      "d ${libraryDir}/Anime 2750 edward jellyfin - -"
+      "d ${libraryDir} 2750 edward jellyfin - -"
     ];
 
     networking.firewall.interfaces = {
