@@ -32,8 +32,8 @@
           CPU_MAX_PERF_ON_AC = 100;
           CPU_MIN_PERF_ON_AC = 0;
 
-          STOP_CHARGE_THRESH_BAT0 = 85;
-          START_CHARGE_THRESH_BAT0 = 80;
+          STOP_CHARGE_THRESH_BAT0 = 80;
+          START_CHARGE_THRESH_BAT0 = 75;
         };
       };
 

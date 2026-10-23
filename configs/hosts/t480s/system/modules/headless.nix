@@ -6,6 +6,13 @@
       HandleLidSwitchDocked = "ignore";
     };
 
+    systemd.sleep.settings.Sleep = {
+      AllowSuspend = false;
+      AllowHibernation = false;
+      AllowHybridSleep = false;
+      AllowSuspendThenHibernate = false;
+    };
+
     boot.kernelParams = ["consoleblank=60"];
 
     services.acpid = {

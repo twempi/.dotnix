@@ -29,7 +29,7 @@ in {
       t480s-headless
       t480s-immich
       # t480s-seanime
-      # t480s-jellyfin
+      t480s-jellyfin
     ];
 
     home-manager.users.edward.imports = [homeManager.t480s];
