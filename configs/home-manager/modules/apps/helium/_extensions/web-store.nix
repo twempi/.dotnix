@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  inputs,
 }: let
   extensions = [
     {
@@ -95,34 +96,33 @@
       hash = "sha256-azsuQ57mbAFQumWGMuesfX9pCEu/PerKCGCVQIXdrFk=";
     }
     # Canvas Local Archive
-    {
-      id = "pihjpoobjgmlfacpemennkjibihkmebm";
-      hash = "sha256-ls3ryJGNDUauN/7Gemk1ChsTa1B4Zk2QJiMqyEv2an4=";
-    }
+    inputs.twempi.lib.canvas-local-archive.extension
   ];
 
-  fetchExtension = {
-    id,
-    hash,
-  }: let
-    os =
-      if pkgs.stdenv.hostPlatform.isDarwin
-      then "mac"
-      else "linux";
-    arch =
-      if pkgs.stdenv.hostPlatform.isAarch64
-      then "arm64"
-      else "x64";
-    os_arch =
-      if pkgs.stdenv.hostPlatform.isDarwin
-      then "arm64"
-      else "x86_64";
-  in
-    pkgs.fetchurl {
-      name = "${id}.crx";
-      url = "https://clients2.google.com/service/update2/crx?response=redirect&os=${os}&arch=${arch}&os_arch=${os_arch}&nacl_arch=x86-64&prod=chromiumcrx&prodchannel=stable&prodversion=120.0.0.0&acceptformat=crx3&x=id%3D${id}%26installsource%3Dondemand%26uc";
-      inherit hash;
-    };
+  # fetchExtension = {
+  #   id,
+  #   hash,
+  # }: let
+  #   os =
+  #     if pkgs.stdenv.hostPlatform.isDarwin
+  #     then "mac"
+  #     else "linux";
+  #   arch =
+  #     if pkgs.stdenv.hostPlatform.isAarch64
+  #     then "arm64"
+  #     else "x64";
+  #   os_arch =
+  #     if pkgs.stdenv.hostPlatform.isDarwin
+  #     then "arm64"
+  #     else "x86_64";
+  # in
+  #   pkgs.fetchurl {
+  #     name = "${id}.crx";
+  #     url = "https://clients2.google.com/service/update2/crx?response=redirect&os=${os}&arch=${arch}&os_arch=${os_arch}&nacl_arch=x86-64&prod=chromiumcrx&prodchannel=stable&prodversion=120.0.0.0&acceptformat=crx3&x=id%3D${id}%26installsource%3Dondemand%26uc";
+  #     inherit hash;
+  #   };
+
+  fetchExtension = inputs.twempi.lib.canvas-local-archive.fetchExtension {inherit pkgs;};
 
   externalExtensionJson = {
     id,

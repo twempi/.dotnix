@@ -25,6 +25,7 @@ in {
       desktop-sway
       desktop-niri
       desktop-graphics-tools
+      desktop-sioyek
     ];
 
     _module.args.hostname = "desktop";

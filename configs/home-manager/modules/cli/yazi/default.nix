@@ -1,5 +1,9 @@
 {inputs, ...}: {
-  flake.modules.homeManager.yazi = {pkgs, ...}: let
+  flake.modules.homeManager.yazi = {
+    config,
+    pkgs,
+    ...
+  }: let
     pref-by-location-plugin = pkgs.fetchFromGitHub {
       owner = "boydaihungst";
       repo = "pref-by-location.yazi";
@@ -15,7 +19,7 @@
     };
 
     # pdfViewer = "${pkgs.zathura}/bin/zathura";
-    pdfViewer = "${pkgs.sioyek}/bin/sioyek";
+    pdfViewer = "${config.programs.sioyek.package}/bin/sioyek";
     videoPlayer = "${pkgs.mpv}/bin/mpv";
   in {
     stylix.targets.yazi.enable = true;
