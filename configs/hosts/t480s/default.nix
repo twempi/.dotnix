@@ -23,7 +23,7 @@ in {
       t480s-minecraft
       t480s-floccus-webdav
       t480s-caddy
-      t480s-pihole
+      # t480s-pihole
       t480s-suwayomi
       t480s-vaultwarden
       t480s-headless

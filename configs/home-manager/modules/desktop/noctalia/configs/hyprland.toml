@@ -2,22 +2,25 @@
 background_opacity = 1.0
 border_width = 2.0
 capsule_opacity = 1.0
-center = ["clock", "date"]
-end = ["tray", "bluetooth", "network", "volume", "brightness", "battery", "control-center", "notifications"]
+center = [ "clock", "date" ]
+end = [ "tray", "bluetooth", "network", "volume", "brightness", "battery", "control-center", "notifications" ]
 font_weight = 400
 margin_edge = 4
 margin_ends = 4
 radius = 0
-start = ["workspaces"]
+start = [ "workspaces" ]
 
 [calendar]
 enabled = true
 
-[calendar.account.personal_google]
-type = "google"
+    [calendar.account.personal_google]
+    type = "google"
 
 [desktop_widgets]
 enabled = false
+
+[dock]
+background_opacity = 1.0
 
 [location]
 auto_locate = true
@@ -25,83 +28,271 @@ auto_locate = true
 [lockscreen_widgets]
 enabled = false
 schema_version = 2
-widget_order = ["lockscreen-login-box@DP-1"]
+widget_order = [
+    "lockscreen-login-box@DP-4",
+    "lockscreen-login-box@DP-5",
+    "lockscreen-login-box@HDMI-A-2",
+    "lockscreen-login-box@DP-2",
+    "lockscreen-login-box@HDMI-A-1",
+    "lockscreen-login-box@DP-1"
+]
 
-[lockscreen_widgets.grid]
-cell_size = 16
-major_interval = 4
-visible = true
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
 
-[lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
-box_height = 0.0
-box_width = 0.0
-cx = 1280.0
-cy = 1317.0
-output = "DP-1"
-rotation = 0.0
-type = "login_box"
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 1280.0
+    cy = 1317.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
+        center_password_text = false
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-2"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 1280.0
+    cy = 1321.0
+    output = "DP-2"
+    placement_height = 0.0
+    placement_width = 0.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-2".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-4"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1280.0
+    cy = 1258.0
+    output = "DP-4"
+    placement_height = 1440.0
+    placement_width = 2560.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-4".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-5"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 1280.0
+    cy = 1321.0
+    output = "DP-5"
+    placement_height = 0.0
+    placement_width = 0.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-5".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 960.0
+    cy = 961.0
+    output = "HDMI-A-1"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-2"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 960.0
+    cy = 961.0
+    output = "HDMI-A-2"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-2".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[notification]
+background_opacity = 1.0
+
+[osd]
+background_opacity = 1.0
 
 [shell]
 corner_radius_scale = 0.5000000074505806
+font_family = "Iosevka"
 launch_apps_as_systemd_services = true
 settings_show_advanced = true
 
-[shell.animation]
-speed = 3.0
+    [shell.animation]
+    speed = 3.0
 
-[shell.panel]
-control_center_placement = "floating"
-session_placement = "centered"
-wallpaper_placement = "centered"
+    [shell.launcher]
+    categories = false
+    compact = true
+    fetch_exchange_rates = false
+    layout = "simple"
 
-[shell.screenshot]
-directory = "/home/edward/Pictures/Screenshots"
-filename_pattern = "Screenshot-%Y-%m-%d_%H:%M:%S"
+        [shell.launcher.providers.calculator]
+        global = false
 
-[[shell.session.actions]]
-action = "lock"
-enabled = true
-shortcut = "l"
-variant = "default"
+    [shell.panel]
+    control_center_placement = "floating"
+    session_placement = "centered"
+    wallpaper_placement = "centered"
 
-[[shell.session.actions]]
-action = "logout"
-enabled = true
-variant = "default"
+    [shell.screenshot]
+    directory = "/home/edward/Pictures/Screenshots"
+    filename_pattern = "Screenshot-%Y-%m-%d_%H:%M:%S"
 
-[[shell.session.actions]]
-action = "suspend"
-enabled = true
-shortcut = "s"
-variant = "default"
+    [[shell.session.actions]]
+    action = "lock"
+    enabled = true
+    shortcut = "l"
+    variant = "default"
 
-[[shell.session.actions]]
-action = "reboot"
-enabled = true
-shortcut = "r"
-variant = "default"
+    [[shell.session.actions]]
+    action = "logout"
+    enabled = true
+    variant = "default"
 
-[[shell.session.actions]]
-action = "shutdown"
-enabled = true
-shortcut = "p"
-variant = "destructive"
+    [[shell.session.actions]]
+    action = "suspend"
+    enabled = true
+    shortcut = "s"
+    variant = "default"
 
-[theme.templates]
-enable_builtin_templates = false
-enable_community_templates = false
+    [[shell.session.actions]]
+    action = "reboot"
+    enabled = true
+    shortcut = "r"
+    variant = "default"
+
+    [[shell.session.actions]]
+    action = "shutdown"
+    enabled = true
+    shortcut = "p"
+    variant = "destructive"
+
+[theme]
+custom_palette = "stylix"
+mode = "dark"
+source = "custom"
+
+    [theme.templates]
+    enable_builtin_templates = false
+    enable_community_templates = false
 
 [wallpaper]
 directory = "/home/edward/Pictures/wallpapers"
 
-[wallpaper.default]
-path = "/home/edward/Pictures/wallpapers/9.png"
+    [wallpaper.default]
+    path = "/home/edward/Pictures/wallpapers/39.png"
 
-[wallpaper.last]
-path = "/home/edward/Pictures/wallpapers/9.png"
+    [wallpaper.last]
+    path = "/home/edward/Pictures/wallpapers/39.png"
 
-[wallpaper.monitors.DP-1]
-path = "/home/edward/Pictures/wallpapers/9.png"
+    [wallpaper.monitors.DP-1]
+    path = "/home/edward/Pictures/wallpapers/19.png"
+
+    [wallpaper.monitors.DP-2]
+    path = "/home/edward/Pictures/wallpapers/24.png"
+
+    [wallpaper.monitors.DP-4]
+    path = "/home/edward/Pictures/wallpapers/39.png"
+
+    [wallpaper.monitors.HDMI-A-1]
+    path = "/home/edward/Pictures/wallpapers/19.png"
+
+    [wallpaper.monitors.HDMI-A-2]
+    path = "/home/edward/Pictures/wallpapers/39.png"
 
 [weather]
 unit = "imperial"
@@ -114,6 +305,7 @@ script = "scripts/bongocat.lua"
 type = "scripted"
 
 [widget.control-center]
+enabled = false
 glyph = "confucius"
 
 [widget.network]
@@ -123,9 +315,12 @@ show_label = false
 hide_when_no_unread = true
 
 [widget.tray]
-hidden = ["blueman", "nm-applet", "pasystray"]
+hidden = [ "blueman", "nm-applet", "pasystray" ]
 
 [widget.workspaces]
+active_pill_size = 2.0
+capsule = false
+font_scale = 1.1000000000000001
 hide_when_empty = true
 minimal = true
-scale = 1.05
+scale = 1.0

@@ -2,7 +2,7 @@
   flake.modules.homeManager.desktop-niri = {pkgs, ...}: {
     programs.niri.settings = {
       outputs = {
-        "DP-4" = {
+        "DP-1" = {
           mode = {
             width = 2560;
             height = 1440;
@@ -15,7 +15,7 @@
           scale = 1.0;
         };
 
-        "HDMI-A-2" = {
+        "HDMI-A-1" = {
           mode = {
             width = 1920;
             height = 1080;
@@ -28,10 +28,6 @@
           scale = 1.0;
         };
       };
-
-      spawn-at-startup = [
-        {command = ["${pkgs.openrgb}/bin/openrgb" "--profile" "/home/edward/.config/OpenRGB/black.orp"];}
-      ];
 
       binds."Ctrl+backslash".action.spawn = ["${pkgs.handy}/bin/handy" "--toggle-transcription"];
     };

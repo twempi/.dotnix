@@ -4,7 +4,7 @@
 
     programs.artcraft = {
       enable = true;
-      apps = ["photocraft" "cadcraft" "vectorcraft"];
+      apps = ["photocraft" "vectorcraft"];
     };
   };
 }

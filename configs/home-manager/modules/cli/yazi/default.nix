@@ -3,8 +3,8 @@
     pref-by-location-plugin = pkgs.fetchFromGitHub {
       owner = "boydaihungst";
       repo = "pref-by-location.yazi";
-      rev = "a2fbb054c0e1adc1099833c93a31855b119fbbba";
-      sha256 = "1d9gadn2mmq5xjx4jh03d7nqy871wcgcwk2z6ak349mslnc93cr1";
+      rev = "919b2d0f23c61943dce74b38f23af75fde3f4828";
+      sha256 = "sha256-RxwX8UH025AsN5NlcPyJ8neake40F7iRRC/zeL0AD9k";
     };
 
     convert-plugin = pkgs.fetchFromGitHub {
@@ -14,7 +14,8 @@
       sha256 = "sha256-cD4s1NXz09+DmBcYb95OMUez1RMiro7Y4YzRPKI0wtA=";
     };
 
-    pdfViewer = "${pkgs.zathura}/bin/zathura";
+    # pdfViewer = "${pkgs.zathura}/bin/zathura";
+    pdfViewer = "${pkgs.sioyek}/bin/sioyek";
     videoPlayer = "${pkgs.mpv}/bin/mpv";
   in {
     stylix.targets.yazi.enable = true;
@@ -257,7 +258,15 @@
         "full-border" = pkgs.yaziPlugins.full-border;
         "smart-enter" = pkgs.yaziPlugins.smart-enter;
         "bunny" = "${inputs.bunny-yazi}";
-        "pref-by-location" = pref-by-location-plugin;
+        "pref-by-location" = pkgs.applyPatches {
+          name = "pref-by-location-patched";
+          src = pref-by-location-plugin;
+
+          postPatch = ''
+            substituteInPlace main.lua \
+              --replace-fail '.scheme' '.spec'
+          '';
+        };
         "convert" = convert-plugin;
       };
 

@@ -11,7 +11,6 @@
         defaultWorkspace = "workspace 1";
 
         startup = [
-          {command = "${pkgs.openrgb}/bin/openrgb --profile ~/.config/OpenRGB/black.orp";}
           {command = "${config.edward.noctalia.commands.sway} --daemon";}
 
           # Set volume to 100%
