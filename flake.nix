@@ -121,8 +121,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    amane.url = "github:MystiaFin/amane";
-
     # comfyui-nix.url = "github:utensils/comfyui-nix";
   };
 

@@ -7,7 +7,7 @@
   }: {
     programs.niri.settings = {
       spawn-at-startup = [
-        {command = ["amane" "run"];}
+        {command = [config.edward.noctalia.commands.niri "--daemon"];}
       ];
 
       input = {

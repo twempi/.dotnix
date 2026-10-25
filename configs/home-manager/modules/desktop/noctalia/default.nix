@@ -23,32 +23,22 @@
     nativeStylixConfig = config.xdg.configFile."noctalia/config.toml".source;
     nativeStylixPalette = config.xdg.configFile."noctalia/palettes/stylix.json".source;
     configSourceFor = wm: let
-      rawConfig =
-        ./configs
-        + "/${
-          if wm == "niri"
-          then "sway"
-          else wm
-        }.toml";
+      rawConfig = ./configs + "/${wm}.toml";
       resolvedRawConfig =
-        if lib.elem wm ["sway" "niri"]
+        if wm == "sway"
         then
-          pkgs.replaceVars rawConfig (
-            {
-              inherit
-                (stylixColors)
-                base09
-                base0A
-                base0B
-                base0C
-                base0D
-                base0E
-                ;
-            }
-            // lib.optionalAttrs (lib.elem wm ["sway" "niri"]) {
-              inherit (stylixColors) base08;
-            }
-          )
+          pkgs.replaceVars rawConfig {
+            inherit
+              (stylixColors)
+              base08
+              base09
+              base0A
+              base0B
+              base0C
+              base0D
+              base0E
+              ;
+          }
         else rawConfig;
       extraConfig = config.edward.noctalia.extraConfigText.${wm} or "";
       mergedConfig =

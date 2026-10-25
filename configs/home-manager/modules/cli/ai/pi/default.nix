@@ -6,7 +6,7 @@
     hostname,
     ...
   }: let
-    learningFolder = "/home/edward/Documents/notes/200 Knowledge/Learning/Courses";
+    learningFolder = "/home/edward/Documents/notes/100 School/Courses";
   in {
     imports = [
       inputs.pi.homeModules.default

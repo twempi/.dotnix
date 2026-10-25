@@ -5,9 +5,10 @@
     ...
   }: let
     inherit (config.lib.niri) actions;
+    noctalia = "${config.edward.noctalia.commands.niri} msg";
   in {
     # Niri's default binds, with only the terminal, launcher and lock screen
-    # swapped for foot and amane.
+    # swapped for foot and Noctalia.
     programs.niri.settings.binds = {
       "Mod+Shift+Slash".action = actions.show-hotkey-overlay;
 
@@ -16,12 +17,12 @@
         action.spawn = ["${pkgs.foot}/bin/foot"];
       };
       "Mod+D" = {
-        hotkey-overlay.title = "Run an Application: amane launcher";
-        action.spawn = ["amane" "ipc" "call" "launcher" "toggle"];
+        hotkey-overlay.title = "Run an Application: Noctalia launcher";
+        action.spawn-sh = "${noctalia} panel-toggle launcher";
       };
       "Super+Alt+L" = {
-        hotkey-overlay.title = "Lock the Screen: amane";
-        action.spawn = ["amane" "ipc" "call" "lock"];
+        hotkey-overlay.title = "Lock the Screen: Noctalia";
+        action.spawn-sh = "${noctalia} session lock";
       };
 
       "XF86AudioRaiseVolume" = {
