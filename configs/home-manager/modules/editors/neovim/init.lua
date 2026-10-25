@@ -17,8 +17,6 @@ require("config.autocmds")
 require("config.keymaps")
 
 local lzextras = require("lzextras")
-vim.g.lze = vim.g.lze or {}
-vim.g.lze.load = lzextras.loaders.with_after
 
 require("lze").load(lzextras.mod_dir_to_spec("plugins"))
 

@@ -195,8 +195,6 @@ return {
 			},
 		})
 
-		vim.lsp.config("arduino_language_server", default_config)
-
 		vim.lsp.config("asm_lsp", {
 			capabilities = capabilities,
 			on_attach = on_attach,
@@ -217,7 +215,6 @@ return {
 			"bashls",
 			"tinymist",
 			"texlab",
-			"arduino_language_server",
 			"asm_lsp",
 		})
 	end,

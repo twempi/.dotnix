@@ -5,6 +5,9 @@ return {
 		after = function()
 			local lint = require("lint")
 
+			-- chktex exits 2 whenever it reports findings; don't toast that as a failure.
+			lint.linters.chktex.ignore_exitcode = true
+
 			lint.linters_by_ft = {
 				-- Python
 				python = { "ruff" },
@@ -18,9 +21,7 @@ return {
 				javascriptreact = { "eslint_d" },
 				typescriptreact = { "eslint_d" },
 
-				-- Shell
-				sh = { "shellcheck" },
-				bash = { "shellcheck" },
+				-- Shell is linted by bashls, which runs shellcheck itself.
 
 				-- Nix
 				nix = { "statix", "deadnix" },
@@ -94,10 +95,12 @@ return {
 
 				-- Assembly
 				asm = { "asmfmt" },
-
-				-- Arduino
-				arduino = { "clang_format" },
 			},
+
+				formatters = {
+					-- Without this latexindent writes an indent.log into the working directory.
+					latexindent = { prepend_args = { "-g", "/dev/null" } },
+				},
 			})
 		end,
 	},

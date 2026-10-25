@@ -15,6 +15,11 @@ return {
 			vim.api.nvim_create_autocmd("FileType", {
 				group = vim.api.nvim_create_augroup("user_treesitter_start", { clear = true }),
 				callback = function(args)
+					-- Starting Treesitter highlighting clears 'syntax', and VimTeX's
+					-- math-zone detection (used by the LaTeX snippets) needs it.
+					if args.match == "tex" then
+						return
+					end
 					pcall(vim.treesitter.start, args.buf)
 				end,
 			})

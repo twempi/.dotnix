@@ -18,8 +18,8 @@
       sha256 = "sha256-cD4s1NXz09+DmBcYb95OMUez1RMiro7Y4YzRPKI0wtA=";
     };
 
-    # pdfViewer = "${pkgs.zathura}/bin/zathura";
-    pdfViewer = "${config.programs.sioyek.package}/bin/sioyek";
+    pdfViewer = "${pkgs.zathura}/bin/zathura";
+    # pdfViewer = "${config.programs.sioyek.package}/bin/sioyek";
     videoPlayer = "${pkgs.mpv}/bin/mpv";
   in {
     stylix.targets.yazi.enable = true;

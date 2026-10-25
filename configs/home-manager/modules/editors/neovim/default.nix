@@ -102,22 +102,10 @@
         prettierd
         eslint_d
 
-        # Arduino
-        arduino-language-server
-        arduino-cli
-
         # Assembly
         asm-lsp
         asmfmt
       ];
-
-      runtimeLibs = with pkgs; [
-        sqlite
-      ];
-
-      env = {
-        PUPPETEER_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
-      };
 
       info = {
         nixdExtras = {

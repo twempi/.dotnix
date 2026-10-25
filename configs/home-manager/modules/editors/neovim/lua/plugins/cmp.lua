@@ -64,7 +64,15 @@ return {
 						"buffer",
 						"spell",
 					},
+					per_filetype = {
+						lua = { inherit_defaults = true, "lazydev" },
+					},
 					providers = {
+						lazydev = {
+							name = "LazyDev",
+							module = "lazydev.integrations.blink",
+							score_offset = 100,
+						},
 						spell = {
 							name = "Spell",
 							module = "blink-cmp-spell",
@@ -83,6 +91,16 @@ return {
 	},
 
 	{ "blink-cmp-spell", dep_of = "blink.cmp" },
+
+	-- Teaches lua_ls the Neovim runtime and the plugins a Lua file requires, and
+	-- adds module-name completion for `require()` (see the lazydev source above).
+	{
+		"lazydev.nvim",
+		ft = "lua",
+		after = function()
+			require("lazydev").setup()
+		end,
+	},
 
 	{
 		"nvim-autopairs",

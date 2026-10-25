@@ -36,11 +36,8 @@
           nvim-dap-go
           lazydev-nvim
           nvim-lspconfig
-          vim-startuptime
           blink-cmp
           blink-cmp-spell
-          lualine-nvim
-          lualine-lsp-progress
           gitsigns-nvim
           which-key-nvim
           nvim-lint

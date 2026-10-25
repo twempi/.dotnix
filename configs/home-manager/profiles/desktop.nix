@@ -117,6 +117,8 @@ in {
       spotify-player
       fritzing
       artcraft
+      nemo
+      thunar
     ];
   };
 }

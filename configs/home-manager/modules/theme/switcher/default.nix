@@ -17,6 +17,11 @@
       "ocean"
       "black-metal-dark-funeral"
       "grayscale-dark"
+      "ayu-mirage"
+      "charcoal-light"
+      "nord"
+      "porple"
+      "serendipity-sunset"
     ];
 
     stateDir = "${config.xdg.stateHome}/theme-switcher";

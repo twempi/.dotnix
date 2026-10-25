@@ -28,8 +28,6 @@ return {
 				paths = vim.api.nvim_get_runtime_file("lua/snippets", true),
 			})
 
-			-- Markdown gets its own Latex Suite snippet set; avoid extending `tex`
-			-- here or the same automatic triggers are registered twice.
 			luasnip.filetype_extend("rmarkdown", { "markdown" })
 			luasnip.filetype_extend("quarto", { "markdown" })
 			luasnip.filetype_extend("mdx", { "markdown" })
@@ -50,24 +48,16 @@ return {
 		end,
 	},
 
+	-- The nixpkgs plugin has no setup(): its plugin/ script registers the `tex`
+	-- snippets with LuaSnip when it loads. Its math triggers call VimTeX's
+	-- in_mathzone(), which needs Vim syntax (see user_treesitter_start).
 	{
-		"luasnip-latex-snippets",
+		"luasnip-latex-snippets.nvim",
 		lazy = true,
 		ft = {
 			"tex",
 			"plaintex",
 			"latex",
-			"markdown",
-			"rmarkdown",
-			"quarto",
-			"mdx",
 		},
-
-		after = function()
-			require("luasnip-latex-snippets").setup({
-				use_treesitter = false,
-				allow_on_markdown = true,
-			})
-		end,
 	},
 }
