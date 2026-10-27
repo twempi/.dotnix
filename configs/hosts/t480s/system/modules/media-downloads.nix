@@ -61,6 +61,7 @@
     # These rules are owned here, not by wireguard-proton0, so they stay in place when the tunnel stops.
     systemd.services.qbittorrent-vpn-routing = {
       description = "Route qBittorrent traffic through Proton VPN";
+      wantedBy = ["multi-user.target"];
       before = ["qbittorrent.service"];
       requiredBy = ["qbittorrent.service"];
       path = [pkgs.iproute2];
