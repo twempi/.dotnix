@@ -17,6 +17,13 @@
         slang = "en,eng";
         osd-duration = 2000;
       };
+
+      bindings = {
+        LEFT = "seek -5 relative+exact"; # Back 5 seconds
+        RIGHT = "seek 5 relative+exact"; # Forward 5 seconds
+        DOWN = "seek -15 relative+exact"; # Back 15 seconds
+        UP = "seek 15 relative+exact"; # Forward 15 seconds
+      };
     };
   };
 }

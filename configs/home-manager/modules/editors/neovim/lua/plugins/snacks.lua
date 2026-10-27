@@ -169,7 +169,13 @@ return {
 
 				notifier = { enabled = true },
 				scope = { enabled = true },
-				scroll = { enabled = true },
+				scroll = {
+					enabled = true,
+					animate = {
+						duration = { step = 20, total = 200 },
+						easing = "linear",
+					},
+				},
 				words = { enabled = true },
 				toggle = { enabled = true },
 
