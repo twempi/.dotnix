@@ -72,7 +72,8 @@
       script = ''
         uid=$(id -u ${config.services.qbittorrent.user})
         for family in -4 -6; do
-          ip "$family" route replace unreachable default metric 255 table ${vpnTable}
+          # The metric must be above the tunnel's default routes, which the kernel gives metric 1024 for IPv6.
+          ip "$family" route replace unreachable default metric 4096 table ${vpnTable}
           ip "$family" rule del uidrange "$uid-$uid" lookup ${vpnTable} priority 6000 2>/dev/null || true
           ip "$family" rule add uidrange "$uid-$uid" lookup ${vpnTable} priority 6000
         done
