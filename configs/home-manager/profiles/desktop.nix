@@ -55,6 +55,7 @@ in {
       gowall
       cyberdrop-dl
       pi
+      pomodoro
 
       # Desktop
       audio
