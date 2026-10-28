@@ -55,11 +55,23 @@
       ];
     };
 
-    # Kill switch: the unreachable fallback means qBittorrent gets no route at all while the
-    # tunnel is down, instead of falling back to the main table. Priority 6000 sits after
-    # Tailscale's rules (5210-5270), so WebUI replies to tailnet clients still go out tailscale0.
+    # Kill switch: rule 6000 sends qBittorrent's traffic to the tunnel's table. While the tunnel is
+    # down that table is empty, so the lookup falls through to rule 6001, which rejects the traffic
+    # instead of letting it reach the main table. Both sit after Tailscale's rules (5210-5270), so
+    # WebUI replies to tailnet clients still go out tailscale0.
     # These rules are owned here, not by wireguard-proton0, so they stay in place when the tunnel stops.
-    systemd.services.qbittorrent-vpn-routing = {
+    systemd.services.qbittorrent-vpn-routing = let
+      # Only adds missing rules, so reapplying never leaves a moment without them.
+      addRules = ''
+        uid=$(id -u ${config.services.qbittorrent.user})
+        for family in -4 -6; do
+          ip "$family" rule show priority 6000 | grep -q "uidrange $uid-$uid lookup ${vpnTable}" ||
+            ip "$family" rule add uidrange "$uid-$uid" lookup ${vpnTable} priority 6000
+          ip "$family" rule show priority 6001 | grep -q "uidrange $uid-$uid unreachable" ||
+            ip "$family" rule add uidrange "$uid-$uid" unreachable priority 6001
+        done
+      '';
+    in {
       description = "Route qBittorrent traffic through Proton VPN";
       wantedBy = ["multi-user.target"];
       before = ["qbittorrent.service"];
@@ -69,19 +81,16 @@
         Type = "oneshot";
         RemainAfterExit = true;
       };
-      script = ''
-        uid=$(id -u ${config.services.qbittorrent.user})
-        for family in -4 -6; do
-          # The metric must be above the tunnel's default routes, which the kernel gives metric 1024 for IPv6.
-          ip "$family" route replace unreachable default metric 4096 table ${vpnTable}
-          ip "$family" rule del uidrange "$uid-$uid" lookup ${vpnTable} priority 6000 2>/dev/null || true
-          ip "$family" rule add uidrange "$uid-$uid" lookup ${vpnTable} priority 6000
-        done
-      '';
+      script = addRules;
+      # Rebuilds reload this unit in place. A restart would also restart qBittorrent through
+      # requiredBy, and the qbittorrent module lets its shutdown take up to 30 minutes.
+      reloadIfChanged = true;
+      reload = addRules;
       postStop = ''
         uid=$(id -u ${config.services.qbittorrent.user})
         for family in -4 -6; do
           ip "$family" rule del uidrange "$uid-$uid" lookup ${vpnTable} priority 6000 2>/dev/null || true
+          ip "$family" rule del uidrange "$uid-$uid" unreachable priority 6001 2>/dev/null || true
         done
       '';
     };
