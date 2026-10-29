@@ -21,6 +21,7 @@
     pdfViewer = "${pkgs.zathura}/bin/zathura";
     # pdfViewer = "${config.programs.sioyek.package}/bin/sioyek";
     videoPlayer = "${pkgs.mpv}/bin/mpv";
+    imageViewer = "${pkgs.feh}/bin/feh";
   in {
     stylix.targets.yazi.enable = true;
 
@@ -85,6 +86,14 @@
               run = ''${videoPlayer} %s'';
               orphan = true;
               desc = "Play video";
+              for = "linux";
+            }
+          ];
+          image = [
+            {
+              run = ''${imageViewer} %s'';
+              orphan = true;
+              desc = "Open image";
               for = "linux";
             }
           ];
