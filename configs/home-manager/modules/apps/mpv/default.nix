@@ -9,7 +9,7 @@
         vo = "gpu-next";
         hwdec = "auto";
         save-position-on-quit = true;
-        keep-open = true;
+        keep-open = false;
         # autofit-larger = "90%x90%";
         volume = 40;
         volume-max = 100;
