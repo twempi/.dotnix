@@ -120,6 +120,7 @@ in {
       artcraft
       nemo
       thunar
+      feh
     ];
   };
 }
