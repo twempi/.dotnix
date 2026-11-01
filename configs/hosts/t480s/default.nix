@@ -31,6 +31,7 @@ in {
       # t480s-seanime
       t480s-jellyfin
       t480s-media-downloads
+      t480s-kalshi-trader
     ];
 
     home-manager.users.edward.imports = [homeManager.t480s];

@@ -874,6 +874,22 @@
         "type": "sourcehut"
       }
     },
+    "kalshi-trader-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793379659,
+        "narHash": "sha256-LDcU65FssCB5LarPodSi7NeF3bSyEoWVTQ5QnqqdIdY=",
+        "owner": "twempi",
+        "repo": "kalshi-trader",
+        "rev": "fab2d8c3aef7d587063ee80c7cf5400ed905edc4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "twempi",
+        "repo": "kalshi-trader",
+        "type": "github"
+      }
+    },
     "minimal-grub-theme-src": {
       "flake": false,
       "locked": {
@@ -1779,6 +1795,7 @@
       "inputs": {
         "canvas-scraper-src": "canvas-scraper-src",
         "gesturelight-src": "gesturelight-src",
+        "kalshi-trader-src": "kalshi-trader-src",
         "minimal-grub-theme-src": "minimal-grub-theme-src",
         "nixpkgs": [
           "nixpkgs"
@@ -1789,11 +1806,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1792793774,
-        "narHash": "sha256-uOckUyV9AsBkGx4USdUc9gwq9g6hKsUOtvibhO84zU4=",
+        "lastModified": 1793490002,
+        "narHash": "sha256-+yS3KuIn8zGOlR+glH/x/s25Qt2lx7K/3D61UvZQKUc=",
         "owner": "twempi",
         "repo": "nix-inputs",
-        "rev": "697a5a33b4882a2d8a260cded6afa3dba50bd432",
+        "rev": "f5c68921acd4a33535ccfe70903cb6a43efe1612",
         "type": "github"
       },
       "original": {
