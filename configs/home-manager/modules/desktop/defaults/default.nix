@@ -37,13 +37,14 @@
           # "x-scheme-handler/http" = ["brave-browser.desktop"];
           # "x-scheme-handler/https" = ["brave-browser.desktop"];
 
-          # Images (EOG)
-          "image/png" = ["org.gnome.eog.desktop"];
-          "image/jpeg" = ["org.gnome.eog.desktop"];
-          "image/jpg" = ["org.gnome.eog.desktop"];
-          "image/gif" = ["org.gnome.eog.desktop"];
-          "image/bmp" = ["org.gnome.eog.desktop"];
-          "image/svg+xml" = ["org.gnome.eog.desktop"];
+          # Images (feh)
+          "image/png" = ["feh.desktop"];
+          "image/jpeg" = ["feh.desktop"];
+          "image/jpg" = ["feh.desktop"];
+          "image/gif" = ["feh.desktop"];
+          "image/bmp" = ["feh.desktop"];
+          "image/webp" = ["feh.desktop"];
+          "image/tiff" = ["feh.desktop"];
 
           # Video / Audio (mpv)
           "video/mp4" = ["mpv.desktop"];

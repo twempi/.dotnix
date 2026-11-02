@@ -109,6 +109,10 @@
               mime = "video/*";
               use = "play";
             }
+            {
+              mime = "image/*";
+              use = "image";
+            }
           ];
         };
       };

@@ -51,7 +51,9 @@
         folders = {
           notes = mkFolder "notes" ["desktop" "t480s" "g14" "ipad"];
           school = mkFolder "school" ["desktop" "t480s" "g14"];
-          projects = mkFolder "projects" ["desktop" "t480s" "g14"];
+          projects =
+            (mkFolder "projects" ["desktop" "t480s" "g14"])
+            // {path = "${config.home.homeDirectory}/Projects";};
         };
       };
     };
