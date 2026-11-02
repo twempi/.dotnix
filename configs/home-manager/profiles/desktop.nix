@@ -11,7 +11,6 @@ in {
       latex
       typst
       neovim
-      vscodium
 
       # Themes
       matugen
