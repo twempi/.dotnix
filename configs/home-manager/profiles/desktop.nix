@@ -120,6 +120,7 @@ in {
       nemo
       thunar
       feh
+      bitwarden
     ];
   };
 }
