@@ -33,7 +33,7 @@
     # Destination path, which breaks behind a stripped path prefix.
     systemd.services.tailscale-serve-floccus = import ./_tailscale-serve-service.nix {
       inherit pkgs;
-      name = "floccus";
+      name = "floccus-webdav";
       description = "Expose Floccus WebDAV as a Tailscale Service";
       port = floccusPort;
     };
