@@ -29,8 +29,11 @@ in {
       t480s-headless
       t480s-immich
       # t480s-seanime
+      t480s-media
       t480s-jellyfin
-      t480s-media-downloads
+      t480s-sonarr
+      t480s-prowlarr
+      t480s-qbittorrent
       t480s-kalshi-trader
     ];
 

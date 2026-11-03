@@ -1,75 +1,42 @@
 {
-  flake.modules.nixos.t480s-media-downloads = {
+  flake.modules.nixos.t480s-qbittorrent = {
     config,
-    lib,
     pkgs,
     ...
   }: let
     downloadsDir = "/srv/downloads";
+    # 8080 is Suwayomi's.
+    qbittorrentPort = 8081;
     vpnTable = "51820";
   in {
-    services.sonarr.enable = true;
-
-    services.prowlarr.enable = true;
-
-    sops.secrets.sonarr_api_key.sopsFile = ../../../../../secrets/sonarr.yaml;
-
-    # Syncs the TRaSH anime profile as its own "Anime (TRaSH)" profile, so the hand-made
-    # "Anime" profile is left alone until series are moved over.
-    services.recyclarr = {
-      enable = true;
-      configuration.sonarr.anime = {
-        base_url = "http://127.0.0.1:8989";
-        api_key._secret = config.sops.secrets.sonarr_api_key.path;
-        quality_profiles = [
-          {
-            trash_id = "20e0fc959f1f1704bed501f23bdae76f"; # [Anime] Remux-1080p
-            name = "Anime (TRaSH)";
-            reset_unmatched_scores.enabled = true;
-            upgrade = {
-              allowed = false;
-              until_quality = "Bluray 1080p";
-            };
-            # 1080p only, like the hand-made profile. The guide also allows 720p and below.
-            qualities = [
-              {
-                name = "Bluray 1080p";
-                qualities = ["Bluray-1080p Remux" "Bluray-1080p"];
-              }
-              {
-                name = "WEB 1080p";
-                qualities = ["WEBDL-1080p" "WEBRip-1080p" "HDTV-1080p"];
-              }
-            ];
-          }
-        ];
-      };
-    };
-
     services.qbittorrent = {
       enable = true;
-      # 8080 is Suwayomi's.
-      webuiPort = 8081;
+      webuiPort = qbittorrentPort;
       torrentingPort = 50000;
       extraArgs = ["--confirm-legal-notice"];
     };
 
-    users.users.sonarr.extraGroups = ["media"];
     users.users.qbittorrent.extraGroups = ["media"];
 
     # Group-writable output so edward, Sonarr, and qBittorrent can move and delete each other's files.
-    systemd.services.sonarr.serviceConfig.UMask = lib.mkForce "0002";
     systemd.services.qbittorrent.serviceConfig.UMask = "0002";
 
     systemd.tmpfiles.rules = [
       "d ${downloadsDir} 2770 qbittorrent media - -"
     ];
 
-    # Admin UIs stay off the LAN. The peer port stays closed until a VPN with port forwarding exists.
-    networking.firewall.interfaces.tailscale0.allowedTCPPorts = [8989 9696 8081];
+    # Admin UI stays off the LAN. The peer port stays closed until a VPN with port forwarding exists.
+    networking.firewall.interfaces.tailscale0.allowedTCPPorts = [qbittorrentPort];
+
+    systemd.services.tailscale-serve-qbittorrent = import ../_tailscale-serve-service.nix {
+      inherit pkgs;
+      name = "qbittorrent";
+      description = "Expose qBittorrent as a Tailscale Service";
+      port = qbittorrentPort;
+    };
 
     sops.secrets.proton_wg_private_key = {
-      sopsFile = ../../../../../secrets/proton.yaml;
+      sopsFile = ../../../../../../secrets/proton.yaml;
       restartUnits = ["wireguard-proton0.service"];
     };
 
