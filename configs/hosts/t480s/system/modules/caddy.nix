@@ -19,10 +19,6 @@
     services.caddy = {
       enable = true;
       virtualHosts."t480s.tailae03d0.ts.net".extraConfig = ''
-        handle_path /floccus-webdav/* {
-          reverse_proxy 127.0.0.1:4918
-        }
-
         handle /api/settings {
           reverse_proxy 127.0.0.1:4919
         }
