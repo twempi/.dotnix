@@ -96,6 +96,11 @@
       flake = false;
     };
 
+    agent-reach-src = {
+      url = "github:Panniantong/Agent-Reach/v1.6.1";
+      flake = false;
+    };
+
     claude-code-nix = {
       url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";

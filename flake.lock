@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "agent-reach-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793517783,
+        "narHash": "sha256-l2mRKME24eoLwUUQPuEl0y6gEIGVNuEJc9pz23hX8Z0=",
+        "owner": "Panniantong",
+        "repo": "Agent-Reach",
+        "rev": "7a38047acf26a729cbb27851e3cb81639da86b29",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Panniantong",
+        "ref": "v1.6.1",
+        "repo": "Agent-Reach",
+        "type": "github"
+      }
+    },
     "aquamarine": {
       "inputs": {
         "hyprutils": [
@@ -1385,6 +1402,7 @@
     },
     "root": {
       "inputs": {
+        "agent-reach-src": "agent-reach-src",
         "artcraft": "artcraft",
         "bunny-yazi": "bunny-yazi",
         "claude-code-nix": "claude-code-nix",

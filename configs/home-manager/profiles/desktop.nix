@@ -39,6 +39,7 @@ in {
       codex
       claude-code
       rea
+      agent-reach
       mcp
       clipboard
       tmux
