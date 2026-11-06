@@ -21,7 +21,6 @@ in {
       # Window Managers
       hyprland
       sway
-      niri
 
       # Terminal
       ghostty
@@ -63,12 +62,7 @@ in {
       gnome-apps
       networking
       bluetooth
-      # Superseded by Noctalia for Hyprland, Sway, and Niri.
-      # waybar
-      # Superseded by Noctalia for notifications and control center.
-      # swaync
-      # Superseded by Noctalia for launcher, wallpaper, power, clipboard, emoji, and GPU picker.
-      # rofi
+      # Sway imports Waybar, SwayNC, and Rofi; Hyprland uses Noctalia.
       defaults
       gnome-keyring
       # dms

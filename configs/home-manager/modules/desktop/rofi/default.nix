@@ -10,8 +10,6 @@
     home.file.".config/rofi/config.rasi".source = ./config.rasi;
     # home.file.".config/rofi/theme.rasi".source = ./theme.rasi;
 
-    /*
-      Superseded by Noctalia shell panels.
     home.file.".config/rofi/scripts/wallpaper.sh" = {
       source = ./wallpaper/wallpaper.sh; # keep your repo path here
       executable = true;
@@ -23,7 +21,6 @@
       executable = true;
     };
     home.file.".config/rofi/themes/powermenu.rasi".source = ./powermenu/powermenu.rasi;
-    */
 
     home.file.".config/rofi/theme.rasi".text = ''
       * {
@@ -77,8 +74,6 @@
     home.packages = [
       pkgs.rofi
 
-      /*
-        Superseded by Noctalia shell panels.
       (pkgs.writeShellApplication {
         name = "rofi-launcher";
         runtimeInputs = with pkgs; [
@@ -110,6 +105,7 @@
           rofi
           systemd
           hyprlock
+          swaylock
           libnotify
           alsa-utils
           coreutils
@@ -255,7 +251,6 @@
           printf '%s\n' "$choice" | cliphist decode | wl-copy
         '';
       })
-      */
 
       (pkgs.writeShellApplication {
         name = "rofi-gpu";

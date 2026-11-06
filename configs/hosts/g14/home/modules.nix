@@ -12,9 +12,6 @@ in {
       modules = [
         homeManager.g14
         homeManager.stylix
-        # niri-flake's NixOS module adds these to NixOS-managed Home Manager users on its own.
-        inputs.niri.homeModules.config
-        inputs.niri.homeModules.stylix
       ];
     });
 
@@ -23,7 +20,6 @@ in {
       profile-desktop
       g14-hyprland
       g14-sway
-      g14-niri
       g14-refresh-rate
       g14-clamshell
       g14-noctalia-gpu

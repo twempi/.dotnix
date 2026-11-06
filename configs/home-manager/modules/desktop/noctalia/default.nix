@@ -11,12 +11,10 @@
     windowManagers = [
       "hyprland"
       "sway"
-      "niri"
     ];
     terminalFor = {
       hyprland = lib.getExe pkgs.kitty;
       sway = lib.getExe pkgs.foot;
-      niri = lib.getExe pkgs.foot;
     };
 
     stylixColors = config.lib.stylix.colors.withHashtag;

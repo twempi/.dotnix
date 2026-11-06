@@ -14,7 +14,6 @@ pkgs.writeShellApplication {
     pkgs.coreutils
     pkgs.sway
     inputs.hyprland.packages.${system}.hyprland
-    inputs.niri.packages.${system}.niri-unstable
     pkgs.dbus
     pkgs.systemd
   ];
@@ -136,18 +135,12 @@ pkgs.writeShellApplication {
           printf 'sway\n'
           return 0
           ;;
-        *niri*)
-          printf 'niri\n'
-          return 0
-          ;;
       esac
 
       if [ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
         printf 'hyprland\n'
       elif [ -n "''${SWAYSOCK:-}" ]; then
         printf 'sway\n'
-      elif [ -n "''${NIRI_SOCKET:-}" ]; then
-        printf 'niri\n'
       else
         printf 'Could not identify the active compositor\n' >&2
         return 1
@@ -170,14 +163,6 @@ pkgs.writeShellApplication {
         | jq -r --arg pattern "$output_pattern" 'first(.[] | select(.active == true and (.name | test($pattern))) | .name) // empty'
     }
 
-    internal_output_niri() {
-      local outputs
-
-      outputs="$(niri msg --json outputs 2>/dev/null)" || return 1
-      printf '%s\n' "$outputs" \
-        | jq -r --arg pattern "$output_pattern" 'first(.[] | select(.current_mode != null and (.name | test($pattern))) | .name) // empty'
-    }
-
     internal_output() {
       local compositor="$1"
 
@@ -187,9 +172,6 @@ pkgs.writeShellApplication {
           ;;
         sway)
           internal_output_sway
-          ;;
-        niri)
-          internal_output_niri
           ;;
         *)
           return 1
@@ -229,13 +211,6 @@ pkgs.writeShellApplication {
       fi
     }
 
-    apply_niri() {
-      local output="$1"
-      local hz="$2"
-
-      niri msg output "$output" mode "$resolution@$hz"
-    }
-
     apply_refresh_rate() {
       local compositor="$1"
       local output="$2"
@@ -247,9 +222,6 @@ pkgs.writeShellApplication {
           ;;
         sway)
           apply_sway "$output" "$hz"
-          ;;
-        niri)
-          apply_niri "$output" "$hz"
           ;;
         *)
           return 1
@@ -303,7 +275,6 @@ pkgs.writeShellApplication {
         WAYLAND_DISPLAY \
         HYPRLAND_INSTANCE_SIGNATURE \
         SWAYSOCK \
-        NIRI_SOCKET \
         XDG_CURRENT_DESKTOP \
         XDG_SESSION_TYPE
 

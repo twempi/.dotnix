@@ -101,7 +101,9 @@ case "$chosen" in
 "$shutdown") run_cmd --shutdown ;;
 "$reboot")   run_cmd --reboot ;;
 "$lock")
-  if command -v hyprlock >/dev/null; then
+  if [[ -n "${SWAYSOCK:-}" ]]; then
+    swaylock
+  elif command -v hyprlock >/dev/null; then
     hyprlock
   else
     notify-send "Lock failed" "hyprlock not found"

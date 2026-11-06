@@ -1,10 +1,5 @@
 {
-  flake.modules.homeManager.g14-sway = {
-    config,
-    pkgs,
-    ...
-  }: let
-    gpuSwitcher = "${config.edward.noctalia.commands.sway} msg panel-toggle edward/g14-gpu:switcher";
+  flake.modules.homeManager.g14-sway = {pkgs, ...}: let
     asusProfileNotify = pkgs.writeShellScriptBin "asus-profile-notify" ''
       #!${pkgs.bash}/bin/bash
 
@@ -30,7 +25,7 @@
     wayland.windowManager.sway.config.keybindings = {
       "XF86KbdBrightnessUp" = "exec asusctl leds next";
       "XF86KbdBrightnessDown" = "exec asusctl leds prev";
-      "Mod4+XF86Launch1" = "exec ${gpuSwitcher}";
+      "Mod4+XF86Launch1" = "exec rofi-gpu";
     };
   };
 }

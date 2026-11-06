@@ -11,7 +11,8 @@
         defaultWorkspace = "workspace 1";
 
         startup = [
-          {command = "${config.edward.noctalia.commands.sway} --daemon";}
+          {command = "${pkgs.awww}/bin/awww-daemon";}
+          {command = "${pkgs.waybar}/bin/waybar -c ${config.xdg.configHome}/waybar/sway.jsonc -s ${config.xdg.configHome}/waybar/sway.css";}
 
           # Set volume to 100%
           {command = "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1";}

@@ -60,14 +60,14 @@
             tmux source-file "$HOME/.config/tmux/tmux.conf" || true
           fi
 
-          noctalia msg config-reload >/dev/null 2>&1 || true
+          if [[ -z "''${SWAYSOCK:-}" ]]; then
+            noctalia msg config-reload >/dev/null 2>&1 || true
+          fi
 
           if [[ -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
             hyprctl reload >/dev/null || true
           elif [[ -n "''${SWAYSOCK:-}" ]]; then
-            swaymsg reload >/dev/null || true
-          elif [[ -n "''${NIRI_SOCKET:-}" ]]; then
-            niri msg action load-config-file || true
+            ${../../desktop/windowmanagers/sway/reload.sh} >/dev/null || true
           elif command -v mmsg >/dev/null; then
             mmsg dispatch reload_config >/dev/null 2>&1 || true
           fi
@@ -106,7 +106,9 @@
           current=$(cat "$current_file" 2>/dev/null || echo "default")
 
           # Escape in the launcher exits non-zero or prints nothing.
-          if ! choice=$(list_schemes | noctalia dmenu --prompt "Theme ($current)"); then
+          if [[ -n "''${SWAYSOCK:-}" ]]; then
+            choice=$(list_schemes | rofi -dmenu -i -p "Theme ($current)" -theme "${config.xdg.configHome}/rofi/config.rasi") || exit 0
+          elif ! choice=$(list_schemes | noctalia dmenu --prompt "Theme ($current)"); then
             exit 0
           fi
           [[ -n "$choice" ]] || exit 0

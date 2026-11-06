@@ -12,9 +12,6 @@ in {
       modules = [
         homeManager.desktop
         homeManager.stylix
-        # niri-flake's NixOS module adds these to NixOS-managed Home Manager users on its own.
-        inputs.niri.homeModules.config
-        inputs.niri.homeModules.stylix
       ];
     });
 
@@ -23,7 +20,6 @@ in {
       profile-desktop
       desktop-hyprland
       desktop-sway
-      desktop-niri
       desktop-graphics-tools
       desktop-sioyek
     ];

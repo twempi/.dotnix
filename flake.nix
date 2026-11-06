@@ -54,8 +54,6 @@
 
     hyprland.url = "github:hyprwm/Hyprland";
 
-    niri.url = "github:sodiboo/niri-flake";
-
     nix-minecraft = {
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";

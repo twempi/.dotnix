@@ -3,7 +3,6 @@
     windowManagers = [
       "hyprland"
       "sway"
-      "niri"
     ];
 
     pluginName = "g14-gpu";

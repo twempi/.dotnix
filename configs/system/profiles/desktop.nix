@@ -25,7 +25,6 @@ in {
       printing
       sway
       hyprland
-      niri
 
       anki
       appimage
