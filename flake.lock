@@ -230,6 +230,22 @@
         "type": "github"
       }
     },
+    "caveman-plugin": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793595589,
+        "narHash": "sha256-DFS9Xp9msSFF4WwdPd9RdghjBzc0x4yVomM6nxQWPKw=",
+        "owner": "JuliusBrussee",
+        "repo": "caveman",
+        "rev": "2e068f735253cce28256744804785f01887d9646",
+        "type": "github"
+      },
+      "original": {
+        "owner": "JuliusBrussee",
+        "repo": "caveman",
+        "type": "github"
+      }
+    },
     "claude-code-nix": {
       "inputs": {
         "nixpkgs": [
@@ -238,11 +254,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1792364479,
-        "narHash": "sha256-HZ/ssK2bqVxSRVm6MoIcdLSAYZ4s67vcl7rbeoPiv90=",
+        "lastModified": 1793750548,
+        "narHash": "sha256-kAPQcLt1ZrEU5P47Hvis9WH+YEWkYnmoo2vY5fv42w4=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "c932f70402686f018d829534d71f9e8ba7859cfb",
+        "rev": "02cb98e535e518b992598bea883a7f6393ca5b8c",
         "type": "github"
       },
       "original": {
@@ -259,11 +275,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792102462,
-        "narHash": "sha256-co1yWucHy1/uQbwm+PSUTlPRrL1PengYmBzsdG83HcQ=",
+        "lastModified": 1793931226,
+        "narHash": "sha256-V2P3uslOSDm+QeKgfyuqy2Jc0DVpYQs9P7bg7CoeL9U=",
         "owner": "sadjow",
         "repo": "codex-cli-nix",
-        "rev": "8dc8656b82ed75c9f76002f1368415b1e8471264",
+        "rev": "8aba16f50c25eef6f6fa0a1a285ceff309573073",
         "type": "github"
       },
       "original": {
@@ -894,11 +910,11 @@
     "kalshi-trader-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1793826981,
-        "narHash": "sha256-6TpkTYAMPYSg5kcmwruUTQ5v9+mJhFKoAWn7/A3UXSU=",
+        "lastModified": 1793976523,
+        "narHash": "sha256-AXJ1F6VJ2wRnjZZdq85sD6+ZAu+G9YaYspX80514Fr0=",
         "owner": "twempi",
         "repo": "kalshi-trader",
-        "rev": "74e1d84c30e71e8068c53404dd16d3170f7a8091",
+        "rev": "fd8a3444907525d76f6e9b5ac9599a5ebc19a3f5",
         "type": "github"
       },
       "original": {
@@ -1405,6 +1421,7 @@
         "agent-reach-src": "agent-reach-src",
         "artcraft": "artcraft",
         "bunny-yazi": "bunny-yazi",
+        "caveman-plugin": "caveman-plugin",
         "claude-code-nix": "claude-code-nix",
         "codex-cli-nix": "codex-cli-nix",
         "context7-plugin": "context7-plugin",
@@ -1824,11 +1841,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1793827016,
-        "narHash": "sha256-F/+a/Fe7cPhv3GUTFzgZDCwFQy9TbCvcVBN2MQfIrfM=",
+        "lastModified": 1793976552,
+        "narHash": "sha256-Z2Pi0qm1yFbytKDlUUIjjy/aJ6ik8M90Lj6lVc2+sl4=",
         "owner": "twempi",
         "repo": "nix-inputs",
-        "rev": "55a0a0c66ffacb3ce4514543b4bd347f2b7ce5ac",
+        "rev": "e7eb068544d33c8ee185ee072a23e6463e7771b7",
         "type": "github"
       },
       "original": {

@@ -60,3 +60,79 @@ map("n", "<C-Up>", "<cmd>resize +2<CR>", { desc = "Increase window height" })
 map("n", "<C-Down>", "<cmd>resize -2<CR>", { desc = "Decrease window height" })
 map("n", "<C-Left>", "<cmd>vertical resize -2<CR>", { desc = "Decrease window width" })
 map("n", "<C-Right>", "<cmd>vertical resize +2<CR>", { desc = "Increase window width" })
+
+-- C: compile and run the current file in the tmux pane right of Neovim
+local function shell_quote(s)
+	-- Outside the quotes, \' and \\ mean the same thing to fish and POSIX shells.
+	return "'" .. s:gsub("[\\']", { ["\\"] = "'\\\\'", ["'"] = "'\\''" }) .. "'"
+end
+
+local function tmux(args)
+	local result = vim.system(vim.list_extend({ "tmux" }, args), { text = true }):wait()
+	return result.code == 0 and vim.trim(result.stdout) or nil
+end
+
+local function c_run_in_tmux()
+	local function warn(msg)
+		vim.notify(msg, vim.log.levels.WARN)
+	end
+
+	local file = vim.api.nvim_buf_get_name(0)
+	if vim.bo.buftype ~= "" or not file:match("%.c$") then
+		return warn("Not a named .c file")
+	end
+	-- Declining the "file changed since reading it" prompt leaves the buffer modified, without an error.
+	vim.cmd.update()
+	if vim.bo.modified then
+		return warn("File not saved; nothing sent to tmux")
+	end
+
+	local nvim_pane = vim.env.TMUX and vim.env.TMUX_PANE
+	if not nvim_pane then
+		return warn("Neovim is not running inside tmux")
+	elseif vim.fn.executable("tmux") == 0 then
+		return warn("tmux is not on PATH")
+	end
+
+	-- {right-of} falls back to Neovim's own pane, or wraps around to the left edge.
+	local nvim_info = tmux({ "display-message", "-p", "-t", nvim_pane, "#{window_id} #{pane_right}" }) or ""
+	local window, nvim_right = nvim_info:match("^(%S+) (%d+)$")
+	local format = "#{pane_id} #{pane_left} #{pane_in_mode} #{bracket_paste_flag} #{pane_current_command}"
+	local info = window and tmux({ "display-message", "-p", "-t", window .. ".{right-of}", format }) or ""
+	local pane, left, in_mode, at_prompt, command = info:match("^(%S+) (%d+) (%d+) (%d) (.*)$")
+	if not pane or pane == nvim_pane or tonumber(left) <= tonumber(nvim_right) then
+		return warn("No tmux pane to the right of Neovim")
+	elseif in_mode ~= "0" then
+		return warn("The right tmux pane is in copy mode")
+	-- Shells turn on bracketed paste only while their prompt waits for input.
+	elseif not ({ bash = true, fish = true, sh = true, zsh = true })[command] or at_prompt ~= "1" then
+		return warn("The right tmux pane is busy: " .. command)
+	end
+
+	local exe = ("%s/c-run/%s-%s"):format(
+		vim.fn.stdpath("cache"),
+		vim.fn.fnamemodify(file, ":t:r"),
+		vim.fn.sha256(file):sub(1, 8)
+	)
+	vim.fn.mkdir(vim.fs.dirname(exe), "p")
+	local cmd = ("cd %s && cc -std=c17 -Wall -Wextra -g %s -o %s && %s"):format(
+		shell_quote(vim.fs.dirname(file)),
+		shell_quote(vim.fs.basename(file)),
+		shell_quote(exe),
+		shell_quote(exe)
+	)
+
+	-- C-u C-k clears a half-typed line in order (C-c is a signal and can race the paste).
+	-- The command is pasted, not typed: fish's vi normal mode would run typed keys as commands.
+	tmux({ "send-keys", "-t", pane, "C-u", "C-k" })
+	tmux({ "set-buffer", "-b", "c-run", cmd })
+	tmux({ "paste-buffer", "-b", "c-run", "-d", "-p", "-t", pane })
+	tmux({ "send-keys", "-t", pane, "Enter" })
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "c",
+	callback = function(event)
+		map("n", ",,", c_run_in_tmux, { buffer = event.buf, desc = "Compile and run in right tmux pane" })
+	end,
+})

@@ -38,6 +38,7 @@
         wl-clipboard
         xclip
         xsel
+        tmux
 
         # Lua
         lua-language-server

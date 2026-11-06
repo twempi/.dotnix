@@ -91,6 +91,11 @@
       flake = false;
     };
 
+    caveman-plugin = {
+      url = "github:JuliusBrussee/caveman";
+      flake = false;
+    };
+
     rea-plugin = {
       url = "github:morluto/rea/rea-agents-6.0.0";
       flake = false;
