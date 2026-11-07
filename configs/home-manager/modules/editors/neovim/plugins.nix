@@ -57,6 +57,7 @@
           typst-preview-nvim
           markdown-preview-nvim
           bullets-vim
+          obsidian-nvim
 
           mini-ai
           mini-icons

@@ -11,10 +11,12 @@ return {
 			})
 		end,
 		after = function()
+			-- blink runs these inside expr mappings (textlock), so the buffer
+			-- change has to be scheduled, as blink's own snippet_forward does.
 			local function luasnip_expand_or_jump()
 				local ok, luasnip = pcall(require, "luasnip")
 				if ok and luasnip.expand_or_jumpable() then
-					luasnip.expand_or_jump()
+					vim.schedule(luasnip.expand_or_jump)
 					return true
 				end
 				return false
@@ -23,7 +25,9 @@ return {
 			local function luasnip_jump_back()
 				local ok, luasnip = pcall(require, "luasnip")
 				if ok and luasnip.jumpable(-1) then
-					luasnip.jump(-1)
+					vim.schedule(function()
+						luasnip.jump(-1)
+					end)
 					return true
 				end
 				return false

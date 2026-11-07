@@ -25,6 +25,7 @@ return {
 			{ "<leader>f", group = "[f]ind" },
 			{ "<leader>g", group = "[g]it" },
 			{ "<leader>l", group = "[l]atex" },
+			{ "<leader>o", group = "[o]bsidian" },
 			{ "<leader>s", group = "[s]earch" },
 			{ "<leader>t", group = "[t]ypst" },
 			{ "<leader>u", group = "[u]i" },
