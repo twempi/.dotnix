@@ -16,14 +16,29 @@
       runtimeInputs = [amane pkgs.coreutils];
       text = builtins.readFile ./scripts/dmenu.sh;
     };
+
+    # Amane draws no color emoji, so its emoji picker needs the outline font. Installed for
+    # everyone, that font pushed Noto Color Emoji out of foot's fallback list, so only the
+    # shell sees it. The rule beats NixOS's alias of "Noto Emoji" to the color font.
+    fontsConf = pkgs.writeText "amane-fonts.conf" ''
+      <?xml version="1.0"?>
+      <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+      <fontconfig>
+        <match target="pattern">
+          <test name="family" qual="first"><string>Noto Emoji</string></test>
+          <edit name="color" mode="assign"><bool>false</bool></edit>
+        </match>
+        <include>/etc/fonts/fonts.conf</include>
+        <dir>${pkgs.noto-fonts-monochrome-emoji}/share/fonts</dir>
+      </fontconfig>
+    '';
   in {
     home.packages = [
       amane
       dmenu
 
-      # The font rofi's theme named, and an outline emoji font: amane draws no color emoji.
+      # The font rofi's theme named.
       pkgs.nerd-fonts.jetbrains-mono
-      pkgs.noto-fonts-monochrome-emoji
 
       (pkgs.writeShellApplication {
         name = "amane-launcher";
@@ -291,19 +306,6 @@
       })
     ];
 
-    # NixOS aliases "Noto Emoji" to the color font, which amane can't draw. Only the
-    # emoji picker asks for this family by name, so no other program is affected.
-    xdg.configFile."fontconfig/conf.d/50-amane-noto-emoji.conf".text = ''
-      <?xml version="1.0"?>
-      <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-      <fontconfig>
-        <match target="pattern">
-          <test name="family" qual="first"><string>Noto Emoji</string></test>
-          <edit name="color" mode="assign"><bool>false</bool></edit>
-        </match>
-      </fontconfig>
-    '';
-
     # The stylix palette; the shell watches this file, so theme-switch recolors it live.
     xdg.configFile."amane-shell/colors".text = let
       inherit (config.lib.stylix) colors;
@@ -324,6 +326,8 @@
         ExecStart = "${shell}/bin/amane-shell";
         Restart = "on-failure";
         RestartSec = 2;
+        # Programs it launches go through `swaymsg exec`, so they keep the normal fonts.
+        Environment = ["FONTCONFIG_FILE=${fontsConf}"];
         # Amane checks these before SWAYSOCK, so one left over from a Hyprland session would win.
         UnsetEnvironment = ["HYPRLAND_INSTANCE_SIGNATURE" "NIRI_SOCKET" "MANGO_INSTANCE_SIGNATURE"];
       };

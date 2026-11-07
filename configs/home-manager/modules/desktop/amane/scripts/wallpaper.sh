@@ -58,6 +58,4 @@ else
   exit 1
 fi
 
-# matugen image "$WALLPAPER"
-
 exit 0

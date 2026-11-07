@@ -13,7 +13,6 @@ in {
       neovim
 
       # Themes
-      matugen
       switcher
       fontconfig
       ohmyposh
