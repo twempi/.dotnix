@@ -35,9 +35,9 @@
         "Mod4+O" = "exec ${pkgs.obsidian}/bin/obsidian";
         "Mod4+N" = "exec ${pkgs.foot}/bin/foot -e nvim";
         "Mod4+Shift+B" = "exec ${pkgs.foot}/bin/foot -e ${pkgs.bluetui}/bin/bluetui";
-        "Mod4+Shift+N" = "exec ${pkgs.swaynotificationcenter}/bin/swaync-client -t -sw";
-        "Mod4+Escape" = "exec rofi-power";
-        "Mod4+Shift+W" = "exec rofi-wallpaper";
+        "Mod4+Shift+N" = "exec amane-notifications";
+        "Mod4+Escape" = "exec amane-power";
+        "Mod4+Shift+W" = "exec amane-wallpaper";
         "Mod4+Shift+T" = "exec theme-switch --pick";
         "Mod4+Shift+R" = "exec ${./reload.sh}";
 
@@ -46,9 +46,9 @@
         "Print" = "exec ${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy screen";
 
         # Launcher / emoji / clipboard
-        "Mod4+Space" = "exec rofi-launcher";
-        "Mod4+U" = "exec rofi-emoji";
-        "Mod4+Y" = "exec rofi-clipboard";
+        "Mod4+Space" = "exec amane-launcher";
+        "Mod4+U" = "exec amane-emoji";
+        "Mod4+Y" = "exec amane-clipboard";
 
         # Move focus
         "Mod4+H" = "focus left";

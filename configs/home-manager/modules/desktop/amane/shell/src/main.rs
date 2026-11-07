@@ -1,0 +1,26 @@
+mod bar;
+mod icons;
+mod menu;
+mod notifications;
+mod stats;
+mod theme;
+mod tray;
+mod ui;
+
+use amane::App;
+
+// replaces waybar, rofi and swaync on sway; popups are added last so they draw on top
+fn main() {
+    App::new()
+        .font(ui::MENU_FONT)
+        .window_per_monitor(bar::view)
+        .window_per_monitor(tray::tip_view)
+        .window_per_monitor(notifications::popups_view)
+        .window_per_monitor(notifications::center_view)
+        .window_per_monitor(tray::menu_view)
+        .window_per_monitor(menu::view)
+        .ipc("launcher", menu::launcher)
+        .ipc("menu", menu::dmenu)
+        .ipc("notifications", notifications::toggle)
+        .run();
+}

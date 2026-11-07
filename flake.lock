@@ -17,6 +17,26 @@
         "type": "github"
       }
     },
+    "amane": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792598840,
+        "narHash": "sha256-fU20wtIC9wlOP9mvcCboSdB67zVq2ZSe9FjD7mwyHMc=",
+        "owner": "MystiaFin",
+        "repo": "amane",
+        "rev": "544cbfc23af37f84ac237cd9bec53173981772b3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "MystiaFin",
+        "repo": "amane",
+        "type": "github"
+      }
+    },
     "aquamarine": {
       "inputs": {
         "hyprutils": [
@@ -1331,6 +1351,7 @@
     "root": {
       "inputs": {
         "agent-reach-src": "agent-reach-src",
+        "amane": "amane",
         "artcraft": "artcraft",
         "bunny-yazi": "bunny-yazi",
         "caveman-plugin": "caveman-plugin",

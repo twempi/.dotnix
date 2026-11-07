@@ -1,0 +1,18 @@
+[package]
+name = "amane-shell"
+version = "0.1.0"
+edition = "2024"
+
+# amane is copied next to this file at build time (see ../_package.nix);
+# every other dependency is already in amane's own lock file, so the
+# versions here are the ones amane was tested with
+[dependencies]
+amane = { path = "amane" }
+chrono = "0.4"
+libc = "0.2"
+png = "0.18"
+serde_json = "1"
+zbus = "5"
+
+[workspace]
+exclude = ["amane"]

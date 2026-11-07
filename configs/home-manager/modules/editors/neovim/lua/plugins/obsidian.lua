@@ -1,57 +1,142 @@
--- Settings mirror the vault's .obsidian/app.json, daily-notes.json and
--- templates.json, so notes made here land where the Obsidian app puts them.
-local vault = vim.fn.expand("~/Documents/notes")
+local prefix = "<leader>o"
 
 return {
-	"obsidian.nvim",
-	cmd = "Obsidian",
-	event = { { event = { "BufReadPre", "BufNewFile" }, pattern = vault .. "/*.md" } },
-	keys = {
-		{ "<leader>oo", "<cmd>Obsidian<CR>", desc = "Obsidian commands" },
-		{ "<leader>od", "<cmd>Obsidian today<CR>", desc = "Daily note" },
-		{ "<leader>of", "<cmd>Obsidian quick_switch<CR>", desc = "Find note" },
-		{ "<leader>os", "<cmd>Obsidian search<CR>", desc = "Search notes" },
-		{ "<leader>on", "<cmd>Obsidian new<CR>", desc = "New note" },
-	},
-	after = function()
-		require("obsidian").setup({
-			legacy_commands = false,
-			workspaces = { { name = "notes", path = vault } },
+	{
+		"obsidian.nvim",
+		ft = { "markdown" },
+		cmd = "Obsidian",
 
-			notes_subdir = "000 Home/Inbox",
-			new_notes_location = "notes_subdir",
-			-- Obsidian names the file after the title ("Untitled", "Untitled 1", ...).
-			note_id_func = function(title, dir)
-				local base = title or "Untitled"
-				local id, n = base, 0
-				while dir and vim.uv.fs_stat(vim.fs.joinpath(tostring(dir), id .. ".md")) do
-					n = n + 1
-					id = base .. " " .. n
-				end
-				return id
-			end,
+		keys = {
+			{ prefix .. "o", "<cmd>Obsidian open<CR>", desc = "Open on App" },
+			{ prefix .. "g", "<cmd>Obsidian search<CR>", desc = "Grep" },
+			{ prefix .. "n", "<cmd>Obsidian new<CR>", desc = "New Note" },
+			{ prefix .. "N", "<cmd>Obsidian new_from_template<CR>", desc = "New Note (Template)" },
+			{ prefix .. "<space>", "<cmd>Obsidian quick_switch<CR>", desc = "Find Files" },
+			{ prefix .. "b", "<cmd>Obsidian backlinks<CR>", desc = "Backlinks" },
+			{ prefix .. "ch", "<Nop>", desc = "Toggle checkbox" },
+			{ prefix .. "t", "<cmd>Obsidian tags<CR>", desc = "Tags" },
+			{ prefix .. "T", "<cmd>Obsidian template<CR>", desc = "Template" },
+			{ prefix .. "L", "<cmd>Obsidian link<CR>", mode = "v", desc = "Link" },
+			{ prefix .. "l", "<cmd>Obsidian links<CR>", desc = "Links" },
+			{ prefix .. "l", "<cmd>Obsidian link_new<CR>", mode = "v", desc = "New Link" },
+			{ prefix .. "e", "<cmd>Obsidian extract_note<CR>", mode = "v", desc = "Extract Note" },
+			{ prefix .. "w", "<cmd>Obsidian workspace<CR>", desc = "Workspace" },
+			{ prefix .. "r", "<cmd>Obsidian rename<CR>", desc = "Rename" },
+			{ prefix .. "i", "<cmd>Obsidian paste_img<CR>", desc = "Paste Image" },
+			{ prefix .. "p", "<cmd>MarkdownPreview<CR>", desc = "Preview File" },
+			{ prefix .. "D", "<cmd>Obsidian today<CR>", desc = "Daily Note" },
+		},
 
-			link = { auto_update = true },
-			-- Obsidian owns the properties; don't add id/aliases/tags on every save.
-			frontmatter = { enabled = false },
-			templates = { folder = "999 Templates" },
-			-- No template: the vault's "Daily Notes" template is Templater JavaScript,
-			-- which obsidian.nvim would paste in unevaluated.
-			daily_notes = {
-				folder = "300 Personal/Daily",
-				workdays_only = false,
-			},
-			attachments = { folder = "/990 Attachments" },
-			picker = { name = "snacks.picker" },
+		after = function()
+			require("obsidian").setup({
+				legacy_commands = false,
 
-			-- Its conceal check runs before enter_note below sets conceallevel.
-			ui = { ignore_conceal_warn = true },
-			callbacks = {
-				-- The note UI (checkboxes, links) is drawn with conceal, like Live Preview.
-				enter_note = function()
-					vim.opt_local.conceallevel = 2
+				workspaces = {
+					{ name = "notes", path = "~/Documents/notes" },
+				},
+
+				callbacks = {
+					enter_note = function(note)
+						vim.keymap.set("n", prefix .. "ch", function()
+							require("obsidian.api").toggle_checkbox()
+						end, { buffer = note.bufnr, desc = "Toggle checkbox" })
+					end,
+				},
+
+				notes_subdir = "000 Home/Inbox",
+				new_notes_location = "notes_subdir",
+
+				ui = {
+					enable = false,
+				},
+
+				link = {
+					style = "wiki",
+					format = "shortest",
+					auto_update = true,
+				},
+
+				frontmatter = {
+					enabled = true,
+					sort = { "id", "aliases", "tags", "type", "course", "topic", "references", "urls" },
+					func = function(note)
+						local meta = vim.deepcopy(note.metadata or {})
+						meta.tags = note.tags or {}
+						-- id and aliases are parsed out of metadata; write them back only when the note has them.
+						if #note.aliases > 0 then
+							meta.aliases = note.aliases
+						end
+						if note.id ~= (note.path and note.path.stem) then
+							meta.id = note.id
+						end
+						return meta
+					end,
+				},
+
+				note = { template = "Normal Note.md" },
+
+				note_id_func = function(title)
+					return title or "Untitled"
 				end,
-			},
-		})
-	end,
+
+				picker = {
+					name = "snacks.picker",
+					note_mappings = { new = "<C-x>", insert_link = "<C-l>" },
+					tag_mappings = { tag_note = "<C-x>", insert_tag = "<C-l>" },
+				},
+
+				templates = {
+					enabled = true,
+					folder = "999 Templates",
+					date_format = "%Y-%m-%d",
+					time_format = "%H:%M",
+					substitutions = {
+						yday = function()
+							return os.date("%Y-%m-%d", os.time() - 24 * 60 * 60) --[[@as string]]
+						end,
+						tmrw = function()
+							return os.date("%Y-%m-%d", os.time() + 24 * 60 * 60) --[[@as string]]
+						end,
+						week_id = function()
+							return os.date("%G-W%V") --[[@as string]]
+						end,
+					},
+				},
+
+				daily_notes = {
+					folder = "300 Personal/Daily",
+					date_format = "%Y-%m-%d",
+					default_tags = { "daily" },
+					template = "Daily NVIM.md",
+					workdays_only = false,
+				},
+
+				attachments = {
+					folder = "990 Attachments",
+					img_name_func = function()
+						return string.format("Pasted image %s", os.date("%Y%m%d%H%M%S"))
+					end,
+					img_text_func = function(path)
+						return string.format("![[%s]]", path.name)
+					end,
+					confirm_img_paste = false,
+				},
+
+				checkbox = {
+					enabled = true,
+					create_new = true,
+					order = { " ", "x", "!", ">", "~" },
+				},
+
+				-- Upstream types mark max_lines required, but setup merges in the default.
+				---@diagnostic disable-next-line: missing-fields
+				search = {
+					sort_by = "modified",
+					sort_reversed = true,
+				},
+
+				footer = { enabled = false },
+			})
+		end,
+	},
 }

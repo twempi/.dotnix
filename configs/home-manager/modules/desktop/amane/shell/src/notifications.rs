@@ -1,0 +1,436 @@
+use std::time::{Duration, SystemTime};
+
+use amane::{
+    Align, Button, Center, Color, Column, Horizontal, Image, Key, LayerWindow, Margin, Monitor,
+    Notification, Notifications, Padding, Parent, Pointer, Rectangle, Row, ScrollArea, Service,
+    SpaceBetween, Urgency, Vertical, Weight, Widget, children,
+};
+
+use crate::icons::Icons;
+use crate::theme::Theme;
+use crate::tray::strip_markup;
+use crate::ui::{self, BAR_HEIGHT, MENU_FONT, MENU_TEXT, Placement};
+
+// swaync's notification-window-width, notification-icon-size and control-center size
+const POPUP_WIDTH: f32 = 380.0;
+const CENTER_WIDTH: f32 = 400.0;
+const CENTER_HEIGHT: f32 = 900.0;
+const ICON: f32 = 50.0;
+const MARGIN: f32 = 10.0;
+
+// the notification center's state, swaync's control center without the extra widgets
+#[derive(Default)]
+pub struct NotificationCenter {
+    pub open: bool,
+    monitor: String,
+    pub dnd: bool,
+    // popups from before the center last closed stay gone, as in swaync
+    popups_after: Option<SystemTime>,
+}
+
+impl Service for NotificationCenter {
+    fn new() -> Self {
+        Self::default()
+    }
+
+    fn interval() -> Duration {
+        Duration::from_secs(3600)
+    }
+}
+
+// redraws popups when one times out, and the center once a minute for its timestamps
+#[derive(Default)]
+pub struct Tick {
+    popups: Vec<u32>,
+    minute: u64,
+}
+
+impl Service for Tick {
+    fn new() -> Self {
+        Self::default()
+    }
+
+    fn update(&mut self) -> bool {
+        let popups: Vec<u32> = popups(&Notifications::read(), &NotificationCenter::read())
+            .iter()
+            .map(|notification| notification.id())
+            .collect();
+
+        let minute = seconds_since(SystemTime::UNIX_EPOCH) / 60;
+
+        let changed = popups != self.popups || minute != self.minute;
+
+        self.popups = popups;
+        self.minute = minute;
+
+        changed
+    }
+}
+
+// swaync's timeout, timeout-low and timeout-critical (0 = stays until closed)
+fn timeout(notification: &Notification) -> Option<u64> {
+    match notification.urgency() {
+        Urgency::Low => Some(3),
+        Urgency::Normal => Some(5),
+        Urgency::Critical => None,
+    }
+}
+
+fn seconds_since(time: SystemTime) -> u64 {
+    SystemTime::now()
+        .duration_since(time)
+        .unwrap_or_default()
+        .as_secs()
+}
+
+// newest first, like swaync
+fn popups<'a>(notifications: &'a Notifications, center: &NotificationCenter) -> Vec<&'a Notification> {
+    if center.dnd || center.open {
+        return Vec::new();
+    }
+
+    notifications
+        .list()
+        .iter()
+        .rev()
+        // swaync's notification-visibility rule: low Spotify notifications are muted
+        .filter(|notification| !(notification.app_name() == "Spotify" && notification.urgency() == Urgency::Low))
+        .filter(|notification| center.popups_after.is_none_or(|after| notification.received() > after))
+        .filter(|notification| {
+            timeout(notification).is_none_or(|limit| seconds_since(notification.received()) < limit)
+        })
+        .collect()
+}
+
+pub fn toggle(_: &[String]) -> String {
+    if NotificationCenter::read().open {
+        close();
+
+        return String::from("closed");
+    }
+
+    let monitor = ui::focused_output();
+    let mut center = NotificationCenter::write();
+
+    center.open = true;
+    center.monitor = monitor;
+
+    String::from("opened")
+}
+
+pub fn toggle_from_bar() {
+    toggle(&[]);
+}
+
+/*
+ * popups waiting behind the center must not show in the frame it hides: Amane would
+ * ack a configure the compositor already dropped (wrong configure serial) and die
+ */
+fn close() {
+    let mut center = NotificationCenter::write();
+
+    if center.open {
+        center.open = false;
+        center.popups_after = Some(SystemTime::now());
+    }
+}
+
+fn center_key(key: Key) {
+    match key {
+        Key::Escape => close(),
+        Key::Character('c') => Notifications::clear(),
+        Key::Character('d') => {
+            let mut center = NotificationCenter::write();
+            center.dnd = !center.dnd;
+        }
+        _ => {}
+    }
+}
+
+fn relative(received: SystemTime) -> String {
+    let seconds = seconds_since(received);
+
+    match seconds {
+        0..60 => String::from("now"),
+        60..3600 => format!("{} min ago", seconds / 60),
+        3600..86400 => format!("{} h ago", seconds / 3600),
+        _ => format!("{} d ago", seconds / 86400),
+    }
+}
+
+fn urgency_color(notification: &Notification, base: &[Color; 16]) -> Color {
+    match notification.urgency() {
+        Urgency::Critical => base[8],
+        Urgency::Low => base[3],
+        Urgency::Normal => base[0x0B],
+    }
+}
+
+// the card swaync draws: icon, title, time, close button, body and action buttons
+fn card(notification: &Notification, width: f32, in_center: bool, icons: &Icons, base: &[Color; 16]) -> Rectangle {
+    let id = notification.id();
+    let inner = width - 22.0;
+
+    let icon_path = icons
+        .find(notification.image())
+        .or_else(|| icons.find(notification.icon()));
+
+    let text_width = if icon_path.is_some() { inner - ICON - 10.0 } else { inner };
+
+    let summary = ui::text(notification.summary(), MENU_TEXT, MENU_FONT)
+        .color(base[5])
+        .weight(Weight::from(700))
+        .elide();
+
+    let mut header: Vec<Box<dyn Widget>> = vec![Box::new(summary)];
+
+    if in_center {
+        header.push(Box::new(
+            ui::text(relative(notification.received()), MENU_TEXT - 3.0, MENU_FONT).color(base[4]),
+        ));
+    }
+
+    header.push(Box::new(
+        Rectangle::new()
+            .width(18.0)
+            .height(18.0)
+            .cursor(Pointer)
+            .on_click(move |_| Notifications::dismiss(id))
+            .align_child(Center, Center)
+            .child(ui::text("\u{F0156}", MENU_TEXT, MENU_FONT).color(base[4])),
+    ));
+
+    let line = ui::height_of(&ui::text("A", MENU_TEXT, MENU_FONT));
+
+    let body_text = strip_markup(notification.body());
+    let body = ui::text(body_text.trim(), MENU_TEXT - 1.0, MENU_FONT)
+        .color(base[4])
+        .wrap()
+        .max_lines(4);
+    let body_height = if body_text.trim().is_empty() {
+        0.0
+    } else {
+        body.height_in(text_width).min(line * 4.0)
+    };
+
+    let mut text_column: Vec<Box<dyn Widget>> = vec![Box::new(
+        Row::new(header).width(text_width).height(line).gap(6.0).align(Center),
+    )];
+
+    if body_height > 0.0 {
+        text_column.push(Box::new(Rectangle::new().width(text_width).height(body_height).child(body)));
+    }
+
+    let text_height = line + body_height + if body_height > 0.0 { 4.0 } else { 0.0 };
+
+    let mut top: Vec<Box<dyn Widget>> = Vec::new();
+
+    if let Some(path) = icon_path {
+        top.push(Box::new(
+            Rectangle::new()
+                .width(ICON)
+                .height(ICON)
+                .radius(6.0)
+                .clip()
+                .fill(Image::contain(path).thumbnail(100, 100)),
+        ));
+    }
+
+    top.push(Box::new(Column::new(text_column).gap(4.0)));
+
+    let top_height = text_height.max(if top.len() > 1 { ICON } else { 0.0 });
+
+    let mut rows: Vec<Box<dyn Widget>> = vec![Box::new(Row::new(top).gap(10.0).height(top_height))];
+    let mut height = top_height;
+
+    if !notification.actions().is_empty() {
+        let buttons: Vec<Box<dyn Widget>> = notification
+            .actions()
+            .iter()
+            .map(|action| {
+                let key = action.key().to_string();
+
+                Box::new(
+                    Rectangle::new()
+                        .width(Parent)
+                        .height(28.0)
+                        .fill(base[2])
+                        .cursor(Pointer)
+                        .on_click(move |_| invoked(id, &key))
+                        .align_child(Center, Center)
+                        .child(ui::text(action.label(), MENU_TEXT - 1.0, MENU_FONT).color(base[5]).elide()),
+                ) as Box<dyn Widget>
+            })
+            .collect();
+
+        rows.push(Box::new(Row::new(buttons).width(inner).height(28.0).gap(6.0)));
+        height += 28.0 + 8.0;
+    }
+
+    Rectangle::new()
+        .width(width)
+        .height(height + 22.0)
+        .fill(base[1])
+        .border(1.0, urgency_color(notification, base))
+        .padding(11.0)
+        .cursor(Pointer)
+        .on_click(move |button| clicked(id, button))
+        .child(Column::new(rows).gap(8.0))
+}
+
+// a click runs the default action or dismisses; hide-on-action closes the center
+fn clicked(id: u32, button: Button) {
+    match button {
+        Button::Left => Notifications::click(id),
+        _ => Notifications::dismiss(id),
+    }
+
+    close();
+}
+
+fn invoked(id: u32, key: &str) {
+    Notifications::invoke(id, key);
+    close();
+}
+
+pub fn popups_view(monitor: &Monitor) -> LayerWindow {
+    let notifications = Notifications::read();
+    let center = NotificationCenter::read();
+    let _tick = Tick::read();
+    let icons = Icons::read();
+    let theme = Theme::read();
+
+    let shown = popups(&notifications, &center);
+    let room = monitor.height as f32 - BAR_HEIGHT - MARGIN * 2.0;
+
+    let mut cards: Vec<Box<dyn Widget>> = Vec::new();
+    let mut height = 0.0;
+
+    for notification in shown {
+        let card = card(notification, POPUP_WIDTH, false, &icons, &theme.base);
+        let card_height = ui::height_of(&card);
+
+        if height + card_height > room {
+            break;
+        }
+
+        height += card_height + 8.0;
+        cards.push(Box::new(card));
+    }
+
+    let visible = !cards.is_empty() && ui::shown_on(&ui::focused_output(), monitor);
+
+    LayerWindow::new()
+        .width(POPUP_WIDTH)
+        .height(height.max(1.0))
+        .anchor_vertical(Vertical::Top)
+        .anchor_horizontal(Horizontal::Right)
+        .margin(Margin {
+            top: MARGIN as i32,
+            right: MARGIN as i32,
+            ..Margin::default()
+        })
+        .namespace("amane-notifications")
+        .visible(visible)
+        .child(Column::new(cards).gap(8.0))
+}
+
+pub fn center_view(monitor: &Monitor) -> LayerWindow {
+    let notifications = Notifications::read();
+    let center = NotificationCenter::read();
+    let _tick = Tick::read();
+    let icons = Icons::read();
+    let theme = Theme::read();
+    let base = &theme.base;
+
+    let visible = center.open && ui::shown_on(&center.monitor, monitor);
+    let height = CENTER_HEIGHT.min(monitor.height as f32 - BAR_HEIGHT - MARGIN * 2.0);
+    let inner = CENTER_WIDTH - 20.0;
+
+    let dnd_switch = Rectangle::new()
+        .width(44.0)
+        .height(22.0)
+        .radius(11.0)
+        .fill(if center.dnd { base[0x0B] } else { base[2] })
+        .padding(3.0)
+        .align_child(if center.dnd { Align::End } else { Align::Start }, Center)
+        .cursor(Pointer)
+        .on_click(|_| {
+            let mut center = NotificationCenter::write();
+            center.dnd = !center.dnd;
+        })
+        .child(Rectangle::new().width(16.0).height(16.0).radius(8.0).fill(base[5]));
+
+    let dnd = Row::new(children![
+        ui::text("Do Not Disturb", MENU_TEXT, MENU_FONT).color(base[5]),
+        dnd_switch,
+    ])
+    .width(inner)
+    .height(28.0)
+    .justify(SpaceBetween)
+    .align(Center);
+
+    let title = Row::new(children![
+        ui::text("Notifications Center", MENU_TEXT + 2.0, MENU_FONT)
+            .color(base[5])
+            .weight(Weight::from(700)),
+        Rectangle::new()
+            .width(40.0)
+            .height(28.0)
+            .fill(base[2])
+            .cursor(Pointer)
+            .on_click(|_| Notifications::clear())
+            .align_child(Center, Center)
+            .child(ui::text(" \u{F01B4} ", MENU_TEXT, MENU_FONT).color(base[5])),
+    ])
+    .width(inner)
+    .height(32.0)
+    .justify(SpaceBetween)
+    .align(Center);
+
+    let list: Box<dyn Widget> = if notifications.list().is_empty() {
+        Box::new(
+            Rectangle::new()
+                .width(inner)
+                .height(Parent)
+                .align_child(Center, Center)
+                .child(ui::text("No Notifications", MENU_TEXT, MENU_FONT).color(base[3])),
+        )
+    } else {
+        let cards: Vec<Box<dyn Widget>> = notifications
+            .list()
+            .iter()
+            .rev()
+            .map(|notification| Box::new(card(notification, inner, true, &icons, base)) as Box<dyn Widget>)
+            .collect();
+
+        Box::new(ScrollArea::new("notification-center", Column::new(cards).gap(8.0)).width(inner))
+    };
+
+    let panel = ui::swallow_clicks(
+        Rectangle::new()
+            .width(CENTER_WIDTH)
+            .height(height)
+            .fill(base[0])
+            .border(1.0, base[3])
+            .padding(10.0)
+            .child(Column::new(vec![Box::new(dnd), Box::new(title), list]).gap(10.0)),
+    );
+
+    ui::overlay(
+        "amane-notification-center",
+        visible,
+        Placement {
+            horizontal: Align::End,
+            vertical: Align::Start,
+            padding: Padding {
+                top: BAR_HEIGHT + MARGIN,
+                right: MARGIN,
+                ..Padding::default()
+            },
+        },
+        close,
+        center_key,
+        panel,
+    )
+}

@@ -62,7 +62,7 @@ in {
       gnome-apps
       networking
       bluetooth
-      # Sway imports Waybar, SwayNC, and Rofi; Hyprland uses Noctalia.
+      # Sway imports the Amane shell; Hyprland uses Noctalia.
       defaults
       gnome-keyring
       # dms

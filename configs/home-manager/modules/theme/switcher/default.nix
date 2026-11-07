@@ -107,7 +107,7 @@
 
           # Escape in the launcher exits non-zero or prints nothing.
           if [[ -n "''${SWAYSOCK:-}" ]]; then
-            choice=$(list_schemes | rofi -dmenu -i -p "Theme ($current)" -theme "${config.xdg.configHome}/rofi/config.rasi") || exit 0
+            choice=$(list_schemes | amane-dmenu -dmenu -i -p "Theme ($current)") || exit 0
           elif ! choice=$(list_schemes | noctalia dmenu --prompt "Theme ($current)"); then
             exit 0
           fi

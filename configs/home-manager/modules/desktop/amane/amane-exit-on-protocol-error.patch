@@ -1,0 +1,17 @@
+diff --git a/src/wayland.rs b/src/wayland.rs
+index c4b785d..db590cc 100644
+--- a/src/wayland.rs
++++ b/src/wayland.rs
+@@ -207,6 +207,12 @@ impl WaylandApp {
+             self.event_loop
+                 .dispatch(None, &mut self.state)
+                 .expect("failed to dispatch events");
++
++            // calloop-wayland-source drops a protocol error when it flushes, so a closed
++            // connection would spin here; exiting lets a supervisor start the shell again
++            if let Some(error) = self.state.connection.protocol_error() {
++                panic!("the compositor closed the connection: {error}");
++            }
+         }
+     }
+ }

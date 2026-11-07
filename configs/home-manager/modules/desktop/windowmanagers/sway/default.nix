@@ -1,15 +1,10 @@
 {config, ...}: let
   inherit (config.flake.modules) homeManager;
 in {
-  flake.modules.homeManager.sway = {
-    config,
-    lib,
-    ...
-  }: {
+  flake.modules.homeManager.sway = {config, ...}: {
+    # The Amane shell replaces Waybar, Rofi and SwayNC.
     imports = with homeManager; [
-      waybar
-      rofi
-      swaync
+      amane
     ];
 
     stylix.targets.sway.enable = true;
@@ -19,16 +14,6 @@ in {
     services.cliphist = {
       enable = true;
       systemdTargets = ["sway-session.target"];
-    };
-
-    # D-Bus activation must also stay in Sway; Hyprland uses Noctalia.
-    systemd.user.services.swaync = {
-      Unit = {
-        Requisite = ["sway-session.target"];
-        PartOf = lib.mkForce ["sway-session.target"];
-        After = lib.mkForce ["sway-session.target"];
-      };
-      Install.WantedBy = lib.mkForce ["sway-session.target"];
     };
 
     # sway
