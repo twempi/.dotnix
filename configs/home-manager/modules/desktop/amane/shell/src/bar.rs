@@ -52,7 +52,8 @@ fn label(content: impl Into<String>, color: Color) -> Text {
 fn module(icon: &str, icon_color: Color, value: String, border: Color, text: Color) -> Rectangle {
     let content = Row::new(children![label(format!("[{icon}]"), icon_color), label(format!(" {value}"), text)]);
 
-    let width = ui::width_of(&content) + GAP;
+    // whole pixels, so the tray left of these modules draws its icons unblurred
+    let width = (ui::width_of(&content) + GAP).ceil();
 
     Rectangle::new().width(width).height(Parent).child(Column::new(children![
         Rectangle::new()
@@ -75,7 +76,8 @@ fn workspace_button(workspace: &Workspace, monitor: &str, hovered: bool, base: &
     } else if hovered {
         base[0x0A]
     } else {
-        base[7]
+        // waybar's persistent color was base07, the background itself in dark themes
+        base[3]
     };
 
     // "format": "{index}"; a workspace with only a name shows its name
@@ -182,9 +184,11 @@ fn tray_module(monitor: &str, base: &[Color; 16]) -> Option<Rectangle> {
                 Rectangle::new()
                     .width(width)
                     .height(Parent)
+                    // centering 14 in the 17 above the border would put icons on a half pixel
                     .padding(Padding {
                         left: 8.0,
                         right: 8.0,
+                        top: 1.0,
                         ..Padding::default()
                     })
                     .align_child(Start, Center)

@@ -1,0 +1,62 @@
+diff --git a/src/graphics/image/shrink.rs b/src/graphics/image/shrink.rs
+index 401c278..ca70502 100644
+--- a/src/graphics/image/shrink.rs
++++ b/src/graphics/image/shrink.rs
+@@ -41,21 +41,51 @@ pub fn to_cover(image: Bitmap, width: u32, height: u32) -> Bitmap {
+     }
+ }
+ 
+-// the mean of every channel over the pixels from left to right and top to bottom
++// the mean over the pixels from left to right and top to bottom, colors weighted by
++// alpha so the color a transparent pixel happens to hold can't tint the edges
+ fn average(image: &Bitmap, left: u32, right: u32, top: u32, bottom: u32) -> [u8; 4] {
+-    let mut total = [0u32; 4];
++    let mut total = [0u64; 4];
+ 
+     for y in top..bottom {
+         for x in left..right {
+             let start = ((y * image.width + x) * 4) as usize;
++            let alpha = u64::from(image.pixels[start + 3]);
+ 
+-            for channel in 0..4 {
+-                total[channel] += u32::from(image.pixels[start + channel]);
++            for channel in 0..3 {
++                total[channel] += u64::from(image.pixels[start + channel]) * alpha;
+             }
++
++            total[3] += alpha;
+         }
+     }
+ 
+-    let count = (right - left) * (bottom - top);
++    if total[3] == 0 {
++        return [0; 4];
++    }
++
++    let count = u64::from((right - left) * (bottom - top));
++
++    [
++        (total[0] / total[3]) as u8,
++        (total[1] / total[3]) as u8,
++        (total[2] / total[3]) as u8,
++        (total[3] / count) as u8,
++    ]
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
+ 
+-    total.map(|sum| (sum / count) as u8)
++    #[test]
++    fn transparent_pixels_do_not_tint_the_average() {
++        // opaque red beside transparent green, twice
++        let image = Bitmap {
++            width: 2,
++            height: 2,
++            pixels: Arc::new([255, 0, 0, 255, 0, 255, 0, 0].repeat(2)),
++        };
++
++        assert_eq!(*to_cover(image, 1, 1).pixels, vec![255, 0, 0, 127]);
++    }
+ }

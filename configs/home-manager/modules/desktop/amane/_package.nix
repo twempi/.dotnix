@@ -20,11 +20,13 @@ rustPlatform.buildRustPackage {
   cargoLock.lockFile = ./shell/Cargo.lock;
 
   # The shell builds against the pinned flake input, the same library the amane CLI ships.
-  # The patch makes a dead Wayland connection exit instead of spinning, so systemd restarts it.
+  # The patches make a dead Wayland connection exit instead of spinning, so systemd restarts it,
+  # and keep the hidden color of transparent pixels out of shrunk icons' edges.
   postUnpack = ''
     cp -r ${amaneSource} "$sourceRoot/amane"
     chmod -R u+w "$sourceRoot/amane"
     patch -d "$sourceRoot/amane" -p1 < ${./amane-exit-on-protocol-error.patch}
+    patch -d "$sourceRoot/amane" -p1 < ${./amane-alpha-weighted-shrink.patch}
   '';
 
   nativeBuildInputs = [pkg-config];

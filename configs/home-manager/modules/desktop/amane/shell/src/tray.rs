@@ -889,7 +889,7 @@ pub fn icons(monitor: &str) -> Row {
         let base = Rectangle::new().width(14.0).height(14.0);
 
         let base = match icon {
-            Some(path) => base.fill(Image::contain(path).thumbnail(56, 56)),
+            Some(path) => base.fill(Image::contain(path).thumbnail(14, 14)),
             // no icon found: the first letter of its title stands in
             None => base.align_child(Center, Center).child(
                 ui::text(item.title.chars().next().unwrap_or('?').to_string(), 11.0, ui::BAR_FONT)
