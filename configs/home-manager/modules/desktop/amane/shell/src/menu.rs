@@ -16,6 +16,9 @@ use crate::ui::{self, MENU_FONT, MENU_TEXT, Placement};
 
 const INPUT: &str = "picker";
 
+// 16:9 like the monitors, so a wallpaper's preview shows the crop it gets on screen
+const PREVIEW_ASPECT: f32 = 16.0 / 9.0;
+
 // the rofi theme files this replaces: config.rasi, powermenu.rasi, wallpaper.rasi
 #[derive(Clone, Copy, PartialEq, Default)]
 enum Style {
@@ -78,15 +81,15 @@ impl Picker {
     }
 
     fn columns(&self) -> usize {
-        if self.style == Style::Grid { 9 } else { 1 }
+        if self.style == Style::Grid { 5 } else { 1 }
     }
 
-    // rofi's listview lines: 12, 5 for the power menu, 3 rows of 9 for wallpapers
+    // rofi's listview lines: 12, 5 for the power menu; 3 rows of wallpapers
     fn page(&self) -> usize {
         match self.style {
             Style::List => 12,
             Style::Power => 5,
-            Style::Grid => 27,
+            Style::Grid => 3 * self.columns(),
         }
     }
 
@@ -309,9 +312,9 @@ fn picked(index: usize) {
 }
 
 fn key(key: Key) {
-    let (columns, keys) = {
+    let (columns, grid, keys) = {
         let picker = Picker::read();
-        (picker.columns() as isize, picker.keys.clone())
+        (picker.columns() as isize, picker.style == Style::Grid, picker.keys.clone())
     };
 
     match key {
@@ -323,6 +326,11 @@ fn key(key: Key) {
         Key::Left => Picker::write().step(-1),
         Key::Home => Picker::write().select(0),
         Key::End => Picker::write().select(usize::MAX),
+        // the wallpaper grid has no search box to type into, so vim's keys move through it
+        Key::Character('h') if grid => Picker::write().step(-1),
+        Key::Character('j') if grid => Picker::write().step(columns),
+        Key::Character('k') if grid => Picker::write().step(-columns),
+        Key::Character('l') if grid => Picker::write().step(1),
         Key::Character(letter) => {
             if let Some((_, code)) = keys.iter().find(|(wanted, _)| *wanted == letter) {
                 accept(*code);
@@ -339,6 +347,18 @@ fn scrolled(scroll: Scroll) {
 }
 
 fn typed(text: String) {
+    // only lists have a search box; one still focused from a list this menu replaced
+    // sends its letters here, and they are this menu's keys instead
+    if Picker::read().style != Style::List {
+        TextInput::set_text(INPUT, "");
+
+        if let Some(letter) = text.chars().last() {
+            key(Key::Character(letter));
+        }
+
+        return;
+    }
+
     let mut picker = Picker::write();
 
     picker.query = text;
@@ -393,18 +413,19 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
         .collect();
 
     let list: Box<dyn Widget> = if picker.style == Style::Grid {
-        let cell = (inner - 8.0 * gap) / 9.0;
-        let cell_height = cell + row_height;
+        let columns = picker.columns();
+        let cell = (inner - (columns - 1) as f32 * gap) / columns as f32;
+        let cell_height = (cell - 10.0) / PREVIEW_ASPECT + 10.0 + row_height;
 
         let rows: Vec<Box<dyn Widget>> = visible_entries
-            .chunks(9)
+            .chunks(columns)
             .enumerate()
             .map(|(row, chunk)| {
                 let cells: Vec<Box<dyn Widget>> = chunk
                     .iter()
                     .enumerate()
                     .map(|(column, &index)| {
-                        let position = picker.offset + row * 9 + column;
+                        let position = picker.offset + row * columns + column;
                         Box::new(grid_cell(&picker.entries[index], position, position == picker.selected, cell, cell_height, &base))
                             as Box<dyn Widget>
                     })
@@ -486,6 +507,13 @@ fn input_bar(picker: &Picker, width: f32, base: &[Color; 16]) -> Rectangle {
         .on_change(typed)
         .on_submit(submitted);
 
+    let mut parts: Vec<Box<dyn Widget>> = vec![Box::new(prompt)];
+
+    // the wallpaper grid has no search, its letters move the selection (see key)
+    if picker.style != Style::Grid {
+        parts.push(Box::new(entry));
+    }
+
     // config.rasi's inputbar: prompt and entry over a dashed bottom border
     Rectangle::new()
         .width(width)
@@ -496,7 +524,7 @@ fn input_bar(picker: &Picker, width: f32, base: &[Color; 16]) -> Rectangle {
                     .width(width)
                     .height(line + 10.0)
                     .padding(5.0)
-                    .child(Row::new(vec![Box::new(prompt), Box::new(entry)]).gap(10.0).align(Center)),
+                    .child(Row::new(parts).gap(10.0).align(Center)),
             ),
             Box::new(Rectangle::new().width(width).height(1.0).fill(base[0x0A])),
         ]))
@@ -554,9 +582,9 @@ fn grid_cell(entry: &Entry, position: usize, selected: bool, width: f32, height:
         (Color::TRANSPARENT, base[5])
     };
 
-    let image_size = width - 10.0;
+    let image_width = width - 10.0;
 
-    let image = Rectangle::new().width(image_size).height(image_size);
+    let image = Rectangle::new().width(image_width).height(image_width / PREVIEW_ASPECT);
 
     let image = match &entry.icon {
         Some(path) => image.fill(Image::cover(path).thumbnail(256, 256)),

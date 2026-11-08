@@ -12,15 +12,15 @@ use crate::theme::Theme;
 use crate::tray::{self, Tray};
 use crate::ui::{self, BAR_FONT, BAR_HEIGHT, BAR_TEXT};
 
-// css pt to px: waybar's 2pt borders, 3pt paddings and margins
-const BORDER: f32 = 3.0;
-const GAP: f32 = 4.0;
+// the reference bar's 2px bottom line and the space between its modules
+const LINE: f32 = 2.0;
+const GAP: f32 = 20.0;
 
-const BATTERY_ICONS: [&str; 10] = [
-    "\u{F008E}", "\u{F007A}", "\u{F007B}", "\u{F007D}", "\u{F007E}",
-    "\u{F007F}", "\u{F0080}", "\u{F0081}", "\u{F0082}", "\u{F0079}",
-];
-const WIFI_ICONS: [&str; 5] = ["\u{F092B}", "\u{F091F}", "\u{F0922}", "\u{F0925}", "\u{F0928}"];
+// its darker purples are the text color at part opacity over the background
+const LINE_ALPHA: u8 = 153;
+const BOX_ALPHA: u8 = 84;
+// fainter, so it doesn't merge with the focused box when their numbers are adjacent
+const OTHER_MONITOR_ALPHA: u8 = 42;
 
 // what only the bar's own input changes: the hovered workspace and battery's format-alt
 #[derive(Default)]
@@ -40,44 +40,42 @@ impl Service for BarState {
 }
 
 fn label(content: impl Into<String>, color: Color) -> Text {
+    // Iosevka names its 900 weight Heavy, so amane's lookup of Black fell back to Regular
     ui::text(content, BAR_TEXT, BAR_FONT)
         .color(color)
-        .weight(Weight::from(900))
+        .weight(Weight::Bold)
 }
 
-/*
- * a waybar module: "[icon]" in the module color, the value in the text color,
- * 3pt right padding and a 2pt bottom border
- */
-fn module(icon: &str, icon_color: Color, value: String, border: Color, text: Color) -> Rectangle {
-    let content = Row::new(children![label(format!("[{icon}]"), icon_color), label(format!(" {value}"), text)]);
+fn tint(color: Color, alpha: u8) -> Color {
+    Color::rgba(color.red(), color.green(), color.blue(), alpha)
+}
+
+// a status module: plain text like "CPU 7%"
+fn module(content: String, color: Color) -> Rectangle {
+    let text = label(content, color);
 
     // whole pixels, so the tray left of these modules draws its icons unblurred
-    let width = (ui::width_of(&content) + GAP).ceil();
-
-    Rectangle::new().width(width).height(Parent).child(Column::new(children![
-        Rectangle::new()
-            .width(width)
-            .height(Parent)
-            .align_child(Start, Center)
-            .child(content),
-        Rectangle::new().width(width).height(BORDER).fill(border),
-    ]))
+    Rectangle::new()
+        .width(ui::width_of(&text).ceil())
+        .height(Parent)
+        .align_child(Start, Center)
+        .child(text)
 }
 
 fn workspace_button(workspace: &Workspace, monitor: &str, hovered: bool, base: &[Color; 16]) -> Rectangle {
-    // sway.css precedence: focused, urgent, visible, hover, then the persistent color
-    let color = if workspace.focused() {
-        base[0x0A]
+    let accent = base[0x0E];
+
+    // a tinted box marks the workspace each monitor shows; the focused one's digit is dark
+    let (fill, color) = if workspace.focused() {
+        (tint(accent, BOX_ALPHA), base[0])
     } else if workspace.urgent() {
-        base[8]
+        (Color::TRANSPARENT, base[8])
     } else if workspace.active() {
-        base[0x0B]
+        (tint(accent, OTHER_MONITOR_ALPHA), accent)
     } else if hovered {
-        base[0x0A]
+        (Color::TRANSPARENT, base[5])
     } else {
-        // waybar's persistent color was base07, the background itself in dark themes
-        base[3]
+        (Color::TRANSPARENT, accent)
     };
 
     // "format": "{index}"; a workspace with only a name shows its name
@@ -88,7 +86,8 @@ fn workspace_button(workspace: &Workspace, monitor: &str, hovered: bool, base: &
     };
 
     let text = label(name, color);
-    let width = (ui::width_of(&text) + 6.6).max(16.0) + BORDER * 2.0;
+    // 7px either side puts single digits 21px apart, as in the reference
+    let width = (ui::width_of(&text) + 14.0).round();
 
     let id = workspace.id();
     let monitor = monitor.to_string();
@@ -96,7 +95,7 @@ fn workspace_button(workspace: &Workspace, monitor: &str, hovered: bool, base: &
     Rectangle::new()
         .width(width)
         .height(Parent)
-        .border(BORDER, color)
+        .fill(fill)
         .align_child(Center, Center)
         .on_click(move |_| Workspaces::focus(id))
         .on_hover(move |inside| {
@@ -116,33 +115,31 @@ fn battery(battery: &BatteryState, alt: bool, base: &[Color; 16]) -> Rectangle {
     let critical = battery.capacity <= 20;
     let warning = !critical && battery.capacity <= 30;
 
-    let icon = BATTERY_ICONS[(battery.capacity / 10).min(9) as usize];
-    let capacity = format!("{}%", battery.capacity);
-
-    let (glyph, color, value) = if alt {
-        // format-alt: "[󱧥] {time}"
-        ("\u{F19E5}", base[0x0B], battery.time.clone())
-    } else {
-        match battery.status {
-            "charging" if critical => ("\u{F089C}", base[8], capacity),
-            "charging" if warning => ("\u{F089D}", base[9], capacity),
-            "charging" | "plugged" => ("\u{F0085}", base[0x0B], capacity),
-            "full" => (icon, base[0x0B], capacity),
-            _ if critical => (icon, base[8], format!("{capacity}!!")),
-            _ if warning => (icon, base[9], capacity),
-            _ => (icon, base[0x0B], capacity),
-        }
+    // i3status's names for the states
+    let name = match battery.status {
+        "charging" | "plugged" => "CHR",
+        "full" => "FULL",
+        _ => "BAT",
     };
 
-    let border = if critical {
+    let value = if alt {
+        // format-alt: the time left
+        battery.time.clone()
+    } else if critical && name == "BAT" {
+        format!("{}%!!", battery.capacity)
+    } else {
+        format!("{}%", battery.capacity)
+    };
+
+    let color = if critical {
         base[8]
     } else if warning {
         base[9]
     } else {
-        base[0x0B]
+        base[0x0E]
     };
 
-    module(glyph, color, value, border, base[5]).on_click(|button| {
+    module(format!("{name} {value}"), color).on_click(|button| {
         if button == Button::Left {
             let mut state = BarState::write();
             state.battery_alt = !state.battery_alt;
@@ -164,44 +161,10 @@ fn brightness_scrolled(scroll: Scroll) {
     Brightness::set((current + step).clamp(1, 100) as u8);
 }
 
-fn tray_module(monitor: &str, base: &[Color; 16]) -> Option<Rectangle> {
-    let visible = Tray::read().items.iter().any(|item| item.status != "Passive");
-
-    if !visible {
-        return None;
-    }
-
-    let icons = tray::icons(monitor);
-    let width = ui::width_of(&icons) + 16.0;
-
-    // #tray: tray-bg background, 6pt side padding, tray-border bottom border
-    Some(
-        Rectangle::new()
-            .width(width)
-            .height(Parent)
-            .fill(base[1])
-            .child(Column::new(children![
-                Rectangle::new()
-                    .width(width)
-                    .height(Parent)
-                    // centering 14 in the 17 above the border would put icons on a half pixel
-                    .padding(Padding {
-                        left: 8.0,
-                        right: 8.0,
-                        top: 1.0,
-                        ..Padding::default()
-                    })
-                    .align_child(Start, Center)
-                    .child(icons),
-                Rectangle::new().width(width).height(BORDER).fill(base[2]),
-            ])),
-    )
-}
-
 pub fn view(monitor: &Monitor) -> LayerWindow {
     let theme = Theme::read();
     let base = theme.base;
-    let text = base[5];
+    let accent = base[0x0E];
 
     let stats = Stats::read();
     let clock = Clock::read();
@@ -216,7 +179,7 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
     let mut list: Vec<&Workspace> = workspaces.list().iter().collect();
     list.sort_by_key(|workspace| (workspace.index() == 0, workspace.index(), workspace.name().map(String::from)));
 
-    let mut left: Vec<Box<dyn Widget>> = list
+    let buttons: Vec<Box<dyn Widget>> = list
         .into_iter()
         .map(|workspace| {
             let hovered = state.hovered.as_ref() == Some(&(monitor.name.clone(), workspace.id()));
@@ -224,59 +187,56 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
         })
         .collect();
 
+    let mut left: Vec<Box<dyn Widget>> = vec![Box::new(Row::new(buttons))];
+
     if !mode.name.is_empty() {
-        // "format": " {}", "max-length": 50
-        let name: String = format!("\u{F205} {}", mode.name).chars().take(50).collect();
+        // "max-length": 50
+        let name: String = mode.name.chars().take(50).collect();
         let content = label(name, base[0]);
-        let width = ui::width_of(&content) + 12.0 + BORDER * 2.0;
+        let width = (ui::width_of(&content) + 14.0).round();
 
         left.push(Box::new(
             Rectangle::new()
                 .width(width)
                 .height(Parent)
-                .fill(base[0x0D])
-                .border(BORDER, base[0x0C])
+                .fill(accent)
                 .align_child(Center, Center)
                 .child(content),
         ));
     }
 
-    // modules-right, in waybar's order
+    // the reference's order, with this bar's extra modules beside their kin
     let mut right: Vec<Box<dyn Widget>> = Vec::new();
 
-    if let Some(tray) = tray_module(&monitor.name, &base) {
-        right.push(Box::new(tray));
+    if Tray::read().items.iter().any(|item| item.status != "Passive") {
+        right.push(Box::new(tray::icons(&monitor.name)));
     }
 
-    let network_icon = match network.link() {
-        Link::Wifi => WIFI_ICONS[(network.strength() / 20).min(4) as usize],
-        Link::Wired => "\u{F0200}",
-        _ => "\u{F1616}",
-    };
-    right.push(Box::new(module(network_icon, base[0x0E], stats.down.clone(), base[0x0E], text)));
+    right.push(Box::new(module(format!("CPU {}%", stats.cpu), accent)));
+    right.push(Box::new(module(format!("MEM {}", stats.memory), accent)));
+    right.push(Box::new(module(format!("DISK {}", stats.disk_free), accent)));
 
-    right.push(Box::new(module("\u{F233}", base[8], stats.disk_free.clone(), base[8], text)));
-    right.push(Box::new(module("\u{E266}", base[9], format!("{}%", stats.cpu), base[9], text)));
+    let down: &str = match network.link() {
+        Link::Offline => "off",
+        _ => &stats.down,
+    };
+    right.push(Box::new(module(format!("NET {down}"), accent)));
 
     if brightness.present() {
         right.push(Box::new(
-            module("\u{F078F}", base[0x0A], format!("{}%", brightness.percent()), base[0x0A], text)
-                .on_scroll(brightness_scrolled),
+            module(format!("BRI {}%", brightness.percent()), accent).on_scroll(brightness_scrolled),
         ));
     }
 
-    right.push(Box::new(module("\u{EFC5}", base[0x0C], stats.memory.clone(), base[0x0C], text)));
-
-    let (volume_icon, volume_color) = match (volume.bluetooth, volume.muted) {
-        (false, false) => ("\u{F028}", base[0x0D]),
-        (false, true) => ("\u{EEE8}", base[8]),
-        (true, false) => ("\u{F00B0}", base[0x0D]),
-        (true, true) => ("\u{F00B2}", base[8]),
+    let sink = if volume.bluetooth { "BT" } else { "VOL" };
+    let (level, volume_color) = if volume.muted {
+        (String::from("muted"), base[8])
+    } else {
+        (format!("{}%", volume.percent), accent)
     };
-    let volume_border = if volume.muted { base[8] } else { base[0x0D] };
 
     right.push(Box::new(
-        module(volume_icon, volume_color, format!("{}%", volume.percent), volume_border, text)
+        module(format!("{sink} {level}"), volume_color)
             .on_click(|button| match button {
                 Button::Left => amane::spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle"),
                 // waybar's on-click-right, kept as configured
@@ -291,7 +251,7 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
     }
 
     right.push(Box::new(
-        module("\u{F073}", base[0x0A], clock.text.clone(), base[0x0A], text).on_click(|button| {
+        module(clock.text.clone(), accent).on_click(|button| {
             if button == Button::Left {
                 notifications::toggle_from_bar();
             }
@@ -310,13 +270,30 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
                 .width(Parent)
                 .height(Parent)
                 .fill(base[0])
-                .padding(GAP)
                 .on_move(|point| tray::track_pointer(point.x))
-                .child(
-                    Row::new(children![Row::new(left).gap(GAP), Row::new(right).gap(GAP)])
+                .child(Column::new(children![
+                    Rectangle::new()
                         .width(Parent)
                         .height(Parent)
-                        .justify(SpaceBetween),
-                ),
+                        // the workspaces start at the edge; the clock stops short of it
+                        .padding(Padding {
+                            right: 8.0,
+                            ..Padding::default()
+                        })
+                        .child(
+                            Row::new(children![
+                                Row::new(left).gap(GAP),
+                                // centers the tray's icons; the text modules fill the height
+                                Row::new(right).gap(GAP).align(Center),
+                            ])
+                            .width(Parent)
+                            .height(Parent)
+                            .justify(SpaceBetween),
+                        ),
+                    Rectangle::new()
+                        .width(Parent)
+                        .height(LINE)
+                        .fill(tint(accent, LINE_ALPHA)),
+                ])),
         )
 }

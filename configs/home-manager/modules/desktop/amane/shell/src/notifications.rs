@@ -1,3 +1,4 @@
+use std::thread;
 use std::time::{Duration, SystemTime};
 
 use amane::{
@@ -65,6 +66,54 @@ impl Service for Tick {
 
         changed
     }
+}
+
+// the one monitor notification popups show on, whichever monitor has focus
+#[derive(Default)]
+pub struct MainOutput {
+    name: String,
+}
+
+impl Service for MainOutput {
+    fn new() -> Self {
+        Self::default()
+    }
+
+    fn listen() {
+        loop {
+            refresh_main_output();
+
+            // sway announces every monitor added, removed or moved
+            for _ in amane::lines(r#"swaymsg -r -m -t subscribe '["output"]'"#) {
+                refresh_main_output();
+            }
+
+            // not running under sway, or sway is going away
+            thread::sleep(Duration::from_secs(5));
+        }
+    }
+}
+
+fn refresh_main_output() {
+    let outputs = serde_json::from_str(&amane::output("swaymsg -r -t get_outputs")).unwrap_or_default();
+    let name = main_output(&outputs);
+
+    if MainOutput::read().name != name {
+        MainOutput::write().name = name;
+    }
+}
+
+// the leftmost, then topmost, enabled monitor: DP-1 on desktop, the laptop panel on g14
+fn main_output(outputs: &serde_json::Value) -> String {
+    outputs
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter(|output| output["active"] == true)
+        .min_by_key(|output| (output["rect"]["x"].as_i64(), output["rect"]["y"].as_i64()))
+        .and_then(|output| output["name"].as_str())
+        .unwrap_or_default()
+        .to_string()
 }
 
 // swaync's timeout, timeout-low and timeout-critical (0 = stays until closed)
@@ -299,6 +348,7 @@ pub fn popups_view(monitor: &Monitor) -> LayerWindow {
     let _tick = Tick::read();
     let icons = Icons::read();
     let theme = Theme::read();
+    let main = MainOutput::read();
 
     let shown = popups(&notifications, &center);
     let room = monitor.height as f32 - BAR_HEIGHT - MARGIN * 2.0;
@@ -318,7 +368,7 @@ pub fn popups_view(monitor: &Monitor) -> LayerWindow {
         cards.push(Box::new(card));
     }
 
-    let visible = !cards.is_empty() && ui::shown_on(&ui::focused_output(), monitor);
+    let visible = !cards.is_empty() && ui::shown_on(&main.name, monitor);
 
     LayerWindow::new()
         .width(POPUP_WIDTH)
@@ -433,4 +483,21 @@ pub fn center_view(monitor: &Monitor) -> LayerWindow {
         center_key,
         panel,
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn picks_the_top_left_monitor() {
+        let outputs = serde_json::json!([
+            {"name": "HDMI-A-1", "active": true, "rect": {"x": 2560, "y": 0}},
+            {"name": "eDP-1", "active": false, "rect": {"x": 0, "y": 0}},
+            {"name": "DP-1", "active": true, "rect": {"x": 0, "y": 0}}
+        ]);
+
+        assert_eq!(main_output(&outputs), "DP-1");
+        assert_eq!(main_output(&serde_json::json!([])), "");
+    }
 }

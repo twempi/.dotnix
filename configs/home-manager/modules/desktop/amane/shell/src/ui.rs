@@ -11,7 +11,7 @@ pub const BAR_TEXT: f32 = 14.5;
 pub const MENU_FONT: &str = "JetBrainsMono Nerd Font";
 pub const MENU_TEXT: f32 = 14.5;
 
-pub const BAR_HEIGHT: f32 = 28.0;
+pub const BAR_HEIGHT: f32 = 24.0;
 
 pub fn text(content: impl Into<String>, size: f32, font: &str) -> Text {
     Text::new(content).size(size).font(font)

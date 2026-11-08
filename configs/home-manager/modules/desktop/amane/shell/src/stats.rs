@@ -302,7 +302,7 @@ impl Service for Clock {
 }
 
 fn now() -> String {
-    chrono::Local::now().format("%a %d | %I:%M %p").to_string()
+    chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string()
 }
 
 // the default sink's volume, read through pactl because it can go past 100%

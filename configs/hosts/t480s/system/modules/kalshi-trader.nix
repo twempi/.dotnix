@@ -7,6 +7,7 @@
     services.kalshi-trader = {
       enable = true;
       port = kalshiTraderPort;
+      environmentFile = "/etc/kalshi-trader.env";
     };
 
     systemd.services.tailscale-serve-kalshi-trader = import ./_tailscale-serve-service.nix {

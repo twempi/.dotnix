@@ -2,6 +2,7 @@ mod bar;
 mod icons;
 mod menu;
 mod notifications;
+mod osd;
 mod stats;
 mod theme;
 mod tray;
@@ -19,6 +20,7 @@ fn main() {
         .window_per_monitor(notifications::center_view)
         .window_per_monitor(tray::menu_view)
         .window_per_monitor(menu::view)
+        .window_per_monitor(osd::view)
         .ipc("launcher", menu::launcher)
         .ipc("menu", menu::dmenu)
         .ipc("notifications", notifications::toggle)

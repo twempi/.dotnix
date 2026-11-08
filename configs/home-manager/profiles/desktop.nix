@@ -36,7 +36,6 @@ in {
       ani-cli
       codex
       claude-code
-      rea
       agent-reach
       mcp
       clipboard

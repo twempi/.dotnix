@@ -875,7 +875,7 @@ fn menu_row(
         .child(ui::text(label, MENU_TEXT - 1.0, MENU_FONT).color(color).elide())
 }
 
-// tray icons for the bar: 14 pixel icons, 8 apart, passive items hidden like waybar does
+// tray icons for the bar: 16 pixel icons, 8 apart, passive items hidden like waybar does
 pub fn icons(monitor: &str) -> Row {
     let tray = Tray::read();
     let icons = Icons::read();
@@ -886,10 +886,10 @@ pub fn icons(monitor: &str) -> Row {
     for item in tray.items.iter().filter(|item| item.status != "Passive") {
         let icon = item.icon_file.clone().or_else(|| icons.find(&item.icon_name));
 
-        let base = Rectangle::new().width(14.0).height(14.0);
+        let base = Rectangle::new().width(16.0).height(16.0);
 
         let base = match icon {
-            Some(path) => base.fill(Image::contain(path).thumbnail(14, 14)),
+            Some(path) => base.fill(Image::contain(path).thumbnail(16, 16)),
             // no icon found: the first letter of its title stands in
             None => base.align_child(Center, Center).child(
                 ui::text(item.title.chars().next().unwrap_or('?').to_string(), 11.0, ui::BAR_FONT)

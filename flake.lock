@@ -1331,23 +1331,6 @@
         "type": "github"
       }
     },
-    "rea-plugin": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1791452401,
-        "narHash": "sha256-ZkORZi9hfQgQvtWsQRmArmQ4y/qnAcP3gPq5tcs/VL0=",
-        "owner": "morluto",
-        "repo": "rea",
-        "rev": "6fee42689ae6e95a0182e0d4d0f55644e73e72be",
-        "type": "github"
-      },
-      "original": {
-        "owner": "morluto",
-        "ref": "rea-agents-6.0.0",
-        "repo": "rea",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "agent-reach-src": "agent-reach-src",
@@ -1372,7 +1355,6 @@
         "noctalia": "noctalia",
         "pi": "pi",
         "ponytail-plugin": "ponytail-plugin",
-        "rea-plugin": "rea-plugin",
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
         "spotify-player": "spotify-player",
