@@ -26,6 +26,16 @@
               (add-pkg-deps [
                 # Provides pdftotext and pdfinfo for the course PDFs.
                 pkgs.poppler-utils
+                # The agent's shell has only coreutils otherwise.
+                pkgs.findutils
+                pkgs.gnugrep
+                pkgs.gnused
+                pkgs.gawk
+                pkgs.diffutils
+                # Printable study packets.
+                pkgs.tectonic
+                # sync_anki.py and independent checks of generated solutions.
+                (pkgs.python3.withPackages (ps: [ps.sympy ps.numpy ps.scipy]))
               ])
             ]
             ++ lib.optionals (hostname == "desktop") [

@@ -1,6 +1,11 @@
 {
   flake.modules.homeManager.librewolf = {
-    stylix.targets.librewolf.enable = true;
+    stylix.targets.librewolf = {
+      enable = true;
+      profileNames = [
+        "edward"
+      ];
+    };
 
     programs.librewolf = {
       enable = true;

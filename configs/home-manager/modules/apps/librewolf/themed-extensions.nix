@@ -15,7 +15,11 @@
           inherit config inputs pkgs;
           startpageOrigin = "https://t480s.tailae03d0.ts.net";
         };
-        manifestPatch = ''.chrome_settings_overrides.homepage = "focus/focus.html"'';
+        # Without Google Fonts the page's font stack falls through to the Stylix font.
+        manifestPatch = ''
+          .chrome_settings_overrides.homepage = "focus/focus.html"
+          | .content_security_policy.extension_pages |= sub(" https://fonts.gstatic.com"; "")
+        '';
       };
 
       "stylix-theme@local".src = pkgs.writeTextDir "manifest.json" (builtins.toJSON {
@@ -70,10 +74,6 @@
       '';
     };
   in {
-    # The theme extension follows Helium's colours; Stylix's target would need
-    # a Firefox Color profile on top of it.
-    stylix.targets.librewolf.enable = false;
-
     programs.librewolf.policies.ExtensionSettings =
       lib.mapAttrs (id: _: {
         install_url = "file://${extensionsDir}/${id}.xpi";
