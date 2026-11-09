@@ -94,13 +94,14 @@ in {
       mpv
       zathura
       anki
-      chromium
+      # chromium
       # zen-browser
       upscayl
       syncthing
       sioyek
       sunsetr
       helium
+      librewolf
       obsidian
       rars
       blanket

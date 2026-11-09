@@ -154,6 +154,14 @@ home-manager build --flake .#edward-t480s
 
 Local packages are not exposed as flake outputs. To build one, build the NixOS host or Home Manager output that consumes it.
 
+Run heavy evaluations and builds (`nix flake check`, `nix eval`, `nixos-rebuild build`, `home-manager build`) inside a memory-capped scope:
+
+```
+systemd-run --user --scope -p MemoryHigh=12G -p MemoryMax=16G -p MemorySwapMax=0 <command>
+```
+
+Agent sessions run inside the T3Code app's scope, so an unbounded `nix` process there makes the kernel kill the whole app. The limits are provisional; update them from the measured peak of a successful build on this machine. If a capped command is killed (exit 137), report that and do not raise the limit without asking.
+
 List the named modules:
 
 ```

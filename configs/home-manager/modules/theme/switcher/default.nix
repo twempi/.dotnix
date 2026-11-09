@@ -150,6 +150,8 @@
     };
   in {
     specialisation = lib.genAttrs schemes (scheme: {
+      # Otherwise every scheme re-imports nixpkgs, about 9 GB across all of them.
+      configuration._module.args.pkgs = lib.mkForce pkgs;
       configuration.stylix.base16Scheme = lib.mkForce (inputs.tt-schemes + "/base16/${scheme}.yaml");
     });
 

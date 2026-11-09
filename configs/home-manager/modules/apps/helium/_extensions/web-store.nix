@@ -143,6 +143,8 @@
         '{ external_crx: $crx, external_version: $version }' > "$out"
     '';
 in {
+  inherit extensions fetchExtension;
+
   configFiles = lib.listToAttrs (
     map (extension: {
       name = "net.imput.helium/External Extensions/${extension.id}.json";
