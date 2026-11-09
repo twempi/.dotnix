@@ -3,27 +3,34 @@ use std::time::{Duration, SystemTime};
 
 use amane::{
     Align, Button, Center, Color, Column, Horizontal, Image, Key, LayerWindow, Margin, Monitor,
-    Notification, Notifications, Padding, Parent, Pointer, Rectangle, Row, ScrollArea, Service,
+    Notification, Notifications, Parent, Pointer, Rectangle, Row, ScrollArea, Service,
     SpaceBetween, Urgency, Vertical, Weight, Widget, children,
 };
 
 use crate::icons::Icons;
 use crate::theme::Theme;
 use crate::tray::strip_markup;
-use crate::ui::{self, BAR_HEIGHT, MENU_FONT, MENU_TEXT, Placement};
+use crate::ui::{self, BAR_HEIGHT, MENU_FONT, MENU_TEXT};
 
-// swaync's notification-window-width, notification-icon-size and control-center size
+// swaync's notification-window-width and notification-icon-size
 const POPUP_WIDTH: f32 = 380.0;
-const CENTER_WIDTH: f32 = 400.0;
-const CENTER_HEIGHT: f32 = 900.0;
 const ICON: f32 = 50.0;
-const MARGIN: f32 = 10.0;
+pub const MARGIN: f32 = 10.0;
 
-// the notification center's state, swaync's control center without the extra widgets
+// the panel's tabs, see panel.rs
+#[derive(Default, Clone, Copy, PartialEq)]
+pub enum Page {
+    #[default]
+    Home,
+    Notifications,
+}
+
+// the state of the panel that holds the notification center
 #[derive(Default)]
 pub struct NotificationCenter {
     pub open: bool,
-    monitor: String,
+    pub page: Page,
+    pub monitor: String,
     pub dnd: bool,
     // popups from before the center last closed stay gone, as in swaync
     popups_after: Option<SystemTime>,
@@ -151,7 +158,16 @@ fn popups<'a>(notifications: &'a Notifications, center: &NotificationCenter) -> 
         .collect()
 }
 
+// the keybind still means notifications; the clock opens the home page
 pub fn toggle(_: &[String]) -> String {
+    toggle_page(Page::Notifications)
+}
+
+pub fn toggle_from_bar() {
+    toggle_page(Page::Home);
+}
+
+fn toggle_page(page: Page) -> String {
     if NotificationCenter::read().open {
         close();
 
@@ -162,20 +178,17 @@ pub fn toggle(_: &[String]) -> String {
     let mut center = NotificationCenter::write();
 
     center.open = true;
+    center.page = page;
     center.monitor = monitor;
 
     String::from("opened")
-}
-
-pub fn toggle_from_bar() {
-    toggle(&[]);
 }
 
 /*
  * popups waiting behind the center must not show in the frame it hides: Amane would
  * ack a configure the compositor already dropped (wrong configure serial) and die
  */
-fn close() {
+pub fn close() {
     let mut center = NotificationCenter::write();
 
     if center.open {
@@ -184,14 +197,17 @@ fn close() {
     }
 }
 
-fn center_key(key: Key) {
+pub fn toggle_dnd() {
+    let mut center = NotificationCenter::write();
+    center.dnd = !center.dnd;
+}
+
+pub fn center_key(key: Key) {
     match key {
         Key::Escape => close(),
-        Key::Character('c') => Notifications::clear(),
-        Key::Character('d') => {
-            let mut center = NotificationCenter::write();
-            center.dnd = !center.dnd;
-        }
+        // only with the list on screen, so a stray key on the home page can't wipe it unseen
+        Key::Character('c') if NotificationCenter::read().page == Page::Notifications => Notifications::clear(),
+        Key::Character('d') => toggle_dnd(),
         _ => {}
     }
 }
@@ -319,6 +335,7 @@ fn card(notification: &Notification, width: f32, in_center: bool, icons: &Icons,
     Rectangle::new()
         .width(width)
         .height(height + 22.0)
+        .radius(if in_center { 8.0 } else { 0.0 })
         .fill(base[1])
         .border(1.0, urgency_color(notification, base))
         .padding(11.0)
@@ -385,56 +402,38 @@ pub fn popups_view(monitor: &Monitor) -> LayerWindow {
         .child(Column::new(cards).gap(8.0))
 }
 
-pub fn center_view(monitor: &Monitor) -> LayerWindow {
+// the panel's notifications tab
+pub fn page(inner: f32, dnd: bool, base: &[Color; 16]) -> Column {
     let notifications = Notifications::read();
-    let center = NotificationCenter::read();
-    let _tick = Tick::read();
     let icons = Icons::read();
-    let theme = Theme::read();
-    let base = &theme.base;
-
-    let visible = center.open && ui::shown_on(&center.monitor, monitor);
-    let height = CENTER_HEIGHT.min(monitor.height as f32 - BAR_HEIGHT - MARGIN * 2.0);
-    let inner = CENTER_WIDTH - 20.0;
 
     let dnd_switch = Rectangle::new()
         .width(44.0)
         .height(22.0)
         .radius(11.0)
-        .fill(if center.dnd { base[0x0B] } else { base[2] })
+        .fill(if dnd { base[0x0B] } else { base[2] })
         .padding(3.0)
-        .align_child(if center.dnd { Align::End } else { Align::Start }, Center)
+        .align_child(if dnd { Align::End } else { Align::Start }, Center)
         .cursor(Pointer)
-        .on_click(|_| {
-            let mut center = NotificationCenter::write();
-            center.dnd = !center.dnd;
-        })
+        .on_click(|_| toggle_dnd())
         .child(Rectangle::new().width(16.0).height(16.0).radius(8.0).fill(base[5]));
 
-    let dnd = Row::new(children![
+    let clear = Rectangle::new()
+        .width(40.0)
+        .height(28.0)
+        .radius(8.0)
+        .fill(base[2])
+        .cursor(Pointer)
+        .on_click(|_| Notifications::clear())
+        .align_child(Center, Center)
+        .child(ui::text(" \u{F01B4} ", MENU_TEXT, MENU_FONT).color(base[5]));
+
+    let controls = Row::new(children![
         ui::text("Do Not Disturb", MENU_TEXT, MENU_FONT).color(base[5]),
-        dnd_switch,
+        Row::new(children![dnd_switch, clear]).gap(8.0).align(Center),
     ])
     .width(inner)
     .height(28.0)
-    .justify(SpaceBetween)
-    .align(Center);
-
-    let title = Row::new(children![
-        ui::text("Notifications Center", MENU_TEXT + 2.0, MENU_FONT)
-            .color(base[5])
-            .weight(Weight::from(700)),
-        Rectangle::new()
-            .width(40.0)
-            .height(28.0)
-            .fill(base[2])
-            .cursor(Pointer)
-            .on_click(|_| Notifications::clear())
-            .align_child(Center, Center)
-            .child(ui::text(" \u{F01B4} ", MENU_TEXT, MENU_FONT).color(base[5])),
-    ])
-    .width(inner)
-    .height(32.0)
     .justify(SpaceBetween)
     .align(Center);
 
@@ -457,32 +456,7 @@ pub fn center_view(monitor: &Monitor) -> LayerWindow {
         Box::new(ScrollArea::new("notification-center", Column::new(cards).gap(8.0)).width(inner))
     };
 
-    let panel = ui::swallow_clicks(
-        Rectangle::new()
-            .width(CENTER_WIDTH)
-            .height(height)
-            .fill(base[0])
-            .border(1.0, base[3])
-            .padding(10.0)
-            .child(Column::new(vec![Box::new(dnd), Box::new(title), list]).gap(10.0)),
-    );
-
-    ui::overlay(
-        "amane-notification-center",
-        visible,
-        Placement {
-            horizontal: Align::End,
-            vertical: Align::Start,
-            padding: Padding {
-                top: BAR_HEIGHT + MARGIN,
-                right: MARGIN,
-                ..Padding::default()
-            },
-        },
-        close,
-        center_key,
-        panel,
-    )
+    Column::new(vec![Box::new(controls), list]).gap(10.0)
 }
 
 #[cfg(test)]

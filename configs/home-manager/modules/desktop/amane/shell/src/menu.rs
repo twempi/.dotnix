@@ -7,11 +7,11 @@ use std::time::Duration;
 
 use amane::{
     Align, Center, Color, Column, Image, Key, LayerWindow, Monitor, Padding, Parent,
-    Pointer, Rectangle, Row, Scroll, Service, Start, TextInput, Weight, Widget,
+    Pointer, Rectangle, Row, Scroll, Service, SpaceBetween, Start, TextInput, Weight, Widget,
 };
 
 use crate::icons::data_dirs;
-use crate::theme::{Theme, home};
+use crate::theme::{Theme, home, parse_palette};
 use crate::ui::{self, MENU_FONT, MENU_TEXT, Placement};
 
 const INPUT: &str = "picker";
@@ -26,6 +26,8 @@ enum Style {
     List,
     Power,
     Grid,
+    // theme-switch's menu: a list with NvChad's color swatches and dashed rows
+    Themes,
 }
 
 #[derive(Clone, Default)]
@@ -33,6 +35,7 @@ struct Entry {
     text: String,
     detail: String,
     icon: Option<PathBuf>,
+    swatches: Vec<Color>,
     search: String,
 }
 
@@ -87,7 +90,7 @@ impl Picker {
     // rofi's listview lines: 12, 5 for the power menu; 3 rows of wallpapers
     fn page(&self) -> usize {
         match self.style {
-            Style::List => 12,
+            Style::List | Style::Themes => 12,
             Style::Power => 5,
             Style::Grid => 3 * self.columns(),
         }
@@ -105,6 +108,13 @@ impl Picker {
         self.shown = (0..self.entries.len())
             .filter(|&index| tokens.iter().all(|token| self.entries[index].search.contains(token)))
             .collect();
+
+        // NvChad lists the names that start with the query first
+        if self.style == Style::Themes {
+            let prefix = tokens.concat();
+
+            self.shown.sort_by_key(|&index| !self.entries[index].search.starts_with(&prefix));
+        }
 
         self.selected = 0;
         self.offset = 0;
@@ -180,6 +190,7 @@ pub fn launcher(_: &[String]) -> String {
                 text: app.name.clone(),
                 detail: app.generic.clone(),
                 icon: None,
+                swatches: Vec::new(),
                 search: app.search.clone(),
             })
             .collect(),
@@ -206,6 +217,7 @@ pub fn dmenu(arguments: &[String]) -> String {
     let style = match read("theme").trim() {
         "power" => Style::Power,
         "wallpaper" => Style::Grid,
+        "themes" => Style::Themes,
         _ => Style::List,
     };
 
@@ -239,11 +251,19 @@ fn parse_row(line: &str) -> Entry {
     let (text, options) = line.split_once('\0').unwrap_or((line, ""));
 
     let mut icon = None;
+    let mut swatches = Vec::new();
     let mut parts = options.split('\x1f');
 
     while let (Some(key), Some(value)) = (parts.next(), parts.next()) {
-        if key == "icon" {
-            icon = Some(PathBuf::from(value));
+        match key {
+            "icon" => icon = Some(PathBuf::from(value)),
+            "colors" => {
+                let palette = parse_palette(&fs::read_to_string(value).unwrap_or_default());
+
+                // the slots and order of NvChad's picker: state.lua's `order`
+                swatches = [1, 2, 3, 4, 8, 9, 0xA, 0xB, 0xC, 0xD].map(|slot| palette[slot]).to_vec();
+            }
+            _ => {}
         }
     }
 
@@ -251,6 +271,7 @@ fn parse_row(line: &str) -> Entry {
         text: text.to_string(),
         detail: String::new(),
         icon,
+        swatches,
         search: text.to_lowercase(),
     }
 }
@@ -349,7 +370,7 @@ fn scrolled(scroll: Scroll) {
 fn typed(text: String) {
     // only lists have a search box; one still focused from a list this menu replaced
     // sends its letters here, and they are this menu's keys instead
-    if Picker::read().style != Style::List {
+    if matches!(Picker::read().style, Style::Power | Style::Grid) {
         TextInput::set_text(INPUT, "");
 
         if let Some(letter) = text.chars().last() {
@@ -380,7 +401,7 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
     let visible = picker.open() && ui::shown_on(&picker.monitor, monitor);
 
     let (width, gap, padding, element_padding): (f32, f32, f32, f32) = match picker.style {
-        Style::List => (600.0, 0.0, 5.0, 5.0),
+        Style::List | Style::Themes => (600.0, 0.0, 5.0, 5.0),
         Style::Power => (350.0, 5.0, 8.0, 8.0),
         Style::Grid => (1000.0, 5.0, 5.0, 5.0),
     };
@@ -438,19 +459,22 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
 
         Box::new(Column::new(rows).gap(gap).height(3.0 * cell_height + 2.0 * gap))
     } else {
-        let rows: Vec<Box<dyn Widget>> = visible_entries
-            .iter()
-            .enumerate()
-            .map(|(row, &index)| {
-                let position = picker.offset + row;
-                Box::new(list_row(&picker.entries[index], &picker.font, position, position == picker.selected, inner, row_height, element_padding, &base))
-                    as Box<dyn Widget>
-            })
-            .collect();
+        let mut rows: Vec<Box<dyn Widget>> = Vec::new();
+
+        for (row, &index) in visible_entries.iter().enumerate() {
+            if picker.style == Style::Themes && row > 0 {
+                rows.push(divider(inner, &base));
+            }
+
+            let position = picker.offset + row;
+
+            rows.push(Box::new(list_row(&picker.entries[index], &picker.font, position, position == picker.selected, inner, row_height, element_padding, &base)));
+        }
 
         // rofi's dynamic: true, the list shrinks to fit few entries
-        let count = rows.len().max(1) as f32;
-        height += count * row_height + (count - 1.0) * gap + gap.max(5.0);
+        let count = visible_entries.len().max(1) as f32;
+        let dividers = rows.len().saturating_sub(visible_entries.len()) as f32;
+        height += count * row_height + (count - 1.0) * gap + dividers + gap.max(5.0);
 
         Box::new(Column::new(rows).gap(gap))
     };
@@ -559,6 +583,22 @@ fn list_row(entry: &Entry, font: &str, position: usize, selected: bool, width: f
         ));
     }
 
+    let mut content = Row::new(parts).gap(8.0).align(Center);
+
+    if !entry.swatches.is_empty() {
+        let swatches: Vec<Box<dyn Widget>> = entry
+            .swatches
+            .iter()
+            // the outline keeps a swatch visible on the accent fill of its own color
+            .map(|&swatch| Box::new(Rectangle::new().width(14.0).height(14.0).fill(swatch).border(1.0, base[0])) as Box<dyn Widget>)
+            .collect();
+
+        content = Row::new(vec![Box::new(content), Box::new(Row::new(swatches).gap(3.0).align(Center))])
+            .width(Parent)
+            .justify(SpaceBetween)
+            .align(Center);
+    }
+
     Rectangle::new()
         .width(width)
         .height(height)
@@ -572,7 +612,7 @@ fn list_row(entry: &Entry, font: &str, position: usize, selected: bool, width: f
         .clip()
         .cursor(Pointer)
         .on_click(move |_| picked(position))
-        .child(Row::new(parts).gap(8.0).align(Center))
+        .child(content)
 }
 
 fn grid_cell(entry: &Entry, position: usize, selected: bool, width: f32, height: f32, base: &[Color; 16]) -> Rectangle {
@@ -606,6 +646,22 @@ fn grid_cell(entry: &Entry, position: usize, selected: bool, width: f32, height:
             .gap(4.0)
             .align(Align::Center),
         )
+}
+
+// the dashes NvChad's theme picker puts between its rows
+fn divider(width: f32, base: &[Color; 16]) -> Box<dyn Widget> {
+    const DASH: f32 = 3.0;
+
+    let dashes = ((width + DASH) / (DASH * 2.0)) as usize;
+
+    Box::new(
+        Row::new(
+            (0..dashes)
+                .map(|_| Box::new(Rectangle::new().width(DASH).height(1.0).fill(base[2])) as Box<dyn Widget>)
+                .collect(),
+        )
+        .gap(DASH),
+    )
 }
 
 // a program from a .desktop file, as rofi's drun mode reads them
@@ -861,6 +917,20 @@ mod tests {
         let entry = parse_row("a.png\0icon\x1f/w/a.png");
         assert_eq!(entry.text, "a.png");
         assert_eq!(entry.icon, Some(PathBuf::from("/w/a.png")));
+
+        assert_eq!(parse_row("nord\0colors\x1f/missing").swatches.len(), 10);
+    }
+
+    #[test]
+    fn themes_starting_with_the_query_come_first() {
+        let mut picker = Picker {
+            style: Style::Themes,
+            entries: ["charcoal-light", "tokyo-night-moon"].map(parse_row).to_vec(),
+            query: String::from("t"),
+            ..Picker::default()
+        };
+        picker.filter();
+        assert_eq!(picker.shown, [1, 0]);
     }
 
     #[test]

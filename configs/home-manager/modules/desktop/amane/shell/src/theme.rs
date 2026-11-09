@@ -38,12 +38,16 @@ fn path() -> PathBuf {
 }
 
 fn load() -> Theme {
+    Theme {
+        base: parse_palette(&fs::read_to_string(path()).unwrap_or_default()),
+    }
+}
+
+pub fn parse_palette(text: &str) -> [Color; 16] {
     // grayscale fallback, so a missing file still gives a readable shell
     let mut base = [Color::rgb(128, 128, 128); 16];
     base[0] = Color::rgb(24, 24, 24);
     base[5] = Color::rgb(216, 216, 216);
-
-    let text = fs::read_to_string(path()).unwrap_or_default();
 
     for line in text.lines() {
         let Some((key, value)) = line.split_once('=') else {
@@ -64,7 +68,7 @@ fn load() -> Theme {
         }
     }
 
-    Theme { base }
+    base
 }
 
 fn parse_hex(value: &str) -> Option<Color> {

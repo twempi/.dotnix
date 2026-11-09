@@ -11,6 +11,11 @@ return {
 			capabilities = blink.get_lsp_capabilities(capabilities)
 		end
 
+		-- Same corners and color as the completion menu.
+		local float_border = vim.tbl_map(function(char)
+			return { char, "BlinkCmpMenuBorder" }
+		end, { "╭", "─", "╮", "│", "╯", "─", "╰", "│" })
+
 		local on_attach = function(client, bufnr)
 			-- Formatting is handled by conform.nvim, not LSP servers.
 			client.server_capabilities.documentFormattingProvider = false
@@ -28,7 +33,9 @@ return {
 			map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
 			map("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
 			map("n", "gr", vim.lsp.buf.references, "References")
-			map("n", "K", vim.lsp.buf.hover, "Hover documentation")
+			map("n", "K", function()
+				vim.lsp.buf.hover({ border = float_border })
+			end, "Hover documentation")
 
 			map("n", "<leader>cr", vim.lsp.buf.rename, "Rename symbol")
 			map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
@@ -40,6 +47,7 @@ return {
 			underline = true,
 			update_in_insert = false,
 			severity_sort = true,
+			float = { border = float_border },
 		})
 
 		local default_config = {

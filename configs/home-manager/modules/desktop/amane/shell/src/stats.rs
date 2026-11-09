@@ -274,7 +274,7 @@ fn battery() -> Option<BatteryState> {
 }
 
 // waybar's default format-time, "{H} h {M} min"
-fn format_time(hours: f64) -> String {
+pub fn format_time(hours: f64) -> String {
     if hours <= 0.0 {
         return String::new();
     }

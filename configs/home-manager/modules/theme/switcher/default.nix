@@ -52,6 +52,14 @@
           done
         }
 
+        # Every prebuilt scheme carries its own palette file for Amane's swatches.
+        theme_rows() {
+          local dir
+          for dir in "$base"/specialisation/*; do
+            printf '%s\0colors\x1f%s\n' "''${dir##*/}" "$dir/home-files/.config/amane-shell/colors"
+          done
+        }
+
         reload_apps() {
           # kitty re-reads kitty.conf on SIGUSR1.
           pkill -USR1 -x kitty || true
@@ -107,7 +115,7 @@
 
           # Escape in the launcher exits non-zero or prints nothing.
           if [[ -n "''${SWAYSOCK:-}" ]]; then
-            choice=$(list_schemes | amane-dmenu -dmenu -i -p "Theme ($current)") || exit 0
+            choice=$(theme_rows | amane-dmenu -dmenu -i -p "Theme ($current)" -theme themes) || exit 0
           elif ! choice=$(list_schemes | noctalia dmenu --prompt "Theme ($current)"); then
             exit 0
           fi

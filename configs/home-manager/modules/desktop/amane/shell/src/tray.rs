@@ -350,7 +350,7 @@ fn refresh(item: &mut Item) -> bool {
     true
 }
 
-fn runtime_dir() -> PathBuf {
+pub fn runtime_dir() -> PathBuf {
     std::env::var_os("XDG_RUNTIME_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(std::env::temp_dir)

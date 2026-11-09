@@ -1,3 +1,6 @@
+-- Filetypes where word suggestions help and snippets may follow a trigger character like `\`.
+local prose_filetypes = { markdown = true, text = true, gitcommit = true, typst = true, tex = true }
+
 return {
 	{
 		"blink.cmp",
@@ -72,6 +75,12 @@ return {
 						lua = { inherit_defaults = true, "lazydev" },
 					},
 					providers = {
+						snippets = {
+							-- Otherwise `s.` buries a struct's fields under every snippet.
+							should_show_items = function(ctx)
+								return prose_filetypes[vim.bo.filetype] or ctx.trigger.initial_kind ~= "trigger_character"
+							end,
+						},
 						lazydev = {
 							name = "LazyDev",
 							module = "lazydev.integrations.blink",
@@ -81,8 +90,10 @@ return {
 							name = "Spell",
 							module = "blink-cmp-spell",
 							opts = {
+								-- 'spell' is on everywhere to check comments, so it can't gate this alone:
+								-- word guesses would outrank clangd and other servers in code.
 								enable_in_context = function()
-									return vim.wo.spell
+									return vim.wo.spell and prose_filetypes[vim.bo.filetype] == true
 								end,
 							},
 						},

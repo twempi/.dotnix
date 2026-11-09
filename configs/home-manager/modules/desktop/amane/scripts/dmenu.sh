@@ -1,6 +1,7 @@
 # rofi -dmenu stand-in: rows on stdin, the choice on stdout, rofi's exit codes
 # (0 picked, 1 cancelled, 10 + N - 1 for -kb-custom-N). Rows may carry rofi's
-# "\0icon\x1f<path>" option. -theme takes power, wallpaper or emoji.
+# "\0icon\x1f<path>" option, or "\0colors\x1f<palette file>" for -theme themes.
+# -theme takes power, wallpaper, emoji or themes.
 prompt=""
 mesg=""
 theme=""

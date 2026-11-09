@@ -132,8 +132,6 @@
     # comfyui-nix.url = "github:utensils/comfyui-nix";
   };
 
-  # Every .nix file under ./configs is a flake-parts module, except paths
-  # containing `/_` (helpers and hardware-configuration.nix files).
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {inherit inputs;} (inputs.import-tree ./configs);
 }

@@ -3,6 +3,7 @@ mod icons;
 mod menu;
 mod notifications;
 mod osd;
+mod panel;
 mod stats;
 mod theme;
 mod tray;
@@ -17,7 +18,7 @@ fn main() {
         .window_per_monitor(bar::view)
         .window_per_monitor(tray::tip_view)
         .window_per_monitor(notifications::popups_view)
-        .window_per_monitor(notifications::center_view)
+        .window_per_monitor(panel::view)
         .window_per_monitor(tray::menu_view)
         .window_per_monitor(menu::view)
         .window_per_monitor(osd::view)

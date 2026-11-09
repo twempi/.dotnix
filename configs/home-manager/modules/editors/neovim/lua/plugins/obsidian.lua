@@ -1,4 +1,66 @@
 local prefix = "<leader>o"
+local daily_folder = "300 Personal/Daily"
+
+-- Dates follow the note being created, so `:Obsidian tomorrow` doesn't get today's links.
+local function note_time(ctx, offset_days)
+	local id = ctx.partial_note and ctx.partial_note.id or ""
+	local year, month, day = string.match(id, "^(%d%d%d%d)-(%d%d)-(%d%d)$")
+	if not year then
+		return os.time() + offset_days * 24 * 60 * 60
+	end
+	-- Noon keeps a daylight saving shift from moving the date.
+	return os.time({ year = year, month = month, day = day + offset_days, hour = 12 })
+end
+
+-- Port of the to-do rollover in the vault's "Daily Notes" Templater template.
+local function rollover_todos(ctx)
+	local empty = "- [ ] "
+	local path = ctx.partial_note and ctx.partial_note.path
+	if not path then
+		return empty
+	end
+
+	local dir, target = vim.fs.dirname(tostring(path)), vim.fs.basename(tostring(path))
+	local previous
+	for name in vim.fs.dir(dir) do
+		if name:match("^%d%d%d%d%-%d%d%-%d%d%.md$") and name < target and (not previous or name > previous) then
+			previous = name
+		end
+	end
+	if not previous then
+		return empty
+	end
+
+	local todos, in_section = {}, false
+	for raw in io.lines(dir .. "/" .. previous) do
+		local line = raw:gsub("\r$", "")
+		if line:match("^## To Do's") then
+			in_section = true
+		elseif in_section and line:match("^## ") then
+			break
+		elseif in_section and line:match("^%s*[-*+] %[ %] %s*%S") then
+			todos[#todos + 1] = line
+		end
+	end
+	return #todos > 0 and table.concat(todos, "\n") or empty
+end
+
+-- gf can't create files, so a link to a daily note that doesn't exist yet would fail with E447.
+local function goto_daily_or_file()
+	local link = require("obsidian.api").cursor_link()
+	local ref = link and require("obsidian.parse.refs").parse(link)
+	local id = ref and ref.target and ref.target:gsub("^" .. vim.pesc(daily_folder) .. "/", "")
+	if not (id and id:match("^%d%d%d%d%-%d%d%-%d%d$")) then
+		vim.api.nvim_feedkeys("gf", "n", false)
+		return
+	end
+
+	local note = require("obsidian.daily").daily({ date = note_time({ partial_note = { id = id } }, 0) })
+	if not note:exists() then
+		note:write()
+	end
+	note:open()
+end
 
 return {
 	{
@@ -23,7 +85,6 @@ return {
 			{ prefix .. "w", "<cmd>Obsidian workspace<CR>", desc = "Workspace" },
 			{ prefix .. "r", "<cmd>Obsidian rename<CR>", desc = "Rename" },
 			{ prefix .. "i", "<cmd>Obsidian paste_img<CR>", desc = "Paste Image" },
-			{ prefix .. "p", "<cmd>MarkdownPreview<CR>", desc = "Preview File" },
 			{ prefix .. "D", "<cmd>Obsidian today<CR>", desc = "Daily Note" },
 		},
 
@@ -40,6 +101,7 @@ return {
 						vim.keymap.set("n", prefix .. "ch", function()
 							require("obsidian.api").toggle_checkbox()
 						end, { buffer = note.bufnr, desc = "Toggle checkbox" })
+						vim.keymap.set("n", "gf", goto_daily_or_file, { buffer = note.bufnr, desc = "Go to file or daily note" })
 					end,
 				},
 
@@ -56,22 +118,8 @@ return {
 					auto_update = true,
 				},
 
-				frontmatter = {
-					enabled = true,
-					sort = { "id", "aliases", "tags", "type", "course", "topic", "references", "urls" },
-					func = function(note)
-						local meta = vim.deepcopy(note.metadata or {})
-						meta.tags = note.tags or {}
-						-- id and aliases are parsed out of metadata; write them back only when the note has them.
-						if #note.aliases > 0 then
-							meta.aliases = note.aliases
-						end
-						if note.id ~= (note.path and note.path.stem) then
-							meta.id = note.id
-						end
-						return meta
-					end,
-				},
+				-- Managing frontmatter rewrites it on every save: bare notes gain tags, keys reorder, YAML comments vanish.
+				frontmatter = { enabled = false },
 
 				note = { template = "Normal Note.md" },
 
@@ -91,20 +139,21 @@ return {
 					date_format = "%Y-%m-%d",
 					time_format = "%H:%M",
 					substitutions = {
-						yday = function()
-							return os.date("%Y-%m-%d", os.time() - 24 * 60 * 60) --[[@as string]]
+						yday = function(ctx)
+							return os.date("%Y-%m-%d", note_time(ctx, -1)) --[[@as string]]
 						end,
-						tmrw = function()
-							return os.date("%Y-%m-%d", os.time() + 24 * 60 * 60) --[[@as string]]
+						tmrw = function(ctx)
+							return os.date("%Y-%m-%d", note_time(ctx, 1)) --[[@as string]]
 						end,
-						week_id = function()
-							return os.date("%G-W%V") --[[@as string]]
+						week_id = function(ctx)
+							return os.date("%G-W%V", note_time(ctx, 0)) --[[@as string]]
 						end,
+						rollover = rollover_todos,
 					},
 				},
 
 				daily_notes = {
-					folder = "300 Personal/Daily",
+					folder = daily_folder,
 					date_format = "%Y-%m-%d",
 					default_tags = { "daily" },
 					template = "Daily NVIM.md",
@@ -125,7 +174,7 @@ return {
 				checkbox = {
 					enabled = true,
 					create_new = true,
-					order = { " ", "x", "!", ">", "~" },
+					order = { " ", "x" },
 				},
 
 				-- Upstream types mark max_lines required, but setup merges in the default.

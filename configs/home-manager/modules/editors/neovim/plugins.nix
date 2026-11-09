@@ -52,10 +52,11 @@
           sqlite-lua
           tabout-nvim
           luasnip-latex-snippets-nvim
+          noice-nvim
+          nui-nvim
 
           render-markdown-nvim
           typst-preview-nvim
-          markdown-preview-nvim
           bullets-vim
           obsidian-nvim
 
