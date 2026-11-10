@@ -130,6 +130,10 @@ fn main_output(outputs: &serde_json::Value) -> String {
 
 // swaync's timeout, timeout-low and timeout-critical (0 = stays until closed)
 fn timeout(notification: &Notification) -> Option<u64> {
+    // amane-calendar's reminders stay until closed, like Noctalia's (its server drops expire_timeout)
+    if notification.app_name() == "Calendar" {
+        return None;
+    }
     match notification.urgency() {
         Urgency::Low => Some(3),
         Urgency::Normal => Some(5),

@@ -7,7 +7,7 @@ use amane::{
 };
 
 use crate::notifications::{self, Page};
-use crate::stats::{BatteryState, Clock, Stats, SwayMode, Volume};
+use crate::stats::{BatteryState, Clock, Detail, Stats, SwayMode, Volume};
 use crate::theme::Theme;
 use crate::tray::{self, Tray};
 use crate::ui::{self, BAR_FONT, BAR_HEIGHT, BAR_TEXT};
@@ -60,6 +60,13 @@ fn module(content: String, color: Color) -> Rectangle {
         .height(Parent)
         .align_child(Start, Center)
         .child(text)
+}
+
+// shows the module's details under the pointer while it hovers
+fn detailed(module: Rectangle, detail: Detail, monitor: &str) -> Rectangle {
+    let monitor = monitor.to_string();
+
+    module.on_hover(move |inside| tray::module_hovered(detail, inside, &monitor))
 }
 
 fn workspace_button(workspace: &Workspace, monitor: &str, hovered: bool, base: &[Color; 16]) -> Rectangle {
@@ -212,19 +219,23 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
         right.push(Box::new(tray::icons(&monitor.name)));
     }
 
-    right.push(Box::new(module(format!("CPU {}%", stats.cpu), accent)));
-    right.push(Box::new(module(format!("MEM {}", stats.memory), accent)));
-    right.push(Box::new(module(format!("DISK {}", stats.disk_free), accent)));
+    let name = monitor.name.as_str();
+
+    right.push(Box::new(detailed(module(format!("CPU {}%", stats.cpu), accent), Detail::Cpu, name)));
+    right.push(Box::new(detailed(module(format!("MEM {}", stats.memory), accent), Detail::Memory, name)));
+    right.push(Box::new(detailed(module(format!("DISK {}", stats.disk_free), accent), Detail::Disk, name)));
 
     let down: &str = match network.link() {
         Link::Offline => "off",
         _ => &stats.down,
     };
-    right.push(Box::new(module(format!("NET {down}"), accent).on_click(|button| {
-        if button == Button::Left {
-            notifications::toggle_from_bar(Page::Network);
-        }
-    })));
+    right.push(Box::new(
+        detailed(module(format!("NET {down}"), accent), Detail::Network, name).on_click(|button| {
+            if button == Button::Left {
+                notifications::toggle_from_bar(Page::Network);
+            }
+        }),
+    ));
 
     if brightness.present() {
         right.push(Box::new(
@@ -252,7 +263,11 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
     ));
 
     if let Some(state_of_battery) = &stats.battery {
-        right.push(Box::new(battery(state_of_battery, state.battery_alt, &base)));
+        right.push(Box::new(detailed(
+            battery(state_of_battery, state.battery_alt, &base),
+            Detail::Battery,
+            name,
+        )));
     }
 
     right.push(Box::new(

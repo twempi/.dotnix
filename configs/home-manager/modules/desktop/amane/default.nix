@@ -17,6 +17,15 @@
       text = builtins.readFile ./scripts/dmenu.sh;
     };
 
+    # The calendar tab's events and reminders, from Google after `amane-calendar --login`, else
+    # the iCal feeds; the addresses and the sign-in stay out of the store, see the script.
+    calendar = pkgs.writers.writePython3Bin "amane-calendar" {
+      libraries = with pkgs.python3Packages; [icalendar recurring-ical-events];
+      flakeIgnore = ["E501"];
+      # the tab runs it from the shell's service too, which has no libnotify
+      makeWrapperArgs = ["--prefix" "PATH" ":" "${pkgs.libnotify}/bin"];
+    } (builtins.readFile ./scripts/calendar.py);
+
     # Amane draws no color emoji, so its emoji picker needs the outline font. Installed for
     # everyone, that font pushed Noto Color Emoji out of foot's fallback list, so only the
     # shell sees it. The rule beats NixOS's alias of "Noto Emoji" to the color font.
@@ -41,12 +50,7 @@
       # The font rofi's theme named.
       pkgs.nerd-fonts.jetbrains-mono
 
-      # The calendar tab's events; the feed addresses stay out of the store, see the script.
-      (pkgs.writers.writePython3Bin "amane-calendar" {
-          libraries = with pkgs.python3Packages; [icalendar recurring-ical-events];
-          flakeIgnore = ["E501"];
-        }
-        (builtins.readFile ./scripts/calendar.py))
+      calendar
 
       (pkgs.writeShellApplication {
         name = "amane-launcher";
@@ -340,6 +344,28 @@
         UnsetEnvironment = ["HYPRLAND_INSTANCE_SIGNATURE" "NIRI_SOCKET" "MANGO_INSTANCE_SIGNATURE"];
       };
 
+      Install.WantedBy = ["sway-session.target"];
+    };
+
+    # Noctalia sends its own calendar reminders under Hyprland, so these follow the Sway session too.
+    systemd.user.services.amane-calendar-reminders = {
+      Unit.Description = "Amane shell: calendar reminders";
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${calendar}/bin/amane-calendar --remind";
+      };
+    };
+
+    systemd.user.timers.amane-calendar-reminders = {
+      Unit = {
+        Description = "Amane shell: calendar reminders";
+        PartOf = ["sway-session.target"];
+        After = ["sway-session.target"];
+      };
+      Timer = {
+        OnCalendar = "minutely";
+        AccuracySec = "1s";
+      };
       Install.WantedBy = ["sway-session.target"];
     };
   };

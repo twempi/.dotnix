@@ -3,7 +3,7 @@ use std::collections::hash_map::DefaultHasher;
 use std::fs;
 use std::hash::{Hash, Hasher};
 use std::path::PathBuf;
-use std::sync::OnceLock;
+use std::sync::{Mutex, OnceLock, PoisonError};
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::thread;
 use std::time::Duration;
@@ -19,6 +19,7 @@ use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
 use zbus::{MatchRule, interface};
 
 use crate::icons::{self, Icons};
+use crate::stats::{self, Detail};
 use crate::theme::Theme;
 use crate::ui::{self, BAR_HEIGHT, MENU_FONT, MENU_TEXT, Placement};
 
@@ -454,10 +455,11 @@ pub fn scrolled(item: &Item, scroll: Scroll) {
     send(item, "Scroll", (delta, orientation));
 }
 
-// hover text for the tray, waybar shows the item's tooltip
+// hover text for the tray, waybar shows the item's tooltip; or a bar module's details
 #[derive(Default)]
 pub struct Tip {
     pub text: String,
+    pub detail: Option<Detail>,
     pub monitor: String,
 }
 
@@ -476,27 +478,90 @@ pub fn hovered(item: &Item, inside: bool, monitor: &str) {
 
     if inside {
         tip.text = item.tooltip.clone();
+        tip.detail = None;
         tip.monitor = monitor.to_string();
     } else if tip.text == item.tooltip {
         tip.text.clear();
     }
 }
 
+// how long the pointer rests on a module before its details show
+const DETAIL_DELAY: Duration = Duration::from_millis(500);
+
+/*
+ * the module waiting out the delay, numbered so an earlier wait on the same module
+ * can't show it early; held while Tip changes, so a leave can't slip in between
+ */
+static PENDING: Mutex<(u64, Option<Detail>)> = Mutex::new((0, None));
+
+pub fn module_hovered(detail: Detail, inside: bool, monitor: &str) {
+    let mut pending = PENDING.lock().unwrap_or_else(PoisonError::into_inner);
+
+    if !inside {
+        if pending.1 == Some(detail) {
+            pending.1 = None;
+        }
+
+        let mut tip = Tip::write();
+        if tip.detail == Some(detail) {
+            tip.detail = None;
+        }
+
+        return;
+    }
+
+    pending.0 += 1;
+    pending.1 = Some(detail);
+
+    let wait = pending.0;
+    let monitor = monitor.to_string();
+
+    thread::spawn(move || {
+        thread::sleep(DETAIL_DELAY);
+
+        let pending = PENDING.lock().unwrap_or_else(PoisonError::into_inner);
+        if *pending != (wait, Some(detail)) {
+            return;
+        }
+
+        let mut tip = Tip::write();
+        tip.text.clear();
+        tip.detail = Some(detail);
+        tip.monitor = monitor;
+    });
+}
+
+// room for the longest details; the window never resizes, only its drawing does
+const TIP_HEIGHT: f32 = 120.0;
+
 pub fn tip_view(monitor: &Monitor) -> LayerWindow {
     let tip = Tip::read();
     let theme = Theme::read();
 
-    let visible = !tip.text.is_empty() && tip.monitor == monitor.name;
+    let lines = match tip.detail {
+        Some(detail) => stats::details(detail),
+        None if !tip.text.is_empty() => vec![tip.text.replace('\n', "  ")],
+        None => Vec::new(),
+    };
 
-    let label = ui::text(tip.text.replace('\n', "  "), MENU_TEXT - 1.0, MENU_FONT).color(theme.base[5]);
-    let width = ui::width_of(&label) + 16.0;
+    let visible = !lines.is_empty() && tip.monitor == monitor.name;
+
+    let labels: Vec<_> = lines
+        .into_iter()
+        .map(|line| ui::text(line, MENU_TEXT - 1.0, MENU_FONT).color(theme.base[5]))
+        .collect();
+
+    let width = labels.iter().map(|label| ui::width_of(label)).fold(0.0, f32::max) + 16.0;
+    let height = labels.iter().map(|label| ui::height_of(label)).sum::<f32>().max(16.0) + 10.0;
+    let boxed: Vec<Box<dyn Widget>> = labels.into_iter().map(|label| Box::new(label) as Box<dyn Widget>).collect();
+
     let left = (pointer_x() - width / 2.0).clamp(0.0, (monitor.width as f32 - width).max(0.0));
 
     // a full-width strip that never moves: only the drawing follows the pointer, so the
     // compositor sees no layer changes besides showing and hiding (see notifications::close)
     LayerWindow::new()
         .width(Full)
-        .height(26.0)
+        .height(TIP_HEIGHT)
         .anchor_vertical(Vertical::Top)
         .margin(Margin {
             top: 4,
@@ -513,15 +578,19 @@ pub fn tip_view(monitor: &Monitor) -> LayerWindow {
                     left,
                     ..Padding::default()
                 })
-                .align_child(Start, Center)
+                .align_child(Start, Start)
                 .child(
                     Rectangle::new()
                         .width(width)
-                        .height(Parent)
+                        .height(height.min(TIP_HEIGHT))
                         .fill(theme.base[1])
                         .border(1.0, theme.base[3])
-                        .align_child(Center, Center)
-                        .child(label),
+                        .padding(Padding {
+                            left: 8.0,
+                            ..Padding::default()
+                        })
+                        .align_child(Start, Center)
+                        .child(Column::new(boxed)),
                 ),
         )
 }
@@ -807,7 +876,13 @@ pub fn menu_view(monitor: &Monitor) -> LayerWindow {
             index == menu.selected,
             theme.base,
             move |_| activate(index),
-        )));
+        )
+        // the pointer moves the same highlight the arrow keys do
+        .on_hover(move |inside| {
+            if inside {
+                TrayMenu::write().selected = index;
+            }
+        })));
     }
 
     if rows.is_empty() {

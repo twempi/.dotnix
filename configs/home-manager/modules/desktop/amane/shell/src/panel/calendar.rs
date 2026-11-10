@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 use std::{env, fs, thread};
 
@@ -14,7 +14,7 @@ use super::controls::{
     hoverable, icon_button, label, look, scroll_view, sized_card, spinner, with_alpha,
 };
 use crate::notifications;
-use crate::theme::config_home;
+use crate::theme::{config_home, home};
 
 const CHEVRON_LEFT: &str = "\u{EA60}";
 const CHEVRON_RIGHT: &str = "\u{EA61}";
@@ -47,7 +47,7 @@ pub struct CalendarState {
     agenda: Agenda,
 }
 
-// the grid's six weeks of events, from amane-calendar and the feeds in the google_calendars secret
+// the grid's six weeks of events, from amane-calendar
 enum Agenda {
     Unconnected,
     Loading,
@@ -57,7 +57,7 @@ enum Agenda {
 #[derive(Debug, PartialEq)]
 struct Event {
     date: NaiveDate,
-    // the feed's line in the secret, which picks its color
+    // the calendar's place in Google's list or the feed's line in the secret, which picks its color
     feed: usize,
     time: String,
     title: String,
@@ -127,9 +127,13 @@ pub fn reset() {
     load_agenda(first_of(today));
 }
 
-// amane-calendar reads the same two places, the secret first
+// amane-calendar's Google sign-in, or its iCal feeds from the secret or the plain file
 fn connected() -> bool {
-    Path::new("/run/secrets/google_calendars").is_file() || config_home().join("amane-shell/calendars").is_file()
+    let state = env::var_os("XDG_STATE_HOME").map_or_else(|| home().join(".local/state"), PathBuf::from);
+
+    state.join("amane-shell/google-account.json").is_file()
+        || Path::new("/run/secrets/google_calendars").is_file()
+        || config_home().join("amane-shell/calendars").is_file()
 }
 
 fn load_agenda(month: NaiveDate) {
@@ -470,8 +474,8 @@ fn events_card(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Recta
         Agenda::Unconnected => Box::new(
             Column::new(children![
                 label("No calendar connected.", FONT_CAPTION, c.variant),
-                label("Add google_calendars to", FONT_CAPTION, c.variant),
-                label("secrets/calendar.yaml", FONT_CAPTION, c.secondary).elide(),
+                label("Sign in to Google with", FONT_CAPTION, c.variant),
+                label("amane-calendar --login", FONT_CAPTION, c.secondary).elide(),
             ])
             .width(Parent)
             .gap(SPACE_XS),

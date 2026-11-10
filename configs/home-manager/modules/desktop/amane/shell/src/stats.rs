@@ -4,19 +4,22 @@ use std::path::Path;
 use std::thread;
 use std::time::Duration;
 
-use amane::Service;
+use amane::{Link, Network, Service};
 
 // everything waybar polled, on waybar's own intervals, in one thread
 #[derive(Default)]
 pub struct Stats {
     tick: u64,
     cpu_last: (u64, u64),
-    rx_last: Option<(String, u64)>,
+    // interface, received and sent bytes at the last network tick
+    net_last: Option<(String, u64, u64)>,
 
     pub cpu: u8,
     pub memory: String,
     pub disk_free: String,
     pub down: String,
+    pub up: String,
+    pub interface: String,
     pub battery: Option<BatteryState>,
 }
 
@@ -26,6 +29,9 @@ pub struct BatteryState {
     // waybar's status names: charging, discharging, plugged, full
     pub status: &'static str,
     pub time: String,
+    pub watts: f64,
+    // full charge now against the design's, in percent
+    pub health: Option<u8>,
 }
 
 impl Service for Stats {
@@ -36,6 +42,7 @@ impl Service for Stats {
         };
 
         stats.down = pow_format(0.0, "b/s", false);
+        stats.up = stats.down.clone();
         stats.update();
 
         stats
@@ -47,6 +54,7 @@ impl Service for Stats {
             self.memory.clone(),
             self.disk_free.clone(),
             self.down.clone(),
+            self.up.clone(),
             self.battery.clone(),
         );
 
@@ -62,22 +70,29 @@ impl Service for Stats {
         if self.tick.is_multiple_of(2) {
             self.memory = memory_used();
 
-            let now = default_interface().and_then(|name| rx_bytes(&name).map(|rx| (name, rx)));
+            let now = default_interface().and_then(|name| {
+                let rx = net_bytes(&name, "rx")?;
+                let tx = net_bytes(&name, "tx")?;
+                Some((name, rx, tx))
+            });
 
-            let rate = match (&self.rx_last, &now) {
-                (Some((last, before)), Some((name, rx))) if last == name => {
-                    rx.saturating_sub(*before) as f64 * 8.0 / 2.0
-                }
-                _ => 0.0,
+            let (down, up) = match (&self.net_last, &now) {
+                (Some((last, rx_before, tx_before)), Some((name, rx, tx))) if last == name => (
+                    rx.saturating_sub(*rx_before) as f64 * 8.0 / 2.0,
+                    tx.saturating_sub(*tx_before) as f64 * 8.0 / 2.0,
+                ),
+                _ => (0.0, 0.0),
             };
 
-            self.down = pow_format(rate, "b/s", false);
-            self.rx_last = now;
+            self.down = pow_format(down, "b/s", false);
+            self.up = pow_format(up, "b/s", false);
+            self.interface = now.as_ref().map(|(name, _, _)| name.clone()).unwrap_or_default();
+            self.net_last = now;
         }
 
         // disk: interval 20
         if self.tick.is_multiple_of(20) {
-            self.disk_free = disk_free("/").map_or_else(String::new, |free| {
+            self.disk_free = disk_space("/").map_or_else(String::new, |(free, _)| {
                 pow_format(free as f64, "B", true)
             });
         }
@@ -93,6 +108,7 @@ impl Service for Stats {
                 self.memory.clone(),
                 self.disk_free.clone(),
                 self.down.clone(),
+                self.up.clone(),
                 self.battery.clone(),
             )
     }
@@ -119,15 +135,7 @@ fn cpu_times() -> (u64, u64) {
 // the htop-style figure from waybar/scripts/memory_usage.sh
 fn memory_used() -> String {
     let meminfo = fs::read_to_string("/proc/meminfo").unwrap_or_default();
-
-    let field = |key: &str| -> u64 {
-        meminfo
-            .lines()
-            .find_map(|line| line.strip_prefix(key))
-            .and_then(|rest| rest.split_whitespace().next())
-            .and_then(|value| value.parse().ok())
-            .unwrap_or(0)
-    };
+    let field = |key: &str| meminfo_field(&meminfo, key);
 
     let used = field("MemTotal:").saturating_sub(
         field("MemFree:")
@@ -137,6 +145,16 @@ fn memory_used() -> String {
     );
 
     format_memory(used)
+}
+
+// a /proc/meminfo value in KiB
+fn meminfo_field(meminfo: &str, key: &str) -> u64 {
+    meminfo
+        .lines()
+        .find_map(|line| line.strip_prefix(key))
+        .and_then(|rest| rest.split_whitespace().next())
+        .and_then(|value| value.parse().ok())
+        .unwrap_or(0)
 }
 
 fn format_memory(used_kib: u64) -> String {
@@ -163,15 +181,17 @@ fn default_interface() -> Option<String> {
         .map(|(_, name)| name)
 }
 
-fn rx_bytes(interface: &str) -> Option<u64> {
-    fs::read_to_string(format!("/sys/class/net/{interface}/statistics/rx_bytes"))
+// direction is "rx" or "tx"
+fn net_bytes(interface: &str, direction: &str) -> Option<u64> {
+    fs::read_to_string(format!("/sys/class/net/{interface}/statistics/{direction}_bytes"))
         .ok()?
         .trim()
         .parse()
         .ok()
 }
 
-fn disk_free(path: &str) -> Option<u64> {
+// (free, total) bytes
+fn disk_space(path: &str) -> Option<(u64, u64)> {
     let path = CString::new(path).ok()?;
 
     let mut stats: libc::statvfs = unsafe { std::mem::zeroed() };
@@ -181,7 +201,9 @@ fn disk_free(path: &str) -> Option<u64> {
         return None;
     }
 
-    Some(stats.f_bavail as u64 * stats.f_frsize as u64)
+    let block = stats.f_frsize as u64;
+
+    Some((stats.f_bavail as u64 * block, stats.f_blocks as u64 * block))
 }
 
 // waybar's pow_format: "{:.1f}{prefix}{unit}", 1000 or 1024 based
@@ -252,6 +274,16 @@ fn battery() -> Option<BatteryState> {
     let now = total(["energy_now", "charge_now"]);
     let full = total(["energy_full", "charge_full"]);
     let rate = total(["power_now", "current_now"]);
+    let design = total(["energy_full_design", "charge_full_design"]);
+
+    // power_now is in µW; a charge-only battery needs its voltage to give watts
+    let watts = batteries
+        .iter()
+        .filter_map(|path| {
+            number(path, "power_now").or_else(|| Some(number(path, "current_now")? * number(path, "voltage_now")? / 1e6))
+        })
+        .sum::<f64>()
+        / 1e6;
 
     let status = match status.as_str() {
         "Charging" => "charging",
@@ -270,6 +302,8 @@ fn battery() -> Option<BatteryState> {
         capacity: capacity.round().clamp(0.0, 100.0) as u8,
         status,
         time: format_time(hours),
+        watts,
+        health: (design > 0.0).then(|| (full / design * 100.0).round().clamp(0.0, 255.0) as u8),
     })
 }
 
@@ -282,6 +316,131 @@ pub fn format_time(hours: f64) -> String {
     let minutes = (hours * 60.0).round() as u64;
 
     format!("{} h {} min", minutes / 60, minutes % 60)
+}
+
+// the bar modules that show more on hover
+#[derive(Clone, Copy, PartialEq)]
+pub enum Detail {
+    Cpu,
+    Memory,
+    Disk,
+    Network,
+    Battery,
+}
+
+fn row(name: &str, value: impl std::fmt::Display) -> String {
+    format!("{name:<9}{value}")
+}
+
+// read while the popup draws, so none of this is gathered when nobody looks
+pub fn details(detail: Detail) -> Vec<String> {
+    let stats = Stats::read();
+    let mut lines = Vec::new();
+
+    match detail {
+        Detail::Cpu => {
+            lines.push(row("Usage", format!("{}%", stats.cpu)));
+
+            if let Ok(load) = fs::read_to_string("/proc/loadavg") {
+                lines.push(row("Load", load.split_whitespace().take(3).collect::<Vec<_>>().join(" ")));
+            }
+
+            if let Some(mhz) = cpu_mhz() {
+                lines.push(row("Clock", format!("{:.2} GHz", mhz / 1000.0)));
+            }
+
+            if let Some(celsius) = cpu_temperature() {
+                lines.push(row("Temp", format!("{celsius:.0}°C")));
+            }
+        }
+        Detail::Memory => {
+            let meminfo = fs::read_to_string("/proc/meminfo").unwrap_or_default();
+            let field = |key: &str| meminfo_field(&meminfo, key);
+
+            lines.push(row("Used", format!("{} of {}", stats.memory, format_memory(field("MemTotal:")))));
+            lines.push(row("Free", format_memory(field("MemAvailable:"))));
+
+            let swap = field("SwapTotal:");
+            if swap > 0 {
+                let used = swap.saturating_sub(field("SwapFree:"));
+                lines.push(row("Swap", format!("{} of {}", format_memory(used), format_memory(swap))));
+            }
+        }
+        Detail::Disk => {
+            if let Some((free, total)) = disk_space("/") {
+                let used = total.saturating_sub(free);
+                let percent = (used * 100).checked_div(total).unwrap_or(0);
+
+                lines.push(row("Mount", "/"));
+                lines.push(row("Free", pow_format(free as f64, "B", true)));
+                lines.push(row(
+                    "Used",
+                    format!("{} of {} ({percent}%)", pow_format(used as f64, "B", true), pow_format(total as f64, "B", true)),
+                ));
+            }
+        }
+        Detail::Network => {
+            let network = Network::read();
+
+            if network.link() == Link::Offline {
+                lines.push(row("Status", "offline"));
+            } else {
+                lines.push(row("Device", &stats.interface));
+
+                if network.link() == Link::Wifi {
+                    lines.push(row("Wi-Fi", format!("{} ({}%)", network.ssid(), network.strength())));
+                }
+
+                lines.push(row("Down", &stats.down));
+                lines.push(row("Up", &stats.up));
+            }
+        }
+        Detail::Battery => {
+            if let Some(battery) = &stats.battery {
+                lines.push(row("Status", battery.status));
+
+                match battery.status {
+                    "charging" if !battery.time.is_empty() => lines.push(row("Full in", &battery.time)),
+                    "discharging" if !battery.time.is_empty() => lines.push(row("Empty in", &battery.time)),
+                    _ => {}
+                }
+
+                if battery.watts > 0.0 {
+                    lines.push(row("Power", format!("{:.1} W", battery.watts)));
+                }
+
+                if let Some(health) = battery.health {
+                    lines.push(row("Health", format!("{health}%")));
+                }
+            }
+        }
+    }
+
+    lines
+}
+
+// the mean of every core's current clock
+fn cpu_mhz() -> Option<f64> {
+    let cpuinfo = fs::read_to_string("/proc/cpuinfo").ok()?;
+
+    let clocks: Vec<f64> = cpuinfo
+        .lines()
+        .filter(|line| line.starts_with("cpu MHz"))
+        .filter_map(|line| line.split(':').nth(1)?.trim().parse().ok())
+        .collect();
+
+    (!clocks.is_empty()).then(|| clocks.iter().sum::<f64>() / clocks.len() as f64)
+}
+
+// AMD's Tctl or Intel's package sensor, both temp1
+fn cpu_temperature() -> Option<f64> {
+    fs::read_dir("/sys/class/hwmon")
+        .ok()?
+        .flatten()
+        .map(|entry| entry.path())
+        .find(|path| matches!(read(path, "name").as_deref(), Some("k10temp" | "coretemp" | "zenpower")))
+        .and_then(|path| number(&path, "temp1_input"))
+        .map(|millidegrees| millidegrees / 1000.0)
 }
 
 pub struct Clock {
