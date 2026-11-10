@@ -1,4 +1,4 @@
-{
+{inputs, ...}: {
   flake.modules.homeManager.neovim = {pkgs, ...}: {
     wrappers.neovim.specs = {
       lze = {
@@ -9,6 +9,15 @@
         ];
       };
 
+      milli = {
+        lazy = true;
+
+        data = pkgs.vimUtils.buildVimPlugin {
+          pname = "milli.nvim";
+          version = inputs.milli-nvim.shortRev or "unstable";
+          src = inputs.milli-nvim;
+        };
+      };
       ui = {
         lazy = false;
         data = with pkgs.vimPlugins; [

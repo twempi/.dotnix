@@ -8,6 +8,7 @@ use amane::{
 };
 
 use crate::icons::Icons;
+use crate::panel;
 use crate::theme::Theme;
 use crate::tray::strip_markup;
 use crate::ui::{self, BAR_HEIGHT, MENU_FONT, MENU_TEXT};
@@ -22,6 +23,10 @@ pub const MARGIN: f32 = 10.0;
 pub enum Page {
     #[default]
     Home,
+    Audio,
+    Network,
+    Bluetooth,
+    Calendar,
     Notifications,
 }
 
@@ -167,6 +172,15 @@ pub fn toggle_from_bar() {
     toggle_page(Page::Home);
 }
 
+// opens the panel on a page, or moves an open panel to it
+pub fn show(page: Page) {
+    if NotificationCenter::read().open {
+        panel::select(page);
+    } else {
+        toggle_page(page);
+    }
+}
+
 fn toggle_page(page: Page) -> String {
     if NotificationCenter::read().open {
         close();
@@ -180,6 +194,9 @@ fn toggle_page(page: Page) -> String {
     center.open = true;
     center.page = page;
     center.monitor = monitor;
+    drop(center);
+
+    panel::entered(page);
 
     String::from("opened")
 }
@@ -194,6 +211,11 @@ pub fn close() {
     if center.open {
         center.open = false;
         center.popups_after = Some(SystemTime::now());
+
+        let page = center.page;
+        drop(center);
+
+        panel::left(page);
     }
 }
 
@@ -204,7 +226,7 @@ pub fn toggle_dnd() {
 
 pub fn center_key(key: Key) {
     match key {
-        Key::Escape => close(),
+        Key::Escape => panel::dismiss(),
         // only with the list on screen, so a stray key on the home page can't wipe it unseen
         Key::Character('c') if NotificationCenter::read().page == Page::Notifications => Notifications::clear(),
         Key::Character('d') => toggle_dnd(),

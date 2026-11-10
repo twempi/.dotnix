@@ -127,5 +127,11 @@
         sqlite.libsqlite3 = "${pkgs.sqlite.out}/lib/libsqlite3.so";
       };
     };
+
+    # Obsidian finds notes by file name; marksman's default title slugs match nothing there.
+    xdg.configFile."marksman/config.toml".text = ''
+      [completion]
+      wiki.style = "file-stem"
+    '';
   };
 }

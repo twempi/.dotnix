@@ -53,6 +53,7 @@ in {
       cyberdrop-dl
       pi
       pomodoro
+      awww
 
       # Desktop
       audio

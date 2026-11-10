@@ -129,6 +129,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    milli-nvim = {
+      url = "github:Amansingh-afk/milli.nvim";
+      flake = false;
+    };
+
     # comfyui-nix.url = "github:utensils/comfyui-nix";
   };
 

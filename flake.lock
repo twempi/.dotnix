@@ -943,6 +943,22 @@
         "type": "github"
       }
     },
+    "milli-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790410311,
+        "narHash": "sha256-LCszPAAToz80Dudta7JmG53Hg71PYZDTDCTOqQdpLkw=",
+        "owner": "Amansingh-afk",
+        "repo": "milli.nvim",
+        "rev": "b69890078dfde44cf71d192bbb02027f81aff1b1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Amansingh-afk",
+        "repo": "milli.nvim",
+        "type": "github"
+      }
+    },
     "minimal-grub-theme-src": {
       "flake": false,
       "locked": {
@@ -1346,6 +1362,7 @@
         "home-manager": "home-manager",
         "hyprland": "hyprland",
         "import-tree": "import-tree",
+        "milli-nvim": "milli-nvim",
         "nix-minecraft": "nix-minecraft",
         "nixWrapperModules": "nixWrapperModules",
         "nixcord": "nixcord",

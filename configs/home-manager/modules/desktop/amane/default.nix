@@ -30,6 +30,7 @@
         </match>
         <include>/etc/fonts/fonts.conf</include>
         <dir>${pkgs.noto-fonts-monochrome-emoji}/share/fonts</dir>
+        <dir>${inputs.noctalia}/lib/assets/fonts</dir>
       </fontconfig>
     '';
   in {

@@ -20,14 +20,6 @@ return {
 		end,
 	},
 	{
-		"mini.pairs",
-		enabled = false,
-		event = "DeferredUIEnter",
-		after = function()
-			require("mini.pairs").setup({})
-		end,
-	},
-	{
 		"mini.surround",
 		event = "DeferredUIEnter",
 		after = function()
