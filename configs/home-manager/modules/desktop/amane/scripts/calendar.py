@@ -1,7 +1,7 @@
-"""Print one day's events from the iCal feeds in ~/.config/amane-shell/calendars.
+"""Print the events from the iCal feeds in the google_calendars secret.
 
-The file lists one address per line, such as Google Calendar's "Secret address in
-iCal format". Each output line is "<time>\t<title>"; the shell's calendar tab draws them.
+The secret lists one address per line, such as Google Calendar's "Secret address in
+iCal format". `amane-calendar FIRST LAST` prints the events between two dates.
 """
 
 import hashlib
@@ -16,6 +16,7 @@ import icalendar
 import recurring_ical_events
 
 REFRESH_SECONDS = 10 * 60
+SECRET = Path("/run/secrets/google_calendars")
 
 home = Path.home()
 config = Path(os.environ.get("XDG_CONFIG_HOME", home / ".config"))
@@ -23,7 +24,8 @@ cache = Path(os.environ.get("XDG_CACHE_HOME", home / ".cache")) / "amane-shell"
 
 
 def feeds():
-    path = config / "amane-shell" / "calendars"
+    # the sops secret syncs through the repo; the plain file is for a machine without it
+    path = SECRET if SECRET.is_file() else config / "amane-shell" / "calendars"
     lines = path.read_text().splitlines() if path.is_file() else []
     urls = [line.strip() for line in lines]
     urls = [url for url in urls if url and not url.startswith("#")]
@@ -58,39 +60,60 @@ def local(value):
     return value.astimezone() if value.tzinfo else value
 
 
-def row(event):
-    start = event.get("DTSTART").dt
-    end = event.get("DTEND")
+def rows(event, feed, first, last):
+    """One line per day the event covers, as "<date>\t<feed>\t<time>\t<title>"."""
+    # icalendar fills in an end from DURATION, or the default length
+    start, end = event.start, event.end
     title = " ".join(str(event.get("SUMMARY", "(No title)")).split())
 
-    if not isinstance(start, datetime):
-        return (0, 0.0), f"All day\t{title}"
+    if isinstance(start, datetime):
+        start, end = local(start), local(end)
+        kind, order, time = 1, start.timestamp(), f"{start:%H:%M} - {end:%H:%M}"
+        day = start.date()
+        final = (end - timedelta(microseconds=1)).date() if end > start else day
+    else:
+        kind, order, time = 0, 0.0, "All day"
+        day = start
+        final = end - timedelta(days=1) if end > start else day
 
-    start = local(start)
-    end = local(end.dt) if end and isinstance(end.dt, datetime) else start
+    day, final = max(day, first), min(final, last)
+    lines = []
 
-    return (1, start.timestamp()), f"{start:%H:%M} - {end:%H:%M}\t{title}"
+    while day <= final:
+        lines.append(((day, kind, order, feed), f"{day}\t{feed}\t{time}\t{title}"))
+        day += timedelta(days=1)
+
+    return lines
 
 
-def day_events(feed, day):
-    start = datetime.combine(day, datetime.min.time()).astimezone()
-    end = start + timedelta(days=1)
+def events(feed, first, last):
+    start = datetime.combine(first, datetime.min.time()).astimezone()
+    end = datetime.combine(last + timedelta(days=1), datetime.min.time()).astimezone()
     calendar = icalendar.Calendar.from_ical(feed)
-    events = recurring_ical_events.of(calendar).between(start, end)
+    found = recurring_ical_events.of(calendar).between(start, end)
 
-    return [event for event in events if event.get("STATUS") != "CANCELLED"]
+    return [event for event in found if event.get("STATUS") != "CANCELLED"]
 
 
 def main():
-    day = date.fromisoformat(sys.argv[1]) if len(sys.argv) > 1 else date.today()
-    rows = []
+    # the first and last day to list; the shell asks for the six weeks it draws
+    first = date.fromisoformat(sys.argv[1]) if len(sys.argv) > 1 else date.today()
+    last = date.fromisoformat(sys.argv[2]) if len(sys.argv) > 2 else first
+    lines = []
 
-    for url in feeds():
+    # a feed's place in the list is its color in the shell, even while it can't be fetched
+    for index, url in enumerate(feeds()):
         feed = fetch(url)
-        if feed:
-            rows.extend(row(event) for event in day_events(feed, day))
+        if not feed:
+            continue
 
-    for _, line in sorted(rows):
+        for event in events(feed, first, last):
+            try:
+                lines.extend(rows(event, index, first, last))
+            except Exception as error:
+                print(f"amane-calendar: skipped an event: {type(error).__name__}", file=sys.stderr)
+
+    for _, line in sorted(lines):
         print(line)
 
 

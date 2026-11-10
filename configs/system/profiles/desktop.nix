@@ -27,6 +27,7 @@ in {
       hyprland
 
       anki
+      calendar
       appimage
       handy
       helium

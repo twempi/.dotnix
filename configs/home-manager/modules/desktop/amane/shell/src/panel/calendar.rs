@@ -1,9 +1,10 @@
+use std::collections::HashMap;
 use std::path::Path;
 use std::time::{Duration, Instant};
 use std::{env, fs, thread};
 
 use amane::{
-    Apps, Button, Center, Column, Parent, Pointer, Rectangle, Row, Service, Weight, Widget, children,
+    Apps, Button, Center, Color, Column, Parent, Pointer, Rectangle, Row, Service, Weight, Widget, children,
     request_frame,
 };
 use chrono::{Datelike, Days, Local, Months, NaiveDate};
@@ -29,6 +30,7 @@ const DOT_GAP: f32 = 2.0;
 const SIDE_GAP: f32 = 48.0;
 const SLIDE_MS: f32 = 100.0;
 const EVENT_ROW: f32 = 38.0;
+const MAX_DOTS: usize = 3;
 const WEEKDAYS: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 struct Slide {
@@ -45,11 +47,20 @@ pub struct CalendarState {
     agenda: Agenda,
 }
 
-// the selected day's events, from amane-calendar and the feeds in ~/.config/amane-shell/calendars
+// the grid's six weeks of events, from amane-calendar and the feeds in the google_calendars secret
 enum Agenda {
     Unconnected,
     Loading,
-    Ready(Vec<(String, String)>),
+    Ready(Vec<Event>),
+}
+
+#[derive(Debug, PartialEq)]
+struct Event {
+    date: NaiveDate,
+    // the feed's line in the secret, which picks its color
+    feed: usize,
+    time: String,
+    title: String,
 }
 
 impl Service for CalendarState {
@@ -97,6 +108,11 @@ fn change_month(by: i32) {
         direction: by as f32,
         started: Instant::now(),
     });
+
+    let month = state.month;
+    drop(state);
+
+    load_agenda(month);
 }
 
 pub fn reset() {
@@ -108,39 +124,78 @@ pub fn reset() {
     state.slide = None;
     drop(state);
 
-    load_agenda(today);
+    load_agenda(first_of(today));
 }
 
-fn feeds_file() -> std::path::PathBuf {
-    config_home().join("amane-shell/calendars")
+// amane-calendar reads the same two places, the secret first
+fn connected() -> bool {
+    Path::new("/run/secrets/google_calendars").is_file() || config_home().join("amane-shell/calendars").is_file()
 }
 
-fn load_agenda(date: NaiveDate) {
-    if !feeds_file().is_file() {
+fn load_agenda(month: NaiveDate) {
+    if !connected() {
         CalendarState::write().agenda = Agenda::Unconnected;
         return;
     }
 
-    CalendarState::write().agenda = Agenda::Loading;
+    // the last month's events stay up until these arrive, so paging doesn't flash a spinner
+    {
+        let mut state = CalendarState::write();
+
+        if matches!(state.agenda, Agenda::Unconnected) {
+            state.agenda = Agenda::Loading;
+        }
+    }
 
     // the helper may download the feeds, so it runs off the drawing thread
     thread::spawn(move || {
-        let events = parse_agenda(&amane::output(&format!("amane-calendar {date}")));
+        let days = cells(month);
+        let events = parse_agenda(&amane::output(&format!("amane-calendar {} {}", days[0], days[41])));
         let mut state = CalendarState::write();
 
-        // a quicker click on another day already owns the card
-        if state.selected == date {
+        // paging on since then: that month's own load owns the grid
+        if state.month == month {
             state.agenda = Agenda::Ready(events);
         }
     });
 }
 
-fn parse_agenda(output: &str) -> Vec<(String, String)> {
+// "<date>\t<feed>\t<time>\t<title>" lines; anything else is skipped
+fn parse_agenda(output: &str) -> Vec<Event> {
     output
         .lines()
-        .filter_map(|line| line.split_once('\t'))
-        .map(|(time, title)| (time.to_string(), title.to_string()))
+        .filter_map(|line| {
+            let mut fields = line.splitn(4, '\t');
+
+            Some(Event {
+                date: NaiveDate::parse_from_str(fields.next()?, "%Y-%m-%d").ok()?,
+                feed: fields.next()?.parse().ok()?,
+                time: fields.next()?.to_string(),
+                title: fields.next()?.to_string(),
+            })
+        })
         .collect()
+}
+
+fn feed_color(ui: &Ui, feed: usize) -> Color {
+    ui.c.calendars[feed % ui.c.calendars.len()]
+}
+
+// each day's calendars, once each, in the order their events come
+fn day_feeds(agenda: &Agenda) -> HashMap<NaiveDate, Vec<usize>> {
+    let mut days: HashMap<NaiveDate, Vec<usize>> = HashMap::new();
+
+    if let Agenda::Ready(events) = agenda {
+        for event in events {
+            let feeds = days.entry(event.date).or_default();
+
+            if !feeds.contains(&event.feed) {
+                feeds.push(event.feed);
+            }
+        }
+    }
+
+    days
 }
 
 pub fn toggle_events() {
@@ -150,7 +205,6 @@ pub fn toggle_events() {
 
 fn select(date: NaiveDate, month_shift: i32) {
     CalendarState::write().selected = date;
-    load_agenda(date);
 
     if month_shift != 0 {
         change_month(month_shift);
@@ -220,7 +274,26 @@ fn slide_frame(state: &CalendarState, travel: f32) -> (NaiveDate, f32, f32) {
     (state.month, slide.direction * travel * (1.0 - moved), 0.7 + 0.3 * moved)
 }
 
-fn day_button(ui: &Ui, date: NaiveDate, month: NaiveDate, selected: NaiveDate, size: f32) -> Rectangle {
+fn dots(ui: &Ui, feeds: &[usize], size: f32, in_month: bool) -> Rectangle {
+    let dots: Vec<Box<dyn Widget>> = feeds
+        .iter()
+        .take(MAX_DOTS)
+        .map(|&feed| {
+            let color = feed_color(ui, feed);
+            let color = if in_month { color } else { with_alpha(color, 0.5) };
+
+            Box::new(Rectangle::new().width(DOTS).height(DOTS).radius(DOTS / 2.0).fill(color)) as Box<dyn Widget>
+        })
+        .collect();
+
+    Rectangle::new()
+        .width(size)
+        .height(DOTS)
+        .align_child(Center, Center)
+        .child(Row::new(dots).gap(DOT_GAP))
+}
+
+fn day_button(ui: &Ui, date: NaiveDate, month: NaiveDate, selected: NaiveDate, size: f32, feeds: &[usize]) -> Rectangle {
     let c = &ui.c;
     let today = Local::now().date_naive();
     let in_month = date.month() == month.month();
@@ -250,20 +323,24 @@ fn day_button(ui: &Ui, date: NaiveDate, month: NaiveDate, selected: NaiveDate, s
         .cursor(Pointer)
         .on_click(move |button| clicked(date, month_shift, button))
         .child(
-            hoverable(
-                Rectangle::new()
-                    .width(size)
-                    .height(size)
-                    .radius(RADIUS_MD)
-                    .fill(look.fill)
-                    .align_child(Center, Center)
-                    .child(text),
-                key,
-            ),
+            Column::new(children![
+                hoverable(
+                    Rectangle::new()
+                        .width(size)
+                        .height(size)
+                        .radius(RADIUS_MD)
+                        .fill(look.fill)
+                        .align_child(Center, Center)
+                        .child(text),
+                    key,
+                ),
+                dots(ui, feeds, size, in_month),
+            ])
+            .gap(DOT_GAP),
         )
 }
 
-fn month_grid(ui: &Ui, month: NaiveDate, selected: NaiveDate, column: f32) -> Column {
+fn month_grid(ui: &Ui, month: NaiveDate, selected: NaiveDate, column: f32, feeds: &HashMap<NaiveDate, Vec<usize>>) -> Column {
     let size = (CELL - 7.0).min(column).min(44.0).floor();
 
     let weekdays: Vec<Box<dyn Widget>> = WEEKDAYS
@@ -292,7 +369,7 @@ fn month_grid(ui: &Ui, month: NaiveDate, selected: NaiveDate, column: f32) -> Co
                         .width(Parent)
                         .height(CELL)
                         .align_child(Center, Center)
-                        .child(day_button(ui, date, month, selected, size)),
+                        .child(day_button(ui, date, month, selected, size, feeds.get(&date).map_or(&[], Vec::as_slice))),
                 ) as Box<dyn Widget>
             })
             .collect();
@@ -351,7 +428,7 @@ fn calendar_card(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Rec
                 .height(grid_height)
                 .translate(x, 0.0)
                 .opacity(opacity)
-                .child(month_grid(ui, month, state.selected, column)),
+                .child(month_grid(ui, month, state.selected, column, &day_feeds(&state.agenda))),
         );
 
     sized_card(ui, width, height).child(
@@ -362,13 +439,15 @@ fn calendar_card(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Rec
     )
 }
 
-// the bar's look: a line in the accent beside the text
-fn event_row(ui: &Ui, (time, title): &(String, String), width: f32) -> Row {
+// the bar's look: a line in the calendar's color beside the text
+fn event_row(ui: &Ui, event: &Event, width: f32) -> Row {
+    let color = feed_color(ui, event.feed);
+
     Row::new(children![
-        Rectangle::new().width(2.0).height(EVENT_ROW).fill(ui.c.primary),
+        Rectangle::new().width(2.0).height(EVENT_ROW).fill(color),
         Column::new(children![
-            label(time.clone(), FONT_CAPTION, ui.c.secondary).elide(),
-            label(title.clone(), FONT_BODY, ui.c.on_surface).weight(Weight::Bold).elide(),
+            label(event.time.clone(), FONT_CAPTION, color).elide(),
+            label(event.title.clone(), FONT_BODY, ui.c.on_surface).weight(Weight::Bold).elide(),
         ])
         .width(Parent)
         .gap(SPACE_XS),
@@ -391,22 +470,29 @@ fn events_card(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Recta
         Agenda::Unconnected => Box::new(
             Column::new(children![
                 label("No calendar connected.", FONT_CAPTION, c.variant),
-                label("Add an iCal address to", FONT_CAPTION, c.variant),
-                label("~/.config/amane-shell/calendars", FONT_CAPTION, c.secondary).elide(),
+                label("Add google_calendars to", FONT_CAPTION, c.variant),
+                label("secrets/calendar.yaml", FONT_CAPTION, c.secondary).elide(),
             ])
             .width(Parent)
             .gap(SPACE_XS),
         ),
         Agenda::Loading => Box::new(spinner(GLYPH, c.primary)),
-        Agenda::Ready(events) if events.is_empty() => Box::new(label("No events.", FONT_CAPTION, c.variant)),
-        Agenda::Ready(events) => Box::new(scroll_view(ui, "calendar-events", (inner, list_height), |list_width| {
-            let rows: Vec<Box<dyn Widget>> = events
-                .iter()
-                .map(|event| Box::new(event_row(ui, event, list_width)) as Box<dyn Widget>)
-                .collect();
+        Agenda::Ready(events) => {
+            let day: Vec<&Event> = events.iter().filter(|event| event.date == state.selected).collect();
 
-            Column::new(rows).width(list_width).gap(SPACE_SM)
-        })),
+            if day.is_empty() {
+                Box::new(label("No events.", FONT_CAPTION, c.variant))
+            } else {
+                Box::new(scroll_view(ui, "calendar-events", (inner, list_height), |list_width| {
+                    let rows: Vec<Box<dyn Widget>> = day
+                        .iter()
+                        .map(|event| Box::new(event_row(ui, event, list_width)) as Box<dyn Widget>)
+                        .collect();
+
+                    Column::new(rows).width(list_width).gap(SPACE_SM)
+                }))
+            }
+        }
     };
 
     sized_card(ui, width, height).child(
@@ -449,14 +535,24 @@ mod tests {
 
     #[test]
     fn reads_the_helpers_lines() {
+        let events = parse_agenda("2026-11-09\t0\tAll day\tHoliday\n2026-11-12\t2\t09:00 - 10:30\tEE\t101\nstray\nbad\tx\ty\tz");
+
         assert_eq!(
-            parse_agenda("All day\tHoliday\n09:00 - 10:30\tEE 101\nstray"),
+            events,
             vec![
-                (String::from("All day"), String::from("Holiday")),
-                (String::from("09:00 - 10:30"), String::from("EE 101")),
+                Event { date: date(2026, 11, 9), feed: 0, time: String::from("All day"), title: String::from("Holiday") },
+                Event { date: date(2026, 11, 12), feed: 2, time: String::from("09:00 - 10:30"), title: String::from("EE\t101") },
             ]
         );
         assert!(parse_agenda("").is_empty());
+
+        // one dot per calendar, however many events it has that day
+        let feeds = day_feeds(&Agenda::Ready(vec![
+            Event { date: date(2026, 11, 9), feed: 1, time: String::new(), title: String::new() },
+            Event { date: date(2026, 11, 9), feed: 0, time: String::new(), title: String::new() },
+            Event { date: date(2026, 11, 9), feed: 1, time: String::new(), title: String::new() },
+        ]));
+        assert_eq!(feeds[&date(2026, 11, 9)], vec![1, 0]);
     }
 
     #[test]

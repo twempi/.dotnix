@@ -138,7 +138,7 @@ pub fn view(_: &Monitor) -> LayerWindow {
 
     // what turned off gets a dim glyph, as Noctalia's inactive lock keys do
     let content = Row::new(children![
-        ui::text(glyph, MENU_TEXT + 4.0, MENU_FONT).color(if on { base[0x0A] } else { base[3] }),
+        ui::text(glyph, MENU_TEXT + 4.0, MENU_FONT).color(if on { base[0x0E] } else { base[3] }),
         ui::text(text, MENU_TEXT, MENU_FONT).color(base[5]),
     ])
     .gap(10.0)
@@ -168,7 +168,7 @@ pub fn view(_: &Monitor) -> LayerWindow {
                         .width(width)
                         .height(Parent)
                         .fill(base[0])
-                        .border(1.0, base[0x0A])
+                        .border(1.0, base[0x0E])
                         .align_child(Center, Center)
                         .child(content),
                 ),

@@ -258,7 +258,7 @@ fn urgency_color(notification: &Notification, base: &[Color; 16]) -> Color {
     match notification.urgency() {
         Urgency::Critical => base[8],
         Urgency::Low => base[3],
-        Urgency::Normal => base[0x0B],
+        Urgency::Normal => base[0x0E],
     }
 }
 
@@ -442,7 +442,7 @@ pub fn page(inner: f32, dnd: bool, base: &[Color; 16]) -> Column {
         .width(44.0)
         .height(22.0)
         .radius(11.0)
-        .fill(if dnd { base[0x0B] } else { base[2] })
+        .fill(if dnd { base[0x0E] } else { base[2] })
         .padding(3.0)
         .align_child(if dnd { Align::End } else { Align::Start }, Center)
         .cursor(Pointer)

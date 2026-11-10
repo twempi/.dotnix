@@ -824,7 +824,7 @@ pub fn menu_view(monitor: &Monitor) -> LayerWindow {
             .width(width)
             .height(height)
             .fill(theme.base[0])
-            .border(1.0, theme.base[0x0A])
+            .border(1.0, theme.base[0x0E])
             .padding(5.0)
             .child(Column::new(rows)),
     );
@@ -855,7 +855,7 @@ fn menu_row(
     clicked: impl Fn(Button) + 'static,
 ) -> Rectangle {
     let (fill, color) = match (selected, enabled) {
-        (true, true) => (base[0x0A], base[0]),
+        (true, true) => (base[0x0E], base[0]),
         (_, false) => (Color::TRANSPARENT, base[3]),
         _ => (Color::TRANSPARENT, base[5]),
     };

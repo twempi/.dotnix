@@ -486,7 +486,7 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
             .width(width)
             .height(height + padding * 2.0 + 2.0)
             .fill(base[0])
-            .border(1.0, base[0x0A])
+            .border(1.0, base[0x0E])
             .padding(padding + 1.0)
             .on_scroll(scrolled)
             .child(Column::new(sections).gap(gap.max(5.0))),
@@ -510,7 +510,7 @@ fn input_bar(picker: &Picker, width: f32, base: &[Color; 16]) -> Rectangle {
         let prompt = Rectangle::new()
             .width(Parent)
             .height(line + 16.0)
-            .fill(base[0x0A])
+            .fill(base[0x0E])
             .padding(8.0)
             .align_child(Start, Center)
             .child(ui::text(&picker.prompt, MENU_TEXT, MENU_FONT).color(base[0]).elide());
@@ -550,14 +550,14 @@ fn input_bar(picker: &Picker, width: f32, base: &[Color; 16]) -> Rectangle {
                     .padding(5.0)
                     .child(Row::new(parts).gap(10.0).align(Center)),
             ),
-            Box::new(Rectangle::new().width(width).height(1.0).fill(base[0x0A])),
+            Box::new(Rectangle::new().width(width).height(1.0).fill(base[0x0E])),
         ]))
 }
 
 #[allow(clippy::too_many_arguments)]
 fn list_row(entry: &Entry, font: &str, position: usize, selected: bool, width: f32, height: f32, padding: f32, base: &[Color; 16]) -> Rectangle {
     let (fill, color) = if selected {
-        (base[0x0A], base[0])
+        (base[0x0E], base[0])
     } else {
         (Color::TRANSPARENT, base[5])
     };
@@ -617,7 +617,7 @@ fn list_row(entry: &Entry, font: &str, position: usize, selected: bool, width: f
 
 fn grid_cell(entry: &Entry, position: usize, selected: bool, width: f32, height: f32, base: &[Color; 16]) -> Rectangle {
     let (fill, color) = if selected {
-        (base[0x0A], base[0])
+        (base[0x0E], base[0])
     } else {
         (Color::TRANSPARENT, base[5])
     };

@@ -1,9 +1,16 @@
 {
   flake.modules.homeManager.sway = {
+    config,
     pkgs,
     lib,
     ...
-  }: {
+  }: let
+    # Match noctalia's naming on Hyprland: Screenshot-<date>_<time>[-region].png
+    screenshot = pkgs.writeShellScript "sway-screenshot" ''
+      exec ${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy "$1" \
+        "${config.xdg.userDirs.extraConfig.SCREENSHOTS}/Screenshot-$(date +%Y-%m-%d_%H:%M:%S)$2.png"
+    '';
+  in {
     wayland.windowManager.sway.config = {
       modifier = "Mod4";
       terminal = "${pkgs.foot}/bin/foot";
@@ -42,8 +49,8 @@
         "Mod4+Shift+R" = "exec ${./reload.sh}";
 
         # Screenshots
-        "Mod4+Shift+S" = "exec ${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy area";
-        "Print" = "exec ${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy screen";
+        "Mod4+Shift+S" = "exec ${screenshot} area -region";
+        "Print" = "exec ${screenshot} screen";
 
         # Launcher / emoji / clipboard
         "Mod4+Space" = "exec amane-launcher";
