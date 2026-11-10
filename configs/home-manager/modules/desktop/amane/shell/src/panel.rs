@@ -444,7 +444,8 @@ fn content(page: Page, dnd: bool) -> Stack {
             .height(HEIGHT)
             .radius(RADIUS_XL)
             .fill(ui.c.surface)
-            .border(1.0, ui.c.outline)
+            // the bar's bottom line
+            .border(2.0, ui.c.primary)
             .padding(PADDING)
             .child(
                 Row::new(children![

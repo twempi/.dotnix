@@ -163,13 +163,22 @@ fn popups<'a>(notifications: &'a Notifications, center: &NotificationCenter) -> 
         .collect()
 }
 
-// the keybind still means notifications; the clock opens the home page
+// the keybind still means notifications; the bar's modules open their own pages
 pub fn toggle(_: &[String]) -> String {
     toggle_page(Page::Notifications)
 }
 
-pub fn toggle_from_bar() {
-    toggle_page(Page::Home);
+// a module's second click closes its page; another module's click moves the panel
+pub fn toggle_from_bar(page: Page) {
+    let center = NotificationCenter::read();
+    let same = center.open && center.page == page;
+    drop(center);
+
+    if same {
+        close();
+    } else {
+        show(page);
+    }
 }
 
 // opens the panel on a page, or moves an open panel to it

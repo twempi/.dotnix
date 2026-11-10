@@ -41,6 +41,13 @@
       # The font rofi's theme named.
       pkgs.nerd-fonts.jetbrains-mono
 
+      # The calendar tab's events; the feed addresses stay out of the store, see the script.
+      (pkgs.writers.writePython3Bin "amane-calendar" {
+          libraries = with pkgs.python3Packages; [icalendar recurring-ical-events];
+          flakeIgnore = ["E501"];
+        }
+        (builtins.readFile ./scripts/calendar.py))
+
       (pkgs.writeShellApplication {
         name = "amane-launcher";
         runtimeInputs = [amane];

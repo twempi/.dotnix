@@ -1,4 +1,4 @@
-// Noctalia's controls and design tokens at this config's corner_radius_scale of 0.5
+// Noctalia's controls, squared and recolored to match the bar and launcher
 
 use std::collections::{HashMap, HashSet};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -13,10 +13,10 @@ use crate::ui::{height_of, width_of};
 pub const TEXT_FONT: &str = "Iosevka";
 pub const ICON_FONT: &str = "noctalia-tabler-icons";
 
-pub const RADIUS_SM: f32 = 1.5;
-pub const RADIUS_MD: f32 = 3.0;
-pub const RADIUS_LG: f32 = 4.5;
-pub const RADIUS_XL: f32 = 6.0;
+pub const RADIUS_SM: f32 = 0.0;
+pub const RADIUS_MD: f32 = 0.0;
+pub const RADIUS_LG: f32 = 0.0;
+pub const RADIUS_XL: f32 = 0.0;
 
 pub const SPACE_XS: f32 = 4.0;
 pub const SPACE_SM: f32 = 8.0;
@@ -59,11 +59,12 @@ pub struct Roles {
 impl Roles {
     pub fn new(base: &[Color; 16]) -> Self {
         Self {
-            primary: base[0x0D],
+            // the bar's accent; a hovered control gets its workspace box's tint
+            primary: base[0x0E],
             on_primary: base[0x00],
-            secondary: base[0x0E],
-            hover: base[0x0C],
-            on_hover: base[0x00],
+            secondary: base[0x0D],
+            hover: with_alpha(base[0x0E], 0.33),
+            on_hover: base[0x05],
             surface: base[0x00],
             container: base[0x01],
             on_surface: base[0x05],
@@ -285,7 +286,7 @@ pub fn toggle(ui: &Ui, key: impl Into<String>, on: bool, small: bool) -> Rectang
     let key = key.into();
     let (thumb, inset, travel) = if small { (14.0, 2.0, 12.0) } else { (18.0, 3.0, 16.0) };
     let height = thumb + inset * 2.0;
-    let border = if ui.hovered(&key) { ui.c.hover } else { ui.c.outline };
+    let border = if ui.hovered(&key) { ui.c.primary } else { ui.c.outline };
 
     let track = Rectangle::new()
         .width(height + travel)
@@ -322,7 +323,7 @@ pub fn slider(
     let track_width = width - SLIDER_PADDING * 2.0;
     let thumb_center = SLIDER_PADDING + value.clamp(0.0, 1.0) * track_width;
     let thumb_x = (thumb_center - SLIDER_THUMB / 2.0).clamp(SLIDER_PADDING, SLIDER_PADDING + track_width - SLIDER_THUMB);
-    let border = if ui.hovered(&key) { ui.c.hover } else { ui.c.outline };
+    let border = if ui.hovered(&key) { ui.c.primary } else { ui.c.outline };
 
     let bar = |bar_width: f32, color: Color| {
         Rectangle::new()

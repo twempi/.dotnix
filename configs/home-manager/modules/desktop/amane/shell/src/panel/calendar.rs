@@ -9,10 +9,11 @@ use amane::{
 use chrono::{Datelike, Days, Local, Months, NaiveDate};
 
 use super::controls::{
-    CONTROL, FONT_BODY, FONT_CAPTION, FONT_TITLE, GLYPH, RADIUS_MD, SPACE_MD, SPACE_SM, Ui, Variant,
-    hoverable, icon_button, label, look, sized_card, with_alpha,
+    CONTROL, FONT_BODY, FONT_CAPTION, FONT_TITLE, GLYPH, RADIUS_MD, SPACE_MD, SPACE_SM, SPACE_XS, Ui, Variant,
+    hoverable, icon_button, label, look, scroll_view, sized_card, spinner, with_alpha,
 };
 use crate::notifications;
+use crate::theme::config_home;
 
 const CHEVRON_LEFT: &str = "\u{EA60}";
 const CHEVRON_RIGHT: &str = "\u{EA61}";
@@ -27,6 +28,7 @@ const DOTS: f32 = 5.0;
 const DOT_GAP: f32 = 2.0;
 const SIDE_GAP: f32 = 48.0;
 const SLIDE_MS: f32 = 100.0;
+const EVENT_ROW: f32 = 38.0;
 const WEEKDAYS: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 struct Slide {
@@ -40,6 +42,14 @@ pub struct CalendarState {
     selected: NaiveDate,
     pub events: bool,
     slide: Option<Slide>,
+    agenda: Agenda,
+}
+
+// the selected day's events, from amane-calendar and the feeds in ~/.config/amane-shell/calendars
+enum Agenda {
+    Unconnected,
+    Loading,
+    Ready(Vec<(String, String)>),
 }
 
 impl Service for CalendarState {
@@ -51,6 +61,7 @@ impl Service for CalendarState {
             selected: today,
             events: true,
             slide: None,
+            agenda: Agenda::Unconnected,
         }
     }
 
@@ -95,6 +106,41 @@ pub fn reset() {
     state.month = first_of(today);
     state.selected = today;
     state.slide = None;
+    drop(state);
+
+    load_agenda(today);
+}
+
+fn feeds_file() -> std::path::PathBuf {
+    config_home().join("amane-shell/calendars")
+}
+
+fn load_agenda(date: NaiveDate) {
+    if !feeds_file().is_file() {
+        CalendarState::write().agenda = Agenda::Unconnected;
+        return;
+    }
+
+    CalendarState::write().agenda = Agenda::Loading;
+
+    // the helper may download the feeds, so it runs off the drawing thread
+    thread::spawn(move || {
+        let events = parse_agenda(&amane::output(&format!("amane-calendar {date}")));
+        let mut state = CalendarState::write();
+
+        // a quicker click on another day already owns the card
+        if state.selected == date {
+            state.agenda = Agenda::Ready(events);
+        }
+    });
+}
+
+fn parse_agenda(output: &str) -> Vec<(String, String)> {
+    output
+        .lines()
+        .filter_map(|line| line.split_once('\t'))
+        .map(|(time, title)| (time.to_string(), title.to_string()))
+        .collect()
 }
 
 pub fn toggle_events() {
@@ -104,6 +150,7 @@ pub fn toggle_events() {
 
 fn select(date: NaiveDate, month_shift: i32) {
     CalendarState::write().selected = date;
+    load_agenda(date);
 
     if month_shift != 0 {
         change_month(month_shift);
@@ -315,22 +362,58 @@ fn calendar_card(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Rec
     )
 }
 
-fn events_card(ui: &Ui, selected: NaiveDate, width: f32, height: f32) -> Rectangle {
-    sized_card(ui, width, height).child(
+// the bar's look: a line in the accent beside the text
+fn event_row(ui: &Ui, (time, title): &(String, String), width: f32) -> Row {
+    Row::new(children![
+        Rectangle::new().width(2.0).height(EVENT_ROW).fill(ui.c.primary),
         Column::new(children![
-            label(selected.format("%A %e %B").to_string(), FONT_TITLE, ui.c.on_surface)
-                .weight(Weight::Bold)
-                .elide(),
-            // shortcut: Noctalia's events come from its own Google broker and encrypted store, which this can't read
-            Rectangle::new()
-                .width(Parent)
-                .height(Parent)
-                .padding(SPACE_SM / 2.0)
-                .child(label("No calendar connected.", FONT_CAPTION, ui.c.variant)),
+            label(time.clone(), FONT_CAPTION, ui.c.secondary).elide(),
+            label(title.clone(), FONT_BODY, ui.c.on_surface).weight(Weight::Bold).elide(),
         ])
         .width(Parent)
-        .height(Parent)
-        .gap(SPACE_MD),
+        .gap(SPACE_XS),
+    ])
+    .width(width)
+    .height(EVENT_ROW)
+    .gap(SPACE_SM)
+    .align(Center)
+}
+
+fn events_card(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Rectangle {
+    let c = &ui.c;
+    let inner = width - SPACE_MD * 2.0;
+    let title = label(state.selected.format("%A %e %B").to_string(), FONT_TITLE, c.on_surface)
+        .weight(Weight::Bold)
+        .elide();
+    let list_height = height - SPACE_MD * 3.0 - crate::ui::height_of(&title);
+
+    let body: Box<dyn Widget> = match &state.agenda {
+        Agenda::Unconnected => Box::new(
+            Column::new(children![
+                label("No calendar connected.", FONT_CAPTION, c.variant),
+                label("Add an iCal address to", FONT_CAPTION, c.variant),
+                label("~/.config/amane-shell/calendars", FONT_CAPTION, c.secondary).elide(),
+            ])
+            .width(Parent)
+            .gap(SPACE_XS),
+        ),
+        Agenda::Loading => Box::new(spinner(GLYPH, c.primary)),
+        Agenda::Ready(events) if events.is_empty() => Box::new(label("No events.", FONT_CAPTION, c.variant)),
+        Agenda::Ready(events) => Box::new(scroll_view(ui, "calendar-events", (inner, list_height), |list_width| {
+            let rows: Vec<Box<dyn Widget>> = events
+                .iter()
+                .map(|event| Box::new(event_row(ui, event, list_width)) as Box<dyn Widget>)
+                .collect();
+
+            Column::new(rows).width(list_width).gap(SPACE_SM)
+        })),
+    };
+
+    sized_card(ui, width, height).child(
+        Column::new(vec![Box::new(title) as Box<dyn Widget>, body])
+            .width(Parent)
+            .height(Parent)
+            .gap(SPACE_MD),
     )
 }
 
@@ -341,7 +424,7 @@ pub fn view(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Row {
 
     Row::new(children![
         calendar_card(ui, state, CALENDAR_WIDTH, height),
-        events_card(ui, state.selected, EVENTS_WIDTH, height),
+        events_card(ui, state, EVENTS_WIDTH, height),
     ])
     .gap(SPACE_MD)
 }
@@ -362,6 +445,18 @@ mod tests {
         assert_eq!(days[0], date(2026, 11, 1));
         assert_eq!(cells(date(2026, 12, 1))[0], date(2026, 11, 29));
         assert_eq!(days[41], date(2026, 12, 12));
+    }
+
+    #[test]
+    fn reads_the_helpers_lines() {
+        assert_eq!(
+            parse_agenda("All day\tHoliday\n09:00 - 10:30\tEE 101\nstray"),
+            vec![
+                (String::from("All day"), String::from("Holiday")),
+                (String::from("09:00 - 10:30"), String::from("EE 101")),
+            ]
+        );
+        assert!(parse_agenda("").is_empty());
     }
 
     #[test]

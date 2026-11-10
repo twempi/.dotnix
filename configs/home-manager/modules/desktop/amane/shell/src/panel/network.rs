@@ -545,7 +545,7 @@ fn ap_row(ui: &Ui, ap: &ApRow) -> Rectangle {
         .on_click(move |_| activate(ssid.clone(), secured, saved, active))
         .child(Row::new(row).width(Parent).height(CONTROL_SM).gap(SPACE_SM).align(Center));
 
-    let rectangle = if hovered { rectangle.border(1.0, c.hover) } else { rectangle };
+    let rectangle = if hovered { rectangle.border(1.0, c.primary) } else { rectangle };
 
     hoverable(rectangle, key)
 }

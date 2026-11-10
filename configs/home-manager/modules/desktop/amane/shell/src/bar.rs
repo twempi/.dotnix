@@ -6,7 +6,7 @@ use amane::{
     Widget, Workspace, Workspaces, Zone, children,
 };
 
-use crate::notifications;
+use crate::notifications::{self, Page};
 use crate::stats::{BatteryState, Clock, Stats, SwayMode, Volume};
 use crate::theme::Theme;
 use crate::tray::{self, Tray};
@@ -220,7 +220,11 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
         Link::Offline => "off",
         _ => &stats.down,
     };
-    right.push(Box::new(module(format!("NET {down}"), accent)));
+    right.push(Box::new(module(format!("NET {down}"), accent).on_click(|button| {
+        if button == Button::Left {
+            notifications::toggle_from_bar(Page::Network);
+        }
+    })));
 
     if brightness.present() {
         right.push(Box::new(
@@ -238,10 +242,11 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
     right.push(Box::new(
         module(format!("{sink} {level}"), volume_color)
             .on_click(|button| match button {
-                Button::Left => amane::spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle"),
+                Button::Left => notifications::toggle_from_bar(Page::Audio),
+                // mute moved here from the left click
+                Button::Middle => amane::spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle"),
                 // waybar's on-click-right, kept as configured
                 Button::Right => amane::spawn("pulseaudio"),
-                Button::Middle => {}
             })
             .on_scroll(volume_scrolled),
     ));
@@ -253,7 +258,7 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
     right.push(Box::new(
         module(clock.text.clone(), accent).on_click(|button| {
             if button == Button::Left {
-                notifications::toggle_from_bar();
+                notifications::toggle_from_bar(Page::Home);
             }
         }),
     ));
