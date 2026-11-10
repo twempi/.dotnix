@@ -17,10 +17,9 @@
       text = builtins.readFile ./scripts/dmenu.sh;
     };
 
-    # The calendar tab's events and reminders, from Google after `amane-calendar --login`, else
-    # the iCal feeds; the addresses and the sign-in stay out of the store, see the script.
+    # The calendar tab's events and reminders, from Google through the sign-in in sops, which
+    # stays out of the store; see the script.
     calendar = pkgs.writers.writePython3Bin "amane-calendar" {
-      libraries = with pkgs.python3Packages; [icalendar recurring-ical-events];
       flakeIgnore = ["E501"];
       # the tab runs it from the shell's service too, which has no libnotify
       makeWrapperArgs = ["--prefix" "PATH" ":" "${pkgs.libnotify}/bin"];

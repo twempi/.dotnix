@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::time::{Duration, Instant};
 use std::{env, fs, thread};
 
@@ -14,7 +14,6 @@ use super::controls::{
     hoverable, icon_button, label, look, scroll_view, sized_card, spinner, with_alpha,
 };
 use crate::notifications;
-use crate::theme::{config_home, home};
 
 const CHEVRON_LEFT: &str = "\u{EA60}";
 const CHEVRON_RIGHT: &str = "\u{EA61}";
@@ -57,7 +56,7 @@ enum Agenda {
 #[derive(Debug, PartialEq)]
 struct Event {
     date: NaiveDate,
-    // the calendar's place in Google's list or the feed's line in the secret, which picks its color
+    // the calendar's place in Google's list, which picks its color
     feed: usize,
     time: String,
     title: String,
@@ -127,13 +126,9 @@ pub fn reset() {
     load_agenda(first_of(today));
 }
 
-// amane-calendar's Google sign-in, or its iCal feeds from the secret or the plain file
+// amane-calendar's Google sign-in, from sops
 fn connected() -> bool {
-    let state = env::var_os("XDG_STATE_HOME").map_or_else(|| home().join(".local/state"), PathBuf::from);
-
-    state.join("amane-shell/google-account.json").is_file()
-        || Path::new("/run/secrets/google_calendars").is_file()
-        || config_home().join("amane-shell/calendars").is_file()
+    Path::new("/run/secrets/google_calendar_account").is_file()
 }
 
 fn load_agenda(month: NaiveDate) {
@@ -151,7 +146,7 @@ fn load_agenda(month: NaiveDate) {
         }
     }
 
-    // the helper may download the feeds, so it runs off the drawing thread
+    // the helper may download from Google, so it runs off the drawing thread
     thread::spawn(move || {
         let days = cells(month);
         let events = parse_agenda(&amane::output(&format!("amane-calendar {} {}", days[0], days[41])));

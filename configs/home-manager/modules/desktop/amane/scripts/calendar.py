@@ -1,10 +1,8 @@
-"""Print the events from the Google account, or else from the iCal feeds.
+"""Print the events from the Google calendars ticked in Google, through the Calendar API.
 
 `amane-calendar --login CLIENT.json` signs in to Google, like Noctalia's Google account:
-CLIENT.json is a "Desktop app" OAuth client downloaded from Google Cloud. Signed in, the
-calendars ticked in Google are read through the Calendar API. Otherwise the events come
-from the iCal feeds in the google_calendars secret, one address per line, such as Google
-Calendar's "Secret address in iCal format".
+CLIENT.json is a "Desktop app" OAuth client downloaded from Google Cloud. It prints the
+sign-in for the google_calendar_account secret, so every machine shares it through sops.
 
 `amane-calendar FIRST LAST` prints the events between two dates.
 `amane-calendar --remind` sends the reminders that are due, see remind().
@@ -28,11 +26,9 @@ from collections import namedtuple
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-import icalendar
-import recurring_ical_events
-
 REFRESH_SECONDS = 10 * 60
-SECRET = Path("/run/secrets/google_calendars")
+# the client and refresh token that --login prints; the shell checks for it too
+ACCOUNT = Path("/run/secrets/google_calendar_account")
 
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
@@ -52,11 +48,10 @@ DIGEST_TIME = "09:00"
 MAX_DIGEST_TITLES = 5
 
 home = Path.home()
-config = Path(os.environ.get("XDG_CONFIG_HOME", home / ".config"))
 cache = Path(os.environ.get("XDG_CACHE_HOME", home / ".cache")) / "amane-shell"
 state = Path(os.environ.get("XDG_STATE_HOME", home / ".local" / "state")) / "amane-shell"
-# the client and refresh token from --login; the shell checks for it too
-account = state / "google-account.json"
+# the hash of the secret's refresh token once Google refuses it, so a new one is tried again
+refused = state / "google-refused"
 
 # start and end are dates for an all-day event and local datetimes otherwise. leads are the
 # times before the start to remind at: None means DEFAULT_LEAD, [] means never.
@@ -78,104 +73,6 @@ def notify(summary, body):
 
 def normalized(leads):
     return sorted({lead for lead in leads if timedelta(0) <= lead <= MAX_LEAD})[:MAX_LEADS]
-
-
-def feeds():
-    # the sops secret syncs through the repo; the plain file is for a machine without it
-    path = SECRET if SECRET.is_file() else config / "amane-shell" / "calendars"
-    lines = path.read_text().splitlines() if path.is_file() else []
-    urls = [line.strip() for line in lines]
-    urls = [url for url in urls if url and not url.startswith("#")]
-    # webcal:// is how calendars hand out the same https address
-    urls = ["https://" + url[9:] if url.startswith("webcal://") else url for url in urls]
-    return [url for url in urls if url.startswith("https://")]
-
-
-def fetch(url):
-    # the secret address is the credential, so the file is named by a hash of it
-    name = "calendar-" + hashlib.sha256(url.encode()).hexdigest()[:16] + ".ics"
-    file = cache / name
-    fresh = file.is_file() and time.time() - file.stat().st_mtime < REFRESH_SECONDS
-
-    if not fresh:
-        try:
-            with urllib.request.urlopen(url, timeout=15) as response:
-                data = response.read()
-            icalendar.Calendar.from_ical(data)
-            write(file, data)
-        except Exception as error:
-            # offline: the last copy is better than an empty day
-            print(f"amane-calendar: {type(error).__name__}", file=sys.stderr)
-
-    return file.read_bytes() if file.is_file() else None
-
-
-def alarm_leads(event, start, end, recurring):
-    """The event's own reminders, like Noctalia's alarmLeadSeconds."""
-    found = []
-
-    for alarm in event.walk("VALARM"):
-        # EMAIL is sent by the server; DISPLAY, AUDIO, or no ACTION at all mean alert here
-        if str(alarm.get("ACTION", "DISPLAY")).upper() not in ("DISPLAY", "AUDIO"):
-            continue
-        trigger = alarm.get("TRIGGER")
-        if trigger is None:
-            continue
-
-        if isinstance(trigger.dt, timedelta):
-            lead = -trigger.dt
-            if trigger.params.get("RELATED") == "END":
-                lead -= max(end - start, timedelta(0))
-        elif recurring:
-            # an absolute trigger fires once for the whole series, not for every occurrence
-            continue
-        else:
-            lead = start - trigger.dt.astimezone()
-        found.append(lead)
-
-    return normalized(found)
-
-
-def ical_event(event, feed, recurring):
-    # icalendar fills in an end from DURATION, or the default length
-    start, end = event.start, event.end
-    title = " ".join(str(event.get("SUMMARY", "")).split())
-    uid = str(event.get("UID", ""))
-    leads = None
-
-    if isinstance(start, datetime):
-        # astimezone() also reads a floating time as local
-        start, end = start.astimezone(), end.astimezone()
-        # a feed without usable alarms says nothing about reminders, so the default applies
-        leads = alarm_leads(event, start, end, uid in recurring) or None
-
-    location = " ".join(str(event.get("LOCATION", "")).split())
-    return Event(feed, uid, title, start, end, location, leads, False)
-
-
-def ical_events(first, last):
-    start = datetime.combine(first, datetime.min.time()).astimezone()
-    end = datetime.combine(last + timedelta(days=1), datetime.min.time()).astimezone()
-    found = []
-
-    # a feed's place in the list is its color in the shell, even while it can't be fetched
-    for index, url in enumerate(feeds()):
-        feed = fetch(url)
-        if not feed:
-            continue
-        calendar = icalendar.Calendar.from_ical(feed)
-        # occurrences lose their RRULE, so the series are found on the originals
-        recurring = {str(event.get("UID")) for event in calendar.walk("VEVENT") if "RRULE" in event or "RDATE" in event}
-
-        for event in recurring_ical_events.of(calendar).between(start, end):
-            if event.get("STATUS") == "CANCELLED":
-                continue
-            try:
-                found.append(ical_event(event, index, recurring))
-            except Exception as error:
-                print(f"amane-calendar: skipped an event: {type(error).__name__}", file=sys.stderr)
-
-    return found
 
 
 def google_token(login, **grant):
@@ -203,8 +100,8 @@ def google_download(login):
     except urllib.error.HTTPError as error:
         # the refresh token was revoked or ran out, so every later try would fail the same way
         if error.code == 400 and b"invalid_grant" in error.read():
-            write(account, json.dumps({**login, "expired": True}).encode())
-            notify("Google Calendar signed out", "Run amane-calendar --login again to sign back in.")
+            write(refused, hashlib.sha256(login["refresh_token"].encode()).hexdigest().encode())
+            notify("Google Calendar signed out", "Sign in again with amane-calendar --login and update the google_calendar_account secret.")
         raise
 
     now = datetime.now(timezone.utc)
@@ -231,9 +128,12 @@ def google_download(login):
 def google_sync():
     file = cache / "google.json"
     fresh = file.is_file() and time.time() - file.stat().st_mtime < REFRESH_SECONDS
-    login = json.loads(account.read_text())
+    if not ACCOUNT.is_file():
+        return []
+    login = json.loads(ACCOUNT.read_text())
+    expired = refused.is_file() and refused.read_text() == hashlib.sha256(login["refresh_token"].encode()).hexdigest()
 
-    if not fresh and not login.get("expired"):
+    if not fresh and not expired:
         try:
             write(file, json.dumps(google_download(login)).encode())
         except Exception as error:
@@ -244,7 +144,7 @@ def google_sync():
 
 
 def popup_leads(reminders):
-    # "email" is sent by Google itself, like an iCal EMAIL alarm
+    # "email" is sent by Google itself
     popups = [reminder for reminder in reminders if reminder.get("method", "popup") in ("popup", "display")]
     return normalized(timedelta(minutes=popup["minutes"]) for popup in popups if isinstance(popup.get("minutes"), int))
 
@@ -294,11 +194,6 @@ def google_events():
     return found
 
 
-def calendar_events(first, last):
-    """The events around the dates; the Google account's synced year, or the feeds' range."""
-    return google_events() if account.is_file() else ical_events(first, last)
-
-
 def rows(event, first, last):
     """One line per day the event covers, as "<date>\t<feed>\t<time>\t<title>"."""
     start, end = event.start, event.end
@@ -328,7 +223,7 @@ def main():
     last = date.fromisoformat(sys.argv[2]) if len(sys.argv) > 2 else first
     lines = []
 
-    for event in calendar_events(first, last):
+    for event in google_events():
         lines.extend(rows(event, first, last))
 
     for _, line in sorted(lines):
@@ -358,7 +253,7 @@ def remind():
     fired = {key for key in saved.get("fired", []) if int(key.split("|")[-2]) > (now - LATE_GRACE).timestamp()}
     due, all_day = [], []
 
-    for event in calendar_events(today - timedelta(days=1), today + MAX_LEAD + timedelta(days=2)):
+    for event in google_events():
         if event.declined:
             continue
 
@@ -459,10 +354,10 @@ def sign_in(path):
     if not set(SCOPES) <= set(tokens.get("scope", "").split()):
         sys.exit("amane-calendar: Google didn't grant calendar access; tick both boxes when signing in")
 
-    write(account, json.dumps({**login, "refresh_token": tokens["refresh_token"]}).encode())
-    # an earlier account's events
-    (cache / "google.json").unlink(missing_ok=True)
-    print("Signed in. The calendar tab and reminders now read your Google calendars.")
+    login["refresh_token"] = tokens["refresh_token"]
+    # JSON has no single quotes, so the line is valid YAML as it is
+    print("Signed in. Add this line with `sops edit secrets/calendar.yaml`, then rebuild NixOS:", file=sys.stderr)
+    print(f"google_calendar_account: '{json.dumps(login)}'")
 
 
 os.umask(0o077)
