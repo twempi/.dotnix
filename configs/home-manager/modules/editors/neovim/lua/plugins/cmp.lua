@@ -136,14 +136,23 @@ return {
 				return false
 			end
 
+			-- Latex Suite's matrix shortcuts and tabout in markdown math.
+			local function latex_suite(name)
+				return function()
+					return require("latex_suite")[name]()
+				end
+			end
+
 			local opts = {
 				snippets = { preset = "luasnip" },
 				cmdline = { enabled = true },
 				keymap = {
 					preset = "default",
-					["<CR>"] = { "accept", "fallback" },
+					["<CR>"] = { "accept", latex_suite("enter"), "fallback" },
+					["<S-CR>"] = { latex_suite("exit"), "fallback" },
 					["<Tab>"] = {
 						luasnip_expand_or_jump,
+						latex_suite("tab"),
 						"fallback",
 					},
 					["<S-Tab>"] = {
@@ -226,7 +235,21 @@ return {
 				disable_filetype = { "TelescopePrompt", "vim" },
 			}
 
-			require("nvim-autopairs").setup(opts)
+			local autopairs = require("nvim-autopairs")
+			autopairs.setup(opts)
+
+			-- Latex Suite's autoDelete$: Backspace in blank inline math `$|$` deletes both.
+			-- Never inserted or skipped over, only deleted.
+			local Rule, cond = require("nvim-autopairs.rule"), require("nvim-autopairs.conds")
+			autopairs.add_rule(
+				Rule("$", "$", "markdown")
+					:with_pair(cond.none())
+					:with_move(cond.none())
+					:with_cr(cond.none())
+					:with_del(function(o)
+						return o.line:sub(o.col - 1, o.col - 1) ~= "$" and o.line:sub(o.col + 2, o.col + 2) ~= "$"
+					end)
+			)
 		end,
 	},
 }

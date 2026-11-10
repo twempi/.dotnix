@@ -68,6 +68,8 @@ local defs = {
 	{ "sts", "_\\text{$0}", "mA" },
 	{ "sq", "\\sqrt{ $0 }$1", "mA" },
 	{ "//", "\\frac{$0}{$1}$2", "mA" },
+	-- Latex Suite's auto-fraction setting, not a data.json snippet.
+	{ "/", "\\frac{[[0]]}{$0}$1", "mA", autofraction = true },
 	{ "ee", "e^{ $0 }$1", "mA" },
 	{ "invs", "^{-1}", "mA" },
 
@@ -306,46 +308,8 @@ local defs = {
 	},
 }
 
--- "text", "code", "inline" or "display" at the cursor, from the markdown and
--- markdown_inline trees ($...$ and $$...$$ are both latex_block nodes).
-local function context()
-	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-	row = row - 1
-	local ok, parser = pcall(vim.treesitter.get_parser, 0, "markdown")
-	if not ok or not parser then
-		return "text"
-	end
-	parser:parse({ row, row + 1 })
-	local pos = { row, col, row, col }
-
-	local node = parser:named_node_for_range(pos)
-	while node do
-		local type = node:type()
-		if type == "fenced_code_block" or type == "indented_code_block" or type == "minus_metadata" then
-			return "code"
-		end
-		node = node:parent()
-	end
-
-	local inline = parser:children().markdown_inline
-	node = inline and inline:named_node_for_range(pos)
-	while node do
-		if node:type() == "code_span" then
-			return "code"
-		elseif node:type() == "latex_block" then
-			-- Right after the closing $ is text again.
-			local sr, sc, er, ec = node:range()
-			local after_open = row > sr or (row == sr and col > sc)
-			local before_close = row < er or (row == er and col < ec)
-			if not (after_open and before_close) then
-				return "text"
-			end
-			return vim.treesitter.get_node_text(node, 0):sub(1, 2) == "$$" and "display" or "inline"
-		end
-		node = node:parent()
-	end
-	return "text"
-end
+local latex_suite = require("latex_suite")
+local context = latex_suite.context
 
 local function in_mode(options, ctx)
 	return (options:find("t") and ctx == "text")
@@ -432,6 +396,129 @@ local function resolver(options, visual)
 	end
 end
 
+-- Latex Suite's auto-fraction: "/" makes the term before it the numerator.
+-- The term ends at an unbracketed autofractionBreakingChars ("+-=\t"), space,
+-- newline, "$" or opening bracket; a space after a Greek letter does not end it.
+local fraction_greek = vim.split(
+	"alpha|beta|gamma|Gamma|delta|Delta|epsilon|varepsilon|zeta|eta|theta|Theta|iota|kappa|lambda|Lambda|mu|nu|omicron|xi|Xi|pi|Pi|rho|sigma|Sigma|tau|upsilon|Upsilon|varphi|phi|Phi|chi|psi|Psi|omega|Omega",
+	"|",
+	{ plain = true }
+)
+local openers = { [")"] = "(", ["]"] = "[", ["}"] = "{" }
+local breaking = " $([{\n+-=\t"
+
+-- 1-based start of the numerator in `text` (the equation up to the cursor).
+local function numerator_start(text)
+	for _, name in ipairs(fraction_greek) do
+		text = text:gsub(name .. " ([^ ])", name .. "#%1")
+	end
+	local k = #text
+	while k >= 1 do
+		local c = text:sub(k, k)
+		if openers[c] then
+			local depth = 0
+			repeat
+				local b = text:sub(k, k)
+				depth = depth + (b == c and 1 or b == openers[c] and -1 or 0)
+				k = k - 1
+			until depth == 0 or k < 1
+			if depth ~= 0 then
+				return nil
+			end
+		elseif breaking:find(c, 1, true) then
+			return k + 1
+		else
+			k = k - 1
+		end
+	end
+	return 1
+end
+
+-- Latex Suite's isWithinEnvironment for autofractionExcludedEnvs ^{...} and \pu{...}:
+-- the cursor (0-based `pos` in `text`) is inside `open` and its matching "}".
+local function within(text, pos, open)
+	local starts, from = {}, 1
+	while true do
+		local at = text:find(open, from, true)
+		if not at or at > pos then
+			break
+		end
+		starts[#starts + 1], from = at, at + 1
+	end
+	for k = #starts, 1, -1 do
+		local left, depth, right = starts[k], 0, nil
+		for j = left + #open - 1, #text do
+			local c = text:sub(j, j)
+			depth = depth + (c == "{" and 1 or c == "}" and -1 or 0)
+			if depth == 0 then
+				right = j
+				break
+			end
+		end
+		if not right then
+			return false
+		elseif right - 1 >= pos and pos >= left - 1 + #open then
+			return true
+		elseif left <= 1 then
+			return false
+		end
+	end
+	return false
+end
+
+local function autofraction()
+	local ctx, eq = context()
+	if not in_mode("m", ctx) then
+		return nil
+	end
+	-- The "/" is already typed; Latex Suite runs before it is.
+	local pos = eq.offset - 1
+	local text = eq.text:sub(1, pos) .. eq.text:sub(eq.offset + 1)
+	if within(text, pos, "^{") or within(text, pos, "\\pu{") then
+		return nil
+	end
+	local start = numerator_start(text:sub(1, pos))
+	if not start or start > pos then
+		return nil
+	end
+	-- (a+b)/ -> \frac{a+b}{}, but (a)(b)/ keeps its brackets.
+	local numerator = text:sub(start, pos)
+	if numerator:match("^%(.*%)$") then
+		local depth = 0
+		for k = 1, #numerator do
+			local c = numerator:sub(k, k)
+			depth = depth + (c == "(" and 1 or c == ")" and -1 or 0)
+			if depth == 0 then
+				if k == #numerator then
+					numerator = numerator:sub(2, -2)
+				end
+				break
+			end
+		end
+	end
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+	local sr, sc = latex_suite.position(eq, start - 1)
+	return {
+		captures = { numerator },
+		clear_region = { from = { sr, sc }, to = { row - 1, col } },
+		env_override = { LATEX_SUITE_CONTEXT = ctx },
+	}
+end
+
+-- Latex Suite's auto-enlarge brackets, for snippets that insert a trigger.
+local enlarge = {
+	[-1] = {
+		[require("luasnip.util.events").pre_expand] = function(_, args)
+			local row, col = latex_suite.enlarge(args.expand_pos[1], args.expand_pos[2])
+			if row then
+				-- Same mark LuaSnip made, which the edits would leave before \left(.
+				local ns = require("luasnip.session").ns_id
+				vim.api.nvim_buf_set_extmark(0, ns, row, col, { id = args.expand_pos_mark_id, right_gravity = false })
+			end
+		end,
+	},
+}
+
 for index, def in ipairs(defs) do
 	def.trig = def[3]:find("r") and def[1]:gsub("%${[%u_]+}", variables) or def[1]
 	def.index = index
@@ -452,6 +539,10 @@ local snippets = {}
 for rank, def in ipairs(defs) do
 	local replacement, options = def[2], def[3]
 	local visual = type(replacement) == "string" and replacement:find("${VISUAL}", 1, true) ~= nil
+	local enlarges = false
+	for _, trigger in ipairs(latex_suite.enlarge_triggers) do
+		enlarges = enlarges or type(replacement) == "string" and replacement:find(trigger, 1, true) ~= nil
+	end
 	snippets[rank] = s({
 		trig = def.trig,
 		trigEngine = options:find("r") and "ecma" or "plain",
@@ -459,7 +550,7 @@ for rank, def in ipairs(defs) do
 		snippetType = options:find("A") and "autosnippet" or "snippet",
 		priority = 2000 - rank,
 		hidden = true,
-		resolveExpandParams = resolver(options, visual),
+		resolveExpandParams = def.autofraction and autofraction or resolver(options, visual),
 	}, {
 		d(1, function(_, parent)
 			local snip = parent.snippet
@@ -469,7 +560,7 @@ for rank, def in ipairs(defs) do
 			end
 			return sn(nil, nodes(body, snip))
 		end),
-	})
+	}, { callbacks = enlarges and enlarge or nil })
 end
 
 return snippets

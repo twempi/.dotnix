@@ -32,6 +32,8 @@ return {
 			luasnip.filetype_extend("quarto", { "markdown" })
 			luasnip.filetype_extend("mdx", { "markdown" })
 
+			require("latex_suite").setup()
+
 			local group = vim.api.nvim_create_augroup("LuaSnipCleanup", { clear = true })
 
 			vim.api.nvim_create_autocmd("InsertLeave", {
