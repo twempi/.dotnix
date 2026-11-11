@@ -94,6 +94,8 @@
 
     xdg.configFile =
       extensions.webStore.configFiles
+      # Native messaging host: Canvas Local Archive converts Office files to PDF with LibreOffice.
+      // (inputs.twempi.lib.canvas-local-archive.pdfHost {inherit pkgs;}).configFiles
       // {
         "helium/theme-preferences.json".text = builtins.toJSON themePreferences;
       };

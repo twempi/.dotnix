@@ -237,11 +237,11 @@
     "canvas-scraper-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1792793733,
-        "narHash": "sha256-vj3ArXgxEdYDViwsC2cf4gS6FlC2xs+fGhn/jKcamYg=",
+        "lastModified": 1794436760,
+        "narHash": "sha256-MC+TVri7TQTZdwGSgP5wjFAg6L3Qdn+H8KjBn5TD5Dk=",
         "owner": "twempi",
         "repo": "canvas-scraper",
-        "rev": "cec2fd7721d4eeaa82676c543d2c9ad6b3c4deef",
+        "rev": "925cd010d876ab31d4e4cac26608a8e819edf96e",
         "type": "github"
       },
       "original": {
@@ -930,11 +930,11 @@
     "kalshi-trader-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1794119713,
-        "narHash": "sha256-fLF4Zvwqoyu3TKm8Qst5ZhQMzYzGby/W+E5MVCGRVG4=",
+        "lastModified": 1794438508,
+        "narHash": "sha256-85WW73JO/DaI7o/g/dydWrW9grCUZozZI9hNJnXBJbw=",
         "owner": "twempi",
         "repo": "kalshi-trader",
-        "rev": "bf383043da8b87de2c5ecd29ebc8c2a2d12a12b6",
+        "rev": "772db19e6d2f1d0556e85c5c800a3ab0564b9706",
         "type": "github"
       },
       "original": {
@@ -1772,11 +1772,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1794119732,
-        "narHash": "sha256-098OHk4NBQkJt3wL6rHd1e1PKHHwQ6elZ75HV/i/+y4=",
+        "lastModified": 1794438540,
+        "narHash": "sha256-tQN3vs1+jium87Z92G0Zg5WBsKp+8b9NT86/p7TY/Fk=",
         "owner": "twempi",
         "repo": "nix-inputs",
-        "rev": "08c0c404e4b5ad762774e9916c9bc2d122f56e10",
+        "rev": "5bc17ab2de0136f914977e5b81496d22f23bf143",
         "type": "github"
       },
       "original": {
