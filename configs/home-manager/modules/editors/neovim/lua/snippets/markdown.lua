@@ -367,9 +367,6 @@ local function nodes(body, snip)
 	return out
 end
 
--- nvim-autopairs has already closed the bracket or quote a trigger ends with.
-local closers = { ["("] = ")", ["["] = "]", ["{"] = "}", ['"'] = '"' }
-
 local function resolver(options, visual)
 	return function(_, line_to_cursor, trigger)
 		local ctx = context()
@@ -386,13 +383,7 @@ local function resolver(options, visual)
 			end
 		end
 
-		local params = { env_override = { LATEX_SUITE_CONTEXT = ctx } }
-		local closer = closers[trigger:sub(-1)]
-		local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-		if closer and vim.api.nvim_get_current_line():sub(col + 1, col + 1) == closer then
-			params.clear_region = { from = { row - 1, col - #trigger }, to = { row - 1, col + 1 } }
-		end
-		return params
+		return { env_override = { LATEX_SUITE_CONTEXT = ctx } }
 	end
 end
 

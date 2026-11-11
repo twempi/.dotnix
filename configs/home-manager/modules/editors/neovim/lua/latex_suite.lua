@@ -215,6 +215,30 @@ function M.context()
 	return ctx
 end
 
+-- Whether the cursor is in `$` or `$$` math once the cursor line reads `line`. For
+-- autopairs, which decides before the key lands: a blank line in `$$ $$` splits
+-- the paragraph, so it is only math after the key is typed.
+function M.math_with_line(line)
+	if vim.treesitter.language.get_lang(vim.bo.filetype) ~= "markdown" then
+		return false
+	end
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+	lines[row] = line
+	local parser = vim.treesitter.get_string_parser(table.concat(lines, "\n"), "markdown")
+	parser:parse(true)
+	local inline = parser:children().markdown_inline
+	local node = inline and inline:named_node_for_range({ row - 1, col, row - 1, col })
+	while node do
+		if node:type() == "latex_block" then
+			local sr, sc, er, ec = node:range()
+			return before(sr, sc, row - 1, col) and before(row - 1, col, er, ec)
+		end
+		node = node:parent()
+	end
+	return false
+end
+
 -- At the cursor position from when the key was pressed (row 1-based).
 local function insert(text, row, col)
 	local lines = vim.split(text, "\n", { plain = true })

@@ -250,6 +250,26 @@ return {
 						return o.line:sub(o.col - 1, o.col - 1) ~= "$" and o.line:sub(o.col + 2, o.col + 2) ~= "$"
 					end)
 			)
+
+			-- In math the Latex Suite snippets insert the closer themselves. LuaSnip
+			-- expands before autopairs' closer lands, so "(" gave "())" and '"' gave
+			-- \text{\text{}} wherever autopairs pairs (end of line, before a space).
+			local function not_in_math(o)
+				local latex_suite = require("latex_suite")
+				local ctx = latex_suite.context()
+				if
+					ctx == "inline"
+					or ctx == "display"
+					or (ctx == "text" and o.line:match("^%s*$") and latex_suite.math_with_line(o.text))
+				then
+					return false
+				end
+			end
+			for _, pair in ipairs({ "(", "[", "{", '"' }) do
+				for _, rule in ipairs(autopairs.get_rules(pair)) do
+					rule:with_pair(not_in_math, 1)
+				end
+			end
 		end,
 	},
 }
