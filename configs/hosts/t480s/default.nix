@@ -40,5 +40,7 @@ in {
     home-manager.users.edward.imports = [homeManager.t480s];
 
     networking.hostName = "t480s";
+
+    services.journald.settings.Journal.SystemMaxUse = "500M";
   };
 }

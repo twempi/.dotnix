@@ -930,11 +930,11 @@
     "kalshi-trader-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1794568675,
-        "narHash": "sha256-HRdxXxwxYFzXCrrQni92azpGiFmqVwX+Uzn0yw590FY=",
+        "lastModified": 1794570828,
+        "narHash": "sha256-Ac2nt/mQighePe2oNpPh4y10R3slYEgvRM3eNjcdNJc=",
         "owner": "twempi",
         "repo": "kalshi-trader",
-        "rev": "536bae39953227e14db3a5e742377121ef30432e",
+        "rev": "8c606561f1495cd9b751c4c119b4eff134fe8111",
         "type": "github"
       },
       "original": {
@@ -1772,11 +1772,11 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1794568712,
-        "narHash": "sha256-FUNi+2a49I96Jmw7QH+VeFs7qssEXi1hZ3WpcX8xc1o=",
+        "lastModified": 1794570850,
+        "narHash": "sha256-aRGnBsilAyZH3ln7qfyvqjxQvg96yQrghgMGu/VZWXM=",
         "owner": "twempi",
         "repo": "nix-inputs",
-        "rev": "d53fb14743630aa175f9585b00bf3475dc2cefd5",
+        "rev": "21531bffe548776a8ebc7d3b6ee41dbaca07b5c7",
         "type": "github"
       },
       "original": {
