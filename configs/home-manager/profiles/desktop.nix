@@ -95,7 +95,7 @@ in {
       mpv
       zathura
       anki
-      # chromium
+      chromium
       # zen-browser
       upscayl
       syncthing

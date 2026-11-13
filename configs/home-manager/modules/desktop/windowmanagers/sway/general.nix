@@ -50,6 +50,10 @@
         };
       };
 
+      # swayfx: square corners on every window
+      extraConfig = ''
+        corner_radius 0
+      '';
       # extraConfig = ''
       #   default_dim_inactive 0.2
       # '';

@@ -6,7 +6,7 @@
 
     programs.chromium = {
       enable = true;
-      homepageLocation = "https://t480s.tailae03d0.ts.net/";
+      # homepageLocation = "https://t480s.tailae03d0.ts.net/";
 
       extraOpts = {
         SpellcheckEnabled = true;
@@ -14,15 +14,15 @@
       };
     };
 
-    environment.etc."/brave/policies/managed/GroupPolicy.json".text = ''
-      {
-        "BraveRewardsDisabled": true,
-        "BraveWalletDisabled": true,
-        "TorDisabled": true,
-        "BraveVPNDisabled": 1,
-        "BraveAIChatEnabled": 0,
-        "BraveNewsDisabled": 1
-      }
-    '';
+    # environment.etc."/brave/policies/managed/GroupPolicy.json".text = ''
+    #   {
+    #     "BraveRewardsDisabled": true,
+    #     "BraveWalletDisabled": true,
+    #     "TorDisabled": true,
+    #     "BraveVPNDisabled": 1,
+    #     "BraveAIChatEnabled": 0,
+    #     "BraveNewsDisabled": 1
+    #   }
+    # '';
   };
 }

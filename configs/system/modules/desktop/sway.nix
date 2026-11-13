@@ -4,13 +4,13 @@
     pkgs,
     ...
   }: let
-    systemdAwareSwayUnwrapped = pkgs.symlinkJoin {
-      inherit (pkgs.sway-unwrapped) pname version passthru meta;
-      paths = [pkgs.sway-unwrapped];
+    systemdAwareSwayfxUnwrapped = pkgs.symlinkJoin {
+      inherit (pkgs.swayfx-unwrapped) pname version passthru meta;
+      paths = [pkgs.swayfx-unwrapped];
 
       postBuild = ''
         cp --remove-destination \
-          ${pkgs.sway-unwrapped}/share/wayland-sessions/sway.desktop \
+          ${pkgs.swayfx-unwrapped}/share/wayland-sessions/sway.desktop \
           $out/share/wayland-sessions/sway.desktop
         substituteInPlace $out/share/wayland-sessions/sway.desktop \
           --replace-fail \
@@ -22,13 +22,15 @@
     programs = {
       sway = {
         enable = true;
-        package = pkgs.sway.override {
-          sway-unwrapped = systemdAwareSwayUnwrapped;
+        package = pkgs.swayfx.override {
+          swayfx-unwrapped = systemdAwareSwayfxUnwrapped;
         };
         wrapperFeatures.gtk = true;
         extraOptions = [
           "--unsupported-gpu"
         ];
+        # The default list without swaylock; the Amane shell locks the session.
+        extraPackages = with pkgs; [brightnessctl foot grim pulseaudio swayidle wmenu];
       };
     };
 

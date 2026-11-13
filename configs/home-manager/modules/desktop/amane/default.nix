@@ -69,7 +69,7 @@
 
       (pkgs.writeShellApplication {
         name = "amane-power";
-        runtimeInputs = [dmenu] ++ (with pkgs; [systemd hyprlock swaylock libnotify alsa-utils coreutils bash]);
+        runtimeInputs = [amane dmenu] ++ (with pkgs; [systemd hyprlock libnotify alsa-utils coreutils bash]);
         # Only nounset, like the rofi script, so the menu's exit codes reach its case.
         bashOptions = ["nounset"];
         text = builtins.readFile ./scripts/power.sh;

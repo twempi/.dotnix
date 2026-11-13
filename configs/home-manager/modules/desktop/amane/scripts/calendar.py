@@ -33,8 +33,9 @@ ACCOUNT = Path("/run/secrets/google_calendar_account")
 AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 API = "https://www.googleapis.com/calendar/v3"
+# calendar.events (not .readonly): the Obsidian vault dashboard shares this sign-in and edits events
 SCOPES = ["https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-          "https://www.googleapis.com/auth/calendar.events.readonly"]
+          "https://www.googleapis.com/auth/calendar.events"]
 # Noctalia's sync window (src/calendar/calendar_service.cpp)
 WINDOW = timedelta(days=365)
 

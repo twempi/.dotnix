@@ -1,14 +1,17 @@
 {config, ...}: let
   inherit (config.flake.modules) homeManager;
 in {
-  flake.modules.homeManager.sway = {config, ...}: {
+  flake.modules.homeManager.sway = {
+    config,
+    pkgs,
+    ...
+  }: {
     # The Amane shell replaces Waybar, Rofi and SwayNC.
     imports = with homeManager; [
       amane
     ];
 
     stylix.targets.sway.enable = true;
-    programs.swaylock.enable = true;
     xdg.userDirs.extraConfig.SCREENSHOTS = "${config.home.homeDirectory}/Pictures/Screenshots";
 
     services.cliphist = {
@@ -20,9 +23,10 @@ in {
     wayland.windowManager.sway = {
       systemd.enable = true;
       enable = true;
-      # package = pkgs.swayfx;
+      package = pkgs.swayfx;
       xwayland = true;
-      checkConfig = true;
+      # swayfx --validate needs a DRM device, which the Nix build sandbox lacks.
+      checkConfig = false;
       extraOptions = ["--unsupported-gpu"];
     };
 

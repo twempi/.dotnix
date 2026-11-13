@@ -94,7 +94,7 @@ case "$chosen" in
 "$reboot")   run_cmd --reboot ;;
 "$lock")
   if [[ -n "${SWAYSOCK:-}" ]]; then
-    swaylock
+    amane ipc call lock
   elif command -v hyprlock >/dev/null; then
     hyprlock
   else

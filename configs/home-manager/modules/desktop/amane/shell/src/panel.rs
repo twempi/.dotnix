@@ -18,7 +18,7 @@ use crate::ui::{self, BAR_HEIGHT, Placement};
 mod audio;
 mod bluetooth;
 mod calendar;
-mod controls;
+pub mod controls;
 mod network;
 
 use controls::{

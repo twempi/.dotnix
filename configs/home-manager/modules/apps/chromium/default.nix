@@ -18,7 +18,7 @@
   in {
     programs.chromium = {
       enable = true;
-      package = braveWithWaylandFlags;
+      # package = braveWithWaylandFlags;
       commandLineArgs = lib.mkForce [];
       extensions = [
         {id = "cndibmoanboadcifjkjbdpjgfedanolh";} # better canvas

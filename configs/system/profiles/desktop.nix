@@ -19,7 +19,7 @@ in {
       wayland
       audio
       gnomeapps
-      # chromium
+      chromium
       seahorse
       login-manager
       printing

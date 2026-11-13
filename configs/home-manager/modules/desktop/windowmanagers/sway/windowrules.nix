@@ -49,7 +49,16 @@
           ])
           popupTitles)
         # Always-float apps
-        ++ lib.flatten (map (app: forApp app floatCenter) alwaysFloatCenterApps);
+        ++ lib.flatten (map (app: forApp app floatCenter) alwaysFloatCenterApps)
+        # Obsidian Settings / Community plugins
+        ++ map (criteria: {
+          criteria =
+            criteria
+            // {
+              title = "^(Settings|Community plugins).*$";
+            };
+          command = "floating enable, resize set width 1100 px height 750 px, move position center";
+        }) (matchApp "^(md[.]obsidian[.]Obsidian)$");
 
       assigns = {
         "9" = matchApp "^(Spotify|spotify)$";

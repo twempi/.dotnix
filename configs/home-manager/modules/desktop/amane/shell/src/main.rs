@@ -1,5 +1,6 @@
 mod bar;
 mod icons;
+mod lock;
 mod menu;
 mod notifications;
 mod osd;
@@ -22,8 +23,10 @@ fn main() {
         .window_per_monitor(tray::menu_view)
         .window_per_monitor(menu::view)
         .window_per_monitor(osd::view)
+        .lock(lock::view)
         .ipc("launcher", menu::launcher)
         .ipc("menu", menu::dmenu)
         .ipc("notifications", notifications::toggle)
+        .ipc("lock", lock::lock)
         .run();
 }
