@@ -23,11 +23,11 @@ in {
     wayland.windowManager.sway = {
       systemd.enable = true;
       enable = true;
-      package = pkgs.swayfx;
+      # The NixOS sway module provides the package and its flags, as Hyprland does.
+      package = null;
       xwayland = true;
       # swayfx --validate needs a DRM device, which the Nix build sandbox lacks.
       checkConfig = false;
-      extraOptions = ["--unsupported-gpu"];
     };
 
     home.sessionVariables = {
