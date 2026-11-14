@@ -1,5 +1,5 @@
-{inputs, ...}: {
-  flake.modules.nixos.desktop-comfyui-flux = {
+{
+  flake.modules.nixos.desktop-comfyui = {
     config,
     lib,
     pkgs,
@@ -7,10 +7,10 @@
   }: let
     cfg = config.services.comfyui;
 
-    # This is the diffusion model, NOT the Qwen text encoder that Ollama pulled.
     modelRepository = "rectangleworm/PornMaster_Klein-9b";
-    # Replace "main" with the resolved commit in model-receipt.json to pin weights.
-    modelRevision = "main";
+    # Pinned commit, so a reboot cannot pull different weights. Change it
+    # deliberately to update the model.
+    modelRevision = "11d13345336b59105223ad96b1e2c1cd2470bdd9";
 
     modelManifest = pkgs.writeText "comfyui-flux-models.json" (builtins.toJSON {
       repository = modelRepository;
@@ -18,12 +18,12 @@
       data_directory = cfg.dataDir;
       files = [
         {
-          source = "unet/turbo/PornMaster_Flux2Klein_v4_Turbo_Q4_K.gguf";
-          destination = "models/diffusion_models/PornMaster_Flux2Klein_v4_Turbo_Q4_K.gguf";
+          source = "unet/turbo/PornMaster_Flux2Klein_v4_Turbo_bf16.safetensors";
+          destination = "models/diffusion_models/PornMaster_Flux2Klein_v4_Turbo_bf16.safetensors";
         }
         {
-          source = "text_encoders/Qwen3-VL-8B-Q4_K_M.gguf";
-          destination = "models/text_encoders/Qwen3-VL-8B-Q4_K_M.gguf";
+          source = "text_encoders/Qwen3-VL-8B-Q8_0.gguf";
+          destination = "models/text_encoders/Qwen3-VL-8B-Q8_0.gguf";
         }
         {
           source = "vae/flux2-vae.safetensors";
@@ -33,34 +33,14 @@
     });
 
     checker = pkgs.writeShellScriptBin "comfyui-flux-check" ''
-      exec ${pkgs.python3}/bin/python3 ${./check-comfyui.py} \
+      exec ${pkgs.python3}/bin/python3 ${../../comfyui/check-comfyui.py} \
         --url http://127.0.0.1:${toString cfg.port} \
         --workflow ${./flux-klein-api.json}
     '';
   in {
-    # This import supplies the options below and disables the nixpkgs module
-    # with the same service name. Import this file through NixOS, not Home Manager.
-    imports = [inputs.comfyui-nix.nixosModules.default];
-
-    services.comfyui = {
-      enable = true;
-      gpuSupport = "cuda";
-      listenAddress = "127.0.0.1";
-      port = 8188;
-      dataDir = "/var/lib/comfyui";
-      openFirewall = false;
-
-      # Includes the flake's pinned ComfyUI-GGUF custom node and dependencies.
-      bundledCustomNodes = true;
-      # Custom nodes come from the flake; no runtime installation is needed.
-      enableManager = false;
-
-      # Conservative starting point for a 16 GB GPU shared with the desktop.
-      extraArgs = ["--lowvram"];
-    };
-
     environment.systemPackages = [checker];
     environment.etc."comfyui/flux-klein-starter.json".source = ./flux-klein-starter.json;
+    environment.etc."comfyui/flux-klein-edit.json".source = ./flux-klein-edit.json;
     environment.etc."comfyui/flux-klein-api.json".source = ./flux-klein-api.json;
 
     # ComfyUI can start while files download. Partial files end in .part and
@@ -82,18 +62,21 @@
         StateDirectory = "comfyui";
         StateDirectoryMode = "0750";
         WorkingDirectory = cfg.dataDir;
-        ExecStart = "${pkgs.python3}/bin/python3 ${./download-models.py} ${modelManifest}";
+        ExecStart = "${pkgs.python3}/bin/python3 ${../../comfyui/download-models.py} ${modelManifest}";
         Restart = "on-failure";
         RestartSec = "30s";
         UMask = "0027";
       };
     };
 
-    # Use a distinct, managed filename; save your edits under a new name in the UI.
+    # Use distinct, managed filenames; save your edits under a new name in the UI.
     systemd.services.comfyui.preStart = lib.mkAfter ''
       ${pkgs.coreutils}/bin/install -D -m 0644 \
         ${./flux-klein-starter.json} \
         ${lib.escapeShellArg "${cfg.dataDir}/user/default/workflows/flux-klein-starter.json"}
+      ${pkgs.coreutils}/bin/install -D -m 0644 \
+        ${./flux-klein-edit.json} \
+        ${lib.escapeShellArg "${cfg.dataDir}/user/default/workflows/flux-klein-edit.json"}
     '';
   };
 }

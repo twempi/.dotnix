@@ -28,13 +28,12 @@ in {
       desktop-openrgb
       desktop-gesturelight
       # desktop-ollama
-      # desktop-comfyui-flux
+      # desktop-open-webui
+      # desktop-comfyui
     ];
 
     networking.hostName = "desktop";
 
-    # `edward-desktop` is activated through the standalone Home Manager output.
-    # Do not let the NixOS generation overwrite its home files during boot.
     home-manager.users = lib.mkForce {};
   };
 }

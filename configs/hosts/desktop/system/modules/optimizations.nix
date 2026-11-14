@@ -34,6 +34,17 @@
       */
     };
 
+    # Uncapped parallel C++ builds (32 jobs x 32 cores) OOM-froze the desktop.
+    # The daemon cgroup limit lets a large build fail instead.
+    nix.settings = {
+      max-jobs = 4;
+      cores = 4;
+    };
+    systemd.services.nix-daemon.serviceConfig = {
+      MemoryHigh = "18G";
+      MemoryMax = "22G";
+    };
+
     zramSwap = {
       enable = true;
       algorithm = "zstd";

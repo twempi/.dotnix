@@ -134,7 +134,7 @@
       flake = false;
     };
 
-    # comfyui-nix.url = "github:utensils/comfyui-nix";
+    comfyui-nix.url = "github:utensils/comfyui-nix";
   };
 
   outputs = inputs:

@@ -4,7 +4,7 @@
   "nodes": [
     {
       "id": 1,
-      "type": "UnetLoaderGGUF",
+      "type": "UNETLoader",
       "pos": [
         20,
         20
@@ -28,10 +28,11 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "UnetLoaderGGUF"
+        "Node name for S&R": "UNETLoader"
       },
       "widgets_values": [
-        "PornMaster_Flux2Klein_v4_Turbo_Q4_K.gguf"
+        "PornMaster_Flux2Klein_v4_Turbo_bf16.safetensors",
+        "default"
       ],
       "title": "Diffusion weights (GGUF)"
     },
@@ -64,7 +65,7 @@
         "Node name for S&R": "CLIPLoaderGGUF"
       },
       "widgets_values": [
-        "Qwen3-VL-8B-Q4_K_M.gguf",
+        "Qwen3-VL-8B-Q8_0.gguf",
         "flux2"
       ],
       "title": "Text encoder (GGUF, flux2)"

@@ -1,54 +1,15 @@
 COMFYUI + FLUX ON NIXOS (RTX 4070 TI SUPER)
 
-This folder is a NixOS module. Copy the WHOLE folder into your .dotnix
-repository. Keep the Python and JSON files beside default.nix.
-Do not import it through Home Manager.
+Files:
+  ai/comfyui/default.nix                    the ComfyUI service (desktop-comfyui)
+  ai/models/pornmaster-klein/default.nix   model download, workflows, checker
+                                            (also desktop-comfyui)
 
-1. ADD THE FLAKE INPUT
+The comfyui-nix flake input is in flake.nix and keeps its own nixpkgs lock.
+desktop-comfyui is imported in configs/hosts/desktop/default.nix. Activate
+with nrs. Home Manager does not manage this service.
 
-Add this to the existing inputs attribute set in your flake.nix:
-
-  comfyui-nix.url = "github:utensils/comfyui-nix";
-
-Keep this input's own nixpkgs lock initially. The package flake brings its
-tested dependency set; there is no need to add nixpkgs.follows for this setup.
-
-2. IMPORT THE FOLDER FROM YOUR DESKTOP NIXOS CONFIGURATION
-
-In your existing NixOS configuration's imports, add the folder path:
-
-  imports = [
-    # Other existing imports...
-    ./comfyui-flux
-  ];
-
-Adjust this relative path to match where you copied the folder. This module
-imports inputs.comfyui-nix.nixosModules.default itself.
-
-The module receives inputs through NixOS specialArgs. If your configuration
-already uses inputs in other modules, it is probably already configured.
-Otherwise, add/merge this into the existing nixpkgs.lib.nixosSystem call:
-
-  specialArgs = { inherit inputs; };
-
-The outputs function must bind inputs, e.g.:
-
-  outputs = inputs@{ self, nixpkgs, ... }: { ... };
-
-Do not replace your existing flake with the snippets above. Merge the input,
-imports, and specialArgs into its current structure.
-
-3. STAGE THE FILES AND REBUILD
-
-From ~/.dotnix, stage the folder using its actual relative path:
-
-  git add path/to/comfyui-flux
-  nrs
-
-Nix will add comfyui-nix to flake.lock. Stage flake.nix and flake.lock when
-you commit your configuration. Home Manager does not manage this service.
-
-4. WATCH THE MODEL DOWNLOAD
+1. WATCH THE MODEL DOWNLOAD
 
   journalctl -fu comfyui-flux-models.service
 
@@ -64,7 +25,7 @@ service retries after 30 seconds. Ctrl+C stops watching the log, not the service
 Progress is printed approximately every 10 seconds during each transfer.
 Hash verification of a large file can take time without a progress line.
 
-5. CHECK THE APPLICATION AND OPEN THE WORKFLOW
+2. CHECK THE APPLICATION AND OPEN THE WORKFLOW
 
   systemctl status comfyui.service --no-pager
   comfyui-flux-check
@@ -75,13 +36,27 @@ not listed, use Open/Load and select this accessible local file:
 
   /etc/comfyui/flux-klein-starter.json
 
+For image editing, load flux-klein-edit (/etc/comfyui/flux-klein-edit.json).
+It scales the reference to 2 megapixels and uses CFGGuider at CFG 1.5 with 8
+steps and a zeroed negative (one of the publisher's documented settings). At
+CFG 1 edits come out with glitchy, blocky artifacts; CFG 2 works but adds
+visible contrast and saturation. The result is resized back to the original
+image's resolution, though detail is limited to what 2 MP can hold.
+
+Q8_0 diffusion GGUFs from this repository do not load: they quantize the
+RMSNorm weights, which ComfyUI-GGUF does not dequantize (shape [136] vs [128]
+error). The workflows therefore use the unquantized bf16 safetensors through
+the core UNETLoader. At about 17 GB it does not fit in 16 GB of VRAM, so
+ComfyUI offloads part of it to system RAM and generation is slower. Q6_K is
+the largest GGUF that works if you need a faster, smaller model.
+
 The same file is included in this download. It has a neutral test prompt,
 768 x 768 resolution, batch size 1, four sampling steps, Euler sampling, and
 BasicGuider (CFG 1). It uses the V4 TURBO checkpoint, so no Turbo LoRA is needed.
 
 Click Run/Queue to generate a test image. The first run also loads the weights
 and can take longer. Save an edited workflow with a different name: the managed
-flux-klein-starter copy is replaced when ComfyUI starts.
+flux-klein-starter and flux-klein-edit copies are replaced when ComfyUI starts.
 
 If you change resolution, change both EmptyFlux2LatentImage and Flux2Scheduler
 to the same width/height. Start with 768 x 768; larger images require more VRAM.
@@ -91,11 +66,11 @@ MODEL FILES
 Source repository: rectangleworm/PornMaster_Klein-9b
 
 Diffusion model:
-  unet/turbo/PornMaster_Flux2Klein_v4_Turbo_Q4_K.gguf
+  unet/turbo/PornMaster_Flux2Klein_v4_Turbo_bf16.safetensors
   -> /var/lib/comfyui/models/diffusion_models/
 
 Text encoder:
-  text_encoders/Qwen3-VL-8B-Q4_K_M.gguf
+  text_encoders/Qwen3-VL-8B-Q8_0.gguf
   -> /var/lib/comfyui/models/text_encoders/
 
 VAE:
@@ -109,7 +84,7 @@ The app binds only to 127.0.0.1:8188. Your existing Ollama/Open WebUI services
 can run alongside it, but a loaded chat model consumes the same GPU memory.
 Before generating images, unload any model shown by `ollama ps`, for example:
 
-  ollama stop gemma4-local
+  ollama stop qwen3.8-local
 
 If another model is loaded, use its exact name from `ollama ps`.
 
@@ -120,20 +95,14 @@ model filenames, and starter workflow. The app and bundled nodes are pinned
 by your flake.lock. Weights are downloaded at runtime into persistent storage.
 No placeholder SHA-256 hashes are used.
 
-On each provisioning run, modelRevision = "main" resolves to ONE concrete
-Hugging Face commit. All three files come from that same commit and are
-checked against the repository's LFS SHA-256 metadata. A receipt records it.
-This checks download integrity; it does not independently audit the publisher.
+modelRevision in ai/models/pornmaster-klein/default.nix is a full Hugging
+Face commit SHA. All three files come from that commit and are checked against
+the repository's LFS SHA-256 metadata. A receipt records it. This checks
+download integrity; it does not independently audit the publisher. To update
+the weights, set modelRevision to a newer commit SHA and rebuild.
 
-To make future runs use identical weights, read the resolved revision:
-
-  sudo cat /var/lib/comfyui/model-receipt.json
-
-Then set modelRevision in default.nix to that resolved_revision commit SHA.
-Rebuild with nrs. You may also provide any known full Hugging Face commit SHA
-there before the initial download. With "main", future restarts/reboots may
-resolve newer weights. This behavior is explicit rather than claiming that
-flake.lock also pins external model weights.
+Changing filenames or revision downloads the new files but does not delete
+the old ones from /var/lib/comfyui/models.
 
 There is no automatic deletion of other model files. Runtime downloads stay
 outside the Nix store and do not inflate your Git repository.
@@ -153,24 +122,19 @@ is too old for this workflow. Update the comfyui-nix input deliberately:
   nrs
 
 If GPU memory is exhausted, unload Ollama models, keep batch size at 1, and
-reduce both workflow dimensions together. --lowvram is already enabled.
+reduce both workflow dimensions together. If that is not enough, add
+extraArgs = ["--lowvram"]; to services.comfyui (slower).
 Actual system RAM requirements and generation speed depend on resolution
 and CPU offloading; this exact model has not been benchmarked here.
 
 VALIDATION PERFORMED
 
-The module's ComfyUI options were checked against utensils/comfyui-nix's
-documentation. Model paths were checked against the publisher's model card.
-Workflow link consistency and Python syntax were checked locally; transfer
-logic was exercised against a local HTTP server, including interrupted/resumed
-downloads and hash failures. The checker validates node/model selections
-against your actual ComfyUI /object_info endpoint after installation.
-
-This authoring environment has no Nix executable or NVIDIA GPU, so a NixOS
-evaluation/build and actual image generation were not run here. The supplied
-workflow is a newly authored starter graph, not a tested copy of the publisher's
-example. Test the neutral prompt first; schema success alone does not prove
-the selected Qwen encoder and checkpoint work together in the locked runtime.
+The desktop NixOS configuration builds with this module. Image generation has
+not been run. The workflows are newly authored graphs, not tested copies of the
+publisher's examples. Test the neutral prompt first; schema success alone does
+not prove the selected Qwen encoder and checkpoint work together in the locked
+runtime. The publisher's own workflows are in the model repository under
+example_workflows/.
 
 REFERENCES
 
