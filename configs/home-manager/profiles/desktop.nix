@@ -52,6 +52,7 @@ in {
       gowall
       cyberdrop-dl
       pi
+      hermes-agent
       pomodoro
       awww
 
@@ -116,6 +117,7 @@ in {
       thunar
       feh
       bitwarden
+      deepseek-harness
     ];
   };
 }

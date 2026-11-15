@@ -20,6 +20,7 @@ in {
     imports = with homeManager; [
       profile-server
       t480s-fastfetch
+      t480s-hermes-agent
     ];
 
     _module.args.hostname = "t480s";

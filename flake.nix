@@ -114,6 +114,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      inputs.nixpkgs.url = "github:NixOS/nixpkgs/f9a75f41be3a74eab55d3a7679d34ad6cc0da977";
+    };
+
     spotify-player = {
       url = "github:aome510/spotify-player";
       inputs.nixpkgs.follows = "nixpkgs";

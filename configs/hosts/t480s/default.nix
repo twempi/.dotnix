@@ -35,6 +35,8 @@ in {
       t480s-prowlarr
       t480s-qbittorrent
       t480s-kalshi-trader
+      t480s-ntfy
+      t480s-hermes-agent
     ];
 
     home-manager.users.edward.imports = [homeManager.t480s];
