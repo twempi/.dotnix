@@ -77,7 +77,7 @@ Important services include:
 
 Treat changes to these services as potentially disruptive. Keep them host-specific unless Edward explicitly requests shared behavior.
 
-Current state: SSH and Tailscale come from `configs/system/modules/networking/remote-access.nix` on all three hosts. `t480s` imports it directly and `desktop` and `g14` get it through the shared desktop profile, so a change there affects every host. Put a server-only SSH or Tailscale setting in `configs/hosts/t480s/default.nix`. `homelab.nix` now holds only Docker and Podman.
+Current state: SSH and Tailscale come from `configs/system/modules/networking/remote-access/default.nix` on all three hosts. `t480s` imports it directly and `desktop` and `g14` get it through the shared desktop profile, so a change there affects every host. Put a server-only SSH or Tailscale setting in `configs/hosts/t480s/default.nix`. `configs/system/modules/services/homelab/default.nix` now holds only Docker and Podman.
 
 Do not treat `t480s` as a desktop-first machine merely because desktop environments or window managers are available in its imports.
 
@@ -280,7 +280,7 @@ Do not place a host-specific workaround in a shared module merely because the sh
 
 - Host-specific overrides go under `configs/hosts/<host>/home/modules` and `configs/hosts/<host>/system/modules`, named `<host>-<name>`.
 - Home Manager modules go under `configs/home-manager/modules/<category>/<name>/default.nix`, or as a single file where neighboring modules do that. Import them by name from the relevant profile in `configs/home-manager/profiles`.
-- NixOS modules go under `configs/system/modules/<category>/<name>.nix`. Import them by name through a system profile or the host's `default.nix`.
+- NixOS modules go under `configs/system/modules/<category>/<name>/default.nix`, and host system modules follow the same layout under `configs/hosts/<host>/system/modules`. Keep `base.nix` and `profiles/*.nix` as single files, matching Home Manager. Import modules by name through a system profile or the host's `default.nix`.
 - A file joins a module just by defining it, and several files may define the same name (for example every `hyprland/*.nix` defines `homeManager.hyprland`). A `.nix` file that should not join the tree must have a `_` prefix.
 - Modules get `inputs` from the enclosing flake-parts module, not from `specialArgs`. `hostname` is a Home Manager module argument set by each `homeManager.<host>` module.
 - Named modules carry no import key, so do not import the same named module twice in one configuration.
