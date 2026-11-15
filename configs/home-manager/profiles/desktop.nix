@@ -116,7 +116,6 @@ in {
       thunar
       feh
       bitwarden
-      deepseek-harness
     ];
   };
 }

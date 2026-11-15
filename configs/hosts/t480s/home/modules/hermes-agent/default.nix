@@ -53,6 +53,10 @@
         };
 
         terminal.env_passthrough = ["CALENDAR_PERSONAL_ICS" "CALENDAR_SCHOOL_ICS"];
+
+        # OpenAI Native search cannot read pages. Firecrawl is the documented
+        # default extractor and works without a key when selected.
+        web.extract_backend = "firecrawl";
       };
 
       # Hermes reads SOUL.md from HERMES_HOME. Replaced on every activation.
