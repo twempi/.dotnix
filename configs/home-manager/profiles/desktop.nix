@@ -65,7 +65,6 @@ in {
       # Sway imports the Amane shell; Hyprland uses Noctalia.
       defaults
       gnome-keyring
-      # dms
       noctalia
       webcam
 

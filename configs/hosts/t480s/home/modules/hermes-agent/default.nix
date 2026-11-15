@@ -8,6 +8,9 @@
 
     programs.hermes-agent.enable = true;
 
+    # Hermes Desktop's SSH mode runs `python3` on this host before starting Hermes.
+    home.packages = [pkgs.python3];
+
     services.hermes-agent = {
       enable = true;
       gateway.enable = true;
