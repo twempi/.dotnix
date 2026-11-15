@@ -1,43 +1,61 @@
-// Noctalia's controls, squared and recolored to match the bar and launcher
-
-use std::collections::{HashMap, HashSet};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use amane::{
     Arc, Canvas, Cap, Center, Color, Column, End, Padding, Parent, Pointer, Rectangle, Row, Service,
     Shape, Size, Stack, Start, Text, TextInput, Widget, children, request_frame,
 };
 
-use crate::ui::{height_of, width_of};
+use crate::logic::panel::Interaction;
+use crate::looks::sway::ui::{height_of, width_of};
+
+// Noctalia's controls, squared and recolored to match the bar and launcher
 
 pub const TEXT_FONT: &str = "Iosevka";
+
 pub const ICON_FONT: &str = "noctalia-tabler-icons";
 
 pub const RADIUS_SM: f32 = 0.0;
+
 pub const RADIUS_MD: f32 = 0.0;
+
 pub const RADIUS_LG: f32 = 0.0;
+
 pub const RADIUS_XL: f32 = 0.0;
 
 pub const SPACE_XS: f32 = 4.0;
+
 pub const SPACE_SM: f32 = 8.0;
+
 pub const SPACE_MD: f32 = 12.0;
 
 pub const FONT_MINI: f32 = 11.0;
+
 pub const FONT_CAPTION: f32 = 13.0;
+
 pub const FONT_BODY: f32 = 14.0;
+
 pub const FONT_TITLE: f32 = 16.0;
 
 pub const CONTROL_SM: f32 = 32.0;
+
 pub const CONTROL: f32 = 38.0;
+
 pub const GLYPH: f32 = 16.0;
 
 const WHEEL_STEP: f32 = 56.0;
+
 const SCROLLBAR: f32 = 6.0;
+
 const SCROLLBAR_HOVER: f32 = 12.0;
+
 const SCROLLBAR_GAP: f32 = 8.0;
+
 const SCROLLBAR_MIN_THUMB: f32 = 32.0;
+
 const SPINNER_MS: u128 = 1200;
+
 const SPINNER_TRAIL: f32 = 266.0;
+
 const DISABLED_OPACITY: f32 = 0.55;
 
 #[derive(Clone, Copy)]
@@ -79,58 +97,6 @@ impl Roles {
     }
 }
 
-// what the pointer is doing in the panel, which only the panel's own views need
-#[derive(Default, Clone)]
-pub struct Interaction {
-    hovered: HashSet<String>,
-    offsets: HashMap<&'static str, f32>,
-}
-
-impl Service for Interaction {
-    fn new() -> Self {
-        Self::default()
-    }
-
-    fn interval() -> Duration {
-        Duration::from_secs(3600)
-    }
-}
-
-impl Interaction {
-    fn set_hovered(key: &str, inside: bool) {
-        // told about a key it doesn't hold: the layout shifted under the pointer, so Amane named the wrong target
-        if !inside && !Self::read().hovered.contains(key) {
-            if !Self::read().hovered.is_empty() {
-                Self::write().hovered.clear();
-            }
-
-            return;
-        }
-
-        let mut state = Self::write();
-
-        if inside {
-            state.hovered.insert(key.to_string());
-        } else {
-            state.hovered.remove(key);
-        }
-    }
-
-    pub fn clear_hover() {
-        if !Self::read().hovered.is_empty() {
-            Self::write().hovered.clear();
-        }
-    }
-
-    fn scroll_to(id: &'static str, offset: f32, max: f32) {
-        let offset = offset.clamp(0.0, max);
-
-        if Self::read().offsets.get(id).copied().unwrap_or(0.0) != offset {
-            Self::write().offsets.insert(id, offset);
-        }
-    }
-}
-
 // everything a view needs, read once per frame: the services must not be read again further down
 pub struct Ui {
     pub c: Roles,
@@ -155,7 +121,7 @@ impl Ui {
 }
 
 pub fn label(content: impl Into<String>, size: f32, color: Color) -> Text {
-    crate::ui::text(content, size, TEXT_FONT).color(color)
+    crate::looks::sway::ui::text(content, size, TEXT_FONT).color(color)
 }
 
 // a square the size of the glyph, as Noctalia lays icons out; the ink is centered in it
@@ -164,7 +130,7 @@ pub fn glyph(codepoint: &str, size: f32, color: Color) -> Rectangle {
         .width(size)
         .height(size)
         .align_child(Center, Center)
-        .child(crate::ui::text(codepoint, size, ICON_FONT).color(color).tight())
+        .child(crate::looks::sway::ui::text(codepoint, size, ICON_FONT).color(color).tight())
 }
 
 pub fn hoverable(rectangle: Rectangle, key: String) -> Rectangle {
@@ -312,7 +278,9 @@ pub fn toggle(ui: &Ui, key: impl Into<String>, on: bool, small: bool) -> Rectang
 }
 
 const SLIDER_TRACK: f32 = 8.0;
+
 const SLIDER_THUMB: f32 = 18.0;
+
 const SLIDER_PADDING: f32 = 2.0;
 
 pub fn slider(
@@ -444,7 +412,7 @@ pub fn with_alpha(color: Color, alpha: f32) -> Color {
 
 // drops whole characters until `...` and what's left fit, as Noctalia does for device names
 pub fn elide_middle(text: &str, size: f32, width: f32) -> String {
-    let fits = |candidate: &str| width_of(&crate::ui::text(candidate, size, TEXT_FONT)) <= width;
+    let fits = |candidate: &str| width_of(&crate::looks::sway::ui::text(candidate, size, TEXT_FONT)) <= width;
 
     if fits(text) {
         return text.to_string();

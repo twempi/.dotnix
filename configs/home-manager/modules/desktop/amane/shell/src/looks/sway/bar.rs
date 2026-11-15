@@ -2,23 +2,28 @@ use std::time::Duration;
 
 use amane::{
     Brightness, Button, Center, Color, Column, Full, Layer, LayerWindow, Link, Monitor, Network,
-    Padding, Parent, Rectangle, Row, Scroll, Service, SpaceBetween, Start, Text, Vertical, Weight,
+    Padding, Parent, Rectangle, Row, Service, SpaceBetween, Start, Text, Vertical, Weight,
     Widget, Workspace, Workspaces, Zone, children,
 };
 
-use crate::notifications::{self, Page};
-use crate::stats::{BatteryState, Clock, Detail, Stats, SwayMode, Volume};
-use crate::theme::Theme;
-use crate::tray::{self, Tray};
-use crate::ui::{self, BAR_FONT, BAR_HEIGHT, BAR_TEXT};
+use crate::logic::compositor::SwayMode;
+use crate::logic::notifications::{self, Page};
+use crate::logic::stats::{BatteryState, Clock, Detail, Stats, Volume};
+use crate::logic::stats::{brightness_scrolled, volume_scrolled};
+use crate::logic::theme::Theme;
+use crate::logic::tray::{self, Tray};
+use crate::looks::sway::ui::{self, BAR_FONT, BAR_HEIGHT, BAR_TEXT};
 
 // the reference bar's 2px bottom line and the space between its modules
 const LINE: f32 = 2.0;
+
 const GAP: f32 = 20.0;
 
 // its darker purples are the text color at part opacity over the background
 const LINE_ALPHA: u8 = 153;
+
 const BOX_ALPHA: u8 = 84;
+
 // fainter, so it doesn't merge with the focused box when their numbers are adjacent
 const OTHER_MONITOR_ALPHA: u8 = 42;
 
@@ -154,20 +159,6 @@ fn battery(battery: &BatteryState, alt: bool, base: &[Color; 16]) -> Rectangle {
     })
 }
 
-fn volume_scrolled(scroll: Scroll) {
-    // scroll-step 1, max-volume 130
-    let step = if scroll.y < 0.0 { "1%+" } else { "1%-" };
-
-    amane::spawn(&format!("wpctl set-volume -l 1.3 @DEFAULT_AUDIO_SINK@ {step}"));
-}
-
-fn brightness_scrolled(scroll: Scroll) {
-    let current = i32::from(Brightness::read().percent());
-    let step = if scroll.y < 0.0 { 1 } else { -1 };
-
-    Brightness::set((current + step).clamp(1, 100) as u8);
-}
-
 pub fn view(monitor: &Monitor) -> LayerWindow {
     let theme = Theme::read();
     let base = theme.base;
@@ -216,7 +207,7 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
     let mut right: Vec<Box<dyn Widget>> = Vec::new();
 
     if Tray::read().items.iter().any(|item| item.status != "Passive") {
-        right.push(Box::new(tray::icons(&monitor.name)));
+        right.push(Box::new(super::tray::icons(&monitor.name)));
     }
 
     let name = monitor.name.as_str();

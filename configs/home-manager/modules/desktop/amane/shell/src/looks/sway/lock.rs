@@ -3,20 +3,14 @@ use amane::{
     Weight, children,
 };
 
-use crate::notifications::Tick;
-use crate::panel::controls::glyph;
-use crate::theme::Theme;
-use crate::ui::{self, MENU_FONT, MENU_TEXT};
+use crate::logic::notifications::Tick;
+use crate::logic::theme::Theme;
+use crate::looks::sway::panel::controls::glyph;
+use crate::looks::sway::ui::{self, MENU_FONT, MENU_TEXT};
 
 const INPUT: &str = "lock-password";
+
 const WIDTH: f32 = 360.0;
-
-// `amane ipc call lock`, from the power menu
-pub fn lock(_: &[String]) -> String {
-    Lock::start();
-
-    String::from("locked")
-}
 
 // the launcher's look: the palette's background, the accent border and the power menu's glyph box
 pub fn view(_: &Monitor) -> LayerWindow {

@@ -1,251 +1,51 @@
 use std::collections::HashMap;
-use std::path::Path;
-use std::time::{Duration, Instant};
-use std::{env, fs, thread};
 
 use amane::{
-    Apps, Button, Center, Color, Column, Parent, Pointer, Rectangle, Row, Service, Weight, Widget, children,
+    Center, Color, Column, Parent, Pointer, Rectangle, Row, Weight, Widget, children,
     request_frame,
 };
-use chrono::{Datelike, Days, Local, Months, NaiveDate};
+use chrono::{Datelike, Local, NaiveDate};
 
+use crate::logic::panel::calendar::{
+    Agenda, CalendarState, Event, cells, change_month, clicked, day_feeds, reset,
+};
 use super::controls::{
     CONTROL, FONT_BODY, FONT_CAPTION, FONT_TITLE, GLYPH, RADIUS_MD, SPACE_MD, SPACE_SM, SPACE_XS, Ui, Variant,
     hoverable, icon_button, label, look, scroll_view, sized_card, spinner, with_alpha,
 };
-use crate::notifications;
 
 const CHEVRON_LEFT: &str = "\u{EA60}";
+
 const CHEVRON_RIGHT: &str = "\u{EA61}";
+
 pub const EVENTS_ON: &str = "\u{EA52}";
+
 pub const EVENTS_OFF: &str = "\u{EE1F}";
 
 const CALENDAR_WIDTH: f32 = 291.0;
+
 const EVENTS_WIDTH: f32 = 194.0;
+
 const CELL: f32 = 48.0;
+
 const WEEKDAY: f32 = 17.0;
+
 const DOTS: f32 = 5.0;
+
 const DOT_GAP: f32 = 2.0;
+
 const SIDE_GAP: f32 = 48.0;
+
 const SLIDE_MS: f32 = 100.0;
+
 const EVENT_ROW: f32 = 38.0;
+
 const MAX_DOTS: usize = 3;
+
 const WEEKDAYS: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-struct Slide {
-    from: NaiveDate,
-    direction: f32,
-    started: Instant,
-}
-
-pub struct CalendarState {
-    month: NaiveDate,
-    selected: NaiveDate,
-    pub events: bool,
-    slide: Option<Slide>,
-    agenda: Agenda,
-}
-
-// the grid's six weeks of events, from amane-calendar
-enum Agenda {
-    Unconnected,
-    Loading,
-    Ready(Vec<Event>),
-}
-
-#[derive(Debug, PartialEq)]
-struct Event {
-    date: NaiveDate,
-    // the calendar's place in Google's list, which picks its color
-    feed: usize,
-    time: String,
-    title: String,
-}
-
-impl Service for CalendarState {
-    fn new() -> Self {
-        let today = Local::now().date_naive();
-
-        Self {
-            month: first_of(today),
-            selected: today,
-            events: true,
-            slide: None,
-            agenda: Agenda::Unconnected,
-        }
-    }
-
-    fn interval() -> Duration {
-        Duration::from_secs(3600)
-    }
-}
-
-fn first_of(date: NaiveDate) -> NaiveDate {
-    date.with_day(1).unwrap_or(date)
-}
-
-fn shifted(month: NaiveDate, by: i32) -> NaiveDate {
-    let months = Months::new(by.unsigned_abs());
-
-    if by >= 0 { month + months } else { month - months }
-}
-
-// six Sunday-first weeks, Noctalia's fixed 42 cells
-fn cells(month: NaiveDate) -> Vec<NaiveDate> {
-    let start = month - Days::new(u64::from(month.weekday().num_days_from_sunday()));
-
-    (0..42).map(|day| start + Days::new(day)).collect()
-}
-
-fn change_month(by: i32) {
-    let mut state = CalendarState::write();
-    let from = state.month;
-
-    state.month = shifted(from, by);
-    state.slide = Some(Slide {
-        from,
-        direction: by as f32,
-        started: Instant::now(),
-    });
-
-    let month = state.month;
-    drop(state);
-
-    load_agenda(month);
-}
-
-pub fn reset() {
-    let today = Local::now().date_naive();
-    let mut state = CalendarState::write();
-
-    state.month = first_of(today);
-    state.selected = today;
-    state.slide = None;
-    drop(state);
-
-    load_agenda(first_of(today));
-}
-
-// amane-calendar's Google sign-in, from sops
-fn connected() -> bool {
-    Path::new("/run/secrets/google_calendar_account").is_file()
-}
-
-fn load_agenda(month: NaiveDate) {
-    if !connected() {
-        CalendarState::write().agenda = Agenda::Unconnected;
-        return;
-    }
-
-    // the last month's events stay up until these arrive, so paging doesn't flash a spinner
-    {
-        let mut state = CalendarState::write();
-
-        if matches!(state.agenda, Agenda::Unconnected) {
-            state.agenda = Agenda::Loading;
-        }
-    }
-
-    // the helper may download from Google, so it runs off the drawing thread
-    thread::spawn(move || {
-        let days = cells(month);
-        let events = parse_agenda(&amane::output(&format!("amane-calendar {} {}", days[0], days[41])));
-        let mut state = CalendarState::write();
-
-        // paging on since then: that month's own load owns the grid
-        if state.month == month {
-            state.agenda = Agenda::Ready(events);
-        }
-    });
-}
-
-// "<date>\t<feed>\t<time>\t<title>" lines; anything else is skipped
-fn parse_agenda(output: &str) -> Vec<Event> {
-    output
-        .lines()
-        .filter_map(|line| {
-            let mut fields = line.splitn(4, '\t');
-
-            Some(Event {
-                date: NaiveDate::parse_from_str(fields.next()?, "%Y-%m-%d").ok()?,
-                feed: fields.next()?.parse().ok()?,
-                time: fields.next()?.to_string(),
-                title: fields.next()?.to_string(),
-            })
-        })
-        .collect()
-}
 
 fn feed_color(ui: &Ui, feed: usize) -> Color {
     ui.c.calendars[feed % ui.c.calendars.len()]
-}
-
-// each day's calendars, once each, in the order their events come
-fn day_feeds(agenda: &Agenda) -> HashMap<NaiveDate, Vec<usize>> {
-    let mut days: HashMap<NaiveDate, Vec<usize>> = HashMap::new();
-
-    if let Agenda::Ready(events) = agenda {
-        for event in events {
-            let feeds = days.entry(event.date).or_default();
-
-            if !feeds.contains(&event.feed) {
-                feeds.push(event.feed);
-            }
-        }
-    }
-
-    days
-}
-
-pub fn toggle_events() {
-    let mut state = CalendarState::write();
-    state.events = !state.events;
-}
-
-fn select(date: NaiveDate, month_shift: i32) {
-    CalendarState::write().selected = date;
-
-    if month_shift != 0 {
-        change_month(month_shift);
-    }
-}
-
-fn clicked(date: NaiveDate, month_shift: i32, button: Button) {
-    match button {
-        Button::Right => {
-            thread::spawn(open_calendar_app);
-        }
-        _ => select(date, month_shift),
-    }
-}
-
-// Noctalia launches the default handler for text/calendar and closes the panel if there is one
-fn open_calendar_app() {
-    let id = amane::output("xdg-mime query default text/calendar");
-    let Some(name) = desktop_entry_name(id.trim()) else {
-        return;
-    };
-
-    if let Some(app) = Apps::read().list().iter().find(|app| app.name() == name) {
-        app.launch();
-        notifications::close();
-    }
-}
-
-fn desktop_entry_name(id: &str) -> Option<String> {
-    if id.is_empty() {
-        return None;
-    }
-
-    let dirs = env::var("XDG_DATA_DIRS").unwrap_or_default();
-
-    dirs.split(':')
-        .find_map(|dir| fs::read_to_string(Path::new(dir).join("applications").join(id)).ok())
-        .and_then(|entry| {
-            entry
-                .lines()
-                .find_map(|line| line.strip_prefix("Name=").map(str::to_string))
-        })
 }
 
 // the old month leaves for 100 ms, then the new one arrives; (month, x, opacity)
@@ -463,7 +263,7 @@ fn events_card(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Recta
     let title = label(state.selected.format("%A %e %B").to_string(), FONT_TITLE, c.on_surface)
         .weight(Weight::Bold)
         .elide();
-    let list_height = height - SPACE_MD * 3.0 - crate::ui::height_of(&title);
+    let list_height = height - SPACE_MD * 3.0 - crate::looks::sway::ui::height_of(&title);
 
     let body: Box<dyn Widget> = match &state.agenda {
         Agenda::Unconnected => Box::new(
@@ -512,51 +312,4 @@ pub fn view(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Row {
         events_card(ui, state, EVENTS_WIDTH, height),
     ])
     .gap(SPACE_MD)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn date(year: i32, month: u32, day: u32) -> NaiveDate {
-        NaiveDate::from_ymd_opt(year, month, day).unwrap()
-    }
-
-    #[test]
-    fn grid_starts_on_sunday_with_six_weeks() {
-        let days = cells(date(2026, 11, 1));
-
-        assert_eq!(days.len(), 42);
-        assert_eq!(days[0], date(2026, 11, 1));
-        assert_eq!(cells(date(2026, 12, 1))[0], date(2026, 11, 29));
-        assert_eq!(days[41], date(2026, 12, 12));
-    }
-
-    #[test]
-    fn reads_the_helpers_lines() {
-        let events = parse_agenda("2026-11-09\t0\tAll day\tHoliday\n2026-11-12\t2\t09:00 - 10:30\tEE\t101\nstray\nbad\tx\ty\tz");
-
-        assert_eq!(
-            events,
-            vec![
-                Event { date: date(2026, 11, 9), feed: 0, time: String::from("All day"), title: String::from("Holiday") },
-                Event { date: date(2026, 11, 12), feed: 2, time: String::from("09:00 - 10:30"), title: String::from("EE\t101") },
-            ]
-        );
-        assert!(parse_agenda("").is_empty());
-
-        // one dot per calendar, however many events it has that day
-        let feeds = day_feeds(&Agenda::Ready(vec![
-            Event { date: date(2026, 11, 9), feed: 1, time: String::new(), title: String::new() },
-            Event { date: date(2026, 11, 9), feed: 0, time: String::new(), title: String::new() },
-            Event { date: date(2026, 11, 9), feed: 1, time: String::new(), title: String::new() },
-        ]));
-        assert_eq!(feeds[&date(2026, 11, 9)], vec![1, 0]);
-    }
-
-    #[test]
-    fn months_shift_across_years() {
-        assert_eq!(shifted(date(2026, 12, 1), 1), date(2027, 1, 1));
-        assert_eq!(shifted(date(2026, 1, 1), -1), date(2025, 12, 1));
-    }
 }

@@ -3,27 +3,23 @@ use std::collections::hash_map::DefaultHasher;
 use std::fs;
 use std::hash::{Hash, Hasher};
 use std::path::PathBuf;
-use std::sync::{Mutex, OnceLock, PoisonError};
 use std::sync::atomic::{AtomicU32, Ordering};
+use std::sync::{Mutex, OnceLock, PoisonError};
 use std::thread;
 use std::time::Duration;
 
-use amane::{
-    Button, Center, Color, Column, Full, Image, Key, LayerWindow, Margin, Monitor, Padding,
-    Parent, Pointer, Rectangle, Row, Scroll, Service, Start, Vertical, Widget,
-};
+use amane::{Button, Key, Scroll, Service};
 use zbus::blocking::{Connection, MessageIterator, connection};
 use zbus::message::Header;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
 use zbus::{MatchRule, interface};
 
-use crate::icons::{self, Icons};
-use crate::stats::{self, Detail};
-use crate::theme::Theme;
-use crate::ui::{self, BAR_HEIGHT, MENU_FONT, MENU_TEXT, Placement};
+use crate::logic::icons;
+use crate::logic::stats::Detail;
 
 const ITEM: &str = "org.kde.StatusNotifierItem";
+
 const MENU: &str = "com.canonical.dbusmenu";
 
 static BUS: OnceLock<Connection> = OnceLock::new();
@@ -35,7 +31,7 @@ pub fn track_pointer(x: f32) {
     POINTER_X.store(x.to_bits(), Ordering::Relaxed);
 }
 
-fn pointer_x() -> f32 {
+pub fn pointer_x() -> f32 {
     f32::from_bits(POINTER_X.load(Ordering::Relaxed))
 }
 
@@ -54,7 +50,7 @@ pub struct Item {
 }
 
 impl Item {
-    fn id(&self) -> String {
+    pub fn id(&self) -> String {
         format!("{}{}", self.bus, self.path)
     }
 }
@@ -109,7 +105,7 @@ impl Service for Tray {
     }
 }
 
-fn connection() -> Option<&'static Connection> {
+pub fn connection() -> Option<&'static Connection> {
     BUS.get()
 }
 
@@ -274,7 +270,7 @@ fn follow_item_signals() {
 }
 
 // reads every property at once; false when the item doesn't answer
-fn refresh(item: &mut Item) -> bool {
+pub fn refresh(item: &mut Item) -> bool {
     let Some(connection) = connection() else {
         return false;
     };
@@ -531,93 +527,29 @@ pub fn module_hovered(detail: Detail, inside: bool, monitor: &str) {
     });
 }
 
-// room for the longest details; the window never resizes, only its drawing does
-const TIP_HEIGHT: f32 = 120.0;
-
-pub fn tip_view(monitor: &Monitor) -> LayerWindow {
-    let tip = Tip::read();
-    let theme = Theme::read();
-
-    let lines = match tip.detail {
-        Some(detail) => stats::details(detail),
-        None if !tip.text.is_empty() => vec![tip.text.replace('\n', "  ")],
-        None => Vec::new(),
-    };
-
-    let visible = !lines.is_empty() && tip.monitor == monitor.name;
-
-    let labels: Vec<_> = lines
-        .into_iter()
-        .map(|line| ui::text(line, MENU_TEXT - 1.0, MENU_FONT).color(theme.base[5]))
-        .collect();
-
-    let width = labels.iter().map(|label| ui::width_of(label)).fold(0.0, f32::max) + 16.0;
-    let height = labels.iter().map(|label| ui::height_of(label)).sum::<f32>().max(16.0) + 10.0;
-    let boxed: Vec<Box<dyn Widget>> = labels.into_iter().map(|label| Box::new(label) as Box<dyn Widget>).collect();
-
-    let left = (pointer_x() - width / 2.0).clamp(0.0, (monitor.width as f32 - width).max(0.0));
-
-    // a full-width strip that never moves: only the drawing follows the pointer, so the
-    // compositor sees no layer changes besides showing and hiding (see notifications::close)
-    LayerWindow::new()
-        .width(Full)
-        .height(TIP_HEIGHT)
-        .anchor_vertical(Vertical::Top)
-        .margin(Margin {
-            top: 4,
-            ..Margin::default()
-        })
-        .namespace("amane-tooltip")
-        .click_through()
-        .visible(visible)
-        .child(
-            Rectangle::new()
-                .width(Parent)
-                .height(Parent)
-                .padding(Padding {
-                    left,
-                    ..Padding::default()
-                })
-                .align_child(Start, Start)
-                .child(
-                    Rectangle::new()
-                        .width(width)
-                        .height(height.min(TIP_HEIGHT))
-                        .fill(theme.base[1])
-                        .border(1.0, theme.base[3])
-                        .padding(Padding {
-                            left: 8.0,
-                            ..Padding::default()
-                        })
-                        .align_child(Start, Center)
-                        .child(Column::new(boxed)),
-                ),
-        )
-}
-
 #[derive(Clone, Default)]
-struct Entry {
-    id: i32,
-    label: String,
-    enabled: bool,
-    separator: bool,
-    toggle: String,
-    toggled: bool,
-    submenu: bool,
-    children: Vec<Entry>,
+pub struct Entry {
+    pub id: i32,
+    pub label: String,
+    pub enabled: bool,
+    pub separator: bool,
+    pub toggle: String,
+    pub toggled: bool,
+    pub submenu: bool,
+    pub children: Vec<Entry>,
 }
 
 // the open tray menu: the item it belongs to, its layout, and the submenus walked into
 #[derive(Default)]
 pub struct TrayMenu {
-    open: bool,
-    monitor: String,
-    x: f32,
+    pub open: bool,
+    pub monitor: String,
+    pub x: f32,
     bus: String,
-    path: String,
+    pub path: String,
     root: Entry,
-    trail: Vec<usize>,
-    selected: usize,
+    pub trail: Vec<usize>,
+    pub selected: usize,
 }
 
 impl Service for TrayMenu {
@@ -681,7 +613,7 @@ fn layout(bus: &str, path: &str, parent: i32) -> Option<Entry> {
     Some(entry(node))
 }
 
-fn entry((id, properties, children): (i32, HashMap<String, OwnedValue>, Vec<OwnedValue>)) -> Entry {
+pub fn entry((id, properties, children): (i32, HashMap<String, OwnedValue>, Vec<OwnedValue>)) -> Entry {
     let text = |name: &str| {
         properties
             .get(name)
@@ -736,7 +668,7 @@ fn mnemonic(label: &str) -> String {
     label.replace("__", "\u{0}").replace('_', "").replace('\u{0}', "_")
 }
 
-fn current(menu: &TrayMenu) -> &Entry {
+pub fn current(menu: &TrayMenu) -> &Entry {
     let mut node = &menu.root;
 
     for &index in &menu.trail {
@@ -749,11 +681,11 @@ fn current(menu: &TrayMenu) -> &Entry {
     node
 }
 
-fn close_menu() {
+pub fn close_menu() {
     TrayMenu::write().open = false;
 }
 
-fn activate(index: usize) {
+pub fn activate(index: usize) {
     let (bus, path, chosen) = {
         let menu = TrayMenu::read();
         let Some(chosen) = current(&menu).children.get(index).cloned() else {
@@ -807,7 +739,7 @@ fn activate(index: usize) {
     });
 }
 
-fn back() {
+pub fn back() {
     let mut menu = TrayMenu::write();
 
     if menu.trail.pop().is_none() {
@@ -817,7 +749,7 @@ fn back() {
     menu.selected = 0;
 }
 
-fn menu_key(key: Key) {
+pub fn menu_key(key: Key) {
     let count = {
         let menu = TrayMenu::read();
         current(&menu).children.len()
@@ -839,151 +771,6 @@ fn menu_key(key: Key) {
         }
         _ => {}
     }
-}
-
-pub fn menu_view(monitor: &Monitor) -> LayerWindow {
-    let menu = TrayMenu::read();
-    let theme = Theme::read();
-
-    let visible = menu.open && menu.monitor == monitor.name;
-    let node = current(&menu);
-
-    let mut rows: Vec<Box<dyn Widget>> = Vec::new();
-
-    if !menu.trail.is_empty() {
-        rows.push(Box::new(menu_row("‹ Back".into(), true, false, theme.base, |_| back())));
-    }
-
-    for (index, child) in node.children.iter().enumerate() {
-        if child.separator {
-            rows.push(Box::new(Rectangle::new().width(Parent).height(1.0).fill(theme.base[3])));
-            continue;
-        }
-
-        let mark = match (child.toggle.as_str(), child.toggled) {
-            ("checkmark", true) => "✓ ",
-            ("radio", true) => "● ",
-            ("radio", false) => "○ ",
-            ("checkmark", false) => "  ",
-            _ => "",
-        };
-
-        let arrow = if child.submenu { "  ›" } else { "" };
-
-        rows.push(Box::new(menu_row(
-            format!("{mark}{}{arrow}", child.label),
-            child.enabled,
-            index == menu.selected,
-            theme.base,
-            move |_| activate(index),
-        )
-        // the pointer moves the same highlight the arrow keys do
-        .on_hover(move |inside| {
-            if inside {
-                TrayMenu::write().selected = index;
-            }
-        })));
-    }
-
-    if rows.is_empty() {
-        rows.push(Box::new(menu_row("(empty)".into(), false, false, theme.base, |_| {})));
-    }
-
-    let height: f32 = rows.iter().map(|row| ui::height_of(row.as_ref())).sum::<f32>() + 10.0;
-
-    let width = 260.0;
-    let left = (menu.x - 20.0).clamp(0.0, (monitor.width as f32 - width).max(0.0));
-
-    let panel = ui::swallow_clicks(
-        Rectangle::new()
-            .width(width)
-            .height(height)
-            .fill(theme.base[0])
-            .border(1.0, theme.base[0x0E])
-            .padding(5.0)
-            .child(Column::new(rows)),
-    );
-
-    ui::overlay(
-        "amane-traymenu",
-        visible,
-        Placement {
-            horizontal: amane::Align::Start,
-            vertical: amane::Align::Start,
-            padding: Padding {
-                top: BAR_HEIGHT,
-                left,
-                ..Padding::default()
-            },
-        },
-        close_menu,
-        menu_key,
-        panel,
-    )
-}
-
-fn menu_row(
-    label: String,
-    enabled: bool,
-    selected: bool,
-    base: [Color; 16],
-    clicked: impl Fn(Button) + 'static,
-) -> Rectangle {
-    let (fill, color) = match (selected, enabled) {
-        (true, true) => (base[0x0E], base[0]),
-        (_, false) => (Color::TRANSPARENT, base[3]),
-        _ => (Color::TRANSPARENT, base[5]),
-    };
-
-    Rectangle::new()
-        .width(Parent)
-        .height(26.0)
-        .fill(fill)
-        .padding(Padding {
-            left: 8.0,
-            right: 8.0,
-            ..Padding::default()
-        })
-        .align_child(Start, Center)
-        .cursor(Pointer)
-        .on_click(clicked)
-        .child(ui::text(label, MENU_TEXT - 1.0, MENU_FONT).color(color).elide())
-}
-
-// tray icons for the bar: 16 pixel icons, 8 apart, passive items hidden like waybar does
-pub fn icons(monitor: &str) -> Row {
-    let tray = Tray::read();
-    let icons = Icons::read();
-    let theme = Theme::read();
-
-    let mut row: Vec<Box<dyn Widget>> = Vec::new();
-
-    for item in tray.items.iter().filter(|item| item.status != "Passive") {
-        let icon = item.icon_file.clone().or_else(|| icons.find(&item.icon_name));
-
-        let base = Rectangle::new().width(16.0).height(16.0);
-
-        let base = match icon {
-            Some(path) => base.fill(Image::contain(path).thumbnail(16, 16)),
-            // no icon found: the first letter of its title stands in
-            None => base.align_child(Center, Center).child(
-                ui::text(item.title.chars().next().unwrap_or('?').to_string(), 11.0, ui::BAR_FONT)
-                    .color(theme.base[5]),
-            ),
-        };
-
-        let (clicked, scrolled, hovered) = (item.clone(), item.clone(), item.clone());
-        let (on_click_monitor, on_hover_monitor) = (monitor.to_string(), monitor.to_string());
-
-        row.push(Box::new(
-            base.cursor(Pointer)
-                .on_click(move |button| self::clicked(&clicked, button, &on_click_monitor))
-                .on_scroll(move |scroll| self::scrolled(&scrolled, scroll))
-                .on_hover(move |inside| self::hovered(&hovered, inside, &on_hover_monitor)),
-        ));
-    }
-
-    Row::new(row).gap(8.0).align(Center)
 }
 
 #[cfg(test)]

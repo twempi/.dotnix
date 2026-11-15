@@ -1,14 +1,16 @@
 use amane::{
-    Align, Full, Key, Keyboard, Layer, LayerWindow, Monitor, Padding, Parent, Rectangle, Service,
-    Size, Text, Widget, Workspaces, Zone,
+    Align, Full, Key, Keyboard, Layer, LayerWindow, Padding, Parent, Rectangle,
+    Size, Text, Widget, Zone,
 };
 
 // waybar's sway.css font, 11pt
 pub const BAR_FONT: &str = "IosevkaTerm Nerd Font Propo";
+
 pub const BAR_TEXT: f32 = 14.5;
 
 // rofi's theme font, "JetBrainsMono Nerd Font 11"
 pub const MENU_FONT: &str = "JetBrainsMono Nerd Font";
+
 pub const MENU_TEXT: f32 = 14.5;
 
 pub const BAR_HEIGHT: f32 = 24.0;
@@ -30,22 +32,6 @@ pub fn height_of(widget: &dyn Widget) -> f32 {
         Size::Fixed(height) => height,
         Size::Parent => 0.0,
     }
-}
-
-// the monitor a popup opens on: where the focused workspace is
-pub fn focused_output() -> String {
-    Workspaces::read()
-        .list()
-        .iter()
-        .find(|workspace| workspace.focused())
-        .and_then(|workspace| workspace.output())
-        .unwrap_or_default()
-        .to_string()
-}
-
-// an empty monitor name means the focused one wasn't known, so every monitor shows it
-pub fn shown_on(wanted: &str, monitor: &Monitor) -> bool {
-    wanted.is_empty() || wanted == monitor.name
 }
 
 pub struct Placement {
@@ -105,30 +91,4 @@ pub fn overlay(
 // a panel's own empty space must not count as a click on the backdrop
 pub fn swallow_clicks(panel: Rectangle) -> Rectangle {
     panel.on_click(|_| {})
-}
-
-// swaynotificationcenter and rofi both run commands through sway, so launched
-// programs don't live in the shell's service and survive a shell restart
-pub fn run(command: &str) {
-    if std::env::var_os("SWAYSOCK").is_none() {
-        amane::spawn(command);
-        return;
-    }
-
-    amane::spawn(&format!("swaymsg {}", quote(&format!("exec {command}"))));
-}
-
-pub fn quote(value: &str) -> String {
-    format!("'{}'", value.replace('\'', r"'\''"))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn quotes_for_sh() {
-        assert_eq!(quote("a b"), "'a b'");
-        assert_eq!(quote("it's"), r"'it'\''s'");
-    }
 }

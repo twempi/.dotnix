@@ -2,26 +2,20 @@ use std::fs;
 use std::thread;
 use std::time::{Duration, Instant};
 
-use amane::{
-    Center, Full, LayerWindow, Margin, Monitor, Parent, Rectangle, Row, Service, Vertical,
-    children,
-};
-
-use crate::theme::Theme;
-use crate::ui::{self, MENU_FONT, MENU_TEXT};
+use amane::Service;
 
 // Noctalia's OSD hide delay
 const SHOWN_FOR: Duration = Duration::from_millis(1400);
 
 // the glyph, the words, and whether the thing turned on
-type Message = (&'static str, &'static str, bool);
+pub type Message = (&'static str, &'static str, bool);
 
 // Noctalia's OSD for caps lock and the microphone turning on or off
 #[derive(Default)]
 pub struct Osd {
     caps_lock: bool,
     microphone: bool,
-    shown: Option<(Message, Instant)>,
+    pub shown: Option<(Message, Instant)>,
 }
 
 impl Service for Osd {
@@ -85,7 +79,7 @@ fn caps_lock() -> bool {
 // whether a program records from a microphone, as Handy does while it listens
 #[derive(Default)]
 pub struct Microphone {
-    active: bool,
+    pub active: bool,
 }
 
 impl Service for Microphone {
@@ -125,54 +119,6 @@ fn recording(sources: &str) -> bool {
 
         fields.len() > 4 && !fields[1].ends_with(".monitor") && fields[4] == "RUNNING"
     })
-}
-
-// shown on every monitor, unlike notifications
-pub fn view(_: &Monitor) -> LayerWindow {
-    let osd = Osd::read();
-    let theme = Theme::read();
-    let base = theme.base;
-
-    let (glyph, text, on) = osd.shown.map_or(("", "", false), |(message, _)| message);
-    let visible = osd.shown.is_some();
-
-    // what turned off gets a dim glyph, as Noctalia's inactive lock keys do
-    let content = Row::new(children![
-        ui::text(glyph, MENU_TEXT + 4.0, MENU_FONT).color(if on { base[0x0E] } else { base[3] }),
-        ui::text(text, MENU_TEXT, MENU_FONT).color(base[5]),
-    ])
-    .gap(10.0)
-    .align(Center);
-
-    let width = ui::width_of(&content) + 32.0;
-
-    // a full-width strip that never moves, like the tray tooltip (see notifications::close)
-    LayerWindow::new()
-        .width(Full)
-        .height(40.0)
-        .anchor_vertical(Vertical::Top)
-        .margin(Margin {
-            top: 10,
-            ..Margin::default()
-        })
-        .namespace("amane-osd")
-        .click_through()
-        .visible(visible)
-        .child(
-            Rectangle::new()
-                .width(Parent)
-                .height(Parent)
-                .align_child(Center, Center)
-                .child(
-                    Rectangle::new()
-                        .width(width)
-                        .height(Parent)
-                        .fill(base[0])
-                        .border(1.0, base[0x0E])
-                        .align_child(Center, Center)
-                        .child(content),
-                ),
-        )
 }
 
 #[cfg(test)]

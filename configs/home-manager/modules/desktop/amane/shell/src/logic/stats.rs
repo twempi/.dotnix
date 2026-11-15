@@ -4,7 +4,7 @@ use std::path::Path;
 use std::thread;
 use std::time::Duration;
 
-use amane::{Link, Network, Service};
+use amane::{Brightness, Link, Network, Scroll, Service};
 
 // everything waybar polled, on waybar's own intervals, in one thread
 #[derive(Default)]
@@ -224,7 +224,7 @@ pub fn pow_format(value: f64, unit: &str, binary: bool) -> String {
     format!("{fraction:.1}{}{binary_marker}{unit}", UNITS[power])
 }
 
-fn read(path: &Path, name: &str) -> Option<String> {
+pub fn read(path: &Path, name: &str) -> Option<String> {
     fs::read_to_string(path.join(name))
         .ok()
         .map(|value| value.trim().to_string())
@@ -234,7 +234,7 @@ fn number(path: &Path, name: &str) -> Option<f64> {
     read(path, name)?.parse().ok()
 }
 
-fn battery() -> Option<BatteryState> {
+pub fn battery() -> Option<BatteryState> {
     let supplies: Vec<_> = fs::read_dir("/sys/class/power_supply")
         .ok()?
         .flatten()
@@ -328,7 +328,7 @@ pub enum Detail {
     Battery,
 }
 
-fn row(name: &str, value: impl std::fmt::Display) -> String {
+pub fn row(name: &str, value: impl std::fmt::Display) -> String {
     format!("{name:<9}{value}")
 }
 
@@ -460,7 +460,7 @@ impl Service for Clock {
     }
 }
 
-fn now() -> String {
+pub fn now() -> String {
     chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string()
 }
 
@@ -511,37 +511,18 @@ fn refresh_volume() {
     }
 }
 
-// sway's binding mode, hidden while it is "default"
-pub struct SwayMode {
-    pub name: String,
+pub fn volume_scrolled(scroll: Scroll) {
+    // scroll-step 1, max-volume 130
+    let step = if scroll.y < 0.0 { "1%+" } else { "1%-" };
+
+    amane::spawn(&format!("wpctl set-volume -l 1.3 @DEFAULT_AUDIO_SINK@ {step}"));
 }
 
-impl Service for SwayMode {
-    fn new() -> Self {
-        Self {
-            name: String::new(),
-        }
-    }
+pub fn brightness_scrolled(scroll: Scroll) {
+    let current = i32::from(Brightness::read().percent());
+    let step = if scroll.y < 0.0 { 1 } else { -1 };
 
-    fn listen() {
-        loop {
-            // -r keeps each event on one line
-            for line in amane::lines(r#"swaymsg -r -m -t subscribe '["mode"]'"#) {
-                let event: serde_json::Value = serde_json::from_str(&line).unwrap_or_default();
-
-                let mode = event["change"].as_str().unwrap_or("default");
-
-                Self::write().name = if mode == "default" {
-                    String::new()
-                } else {
-                    mode.to_string()
-                };
-            }
-
-            // not running under sway, or sway is going away
-            thread::sleep(Duration::from_secs(5));
-        }
-    }
+    Brightness::set((current + step).clamp(1, 100) as u8);
 }
 
 #[cfg(test)]

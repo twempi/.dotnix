@@ -5,11 +5,11 @@ use std::path::{Path, PathBuf};
 
 use amane::Service;
 
-use crate::theme::{config_home, home};
+use crate::logic::theme::{config_home, home};
 
 // icon name to file, built once in the background because walking the themes takes seconds
 pub struct Icons {
-    index: HashMap<String, (u32, PathBuf)>,
+    pub index: HashMap<String, (u32, PathBuf)>,
 }
 
 impl Service for Icons {
