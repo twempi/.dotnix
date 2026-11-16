@@ -301,7 +301,7 @@ fn device_row(ui: &Ui, tab: &BluetoothTab, device: &Device) -> Rectangle {
         ));
 
         let body = Column::new(rows).width(Parent).gap(SPACE_SM);
-        let body_height = crate::looks::sway::ui::height_of(&body) + SPACE_XS + SPACE_SM;
+        let body_height = crate::looks::ui::height_of(&body) + SPACE_XS + SPACE_SM;
 
         column.push(Box::new(
             Rectangle::new()
@@ -397,7 +397,7 @@ pub fn view(ui: &Ui, width: f32, height: f32) -> Column {
 
         let card = pairing_card(ui, pairing, &name, width);
 
-        used = crate::looks::sway::ui::height_of(&card) + SPACE_MD;
+        used = crate::looks::ui::height_of(&card) + SPACE_MD;
         column.push(Box::new(card));
     }
 

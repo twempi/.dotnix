@@ -93,7 +93,8 @@ case "$chosen" in
 "$shutdown") run_cmd --shutdown ;;
 "$reboot")   run_cmd --reboot ;;
 "$lock")
-  if [[ -n "${SWAYSOCK:-}" ]]; then
+  # the Amane shell runs on Sway and Hyprland
+  if [[ -n "${SWAYSOCK:-}" || -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
     amane ipc call lock
   elif command -v hyprlock >/dev/null; then
     hyprlock

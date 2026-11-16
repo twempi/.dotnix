@@ -594,9 +594,9 @@ fn launch_app(id: &str) {
     let lines: String = counts.iter().map(|(id, count)| format!("{count}\t{id}\n")).collect();
     let _ = fs::write(&path, lines);
 
-    // rofi runs terminal programs in the terminal, sway's is foot
+    // rofi runs terminal programs in the session's terminal
     let mut command = if app.terminal {
-        format!("foot -e {}", app.exec)
+        format!("{} -e {}", compositor::terminal(), app.exec)
     } else {
         app.exec.clone()
     };

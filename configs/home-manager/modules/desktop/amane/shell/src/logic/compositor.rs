@@ -1,7 +1,27 @@
+use std::env;
+use std::io::{BufRead, BufReader};
+use std::os::unix::net::UnixStream;
+use std::path::PathBuf;
 use std::thread;
 use std::time::Duration;
 
 use amane::{Monitor, Service, Workspaces};
+
+// amane checks hyprland before sway too, so a SWAYSOCK left over in the session doesn't count
+pub fn hyprland() -> bool {
+    env::var_os("HYPRLAND_INSTANCE_SIGNATURE").is_some()
+}
+
+// hyprland's event socket, a line per event like "monitoradded>>DP-1"; nothing if it isn't up
+fn hyprland_events() -> impl Iterator<Item = String> {
+    let path = env::var_os("XDG_RUNTIME_DIR")
+        .zip(env::var_os("HYPRLAND_INSTANCE_SIGNATURE"))
+        .map(|(runtime, instance)| PathBuf::from(runtime).join("hypr").join(instance).join(".socket2.sock"));
+
+    path.and_then(|path| UnixStream::connect(path).ok())
+        .into_iter()
+        .flat_map(|stream| BufReader::new(stream).lines().map_while(Result::ok))
+}
 
 // sway's binding mode, hidden while it is "default"
 pub struct SwayMode {
@@ -16,6 +36,11 @@ impl Service for SwayMode {
     }
 
     fn listen() {
+        // shortcut: hyprland's submaps aren't shown, add them once the config has one
+        if hyprland() {
+            return;
+        }
+
         loop {
             // -r keeps each event on one line
             for line in amane::lines(r#"swaymsg -r -m -t subscribe '["mode"]'"#) {
@@ -53,14 +78,21 @@ pub fn shown_on(wanted: &str, monitor: &Monitor) -> bool {
 }
 
 // swaynotificationcenter and rofi both run commands through sway, so launched
-// programs don't live in the shell's service and survive a shell restart
+// programs don't live in the shell's service and survive a shell restart;
+// hyprland's keybinds give each program its own unit through uwsm instead
 pub fn run(command: &str) {
-    if std::env::var_os("SWAYSOCK").is_none() {
+    if hyprland() {
+        amane::spawn(&format!("uwsm app -- sh -c {}", quote(command)));
+    } else if env::var_os("SWAYSOCK").is_some() {
+        amane::spawn(&format!("swaymsg {}", quote(&format!("exec {command}"))));
+    } else {
         amane::spawn(command);
-        return;
     }
+}
 
-    amane::spawn(&format!("swaymsg {}", quote(&format!("exec {command}"))));
+// the terminal each session opens: foot on sway, kitty on hyprland
+pub fn terminal() -> &'static str {
+    if hyprland() { "kitty" } else { "foot" }
 }
 
 pub fn quote(value: &str) -> String {
@@ -82,19 +114,29 @@ impl Service for MainOutput {
         loop {
             refresh_main_output();
 
-            // sway announces every monitor added, removed or moved
-            for _ in amane::lines(r#"swaymsg -r -m -t subscribe '["output"]'"#) {
-                refresh_main_output();
+            if hyprland() {
+                // monitors added or removed, or rearranged by a config reload
+                for event in hyprland_events() {
+                    if event.starts_with("monitor") || event.starts_with("configreloaded") {
+                        refresh_main_output();
+                    }
+                }
+            } else {
+                // sway announces every monitor added, removed or moved
+                for _ in amane::lines(r#"swaymsg -r -m -t subscribe '["output"]'"#) {
+                    refresh_main_output();
+                }
             }
 
-            // not running under sway, or sway is going away
+            // the compositor isn't up yet, or is going away
             thread::sleep(Duration::from_secs(5));
         }
     }
 }
 
 fn refresh_main_output() {
-    let outputs = serde_json::from_str(&amane::output("swaymsg -r -t get_outputs")).unwrap_or_default();
+    let command = if hyprland() { "hyprctl -j monitors" } else { "swaymsg -r -t get_outputs" };
+    let outputs = serde_json::from_str(&amane::output(command)).unwrap_or_default();
     let name = main_output(&outputs);
 
     if MainOutput::read().name != name {
@@ -102,14 +144,19 @@ fn refresh_main_output() {
     }
 }
 
-// the leftmost, then topmost, enabled monitor: DP-1 on desktop, the laptop panel on g14
+// the leftmost, then topmost, enabled monitor: DP-1 on desktop, the laptop panel on g14;
+// sway marks enabled outputs active and nests their position in rect, hyprctl marks disabled ones
 fn main_output(outputs: &serde_json::Value) -> String {
     outputs
         .as_array()
         .into_iter()
         .flatten()
-        .filter(|output| output["active"] == true)
-        .min_by_key(|output| (output["rect"]["x"].as_i64(), output["rect"]["y"].as_i64()))
+        .filter(|output| output["active"] == true || output["disabled"] == false)
+        .min_by_key(|output| {
+            let position = if output["rect"].is_object() { &output["rect"] } else { output };
+
+            (position["x"].as_i64(), position["y"].as_i64())
+        })
         .and_then(|output| output["name"].as_str())
         .unwrap_or_default()
         .to_string()
@@ -135,5 +182,14 @@ mod tests {
 
         assert_eq!(main_output(&outputs), "DP-1");
         assert_eq!(main_output(&serde_json::json!([])), "");
+
+        // hyprctl -j monitors, trimmed
+        let monitors = serde_json::json!([
+            {"name": "HDMI-A-1", "x": 2560, "y": 0, "disabled": false},
+            {"name": "eDP-1", "x": 0, "y": 0, "disabled": true},
+            {"name": "DP-1", "x": 0, "y": 0, "disabled": false}
+        ]);
+
+        assert_eq!(main_output(&monitors), "DP-1");
     }
 }

@@ -1,11 +1,7 @@
 {
-  flake.modules.homeManager.g14-hyprland = {
-    config,
-    lib,
-    ...
-  }: let
+  flake.modules.homeManager.g14-hyprland = {lib, ...}: let
     toLua = lib.generators.toLua {};
-    gpuSwitcher = "${config.edward.noctalia.commands.hyprland} msg panel-toggle edward/g14-gpu:switcher";
+    gpuSwitcher = "amane-gpu";
   in {
     wayland.windowManager.hyprland.settings.bind = [
       {

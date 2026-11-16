@@ -9,8 +9,9 @@
     toLua = lib.generators.toLua {};
     exec = command: "  hl.exec_cmd(${toLua command})";
     execWithRules = command: rules: "  hl.exec_cmd(${toLua command}, ${toLua rules})";
+    # The Amane shell starts with the session's systemd target; awww draws the wallpaper Noctalia used to.
     autostart = [
-      (exec "uwsm app -- ${config.edward.noctalia.commands.hyprland} --daemon")
+      (exec "uwsm app -- ${pkgs.awww}/bin/awww-daemon")
       (execWithRules "uwsm app -- spotify" {workspace = "9 silent";})
       (execWithRules "uwsm app -- ${pkgs.obsidian}/bin/obsidian" {workspace = "10 silent";})
       (exec "sleep 4 && ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 1")

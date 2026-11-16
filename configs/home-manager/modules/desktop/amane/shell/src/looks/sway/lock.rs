@@ -5,7 +5,7 @@ use amane::{
 
 use crate::logic::notifications::Tick;
 use crate::logic::theme::Theme;
-use crate::looks::sway::panel::controls::glyph;
+use crate::looks::tabs::controls::glyph;
 use crate::looks::sway::ui::{self, MENU_FONT, MENU_TEXT};
 
 const INPUT: &str = "lock-password";

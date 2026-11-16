@@ -9,7 +9,7 @@ use crate::logic::panel::audio::{
     AudioData, AudioTab, DIRTY, Menu, MenuAction, MenuItem, Stream, Target, close_menu,
     run_menu_action, set_volume, toggle_menu, toggle_mute,
 };
-use crate::looks::sway::ui::{height_of, width_of};
+use crate::looks::ui::{height_of, width_of};
 use super::controls::{
     CONTROL, CONTROL_SM, FONT_BODY, FONT_CAPTION, FONT_TITLE, RADIUS_LG, RADIUS_MD, SPACE_MD, SPACE_SM,
     SPACE_XS, Ui, Variant, elide_middle, glyph, hoverable, icon_button, label, scroll_view, sized_card,

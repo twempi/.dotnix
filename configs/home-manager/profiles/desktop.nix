@@ -62,7 +62,8 @@ in {
       gnome-apps
       networking
       bluetooth
-      # Sway imports the Amane shell; Hyprland uses Noctalia.
+      # Amane is the shell on Sway and Hyprland; Noctalia stays configured but nothing starts it.
+      amane
       defaults
       gnome-keyring
       noctalia

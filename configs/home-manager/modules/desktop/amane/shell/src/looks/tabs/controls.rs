@@ -6,7 +6,7 @@ use amane::{
 };
 
 use crate::logic::panel::Interaction;
-use crate::looks::sway::ui::{height_of, width_of};
+use crate::looks::ui::{height_of, width_of};
 
 // Noctalia's controls, squared and recolored to match the bar and launcher
 
@@ -100,15 +100,26 @@ impl Roles {
 // everything a view needs, read once per frame: the services must not be read again further down
 pub struct Ui {
     pub c: Roles,
+    // the hyprland look squares the pills too: toggles, sliders, scrollbars and dots
+    pub sharp: bool,
     interaction: Interaction,
 }
 
 impl Ui {
     pub fn new(base: &[Color; 16]) -> Self {
+        Self::with(Roles::new(base), false)
+    }
+
+    pub fn with(c: Roles, sharp: bool) -> Self {
         Self {
-            c: Roles::new(base),
+            c,
+            sharp,
             interaction: Interaction::read().clone(),
         }
+    }
+
+    pub fn round(&self, radius: f32) -> f32 {
+        if self.sharp { 0.0 } else { radius }
     }
 
     pub fn hovered(&self, key: &str) -> bool {
@@ -121,7 +132,7 @@ impl Ui {
 }
 
 pub fn label(content: impl Into<String>, size: f32, color: Color) -> Text {
-    crate::looks::sway::ui::text(content, size, TEXT_FONT).color(color)
+    crate::looks::ui::text(content, size, TEXT_FONT).color(color)
 }
 
 // a square the size of the glyph, as Noctalia lays icons out; the ink is centered in it
@@ -130,7 +141,7 @@ pub fn glyph(codepoint: &str, size: f32, color: Color) -> Rectangle {
         .width(size)
         .height(size)
         .align_child(Center, Center)
-        .child(crate::looks::sway::ui::text(codepoint, size, ICON_FONT).color(color).tight())
+        .child(crate::looks::ui::text(codepoint, size, ICON_FONT).color(color).tight())
 }
 
 pub fn hoverable(rectangle: Rectangle, key: String) -> Rectangle {
@@ -260,7 +271,7 @@ pub fn toggle(ui: &Ui, key: impl Into<String>, on: bool, small: bool) -> Rectang
     let track = Rectangle::new()
         .width(height + travel)
         .height(height)
-        .radius(height / 2.0)
+        .radius(ui.round(height / 2.0))
         .fill(if on { ui.c.primary } else { ui.c.outline })
         .border(1.0, border)
         .cursor(Pointer)
@@ -269,7 +280,7 @@ pub fn toggle(ui: &Ui, key: impl Into<String>, on: bool, small: bool) -> Rectang
             Rectangle::new()
                 .width(thumb)
                 .height(thumb)
-                .radius(thumb / 2.0)
+                .radius(ui.round(thumb / 2.0))
                 .fill(ui.c.on_primary)
                 .translate(inset + if on { travel } else { 0.0 }, 0.0),
         );
@@ -300,7 +311,7 @@ pub fn slider(
         Rectangle::new()
             .width(bar_width)
             .height(SLIDER_TRACK)
-            .radius(SLIDER_TRACK / 2.0)
+            .radius(ui.round(SLIDER_TRACK / 2.0))
             .fill(color)
             .translate(SLIDER_PADDING, (control - SLIDER_TRACK) / 2.0)
     };
@@ -318,7 +329,7 @@ pub fn slider(
                     Rectangle::new()
                         .width(SLIDER_THUMB)
                         .height(SLIDER_THUMB)
-                        .radius(SLIDER_THUMB / 2.0)
+                        .radius(ui.round(SLIDER_THUMB / 2.0))
                         .fill(ui.c.on_primary)
                         .border(1.0, border)
                         .translate(thumb_x, (control - SLIDER_THUMB) / 2.0),
@@ -378,14 +389,14 @@ pub fn scroll_view(ui: &Ui, id: &'static str, (width, height): (f32, f32), conte
     let track = Rectangle::new()
         .width(thickness)
         .height(height)
-        .radius(thickness / 2.0)
+        .radius(ui.round(thickness / 2.0))
         .fill(with_alpha(ui.c.outline, 0.55))
         .translate(SCROLLBAR - thickness, 0.0);
 
     let thumb_bar = Rectangle::new()
         .width(thickness)
         .height(thumb)
-        .radius(thickness / 2.0)
+        .radius(ui.round(thickness / 2.0))
         .fill(with_alpha(ui.c.variant, 0.5))
         .translate(SCROLLBAR - thickness, thumb_y);
 
@@ -412,7 +423,7 @@ pub fn with_alpha(color: Color, alpha: f32) -> Color {
 
 // drops whole characters until `...` and what's left fit, as Noctalia does for device names
 pub fn elide_middle(text: &str, size: f32, width: f32) -> String {
-    let fits = |candidate: &str| width_of(&crate::looks::sway::ui::text(candidate, size, TEXT_FONT)) <= width;
+    let fits = |candidate: &str| width_of(&crate::looks::ui::text(candidate, size, TEXT_FONT)) <= width;
 
     if fits(text) {
         return text.to_string();

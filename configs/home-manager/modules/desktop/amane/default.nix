@@ -1,5 +1,6 @@
 {inputs, ...}: {
-  # The Amane shell (github:MystiaFin/amane) for Sway: replaces Waybar, Rofi and SwayNC.
+  # The Amane shell (github:MystiaFin/amane): replaces Waybar, Rofi and SwayNC on Sway and Noctalia on
+  # Hyprland, with a look of its own in each.
   flake.modules.homeManager.amane = {
     config,
     pkgs,
@@ -41,6 +42,30 @@
         <dir>${inputs.noctalia}/lib/assets/fonts</dir>
       </fontconfig>
     '';
+
+    # One unit per session, so each starts and stops with its compositor. Amane checks Niri, then
+    # Hyprland, then Sway, so a variable left over from another session would pick the wrong one.
+    shellService = target: leftovers: {
+      Unit = {
+        Description = "Amane shell: bar, launcher, menus, tray and notifications";
+        Requisite = [target];
+        PartOf = [target];
+        After = [target];
+      };
+
+      Service = {
+        ExecStart = "${shell}/bin/amane-shell";
+        Restart = "on-failure";
+        RestartSec = 2;
+        # Programs it launches go through `swaymsg exec` or `uwsm app`, so they keep the normal fonts.
+        Environment = ["FONTCONFIG_FILE=${fontsConf}"];
+        UnsetEnvironment = leftovers;
+      };
+
+      Install.WantedBy = [target];
+    };
+
+    sessions = ["sway-session.target" "wayland-session@hyprland.desktop.target"];
   in {
     home.packages = [
       amane
@@ -324,29 +349,15 @@
     in
       builtins.concatStringsSep "" (map (slot: "${slot}=#${colors.${slot}}\n") slots);
 
-    # Only Sway runs the shell; Hyprland keeps Noctalia, so there is no D-Bus activation file.
-    systemd.user.services.amane-shell = {
-      Unit = {
-        Description = "Amane shell: bar, launcher, menus, tray and notifications";
-        Requisite = ["sway-session.target"];
-        PartOf = ["sway-session.target"];
-        After = ["sway-session.target"];
-      };
+    # The shell starts with its session, so there is no D-Bus activation file.
+    systemd.user.services.amane-shell =
+      shellService "sway-session.target" ["HYPRLAND_INSTANCE_SIGNATURE" "NIRI_SOCKET" "MANGO_INSTANCE_SIGNATURE"];
 
-      Service = {
-        ExecStart = "${shell}/bin/amane-shell";
-        Restart = "on-failure";
-        RestartSec = 2;
-        # Programs it launches go through `swaymsg exec`, so they keep the normal fonts.
-        Environment = ["FONTCONFIG_FILE=${fontsConf}"];
-        # Amane checks these before SWAYSOCK, so one left over from a Hyprland session would win.
-        UnsetEnvironment = ["HYPRLAND_INSTANCE_SIGNATURE" "NIRI_SOCKET" "MANGO_INSTANCE_SIGNATURE"];
-      };
+    # UWSM's target for the Hyprland session.
+    systemd.user.services.amane-shell-hyprland =
+      shellService "wayland-session@hyprland.desktop.target" ["NIRI_SOCKET"];
 
-      Install.WantedBy = ["sway-session.target"];
-    };
-
-    # Noctalia sends its own calendar reminders under Hyprland, so these follow the Sway session too.
+    # The reminders follow whichever session runs the shell.
     systemd.user.services.amane-calendar-reminders = {
       Unit.Description = "Amane shell: calendar reminders";
       Service = {
@@ -358,14 +369,14 @@
     systemd.user.timers.amane-calendar-reminders = {
       Unit = {
         Description = "Amane shell: calendar reminders";
-        PartOf = ["sway-session.target"];
-        After = ["sway-session.target"];
+        PartOf = sessions;
+        After = sessions;
       };
       Timer = {
         OnCalendar = "minutely";
         AccuracySec = "1s";
       };
-      Install.WantedBy = ["sway-session.target"];
+      Install.WantedBy = sessions;
     };
   };
 }

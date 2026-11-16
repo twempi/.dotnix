@@ -81,7 +81,7 @@ fn dots(ui: &Ui, feeds: &[usize], size: f32, in_month: bool) -> Rectangle {
             let color = feed_color(ui, feed);
             let color = if in_month { color } else { with_alpha(color, 0.5) };
 
-            Box::new(Rectangle::new().width(DOTS).height(DOTS).radius(DOTS / 2.0).fill(color)) as Box<dyn Widget>
+            Box::new(Rectangle::new().width(DOTS).height(DOTS).radius(ui.round(DOTS / 2.0)).fill(color)) as Box<dyn Widget>
         })
         .collect();
 
@@ -263,7 +263,7 @@ fn events_card(ui: &Ui, state: &CalendarState, width: f32, height: f32) -> Recta
     let title = label(state.selected.format("%A %e %B").to_string(), FONT_TITLE, c.on_surface)
         .weight(Weight::Bold)
         .elide();
-    let list_height = height - SPACE_MD * 3.0 - crate::looks::sway::ui::height_of(&title);
+    let list_height = height - SPACE_MD * 3.0 - crate::looks::ui::height_of(&title);
 
     let body: Box<dyn Widget> = match &state.agenda {
         Agenda::Unconnected => Box::new(

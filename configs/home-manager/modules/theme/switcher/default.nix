@@ -113,8 +113,8 @@
           local current choice
           current=$(cat "$current_file" 2>/dev/null || echo "default")
 
-          # Escape in the launcher exits non-zero or prints nothing.
-          if [[ -n "''${SWAYSOCK:-}" ]]; then
+          # Escape in the launcher exits non-zero or prints nothing. Amane runs on Sway and Hyprland.
+          if [[ -n "''${SWAYSOCK:-}" || -n "''${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
             choice=$(theme_rows | amane-dmenu -dmenu -i -p "Theme ($current)" -theme themes) || exit 0
           elif ! choice=$(list_schemes | noctalia dmenu --prompt "Theme ($current)"); then
             exit 0

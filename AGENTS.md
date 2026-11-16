@@ -42,7 +42,7 @@ Current NixOS hosts are `desktop`, `g14`, and `t480s`. Current Home Manager outp
 
 ### `desktop`
 
-`desktop` is the main and default machine.
+`desktop` is the main machine.
 
 It has:
 
@@ -51,7 +51,7 @@ It has:
 - Hyprland and Sway available
 - Hyprland through UWSM as its primary desktop session
 
-If a task does not name a host, assume `desktop` and state that assumption.
+If a task does not name a host, make the change in the appropriate shared configuration under `configs/system` or `configs/home-manager`, using the existing feature module. Edward will explicitly name a host when he wants a host-specific change. Check imports and report which hosts and outputs the shared change affects; do not assume `desktop` is the target.
 
 ### `g14`
 
@@ -118,6 +118,12 @@ Do not modify the following without a confirmed need and a clear understanding o
 - User accounts, authentication, or permissions
 
 Do not perform destructive disk, filesystem, Git, package-store, or generation-cleanup operations unless directly requested.
+
+## Hermes Agent
+
+Hermes may read and edit this repository when Edward asks it to, but it must not add or change packages, skills, plugins, or services in Nix files on its own. For any such change, propose the exact edit and wait for approval. Hermes must not run the prohibited activation commands above.
+
+Hermes works on Edward's projects with the "This device" gateway on `desktop` or `g14`, not on `t480s`. `t480s` Hermes runs only scheduled jobs and ntfy messages.
 
 ## Common Commands
 
@@ -393,9 +399,9 @@ Every repair or streamlining task ends with the structured report described in `
 
 When uncertain:
 
-- Choose `desktop` as the target host if no host was named.
+- Default to the appropriate shared configuration if no host was named; use host-specific configuration when Edward explicitly specifies a host.
 - Inspect imports before deciding whether a change is shared.
-- Keep behavior host-specific unless sharing is clearly intentional.
+- Treat an unspecified host as a request for shared behavior, while preserving hardware-specific and service-safety boundaries.
 - Prefer an existing module over creating a new one.
 - Prefer a small repair over a rewrite.
 - Prefer a targeted build over activation.

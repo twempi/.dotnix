@@ -13,13 +13,8 @@ use crate::logic::panel::{Cover, dismiss, playback, select, uptime_hours};
 use crate::logic::stats::format_time;
 use crate::logic::theme::{Theme, home};
 use crate::looks::sway::ui::{self, BAR_HEIGHT, Placement};
+use crate::looks::tabs::{audio, bluetooth, calendar, controls, network};
 use super::notifications::MARGIN;
-
-mod audio;
-mod bluetooth;
-mod calendar;
-pub mod controls;
-mod network;
 
 use controls::{
     CONTROL_SM, FONT_BODY, FONT_CAPTION, FONT_TITLE, RADIUS_LG, RADIUS_MD, RADIUS_XL, SPACE_MD, SPACE_SM,

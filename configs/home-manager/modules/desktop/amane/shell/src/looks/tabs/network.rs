@@ -227,7 +227,7 @@ fn ap_row(ui: &Ui, ap: &ApRow) -> Rectangle {
 
 fn bucket_header(ui: &Ui, title: &str) -> Row {
     let text = label(title, FONT_MINI, ui.c.variant).weight(Weight::Bold);
-    let width = crate::looks::sway::ui::width_of(&text) + SPACE_SM * 2.0;
+    let width = crate::looks::ui::width_of(&text) + SPACE_SM * 2.0;
 
     Row::new(children![
         Rectangle::new()
@@ -320,7 +320,7 @@ pub fn view(ui: &Ui, width: f32, height: f32) -> Column {
     let tab = NetworkTab::read();
     let network = Network::read();
     let current = current_card(ui, &tab, &network, width);
-    let current_height = crate::looks::sway::ui::height_of(&current);
+    let current_height = crate::looks::ui::height_of(&current);
 
     let list = scroll_view(ui, "network", (width, height - current_height - SPACE_MD), |list_width| {
         let mut column: Vec<Box<dyn Widget>> = Vec::new();

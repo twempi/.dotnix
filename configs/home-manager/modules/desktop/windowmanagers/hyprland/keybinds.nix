@@ -8,7 +8,15 @@
     lua = lib.generators.mkLuaInline;
     toLua = lib.generators.toLua {};
     uwsmApp = "uwsm app --";
-    noctalia = "${config.edward.noctalia.commands.hyprland} msg";
+    wpctl = "${pkgs.wireplumber}/bin/wpctl";
+    brightnessctl = "${pkgs.brightnessctl}/bin/brightnessctl";
+    playerctl = "${pkgs.playerctl}/bin/playerctl";
+
+    # Sway's screenshots: Screenshot-<date>_<time>[-region].png; grimshot's area and screen don't need sway
+    screenshot = pkgs.writeShellScript "hyprland-screenshot" ''
+      exec ${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy "$1" \
+        "${config.home.homeDirectory}/Pictures/Screenshots/Screenshot-$(date +%Y-%m-%d_%H:%M:%S)$2.png"
+    '';
 
     modKey = key: lua ''mod .. " + ${key}"'';
     execCmd = command: lua "hl.dsp.exec_cmd(${toLua command})";
@@ -104,23 +112,22 @@
           (bind (modKey "O") (execLocal "notes"))
           (bind (modKey "N") (execLocal "editor"))
           (bind (modKey "SHIFT + B") (execLocal "bluetooth"))
-          (bind (modKey "SHIFT + N") (execCmd "${noctalia} panel-toggle control-center"))
-          (bind (modKey "Escape") (execCmd "${noctalia} panel-toggle session"))
+          (bind (modKey "SHIFT + N") (execCmd "amane-notifications"))
+          (bind (modKey "Escape") (execCmd "amane-power"))
 
           (bind (modKey "Z") (execLocal "colorPicker"))
-          (bind (modKey "SHIFT + W") (execCmd "${noctalia} panel-toggle wallpaper"))
+          (bind (modKey "SHIFT + W") (execCmd "amane-wallpaper"))
           (bind (modKey "SHIFT + T") (execCmd "theme-switch --pick"))
-          (bind (modKey "SHIFT + R") (execCmd "${noctalia} config-reload"))
-          (bind (modKey "Comma") (execCmd "${noctalia} settings-toggle"))
+          (bind (modKey "SHIFT + R") (execCmd "hyprctl reload"))
 
           # Screenshots
-          (bind (modKey "SHIFT + S") (execCmd "${noctalia} screenshot-region"))
-          (bind "Print" (execCmd "${noctalia} screenshot-fullscreen"))
+          (bind (modKey "SHIFT + S") (execCmd "${screenshot} area -region"))
+          (bind "Print" (execCmd "${screenshot} screen"))
 
           # Launcher / emoji / clipboard
-          (bind (modKey "Space") (execCmd "${noctalia} panel-toggle launcher"))
-          (bind (modKey "U") (execCmd "${noctalia} panel-toggle launcher /emo"))
-          (bind (modKey "Y") (execCmd "${noctalia} panel-toggle clipboard"))
+          (bind (modKey "Space") (execCmd "amane-launcher"))
+          (bind (modKey "U") (execCmd "amane-emoji"))
+          (bind (modKey "Y") (execCmd "amane-clipboard"))
 
           # Move focus with mod + HJKL(Vim keys)
           (bind (modKey "H") (lua ''hl.dsp.focus({ direction = "left" })''))
@@ -150,36 +157,36 @@
           (bindWith (modKey "SHIFT + K") (resize 0 50) {repeating = true;})
 
           # Laptop multimedia keys for volume and LCD brightness
-          (bindWith "XF86AudioLowerVolume" (execCmd "${noctalia} volume-down") {
+          (bindWith "XF86AudioLowerVolume" (execCmd "${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%-") {
             locked = true;
             repeating = true;
           })
-          (bindWith "XF86AudioRaiseVolume" (execCmd "${noctalia} volume-up") {
+          (bindWith "XF86AudioRaiseVolume" (execCmd "${wpctl} set-volume @DEFAULT_AUDIO_SINK@ 5%+") {
             locked = true;
             repeating = true;
           })
-          (bindWith "XF86AudioMute" (execCmd "${noctalia} volume-mute") {
+          (bindWith "XF86AudioMute" (execCmd "${wpctl} set-mute @DEFAULT_AUDIO_SINK@ toggle") {
             locked = true;
             repeating = true;
           })
-          (bindWith "XF86AudioMicMute" (execCmd "${noctalia} mic-mute") {
+          (bindWith "XF86AudioMicMute" (execCmd "${wpctl} set-mute @DEFAULT_AUDIO_SOURCE@ toggle") {
             locked = true;
             repeating = true;
           })
-          (bindWith "XF86MonBrightnessUp" (execCmd "${noctalia} brightness-up") {
+          (bindWith "XF86MonBrightnessUp" (execCmd "${brightnessctl} set 5%+") {
             locked = true;
             repeating = true;
           })
-          (bindWith "XF86MonBrightnessDown" (execCmd "${noctalia} brightness-down") {
+          (bindWith "XF86MonBrightnessDown" (execCmd "${brightnessctl} set 5%-") {
             locked = true;
             repeating = true;
           })
 
           # Requires an active MPRIS player
-          (bindWith "XF86AudioNext" (execCmd "${noctalia} media next") {locked = true;})
-          (bindWith "XF86AudioPause" (execCmd "${noctalia} media toggle") {locked = true;})
-          (bindWith "XF86AudioPlay" (execCmd "${noctalia} media toggle") {locked = true;})
-          (bindWith "XF86AudioPrev" (execCmd "${noctalia} media previous") {locked = true;})
+          (bindWith "XF86AudioNext" (execCmd "${playerctl} next") {locked = true;})
+          (bindWith "XF86AudioPause" (execCmd "${playerctl} play-pause") {locked = true;})
+          (bindWith "XF86AudioPlay" (execCmd "${playerctl} play-pause") {locked = true;})
+          (bindWith "XF86AudioPrev" (execCmd "${playerctl} previous") {locked = true;})
         ]
         ++ builtins.concatLists (map workspaceBind [1 2 3 4 5 6 7 9 10])
         ++ keycodeWorkspaceBinds;

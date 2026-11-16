@@ -1,16 +1,9 @@
-{config, ...}: let
-  inherit (config.flake.modules) homeManager;
-in {
+{
   flake.modules.homeManager.sway = {
     config,
     pkgs,
     ...
   }: {
-    # The Amane shell replaces Waybar, Rofi and SwayNC.
-    imports = with homeManager; [
-      amane
-    ];
-
     stylix.targets.sway.enable = true;
     xdg.userDirs.extraConfig.SCREENSHOTS = "${config.home.homeDirectory}/Pictures/Screenshots";
 
