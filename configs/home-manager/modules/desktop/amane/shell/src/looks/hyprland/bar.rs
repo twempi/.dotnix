@@ -13,17 +13,19 @@ use crate::logic::theme::Theme;
 use crate::logic::tray::{self, Tray};
 use crate::looks::hyprland::panel;
 use crate::looks::hyprland::ui::{self, GAP, ISLAND, TEXT, frame, label};
-use crate::looks::tabs::controls::{glyph, with_alpha};
+use crate::looks::tabs::controls::glyph;
 
 // the room inside an island, either side of its contents
 const INSET: f32 = 12.0;
 
 const GLYPH: f32 = 15.0;
 
-// a workspace is a dot; the one this monitor shows grows into a block
-const DOT: f32 = 8.0;
+// room beside a workspace's number; the one this monitor shows grows into a wider block
+const ROOM: f32 = 12.0;
 
-const BLOCK: f32 = 26.0;
+const WIDE: f32 = 26.0;
+
+const BLOCK: f32 = 20.0;
 
 const GROW: Duration = Duration::from_millis(180);
 
@@ -62,19 +64,11 @@ const BATTERY: [&str; 5] = ["\u{EA34}", "\u{EA2F}", "\u{EA30}", "\u{EA31}", "\u{
 
 const MUSIC: &str = "\u{EAFC}";
 
-const PREVIOUS: &str = "\u{ED4C}";
 
-const PLAY: &str = "\u{ED46}";
-
-const PAUSE: &str = "\u{ED45}";
-
-const NEXT: &str = "\u{ED4B}";
-
-// what only the bar's own input changes: the hovered workspace and the battery's time left
+// what only the bar's own input changes: the hovered workspace
 #[derive(Default)]
 pub struct BarState {
     hovered: Option<(String, i64)>,
-    battery_alt: bool,
 }
 
 impl Service for BarState {
@@ -118,29 +112,37 @@ fn island(content: Row, base: &[Color; 16]) -> Rectangle {
         .child(content.height(Parent))
 }
 
+// the list holds only this monitor's workspaces, so active is the one it shows
 fn marker(workspace: &Workspace, monitor: &str, hovered: bool, base: &[Color; 16]) -> Rectangle {
-    let accent = base[0x0E];
-    let here = workspace.active() && workspace.output() == Some(monitor);
+    let shown = workspace.active();
 
-    let (target, color) = if here && workspace.focused() {
-        (BLOCK, accent)
-    } else if here {
-        (BLOCK, base[5])
-    } else if workspace.active() {
-        // the workspace the other monitor shows
-        (DOT, with_alpha(accent, 0.5))
+    let (fill, color) = if shown && workspace.focused() {
+        (base[0x0E], base[0])
+    } else if shown {
+        (base[2], base[5])
+    } else if workspace.urgent() {
+        (Color::TRANSPARENT, base[8])
     } else if hovered {
-        (DOT, base[5])
+        (Color::TRANSPARENT, base[5])
     } else {
-        (DOT, base[3])
+        (Color::TRANSPARENT, base[4])
     };
 
-    let width = grown(monitor, workspace.id(), target);
+    // a workspace with only a name shows its name
+    let name = if workspace.index() > 0 {
+        workspace.index().to_string()
+    } else {
+        workspace.name().unwrap_or_default().to_string()
+    };
+
+    let text = label(name, TEXT - 1.0, color).weight(Weight::Bold);
+    let room = if shown { WIDE } else { ROOM };
+    let width = grown(monitor, workspace.id(), (ui::width_of(&text) + room).round());
     let id = workspace.id();
     let monitor = monitor.to_string();
 
     Rectangle::new()
-        .width(width + DOT)
+        .width(width)
         .height(Parent)
         .align_child(Center, Center)
         .cursor(Pointer)
@@ -154,10 +156,17 @@ fn marker(workspace: &Workspace, monitor: &str, hovered: bool, base: &[Color; 16
                 state.hovered = None;
             }
         })
-        .child(Rectangle::new().width(width).height(DOT).fill(color))
+        .child(
+            Rectangle::new()
+                .width(width)
+                .height(BLOCK)
+                .fill(fill)
+                .align_child(Center, Center)
+                .child(text),
+        )
 }
 
-// only workspaces with windows, and the empty one a monitor may be showing
+// this monitor's workspaces with windows, and the empty one it may be showing
 fn workspaces(monitor: &str, base: &[Color; 16]) -> Rectangle {
     let workspaces = Workspaces::read();
     let state = BarState::read();
@@ -165,7 +174,7 @@ fn workspaces(monitor: &str, base: &[Color; 16]) -> Rectangle {
     let mut list: Vec<&Workspace> = workspaces
         .list()
         .iter()
-        .filter(|workspace| workspace.windows() > 0 || workspace.active())
+        .filter(|workspace| workspace.output() == Some(monitor) && (workspace.windows() > 0 || workspace.active()))
         .collect();
     list.sort_by_key(|workspace| (workspace.index() == 0, workspace.index(), workspace.name().map(String::from)));
 
@@ -180,7 +189,7 @@ fn workspaces(monitor: &str, base: &[Color; 16]) -> Rectangle {
     island(Row::new(markers), base)
 }
 
-// the song and its controls; nothing at all while no player is up
+// the song alone, its controls are in the panel it opens; nothing at all while no player is up
 fn media(base: &[Color; 16]) -> Option<Rectangle> {
     let media = Media::read();
     media.active()?;
@@ -194,18 +203,6 @@ fn media(base: &[Color; 16]) -> Option<Rectangle> {
     let text = label(song, TEXT, base[5]);
     let width = ui::width_of(&text).min(MEDIA_TEXT).ceil();
 
-    let button = |code: &str, color: Color, action: fn()| {
-        Rectangle::new()
-            .width(22.0)
-            .height(Parent)
-            .align_child(Center, Center)
-            .cursor(Pointer)
-            .on_click(move |_| action())
-            .child(glyph(code, GLYPH, color))
-    };
-
-    let play = if media.playing() { PAUSE } else { PLAY };
-
     let row = Row::new(children![
         glyph(MUSIC, GLYPH, base[0x0E]),
         Rectangle::new()
@@ -215,12 +212,6 @@ fn media(base: &[Color; 16]) -> Option<Rectangle> {
             .cursor(Pointer)
             .on_click(|_| panel::open(Page::Home, true))
             .child(text.elide()),
-        Row::new(children![
-            button(PREVIOUS, base[5], Media::previous),
-            button(play, base[0x0E], Media::play_pause),
-            button(NEXT, base[5], Media::next),
-        ])
-        .height(Parent),
     ])
     .gap(8.0)
     .align(Center);
@@ -228,22 +219,14 @@ fn media(base: &[Color; 16]) -> Option<Rectangle> {
     Some(island(row, base))
 }
 
-// the right island's unit: an icon, then its value when it has one
-fn module(code: &str, value: Option<String>, color: Color, base: &[Color; 16]) -> Rectangle {
-    let mut parts: Vec<Box<dyn Widget>> = vec![Box::new(glyph(code, GLYPH, color))];
-
-    if let Some(value) = value {
-        parts.push(Box::new(label(value, TEXT, base[5])));
-    }
-
-    let row = Row::new(parts).gap(6.0).align(Center);
-
+// the right island's unit, an icon alone; the panel and the hover details have the values
+fn module(code: &str, color: Color) -> Rectangle {
     Rectangle::new()
-        .width(ui::width_of(&row).ceil())
+        .width(GLYPH)
         .height(Parent)
-        .align_child(Start, Center)
+        .align_child(Center, Center)
         .cursor(Pointer)
-        .child(row)
+        .child(glyph(code, GLYPH, color))
 }
 
 fn opens(module: Rectangle, page: Page) -> Rectangle {
@@ -276,12 +259,10 @@ fn bluetooth(base: &[Color; 16]) -> Option<Rectangle> {
         (true, None) => (BLUETOOTH, base[0x0E]),
     };
 
-    let name = connected.map(|device| device.name().chars().take(16).collect());
-
-    Some(opens(module(code, name, color, base), Page::Bluetooth))
+    Some(opens(module(code, color), Page::Bluetooth))
 }
 
-fn battery(battery: &BatteryState, alt: bool, base: &[Color; 16]) -> Rectangle {
+fn battery(battery: &BatteryState, base: &[Color; 16]) -> Rectangle {
     // the states sway's bar uses: warning at 30, critical at 20
     let critical = battery.capacity <= 20;
     let warning = !critical && battery.capacity <= 30;
@@ -301,14 +282,7 @@ fn battery(battery: &BatteryState, alt: bool, base: &[Color; 16]) -> Rectangle {
         base[0x0E]
     };
 
-    let value = if alt { battery.time.clone() } else { format!("{}%", battery.capacity) };
-
-    module(code, Some(value), color, base).on_click(|button| {
-        if button == Button::Left {
-            let mut state = BarState::write();
-            state.battery_alt = !state.battery_alt;
-        }
-    })
+    module(code, color)
 }
 
 fn status(monitor: &str, base: &[Color; 16]) -> Rectangle {
@@ -317,7 +291,6 @@ fn status(monitor: &str, base: &[Color; 16]) -> Rectangle {
     let volume = Volume::read();
     let network = Network::read();
     let brightness = Brightness::read();
-    let state = BarState::read();
     let dnd = NotificationCenter::read().dnd;
     let unread = Notifications::read().list().len();
 
@@ -330,36 +303,31 @@ fn status(monitor: &str, base: &[Color; 16]) -> Rectangle {
         right.push(Box::new(super::tray::icons(monitor)));
     }
 
-    let bell = if dnd { BELL_OFF } else { BELL };
-    let count = (unread > 0).then(|| unread.to_string());
-    right.push(Box::new(opens(module(bell, count, accent, base), Page::Notifications)));
-
     if let Some(bluetooth) = bluetooth(base) {
         right.push(Box::new(bluetooth));
     }
 
-    let (code, color, down) = match network.link() {
-        Link::Offline => (WIFI_OFF, base[3], "off"),
-        Link::Wifi => (WIFI, accent, stats.down.as_str()),
-        Link::Wired => (ETHERNET, accent, stats.down.as_str()),
-        Link::Other => (NETWORK, accent, stats.down.as_str()),
+    let (code, color) = match network.link() {
+        Link::Offline => (WIFI_OFF, base[3]),
+        Link::Wifi => (WIFI, accent),
+        Link::Wired => (ETHERNET, accent),
+        Link::Other => (NETWORK, accent),
     };
-    // as wide as "999.9Mb/s" in the monospaced font, so the island doesn't twitch with the rate
     right.push(Box::new(detailed(
-        opens(module(code, Some(format!("{down:>9}")), color, base), Page::Network),
+        opens(module(code, color), Page::Network),
         Detail::Network,
         monitor,
     )));
 
-    let (code, color, level) = if volume.muted {
-        (VOLUME_OFF, base[8], String::from("muted"))
+    let (code, color) = if volume.muted {
+        (VOLUME_OFF, base[8])
     } else if volume.bluetooth {
-        (HEADPHONES, accent, format!("{}%", volume.percent))
+        (HEADPHONES, accent)
     } else {
-        (VOLUME, accent, format!("{}%", volume.percent))
+        (VOLUME, accent)
     };
     right.push(Box::new(
-        module(code, Some(level), color, base)
+        module(code, color)
             .on_click(|button| match button {
                 Button::Left => panel::open(Page::Audio, false),
                 Button::Middle => amane::spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle"),
@@ -371,21 +339,27 @@ fn status(monitor: &str, base: &[Color; 16]) -> Rectangle {
 
     if brightness.present() {
         right.push(Box::new(
-            module(SUN, Some(format!("{}%", brightness.percent())), accent, base).on_scroll(brightness_scrolled),
+            module(SUN, accent).on_scroll(brightness_scrolled),
         ));
     }
 
     if let Some(battery_state) = &stats.battery {
         right.push(Box::new(detailed(
-            battery(battery_state, state.battery_alt, base),
+            battery(battery_state, base),
             Detail::Battery,
             monitor,
         )));
     }
 
+    // only while there are notifications, last before the clock
+    if unread > 0 {
+        let bell = if dnd { BELL_OFF } else { BELL };
+        right.push(Box::new(opens(module(bell, accent), Page::Notifications)));
+    }
+
     right.push(Box::new(Rectangle::new().width(1.0).height(14.0).fill(base[2])));
 
-    let clock = label(chrono::Local::now().format("%a %b %-d  %H:%M").to_string(), TEXT, accent).weight(Weight::Bold);
+    let clock = label(chrono::Local::now().format("%H:%M").to_string(), TEXT, accent).weight(Weight::Bold);
 
     right.push(Box::new(opens(
         Rectangle::new()

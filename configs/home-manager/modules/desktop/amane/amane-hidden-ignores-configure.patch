@@ -1,0 +1,26 @@
+--- a/src/wayland/layer.rs	2026-11-15 17:06:12.050610185 -0800
++++ b/src/wayland/layer.rs	2026-11-15 17:06:12.060505008 -0800
+@@ -14,6 +14,7 @@
+ use crate::{Horizontal, Keyboard, Layer, LayerWindow, Margin, Vertical, WindowSize, Zone};
+ 
+ use super::WaylandState;
++use super::surface::Role;
+ 
+ // the parts of the window the compositor knows about, kept to see what the next view changes
+ #[derive(Debug, Clone, Copy, PartialEq)]
+@@ -68,6 +69,15 @@
+             return;
+         };
+ 
++        /*
++         * hyprland also configures layer surfaces that are hidden, even ones never
++         * committed; drawing would attach a buffer and map them. Showing commits
++         * without a buffer, which brings a fresh configure on every compositor
++         */
++        if matches!(&window.role, Role::Layer { settings, .. } if !settings.visible) {
++            return;
++        }
++
+         let (width, height) = configure.new_size;
+ 
+         window.resize(width, height);

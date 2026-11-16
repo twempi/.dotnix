@@ -187,6 +187,9 @@ fn menu_row(
         .child(ui::text(label, TEXT - 1.0, MENU_FONT).color(color).elide())
 }
 
+// the island draws these itself, Noctalia hid the same
+const DRAWN: [&str; 3] = ["blueman", "nm-applet", "pasystray"];
+
 // tray icons for the right island: 16 pixel icons, passive items hidden like waybar does
 pub fn icons(monitor: &str) -> Row {
     let tray = Tray::read();
@@ -195,7 +198,7 @@ pub fn icons(monitor: &str) -> Row {
 
     let mut row: Vec<Box<dyn Widget>> = Vec::new();
 
-    for item in tray.items.iter().filter(|item| item.status != "Passive") {
+    for item in tray.items.iter().filter(|item| item.status != "Passive" && !DRAWN.contains(&item.name.as_str())) {
         let icon = item.icon_file.clone().or_else(|| icons.find(&item.icon_name));
 
         let cell = Rectangle::new().width(16.0).height(16.0);

@@ -12,7 +12,7 @@ use crate::logic::notifications::{
 };
 use crate::logic::theme::Theme;
 use crate::logic::tray::strip_markup;
-use crate::looks::sway::ui::{self, BAR_HEIGHT, MENU_FONT, MENU_TEXT};
+use crate::looks::sway::ui::{self, BAR_HEIGHT, MENU_FONT, MENU_TEXT, appear, forget};
 
 // swaync's notification-window-width and notification-icon-size
 const POPUP_WIDTH: f32 = 380.0;
@@ -150,9 +150,12 @@ pub fn popups_view(monitor: &Monitor) -> LayerWindow {
     let theme = Theme::read();
     let main = MainOutput::read();
 
-    let shown = popups(&notifications, &center);
+    let on_main = compositor::shown_on(&main.name, monitor);
+    let shown = if on_main { popups(&notifications, &center) } else { Vec::new() };
     let room = monitor.height as f32 - BAR_HEIGHT - MARGIN * 2.0;
 
+    let prefix = format!("popup:{}:", monitor.name);
+    let mut keys = Vec::new();
     let mut cards: Vec<Box<dyn Widget>> = Vec::new();
     let mut height = 0.0;
 
@@ -164,11 +167,16 @@ pub fn popups_view(monitor: &Monitor) -> LayerWindow {
             break;
         }
 
+        // each card slides in from the right as it arrives
+        let key = format!("{prefix}{}", notification.id());
+        let settled = appear(&key, true);
+        keys.push(key);
+
         height += card_height + 8.0;
-        cards.push(Box::new(card));
+        cards.push(Box::new(card.translate((1.0 - settled) * 24.0, 0.0).opacity(settled)));
     }
 
-    let visible = !cards.is_empty() && compositor::shown_on(&main.name, monitor);
+    forget(|key| key.starts_with(&prefix) && !keys.iter().any(|kept| kept == key));
 
     LayerWindow::new()
         .width(POPUP_WIDTH)
@@ -181,7 +189,7 @@ pub fn popups_view(monitor: &Monitor) -> LayerWindow {
             ..Margin::default()
         })
         .namespace("amane-notifications")
-        .visible(visible)
+        .visible(!cards.is_empty())
         .child(Column::new(cards).gap(8.0))
 }
 

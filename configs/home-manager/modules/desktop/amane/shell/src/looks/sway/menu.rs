@@ -8,7 +8,7 @@ use crate::logic::menu::{
     Desktop, Entry, INPUT, Picker, Style, dismiss, key, picked, scrolled, submitted, typed,
 };
 use crate::logic::theme::Theme;
-use crate::looks::sway::ui::{self, MENU_FONT, MENU_TEXT, Placement};
+use crate::looks::sway::ui::{self, MENU_FONT, MENU_TEXT, Placement, appear, settle};
 
 // 16:9 like the monitors, so a wallpaper's preview shows the crop it gets on screen
 const PREVIEW_ASPECT: f32 = 16.0 / 9.0;
@@ -22,6 +22,7 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
     let _desktop = Desktop::read();
 
     let visible = picker.open() && compositor::shown_on(&picker.monitor, monitor);
+    let settled = appear(&format!("menu:{}", monitor.name), visible);
 
     let (width, gap, padding, element_padding): (f32, f32, f32, f32) = match picker.style {
         Style::List | Style::Themes => (600.0, 0.0, 5.0, 5.0),
@@ -104,15 +105,18 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
 
     sections.push(list);
 
-    let panel = ui::swallow_clicks(
-        Rectangle::new()
-            .width(width)
-            .height(height + padding * 2.0 + 2.0)
-            .fill(base[0])
-            .border(1.0, base[0x0E])
-            .padding(padding + 1.0)
-            .on_scroll(scrolled)
-            .child(Column::new(sections).gap(gap.max(5.0))),
+    let panel = settle(
+        ui::swallow_clicks(
+            Rectangle::new()
+                .width(width)
+                .height(height + padding * 2.0 + 2.0)
+                .fill(base[0])
+                .border(1.0, base[0x0E])
+                .padding(padding + 1.0)
+                .on_scroll(scrolled)
+                .child(Column::new(sections).gap(gap.max(5.0))),
+        ),
+        settled,
     );
 
     ui::overlay("amane-menu", visible, Placement::center(), dismiss, key, panel)

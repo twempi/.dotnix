@@ -21,12 +21,15 @@ rustPlatform.buildRustPackage {
 
   # The shell builds against the pinned flake input, the same library the amane CLI ships.
   # The patches make a dead Wayland connection exit instead of spinning, so systemd restarts it,
-  # and keep the hidden color of transparent pixels out of shrunk icons' edges.
+  # and keep the hidden color of transparent pixels out of shrunk icons' edges. Hyprland configures
+  # hidden layer surfaces too, and drawing on that configure mapped them as invisible full-screen
+  # windows that took every click.
   postUnpack = ''
     cp -r ${amaneSource} "$sourceRoot/amane"
     chmod -R u+w "$sourceRoot/amane"
     patch -d "$sourceRoot/amane" -p1 < ${./amane-exit-on-protocol-error.patch}
     patch -d "$sourceRoot/amane" -p1 < ${./amane-alpha-weighted-shrink.patch}
+    patch -d "$sourceRoot/amane" -p1 < ${./amane-hidden-ignores-configure.patch}
   '';
 
   nativeBuildInputs = [pkg-config];

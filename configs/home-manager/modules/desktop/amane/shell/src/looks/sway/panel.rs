@@ -12,7 +12,7 @@ use crate::logic::panel::calendar::{CalendarState, toggle_events};
 use crate::logic::panel::{Cover, dismiss, playback, select, uptime_hours};
 use crate::logic::stats::format_time;
 use crate::logic::theme::{Theme, home};
-use crate::looks::sway::ui::{self, BAR_HEIGHT, Placement};
+use crate::looks::sway::ui::{self, BAR_HEIGHT, Placement, settle};
 use crate::looks::tabs::{audio, bluetooth, calendar, controls, network};
 use super::notifications::MARGIN;
 
@@ -362,12 +362,16 @@ pub fn view(monitor: &Monitor) -> LayerWindow {
 
     let center = NotificationCenter::read();
     let visible = center.open && compositor::shown_on(&center.monitor, monitor);
+    let settled = ui::appear(&format!("panel:{}", monitor.name), visible);
 
     // the home page reads services that change every second; a hidden panel must not redraw for them
     let panel = if visible {
-        content(center.page, center.dnd)
+        settle(
+            Rectangle::new().width(WIDTH).height(HEIGHT).child(content(center.page, center.dnd)),
+            settled,
+        )
     } else {
-        Stack::new(Vec::new()).width(0.0).height(0.0)
+        Rectangle::new().width(0.0).height(0.0)
     };
 
     ui::overlay(

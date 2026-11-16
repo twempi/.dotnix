@@ -40,6 +40,8 @@ pub struct Item {
     pub bus: String,
     pub path: String,
     owner: String,
+    // the item's own Id, "nm-applet" where the Title says "Network"
+    pub name: String,
     pub title: String,
     pub status: String,
     pub tooltip: String,
@@ -296,6 +298,7 @@ pub fn refresh(item: &mut Item) -> bool {
             .unwrap_or_default()
     };
 
+    item.name = text("Id");
     item.title = text("Title");
     item.status = text("Status");
 

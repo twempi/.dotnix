@@ -5,16 +5,17 @@ use amane::{
 
 use crate::logic::osd::Osd;
 use crate::logic::theme::Theme;
-use crate::looks::sway::ui::{self, MENU_FONT, MENU_TEXT};
+use crate::looks::sway::ui::{self, MENU_FONT, MENU_TEXT, appear, settle};
 
 // shown on every monitor, unlike notifications
-pub fn view(_: &Monitor) -> LayerWindow {
+pub fn view(monitor: &Monitor) -> LayerWindow {
     let osd = Osd::read();
     let theme = Theme::read();
     let base = theme.base;
 
     let (glyph, text, on) = osd.shown.map_or(("", "", false), |(message, _)| message);
     let visible = osd.shown.is_some();
+    let settled = appear(&format!("osd:{}", monitor.name), visible);
 
     // what turned off gets a dim glyph, as Noctalia's inactive lock keys do
     let content = Row::new(children![
@@ -43,7 +44,7 @@ pub fn view(_: &Monitor) -> LayerWindow {
                 .width(Parent)
                 .height(Parent)
                 .align_child(Center, Center)
-                .child(
+                .child(settle(
                     Rectangle::new()
                         .width(width)
                         .height(Parent)
@@ -51,6 +52,7 @@ pub fn view(_: &Monitor) -> LayerWindow {
                         .border(1.0, base[0x0E])
                         .align_child(Center, Center)
                         .child(content),
-                ),
+                    settled,
+                )),
         )
 }

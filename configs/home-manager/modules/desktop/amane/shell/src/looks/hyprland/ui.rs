@@ -1,7 +1,4 @@
-use std::sync::{Mutex, PoisonError};
-use std::time::{Duration, Instant};
-
-use amane::{Color, Rectangle, Text, request_frame};
+use amane::{Color, Rectangle, Text};
 
 pub use crate::looks::ui::*;
 use crate::looks::tabs::controls::Roles;
@@ -22,8 +19,6 @@ pub const BELOW: f32 = GAP + ISLAND + GAP;
 
 // sharp minimal: opaque fills, thin borders, no rounded corners anywhere
 pub const BORDER: f32 = 1.0;
-
-const SETTLE: Duration = Duration::from_millis(160);
 
 pub fn label(content: impl Into<String>, size: f32, color: Color) -> Text {
     text(content, size, BAR_FONT).color(color)
@@ -51,50 +46,4 @@ pub fn roles(base: &[Color; 16]) -> Roles {
 // a floating box: the islands, popups and menus all share it
 pub fn frame(rectangle: Rectangle, base: &[Color; 16]) -> Rectangle {
     rectangle.fill(base[0]).border(BORDER, base[0x0E])
-}
-
-// when each thing on screen first appeared, keyed by what it is and on which monitor
-static SINCE: Mutex<Vec<(String, Instant)>> = Mutex::new(Vec::new());
-
-/*
- * 0 when something has just come on screen, 1 once it has settled; the window keeps
- * drawing frames until then. Only the drawing moves, the layer surface never changes size
- */
-pub fn appear(key: &str, shown: bool) -> f32 {
-    let mut since = SINCE.lock().unwrap_or_else(PoisonError::into_inner);
-    let found = since.iter().position(|(name, _)| name == key);
-
-    if !shown {
-        if let Some(index) = found {
-            since.swap_remove(index);
-        }
-
-        return 1.0;
-    }
-
-    let started = match found {
-        Some(index) => since[index].1,
-        None => {
-            since.push((key.to_string(), Instant::now()));
-            Instant::now()
-        }
-    };
-
-    let progress = (started.elapsed().as_secs_f32() / SETTLE.as_secs_f32()).min(1.0);
-
-    if progress < 1.0 {
-        request_frame();
-    }
-
-    1.0 - (1.0 - progress).powi(3)
-}
-
-// what left the screen without appear(key, false), like a popup that timed out
-pub fn forget(stale: impl Fn(&str) -> bool) {
-    SINCE.lock().unwrap_or_else(PoisonError::into_inner).retain(|(name, _)| !stale(name));
-}
-
-// slides a popup down into place while it fades in
-pub fn settle(rectangle: Rectangle, progress: f32) -> Rectangle {
-    rectangle.translate(0.0, (progress - 1.0) * GAP).opacity(progress)
 }
