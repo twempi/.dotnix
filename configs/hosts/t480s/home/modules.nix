@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  lib,
   withSystem,
   ...
 }: let
@@ -24,5 +25,8 @@ in {
     ];
 
     _module.args.hostname = "t480s";
+
+    # base16-fish recolors the terminal palette on shell start, which leaks into the SSH client's terminal.
+    stylix.targets.fish.enable = lib.mkForce false;
   };
 }
