@@ -123,7 +123,7 @@ Do not perform destructive disk, filesystem, Git, package-store, or generation-c
 
 Hermes may read and edit this repository when Edward asks it to, but it must not add or change packages, skills, plugins, or services in Nix files on its own. For any such change, propose the exact edit and wait for approval. Hermes must not run the prohibited activation commands above.
 
-Hermes works on Edward's projects with the "This device" gateway on `desktop` or `g14`, not on `t480s`. `t480s` Hermes runs only scheduled jobs and ntfy messages.
+Hermes works on Edward's projects with the "This device" gateway on `desktop` or `g14`, not on `t480s`. `t480s` Hermes runs only scheduled jobs and Discord messages.
 
 ## Common Commands
 

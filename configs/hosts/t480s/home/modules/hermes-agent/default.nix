@@ -12,9 +12,8 @@
       enable = true;
       gateway.enable = true;
 
-      # Written by sops from the t480s-hermes-agent NixOS module: NTFY_TOKEN,
-      # DISCORD_BOT_TOKEN, DISCORD_HOME_CHANNEL, DISCORD_ALLOWED_USERS and the
-      # CALENDAR_*_ICS feed URLs.
+      # Written by sops from the t480s-hermes-agent NixOS module: DISCORD_BOT_TOKEN,
+      # DISCORD_HOME_CHANNEL, DISCORD_ALLOWED_USERS and the CALENDAR_*_ICS feed URLs.
       environmentFiles = ["/run/secrets/hermes_env"];
 
       # Browser automation uses a system Chromium on PATH; Hermes's packaged one is not on Nix.
@@ -23,12 +22,6 @@
       environment = {
         # File tools may read the synced notes but only write Hermes' own state.
         HERMES_WRITE_SAFE_ROOT = "/home/edward/.hermes";
-
-        NTFY_SERVER_URL = "http://127.0.0.1:2586";
-        NTFY_TOPIC = "hermes";
-        NTFY_ALLOWED_USERS = "hermes";
-        NTFY_HOME_CHANNEL = "hermes";
-        NTFY_MARKDOWN = "false";
       };
 
       settings = {
