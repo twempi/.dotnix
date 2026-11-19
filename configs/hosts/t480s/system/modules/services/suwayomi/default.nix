@@ -46,6 +46,12 @@
       openFirewall = false;
     };
 
+    # Suwayomi serves the WebUI from /tmp for the lifetime of the process.
+    # Keep tmpfiles from aging out assets for pages that are used infrequently.
+    systemd.tmpfiles.rules = [
+      "x /tmp/Tachidesk/webUI-serve - - - -"
+    ];
+
     systemd.services.tailscale-serve-suwayomi = import ../_tailscale-serve-service.nix {
       inherit pkgs;
       name = "suwayomi";
