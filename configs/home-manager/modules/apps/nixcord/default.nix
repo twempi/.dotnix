@@ -17,7 +17,7 @@
         esac
       done
 
-      exec ${lib.getExe vesktopPackage} "''${args[@]}"
+      exec ${lib.getExe vesktopPackage} --disable-gpu "''${args[@]}"
     '';
   in {
     imports = [

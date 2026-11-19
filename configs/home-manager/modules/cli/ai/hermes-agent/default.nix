@@ -17,8 +17,6 @@
       inputs.hermes-agent.homeManagerModules.default
     ];
 
-    # CLI only. Enabling services.hermes-agent would make the config Nix-managed
-    # and block `hermes setup`, so keys and model stay in ~/.hermes for now.
     programs.hermes-agent = {
       enable = true;
       desktop = {
@@ -26,9 +24,6 @@
       };
     };
 
-    # extraPlugins only accepts plugin.yaml, while REA uses plugin.json.
-    # Link the reviewed trees without making config.yaml Nix-managed.
-    # Enable these through Hermes after activation; settings stay mutable.
     home.file = {
       ".hermes/plugins/rea".source = "${reaPlugins}/rea";
       ".hermes/plugins/memory-wiki".source = "${memoryWikiPlugins}/memory-wiki";
