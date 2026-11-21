@@ -230,8 +230,9 @@
             repeat.times = null;
             enabled = true;
             timezone = "America/Los_Angeles";
-            # A channel named "deals" that the bot can post in, separate from the home channel.
-            deliver = "discord:#deals";
+            # The #deals channel, by ID: Hermes' channel directory on t480s lists no guild channels,
+            # so "discord:#deals" does not resolve.
+            deliver = "discord:1573565206657761300";
             wrap_response = false;
             script = "deals.py";
             # Listing text is written by strangers; keep the agent away from the terminal and files.
