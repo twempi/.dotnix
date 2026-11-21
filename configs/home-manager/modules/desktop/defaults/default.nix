@@ -25,11 +25,6 @@
       mimeApps = {
         enable = true;
 
-        associations.added = {
-          "x-scheme-handler/discord" = ["vesktop.desktop"];
-          "x-scheme-handler/obsidian" = ["obsidian.desktop"];
-        };
-
         defaultApplications = {
           # Web / URLs
           # "text/html" = ["brave-browser.desktop"];

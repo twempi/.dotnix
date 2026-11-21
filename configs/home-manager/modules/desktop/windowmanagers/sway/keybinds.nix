@@ -5,7 +5,7 @@
     lib,
     ...
   }: let
-    # Match noctalia's naming on Hyprland: Screenshot-<date>_<time>[-region].png
+    # Same naming as Hyprland's screenshots: Screenshot-<date>_<time>[-region].png
     screenshot = pkgs.writeShellScript "sway-screenshot" ''
       exec ${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy "$1" \
         "${config.xdg.userDirs.extraConfig.SCREENSHOTS}/Screenshot-$(date +%Y-%m-%d_%H:%M:%S)$2.png"

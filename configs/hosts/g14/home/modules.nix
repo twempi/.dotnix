@@ -22,7 +22,7 @@ in {
       g14-sway
       g14-refresh-rate
       g14-clamshell
-      g14-noctalia-gpu
+      g14-gpu
       g14-fastfetch
     ];
 

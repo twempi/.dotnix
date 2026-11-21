@@ -1338,26 +1338,6 @@
         "type": "github"
       }
     },
-    "noctalia": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1794187544,
-        "narHash": "sha256-TiHcVEPiDsYF399Y0cyW+O4P82EaJ6t6psB4vqprxy4=",
-        "owner": "noctalia-dev",
-        "repo": "noctalia-shell",
-        "rev": "c1249d5db25269df5f4ad735cad39aeeb95e1ea3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "noctalia-dev",
-        "repo": "noctalia-shell",
-        "type": "github"
-      }
-    },
     "nur": {
       "inputs": {
         "flake-parts": [
@@ -1570,7 +1550,6 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_4",
         "nixpkgs-stable": "nixpkgs-stable",
-        "noctalia": "noctalia",
         "pi": "pi",
         "ponytail-plugin": "ponytail-plugin",
         "sops-nix": "sops-nix",

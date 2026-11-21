@@ -62,11 +62,10 @@ in {
       gnome-apps
       networking
       bluetooth
-      # Amane is the shell on Sway and Hyprland; Noctalia stays configured but nothing starts it.
+      # Amane is the shell on Sway and Hyprland.
       amane
       defaults
       gnome-keyring
-      noctalia
       webcam
 
       # Apps
