@@ -26,7 +26,8 @@ OFFERUP_LOCATION = urllib.parse.quote(json.dumps({
 RADIUS_MILES = 15
 # Logged out, Facebook ignores the radius and has no Northridge page, so it covers greater LA.
 FACEBOOK_CITY = "la"
-QUERIES = ["laptop", "macbook", "gaming pc", "graphics card", "rtx", "ryzen", "ssd", "ddr5"]
+# Broad terms; the agent filters out the noise they bring in.
+QUERIES = ["laptop", "desktop", "gaming pc", "pc parts", "computer parts"]
 CRAIGSLIST_CATEGORIES = ["sya", "syp"]  # computers, computer parts
 SEEN = Path.home() / ".hermes/deals-seen.json"
 
@@ -70,9 +71,8 @@ def find_listings(node, found):
             find_listings(value, found)
 
 
-def facebook(query):
-    params = urllib.parse.urlencode({"query": query, "sortBy": "creation_time_descend"})
-    page = fetch(f"https://www.facebook.com/marketplace/{FACEBOOK_CITY}/search?{params}")
+def facebook(path):
+    page = fetch(f"https://www.facebook.com/marketplace/{FACEBOOK_CITY}/{path}")
     found = {}
     for blob in re.findall(r'<script type="application/json"[^>]*>(.*?)</script>', page, re.S):
         find_listings(json.loads(blob), found)
@@ -95,7 +95,9 @@ def slickdeals(_):
 
 
 sources = [(f"OfferUp '{q}'", offerup, q) for q in QUERIES]
-sources += [(f"Facebook '{q}'", facebook, q) for q in QUERIES]
+sources += [(f"Facebook '{q}'", facebook, "search?" + urllib.parse.urlencode({"query": q, "sortBy": "creation_time_descend"})) for q in QUERIES]
+# The computers category holds laptops, desktops and parts whatever their titles say.
+sources += [("Facebook computers", facebook, "computers?sortBy=creation_time_descend")]
 sources += [(f"Craigslist {c}", craigslist, c) for c in CRAIGSLIST_CATEGORIES]
 sources += [("Slickdeals", slickdeals, None)]
 listings = {}
