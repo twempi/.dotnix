@@ -4,6 +4,14 @@
       steam
       steam-unwrapped
       steam-run
+      (lutris.override {
+        extraPkgs = pkgs: [
+          pkgs.wineWow64Packages.stable
+          pkgs.winetricks
+          # Lutris' default wine version is a Proton build, which it launches through umu
+          pkgs.umu-launcher
+        ];
+      })
     ];
 
     programs.steam = {

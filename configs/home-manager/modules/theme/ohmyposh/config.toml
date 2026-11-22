@@ -8,6 +8,21 @@ alignment = 'left'
 newline = true
 
 [[blocks.segments]]
+type = 'session'
+style = 'plain'
+background = 'transparent'
+foreground = 'green'
+template = '{{ if .SSHSession }}󰒋 {{ .HostName }}<darkGray> | </>{{ end }}'
+
+# DEVSHELL_NAME = "<icon> name/<color>|<icon> name/<color>", set by a devenv or nix shell.
+# <color> is a palette name (p:orange), a terminal color (yellow) or hex (#fab387).
+[[blocks.segments]]
+type = 'text'
+style = 'plain'
+background = 'transparent'
+template = '''{{ if .Env.DEVSHELL_NAME }}{{ range splitList "|" .Env.DEVSHELL_NAME }}{{ $p := splitList "/" . }}<{{ last $p }}>{{ initial $p | join "/" }}</><darkGray> | </>{{ end }}{{ end }}'''
+
+[[blocks.segments]]
 type = 'path'
 style = 'plain'
 background = 'transparent'
