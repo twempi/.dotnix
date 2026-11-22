@@ -1952,11 +1952,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1794570850,
-        "narHash": "sha256-aRGnBsilAyZH3ln7qfyvqjxQvg96yQrghgMGu/VZWXM=",
+        "lastModified": 1795329249,
+        "narHash": "sha256-sRLoQ4h+AVBMJYoxpotS/yBlmhRSVi5vKUWBxJckTp0=",
         "owner": "twempi",
         "repo": "nix-inputs",
-        "rev": "21531bffe548776a8ebc7d3b6ee41dbaca07b5c7",
+        "rev": "ced90ce82bfeffe43df62703528a09c9781f0f55",
         "type": "github"
       },
       "original": {
