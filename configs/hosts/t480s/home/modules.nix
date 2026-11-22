@@ -21,6 +21,7 @@ in {
     imports = with homeManager; [
       profile-server
       t480s-fastfetch
+      hermes-agent
       t480s-hermes-agent
     ];
 

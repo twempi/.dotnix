@@ -37,7 +37,7 @@
         # "Mod4+B" = "exec zen-beta";
         "Mod4+B" = "exec helium";
         "Mod4+E" = "exec ${pkgs.foot}/bin/foot -e ${pkgs.yazi}/bin/yazi";
-        "Mod4+Shift+E" = "exec ${pkgs.nautilus}/bin/nautilus";
+        "Mod4+Shift+E" = "exec ${pkgs.nemo}/bin/nemo";
         "Mod4+M" = "exec spotify";
         "Mod4+O" = "exec ${pkgs.obsidian}/bin/obsidian";
         "Mod4+N" = "exec ${pkgs.foot}/bin/foot -e nvim";

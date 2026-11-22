@@ -1,15 +1,11 @@
-{inputs, ...}: {
+{
   flake.modules.homeManager.t480s-hermes-agent = {pkgs, ...}: {
-    imports = [
-      inputs.hermes-agent.homeManagerModules.default
-    ];
-
-    programs.hermes-agent.enable = true;
+    # The shared settings, SOUL.md and the Hindsight plugin come from the hermes-agent module.
+    programs.hermes-agent.desktop.enable = false;
 
     home.packages = [pkgs.python3];
 
     services.hermes-agent = {
-      enable = true;
       gateway.enable = true;
 
       # Written by sops from the t480s-hermes-agent NixOS module: DISCORD_BOT_TOKEN,
@@ -20,38 +16,27 @@
       extraPackages = [pkgs.chromium];
 
       environment = {
-        # File tools may read the synced notes but only write Hermes' own state.
-        HERMES_WRITE_SAFE_ROOT = "/home/edward/.hermes";
+        # File tools may read the synced notes but only write Hermes' own state and the shared skills.
+        HERMES_WRITE_SAFE_ROOT = "/home/edward/.hermes:/home/edward/Documents/hermes-skills";
       };
 
       settings = {
+        # The gateway and cron jobs are light work, so a cheap model.
         model = {
-          default = "gpt-6.1-sol";
+          default = "gpt-6-luna";
           provider = "openai-codex";
           base_url = "https://chatgpt.com/backend-api/codex";
         };
 
-        timezone = "America/Los_Angeles";
-
-        approvals.mode = "smart";
-
-        agent.reasoning_effort = "medium";
-
-        memory = {
-          memory_enabled = true;
-          user_profile_enabled = true;
-          write_approval = false;
-        };
-
         terminal.env_passthrough = ["CALENDAR_PERSONAL_ICS" "CALENDAR_SCHOOL_ICS"];
-
-        # OpenAI Native search cannot read pages. Firecrawl is the documented
-        # default extractor and works without a key when selected.
-        web.extract_backend = "firecrawl";
       };
 
-      # Hermes reads SOUL.md from HERMES_HOME. Replaced on every activation.
-      hermesHomeFiles."SOUL.md" = ./SOUL.md;
+      # The server runs on this host; its Tailscale Service address is for the other machines.
+      hermesHomeFiles."hindsight/config.json" = builtins.toJSON {
+        mode = "local_external";
+        api_url = "http://127.0.0.1:8888";
+        bank_id = "hermes";
+      };
 
       # Pre-run script for the local-deals job: prints only listings not seen before.
       # Facebook is searched logged out, so no account or cookie is needed.
