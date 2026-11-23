@@ -1,5 +1,8 @@
+import base64
+import functools
 import html
 import json
+import os
 import re
 import urllib.parse
 import urllib.request
@@ -29,6 +32,7 @@ FACEBOOK_CITY = "la"
 # Broad terms; the agent filters out the noise they bring in.
 QUERIES = ["laptop", "desktop", "gaming pc", "pc parts", "computer parts"]
 CRAIGSLIST_CATEGORIES = ["sya", "syp"]  # computers, computer parts
+EBAY_CATEGORY = "58058"  # Computers/Tablets & Networking
 SEEN = Path.home() / ".hermes/deals-seen.json"
 
 
@@ -94,12 +98,37 @@ def slickdeals(_):
         yield item.findtext("link").split("?")[0], item.findtext("title"), "in title", "online"
 
 
+@functools.cache
+def ebay_token():
+    # App token from the client credentials grant; EBAY_CLIENT_ID and EBAY_CLIENT_SECRET come from hermes_env.
+    credentials = base64.b64encode(f"{os.environ['EBAY_CLIENT_ID']}:{os.environ['EBAY_CLIENT_SECRET']}".encode()).decode()
+    body = urllib.parse.urlencode({"grant_type": "client_credentials", "scope": "https://api.ebay.com/oauth/api_scope"}).encode()
+    request = urllib.request.Request("https://api.ebay.com/identity/v1/oauth2/token", body,
+                                     {"Authorization": "Basic " + credentials, "Content-Type": "application/x-www-form-urlencoded"})
+    return json.load(urllib.request.urlopen(request, timeout=30))["access_token"]
+
+
+def ebay(query):
+    params = urllib.parse.urlencode({
+        "q": query, "category_ids": EBAY_CATEGORY, "sort": "newlyListed", "limit": 50,
+        "filter": "buyingOptions:{FIXED_PRICE},conditions:{USED},itemLocationCountry:US,deliveryCountry:US",
+    })
+    request = urllib.request.Request("https://api.ebay.com/buy/browse/v1/item_summary/search?" + params,
+                                     headers={"Authorization": "Bearer " + ebay_token(), "X-EBAY-C-MARKETPLACE-ID": "EBAY_US"})
+    for item in json.load(urllib.request.urlopen(request, timeout=30)).get("itemSummaries", []):
+        shipping = ((item.get("shippingOptions") or [{}])[0].get("shippingCost") or {}).get("value", "?")
+        # The link's query string is tracking; dropping it keeps the seen list stable.
+        yield (item["itemWebUrl"].split("?")[0], item["title"],
+               f"${item['price']['value']} + ${shipping} shipping", "shipped")
+
+
 sources = [(f"OfferUp '{q}'", offerup, q) for q in QUERIES]
 sources += [(f"Facebook '{q}'", facebook, "search?" + urllib.parse.urlencode({"query": q, "sortBy": "creation_time_descend"})) for q in QUERIES]
 # The computers category holds laptops, desktops and parts whatever their titles say.
 sources += [("Facebook computers", facebook, "computers?sortBy=creation_time_descend")]
 sources += [(f"Craigslist {c}", craigslist, c) for c in CRAIGSLIST_CATEGORIES]
 sources += [("Slickdeals", slickdeals, None)]
+sources += [(f"eBay '{q}'", ebay, q) for q in QUERIES]
 listings = {}
 for name, source, arg in sources:
     try:

@@ -9,7 +9,8 @@
       gateway.enable = true;
 
       # Written by sops from the t480s-hermes-agent NixOS module: DISCORD_BOT_TOKEN,
-      # DISCORD_HOME_CHANNEL, DISCORD_ALLOWED_USERS and the CALENDAR_*_ICS feed URLs.
+      # DISCORD_HOME_CHANNEL, DISCORD_ALLOWED_USERS, the CALENDAR_*_ICS feed URLs and
+      # EBAY_CLIENT_ID/EBAY_CLIENT_SECRET (production App ID and Cert ID) for deals.py.
       environmentFiles = ["/run/secrets/hermes_env"];
 
       # Browser automation uses a system Chromium on PATH; Hermes's packaged one is not on Nix.
@@ -28,7 +29,8 @@
           base_url = "https://chatgpt.com/backend-api/codex";
         };
 
-        terminal.env_passthrough = ["CALENDAR_PERSONAL_ICS" "CALENDAR_SCHOOL_ICS"];
+        # Hermes scrubs secrets from the terminal and cron scripts unless they are listed here.
+        terminal.env_passthrough = ["CALENDAR_PERSONAL_ICS" "CALENDAR_SCHOOL_ICS" "EBAY_CLIENT_ID" "EBAY_CLIENT_SECRET"];
       };
 
       # The server runs on this host; its Tailscale Service address is for the other machines.
