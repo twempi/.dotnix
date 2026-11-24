@@ -13,9 +13,12 @@
     playerctl = "${pkgs.playerctl}/bin/playerctl";
 
     # Sway's screenshots: Screenshot-<date>_<time>[-region].png; grimshot's area and screen don't need sway
+    # wayfreeze shows a frozen copy of the screen first, so menus that close when slurp grabs input stay in the shot.
+    # After exec, $$ is wayfreeze's PID; killing it unfreezes once grimshot finishes or is cancelled.
     screenshot = pkgs.writeShellScript "hyprland-screenshot" ''
-      exec ${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy "$1" \
-        "${config.home.homeDirectory}/Pictures/Screenshots/Screenshot-$(date +%Y-%m-%d_%H:%M:%S)$2.png"
+      file="${config.home.homeDirectory}/Pictures/Screenshots/Screenshot-$(date +%Y-%m-%d_%H:%M:%S)$2.png"
+      exec ${pkgs.wayfreeze}/bin/wayfreeze --hide-cursor --after-freeze-cmd \
+        "${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy '$1' '$file'; kill $$"
     '';
 
     modKey = key: lua ''mod .. " + ${key}"'';

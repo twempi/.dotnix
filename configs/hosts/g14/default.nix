@@ -27,7 +27,7 @@ in {
     ];
 
     networking = {
-      networkmanager.wifi.powersave = true;
+      networkmanager.wifi.powersave = false;
       hostName = "g14";
     };
 

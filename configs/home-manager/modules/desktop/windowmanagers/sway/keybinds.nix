@@ -6,9 +6,12 @@
     ...
   }: let
     # Same naming as Hyprland's screenshots: Screenshot-<date>_<time>[-region].png
+    # wayfreeze shows a frozen copy of the screen first, so menus that close when slurp grabs input stay in the shot.
+    # After exec, $$ is wayfreeze's PID; killing it unfreezes once grimshot finishes or is cancelled.
     screenshot = pkgs.writeShellScript "sway-screenshot" ''
-      exec ${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy "$1" \
-        "${config.xdg.userDirs.extraConfig.SCREENSHOTS}/Screenshot-$(date +%Y-%m-%d_%H:%M:%S)$2.png"
+      file="${config.xdg.userDirs.extraConfig.SCREENSHOTS}/Screenshot-$(date +%Y-%m-%d_%H:%M:%S)$2.png"
+      exec ${pkgs.wayfreeze}/bin/wayfreeze --hide-cursor --after-freeze-cmd \
+        "${pkgs.sway-contrib.grimshot}/bin/grimshot --notify savecopy '$1' '$file'; kill $$"
     '';
   in {
     wayland.windowManager.sway.config = {

@@ -27,7 +27,8 @@ has_connector_prefix() {
     connector_name="${connector_path##*/}"
     connector_name="${connector_name#"$card"-}"
 
-    if [[ "$connector_name" == "$prefix"* ]]; then
+    # Both G14 GPUs expose an eDP connector; only the one wired to the panel (MUX state) is "connected".
+    if [[ "$connector_name" == "$prefix"* && "$(cat "$connector_path/status" 2>/dev/null)" == connected ]]; then
       return 0
     fi
   done
