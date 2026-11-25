@@ -10,15 +10,16 @@ use crate::logic::compositor;
 use crate::logic::notifications::{self, NotificationCenter, Page, Tick};
 use crate::logic::panel::bluetooth::start_agent;
 use crate::logic::panel::calendar::{CalendarState, toggle_events};
+use crate::logic::panel::usage::{self as usage_logic, UsageState};
 use crate::logic::panel::{Cover, dismiss, playback, select, uptime_hours};
 use crate::logic::stats::format_time;
 use crate::logic::theme::{Theme, home};
 use crate::looks::hyprland::ui::{self, BELOW, GAP, Placement, settle};
 use crate::looks::tabs::controls::{
     CONTROL_SM, FONT_BODY, FONT_CAPTION, FONT_TITLE, SPACE_MD, SPACE_SM, SPACE_XS, Ui, Variant, glyph,
-    hoverable, icon_button, label, look, sized_card,
+    disabled, hoverable, icon_button, label, look, sized_card,
 };
-use crate::looks::tabs::{audio, bluetooth, calendar, network};
+use crate::looks::tabs::{audio, bluetooth, calendar, network, usage};
 
 // the size sway's panel gives the tabs, which they are laid out for
 const CONTENT: f32 = 497.0;
@@ -73,12 +74,13 @@ const GLYPH_BELL: &str = "\u{EA35}";
 
 const GLYPH_BELL_OFF: &str = "\u{ECE9}";
 
-const TAB_LIST: [(Page, &str); 6] = [
+const TAB_LIST: [(Page, &str); 7] = [
     (Page::Home, "\u{EAC1}"),
     (Page::Audio, "\u{EB51}"),
     (Page::Network, GLYPH_WIFI),
     (Page::Bluetooth, GLYPH_BLUETOOTH),
     (Page::Calendar, "\u{EA52}"),
+    (Page::Usage, usage::GLYPH_USAGE),
     (Page::Notifications, GLYPH_BELL),
 ];
 
@@ -138,13 +140,14 @@ fn header_action(ui: &Ui, code: &str, variant: Variant) -> Rectangle {
     icon_button(ui, format!("action:{code}"), code, (CONTROL_SM, 14.0, 0.0), variant)
 }
 
-fn header(ui: &Ui, page: Page, events_shown: bool) -> Row {
+fn header(ui: &Ui, page: Page, events_shown: bool, usage_loading: bool) -> Row {
     let title = match page {
         Page::Home => "HOME",
         Page::Audio => "AUDIO",
         Page::Network => "NETWORK",
         Page::Bluetooth => "BLUETOOTH",
         Page::Calendar => "CALENDAR",
+        Page::Usage => "USAGE",
         Page::Notifications => "NOTIFICATIONS",
     };
 
@@ -165,6 +168,16 @@ fn header(ui: &Ui, page: Page, events_shown: bool) -> Row {
         };
 
         actions.push(Box::new(header_action(ui, code, variant).on_click(|_| toggle_events())));
+    }
+
+    if page == Page::Usage {
+        let refresh = header_action(ui, usage::GLYPH_REFRESH, Variant::Outline);
+
+        actions.push(Box::new(if usage_loading {
+            disabled(refresh)
+        } else {
+            refresh.on_click(|_| usage_logic::refresh())
+        }));
     }
 
     actions.push(Box::new(
@@ -350,6 +363,7 @@ fn content(page: Page, dnd: bool) -> Stack {
     let ui = Ui::with(ui::roles(&theme.base), true);
     let calendar = CalendarState::read();
     let events_shown = calendar.events;
+    let usage_state = UsageState::read();
 
     let body: Box<dyn Widget> = match page {
         Page::Home => Box::new(home_page(&ui, dnd)),
@@ -357,6 +371,7 @@ fn content(page: Page, dnd: bool) -> Stack {
         Page::Network => Box::new(network::view(&ui, CONTENT, BODY)),
         Page::Bluetooth => Box::new(bluetooth::view(&ui, CONTENT, BODY)),
         Page::Calendar => Box::new(calendar::view(&ui, &calendar, CONTENT, BODY)),
+        Page::Usage => Box::new(usage::view(&ui, &usage_state, CONTENT, BODY)),
         Page::Notifications => Box::new(super::notifications::page(&ui, CONTENT, dnd, &theme.base)),
     };
 
@@ -366,7 +381,7 @@ fn content(page: Page, dnd: bool) -> Stack {
         ui::frame(Rectangle::new().width(WIDTH).height(HEIGHT), &theme.base)
             .padding(PADDING)
             .child(
-                Column::new(children![tabs(&ui, page), header(&ui, page, events_shown), body])
+                Column::new(children![tabs(&ui, page), header(&ui, page, events_shown, usage_state.loading), body])
                     .width(CONTENT)
                     .height(Parent)
                     .gap(SPACE_MD),

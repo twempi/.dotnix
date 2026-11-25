@@ -9,16 +9,17 @@ use crate::logic::compositor;
 use crate::logic::notifications::{self, NotificationCenter, Page, Tick};
 use crate::logic::panel::bluetooth::start_agent;
 use crate::logic::panel::calendar::{CalendarState, toggle_events};
+use crate::logic::panel::usage::{self as usage_logic, UsageState};
 use crate::logic::panel::{Cover, dismiss, playback, select, uptime_hours};
 use crate::logic::stats::format_time;
 use crate::logic::theme::{Theme, home};
 use crate::looks::sway::ui::{self, BAR_HEIGHT, Placement, settle};
-use crate::looks::tabs::{audio, bluetooth, calendar, controls, network};
+use crate::looks::tabs::{audio, bluetooth, calendar, controls, network, usage};
 use super::notifications::MARGIN;
 
 use controls::{
     CONTROL_SM, FONT_BODY, FONT_CAPTION, FONT_TITLE, RADIUS_LG, RADIUS_MD, RADIUS_XL, SPACE_MD, SPACE_SM,
-    SPACE_XS, Ui, Variant, glyph, icon_button, label, look, sized_card,
+    SPACE_XS, Ui, Variant, disabled, glyph, icon_button, label, look, sized_card,
 };
 
 // Noctalia's control center frame: a sidebar of tabs beside a header and the tab's body
@@ -66,12 +67,13 @@ const GLYPH_BELL: &str = "\u{EA35}";
 
 const GLYPH_BELL_OFF: &str = "\u{ECE9}";
 
-const TABS: [(Page, &str); 6] = [
+const TABS: [(Page, &str); 7] = [
     (Page::Home, "\u{EAC1}"),
     (Page::Audio, "\u{EB51}"),
     (Page::Network, GLYPH_WIFI),
     (Page::Bluetooth, GLYPH_BLUETOOTH),
     (Page::Calendar, "\u{EA52}"),
+    (Page::Usage, usage::GLYPH_USAGE),
     (Page::Notifications, GLYPH_BELL),
 ];
 
@@ -95,13 +97,14 @@ fn header_action(ui: &Ui, code: &str, variant: Variant) -> Rectangle {
     icon_button(ui, format!("action:{code}"), code, (CONTROL_SM, 14.0, RADIUS_MD), variant)
 }
 
-fn header(ui: &Ui, page: Page, events_shown: bool) -> Row {
+fn header(ui: &Ui, page: Page, events_shown: bool, usage_loading: bool) -> Row {
     let title = match page {
         Page::Home => "Home",
         Page::Audio => "Audio",
         Page::Network => "Network",
         Page::Bluetooth => "Bluetooth",
         Page::Calendar => "Calendar",
+        Page::Usage => "Usage",
         Page::Notifications => "Notifications",
     };
 
@@ -124,6 +127,16 @@ fn header(ui: &Ui, page: Page, events_shown: bool) -> Row {
         actions.push(Box::new(
             header_action(ui, code, variant).on_click(|_| toggle_events()),
         ));
+    }
+
+    if page == Page::Usage {
+        let refresh = header_action(ui, usage::GLYPH_REFRESH, Variant::Default);
+
+        actions.push(Box::new(if usage_loading {
+            disabled(refresh)
+        } else {
+            refresh.on_click(|_| usage_logic::refresh())
+        }));
     }
 
     actions.push(Box::new(
@@ -315,6 +328,7 @@ fn content(page: Page, dnd: bool) -> Stack {
     let ui = Ui::new(&theme.base);
     let calendar = CalendarState::read();
     let events_shown = calendar.events;
+    let usage_state = UsageState::read();
 
     let body: Box<dyn Widget> = match page {
         Page::Home => Box::new(home_page(&ui, dnd)),
@@ -322,6 +336,7 @@ fn content(page: Page, dnd: bool) -> Stack {
         Page::Network => Box::new(network::view(&ui, CONTENT, BODY)),
         Page::Bluetooth => Box::new(bluetooth::view(&ui, CONTENT, BODY)),
         Page::Calendar => Box::new(calendar::view(&ui, &calendar, CONTENT, BODY)),
+        Page::Usage => Box::new(usage::view(&ui, &usage_state, CONTENT, BODY)),
         Page::Notifications => Box::new(super::notifications::page(CONTENT, dnd, &theme.base)),
     };
 
@@ -339,7 +354,7 @@ fn content(page: Page, dnd: bool) -> Stack {
             .child(
                 Row::new(children![
                     sidebar(&ui, page),
-                    Column::new(children![header(&ui, page, events_shown), body])
+                    Column::new(children![header(&ui, page, events_shown, usage_state.loading), body])
                         .width(CONTENT)
                         .height(Parent)
                         .gap(SPACE_MD),

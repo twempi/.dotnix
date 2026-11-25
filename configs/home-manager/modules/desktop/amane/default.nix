@@ -26,6 +26,11 @@
       makeWrapperArgs = ["--prefix" "PATH" ":" "${pkgs.libnotify}/bin"];
     } (builtins.readFile ./scripts/calendar.py);
 
+    # The usage tab's Claude and Codex limits, from the agents' own sign-ins; see the script.
+    usage = pkgs.writers.writePython3Bin "amane-usage" {
+      flakeIgnore = ["E501"];
+    } (builtins.readFile ./scripts/usage.py);
+
     # The shell's icon font, family "noctalia-tabler-icons", from the Noctalia shell it was modelled on.
     tablerIconFont = pkgs.linkFarm "noctalia-tabler-font" {
       "noctalia-tabler.ttf" = pkgs.fetchurl {
@@ -83,6 +88,7 @@
       pkgs.nerd-fonts.jetbrains-mono
 
       calendar
+      usage
 
       (pkgs.writeShellApplication {
         name = "amane-launcher";

@@ -14,6 +14,7 @@ pub enum Page {
     Network,
     Bluetooth,
     Calendar,
+    Usage,
     Notifications,
 }
 

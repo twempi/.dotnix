@@ -72,6 +72,7 @@ pub struct Roles {
     pub outline: Color,
     pub error: Color,
     pub on_error: Color,
+    pub orange: Color,
     pub calendars: [Color; 8],
 }
 
@@ -91,6 +92,8 @@ impl Roles {
             outline: base[0x03],
             error: base[0x08],
             on_error: base[0x00],
+            // the scheme's orange, which the usage tab gives Claude
+            orange: base[0x09],
             // one per calendar, in Google's order, starting with the accent
             calendars: [base[0x0E], base[0x0D], base[0x0B], base[0x09], base[0x0C], base[0x08], base[0x0A], base[0x0F]],
         }

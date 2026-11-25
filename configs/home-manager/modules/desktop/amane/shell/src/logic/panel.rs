@@ -15,6 +15,7 @@ pub mod audio;
 pub mod bluetooth;
 pub mod calendar;
 pub mod network;
+pub mod usage;
 
 // the current track's cover as a file, because Amane only draws local images
 #[derive(Default)]
@@ -122,6 +123,7 @@ pub fn entered(page: Page) {
         Page::Bluetooth => bluetooth::entered(),
         Page::Network => network::entered(),
         Page::Calendar => calendar::reset(),
+        Page::Usage => usage::refresh(),
         _ => {}
     }
 }
