@@ -1,5 +1,9 @@
 {
-  flake.modules.homeManager.t480s-hermes-agent = {pkgs, ...}: {
+  flake.modules.homeManager.t480s-hermes-agent = {
+    pkgs,
+    lib,
+    ...
+  }: {
     # The shared settings, SOUL.md and the Hindsight plugin come from the hermes-agent module.
     programs.hermes-agent.desktop.enable = false;
 
@@ -18,7 +22,14 @@
 
       environment = {
         # File tools may read the synced notes but only write Hermes' own state and the shared skills.
-        HERMES_WRITE_SAFE_ROOT = "/home/edward/.hermes:/home/edward/Documents/hermes-skills";
+        HERMES_WRITE_SAFE_ROOT = lib.concatStringsSep ":" [
+          "/home/edward/.hermes"
+          "/home/edward/Documents/hermes-skills"
+          # The morning and weekly jobs add and tick tasks here (see jobs.nix).
+          "/home/edward/Documents/notes/300 Personal/Daily"
+          "/home/edward/Documents/notes/300 Personal/Weekly"
+          "/home/edward/Documents/notes/100 School/School To Do's.md"
+        ];
       };
 
       settings = {

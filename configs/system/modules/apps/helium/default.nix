@@ -25,6 +25,7 @@
         HomepageIsNewTabPage = true;
         MetricsReportingEnabled = false;
         PasswordManagerEnabled = false;
+        PromptForDownloadLocation = false;
         RestoreOnStartup = 5;
         SearchSuggestEnabled = true;
         ShowHomeButton = false;
