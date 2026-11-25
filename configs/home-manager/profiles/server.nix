@@ -9,6 +9,7 @@ in {
       bat
       btop
       fish
+      lazygit
       ssh
       clipboard
       tmux
