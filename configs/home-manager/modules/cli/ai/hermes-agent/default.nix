@@ -38,6 +38,18 @@
   in {
     imports = [
       inputs.hermes-agent.homeManagerModules.default
+      # Desktop sessions need model.default; with nous.guest off there is no trial-model fallback.
+      # settings merges with recursiveUpdate in definition order (mkDefault is not resolved inside it),
+      # so mkBefore lets a host's own settings.model (t480s) win. /model still switches per session.
+      {
+        services.hermes-agent.settings = lib.mkBefore {
+          model = {
+            default = "gpt-6.2-sol";
+            provider = "openai-codex";
+            base_url = "https://chatgpt.com/backend-api/codex";
+          };
+        };
+      }
     ];
 
     programs.hermes-agent = {
@@ -54,10 +66,9 @@
 
       extraPythonPackages = [hindsightClient];
 
-      # No model here: on desktop and g14 it is picked per task with /model or `hermes model`,
-      # which writes config.yaml, and keys left undeclared survive activation.
       settings = {
         timezone = "America/Los_Angeles";
+        nous.guest = false;
 
         approvals.mode = "smart";
 
@@ -77,6 +88,9 @@
         # OpenAI Native search cannot read pages. Firecrawl is the documented
         # default extractor and works without a key when selected.
         web.extract_backend = "firecrawl";
+
+        # Plugins are opt-in. This list replaces one written by `hermes plugins enable`.
+        plugins.enabled = ["ponytail"];
       };
 
       # Hermes reads SOUL.md from HERMES_HOME. Replaced on every activation.
@@ -92,6 +106,8 @@
     home.file = {
       ".hermes/plugins/rea".source = "${reaPlugins}/rea";
       ".hermes/plugins/memory-wiki".source = "${memoryWikiPlugins}/memory-wiki";
+      # Injects the ponytail ruleset before each model call, like the Claude Code and Codex hooks.
+      ".hermes/plugins/ponytail".source = inputs.ponytail-plugin;
       # Memory providers are found by directory name, so this is not an extraPlugins entry
       # (those are linked as nix-managed-<name>).
       ".hermes/plugins/hindsight".source = "${hindsightSrc}/hindsight-integrations/hermes";

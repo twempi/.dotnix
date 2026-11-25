@@ -27,6 +27,7 @@ in {
       hyprland
 
       anki
+      codex
       calendar
       appimage
       handy

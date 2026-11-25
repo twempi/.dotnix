@@ -34,6 +34,22 @@
       extensions.theme.id = "user_color_theme_id";
     };
 
+    # Canvas Local Archive's native host also serves the Stylix palette to the
+    # extension's side panel, so each theme-switcher specialisation reaches it.
+    # Only arguments the pinned helper accepts are passed: older pins lack the theme ones.
+    canvasArchiveHost = let
+      pdfHost = inputs.twempi.lib.canvas-local-archive.pdfHost;
+    in
+      pdfHost (builtins.intersectAttrs (lib.functionArgs pdfHost) {
+        inherit pkgs;
+        colors = config.lib.stylix.colors;
+        fonts = {
+          sansSerif = config.stylix.fonts.sansSerif.name;
+          monospace = config.stylix.fonts.monospace.name;
+        };
+        polarity = config.stylix.polarity;
+      });
+
     profilePreferences = import ./_preferences.nix;
 
     # Helium reads Preferences only at startup and rewrites them on exit, so the
@@ -94,8 +110,8 @@
 
     xdg.configFile =
       extensions.webStore.configFiles
-      # Native messaging host: Canvas Local Archive converts Office files to PDF with LibreOffice.
-      // (inputs.twempi.lib.canvas-local-archive.pdfHost {inherit pkgs;}).configFiles
+      # Native messaging host: Canvas Local Archive's PDF conversion and Stylix palette.
+      // canvasArchiveHost.configFiles
       // {
         "helium/theme-preferences.json".text = builtins.toJSON themePreferences;
       };

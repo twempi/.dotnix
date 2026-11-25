@@ -237,11 +237,11 @@
     "canvas-scraper-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1794436760,
-        "narHash": "sha256-MC+TVri7TQTZdwGSgP5wjFAg6L3Qdn+H8KjBn5TD5Dk=",
+        "lastModified": 1795573413,
+        "narHash": "sha256-5TO/G1MYz03E/LWieQs99+zRmckqfC96a23pPhbxgEk=",
         "owner": "twempi",
         "repo": "canvas-scraper",
-        "rev": "925cd010d876ab31d4e4cac26608a8e819edf96e",
+        "rev": "a3ffd42a4cb794011c3dc41b60983cf924d07801",
         "type": "github"
       },
       "original": {
@@ -1952,11 +1952,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1795329249,
-        "narHash": "sha256-sRLoQ4h+AVBMJYoxpotS/yBlmhRSVi5vKUWBxJckTp0=",
+        "lastModified": 1795573416,
+        "narHash": "sha256-ydiuNLkmPH1cnI+ySE/Hwa/70kbM5JYY4ND2Z1Jjeb0=",
         "owner": "twempi",
         "repo": "nix-inputs",
-        "rev": "ced90ce82bfeffe43df62703528a09c9781f0f55",
+        "rev": "760342fd4ba9e9634754f81221119942f411ba88",
         "type": "github"
       },
       "original": {
