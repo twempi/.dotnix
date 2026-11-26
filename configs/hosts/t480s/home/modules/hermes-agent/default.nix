@@ -54,6 +54,10 @@
       # Pre-run script for the local-deals job: prints only listings not seen before.
       # Facebook is searched logged out, so no account or cookie is needed.
       hermesHomeFiles."scripts/deals.py" = ./deals.py;
+
+      # Pre-run script for the morning-briefing and weekly-deadlines jobs: expanded calendar
+      # events, weather and the vault's tracked tasks, so the agent does not parse .ics itself.
+      hermesHomeFiles."scripts/deadlines.py" = ./deadlines.py;
     };
   };
 }

@@ -55,6 +55,7 @@ in {
       hermes-agent
       pomodoro
       awww
+      spotatui
 
       # Desktop
       audio
