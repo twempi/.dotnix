@@ -1,6 +1,7 @@
 {inputs, ...}: {
   flake.modules.homeManager.librewolf = {
     config,
+    hostname,
     lib,
     pkgs,
     ...
@@ -12,7 +13,7 @@
     themedXpis = lib.mapAttrs (id: args: mkXpi (args // {inherit id;})) {
       "startpage@local" = {
         src = import ../helium/_extensions/custom-startpage.nix {
-          inherit config inputs pkgs;
+          inherit config hostname inputs pkgs;
           startpageOrigin = "https://t480s.tailae03d0.ts.net";
         };
         # Without Google Fonts the page's font stack falls through to the Stylix font.

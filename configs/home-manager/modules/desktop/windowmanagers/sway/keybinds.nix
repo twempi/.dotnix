@@ -5,9 +5,6 @@
     lib,
     ...
   }: let
-    # Same naming as Hyprland's screenshots: Screenshot-<date>_<time>[-region].png
-    # wayfreeze shows a frozen copy of the screen first, so menus that close when slurp grabs input stay in the shot.
-    # After exec, $$ is wayfreeze's PID; killing it unfreezes once grimshot finishes or is cancelled.
     screenshot = pkgs.writeShellScript "sway-screenshot" ''
       file="${config.xdg.userDirs.extraConfig.SCREENSHOTS}/Screenshot-$(date +%Y-%m-%d_%H:%M:%S)$2.png"
       exec ${pkgs.wayfreeze}/bin/wayfreeze --hide-cursor --after-freeze-cmd \
@@ -41,7 +38,7 @@
         "Mod4+B" = "exec helium";
         "Mod4+E" = "exec ${pkgs.foot}/bin/foot -e ${pkgs.yazi}/bin/yazi";
         "Mod4+Shift+E" = "exec ${pkgs.nemo}/bin/nemo";
-        "Mod4+M" = "exec spotify";
+        "Mod4+M" = "exec ${pkgs.foot}/bin/foot -e ${pkgs.spotatui}/bin/spotatui";
         "Mod4+O" = "exec ${pkgs.obsidian}/bin/obsidian";
         "Mod4+N" = "exec ${pkgs.foot}/bin/foot -e nvim";
         "Mod4+Shift+B" = "exec ${pkgs.foot}/bin/foot -e ${pkgs.bluetui}/bin/bluetui";

@@ -1,5 +1,6 @@
 {
   config,
+  hostname,
   inputs,
   lib,
   pkgs,
@@ -7,7 +8,7 @@
   startpageOrigin,
 }: let
   customStartpage = import ./custom-startpage.nix {
-    inherit config inputs pkgs startpageOrigin;
+    inherit config hostname inputs pkgs startpageOrigin;
   };
   discordToVesktop = import ./discord-to-vesktop.nix {inherit pkgs;};
   webStore = import ./web-store.nix {inherit lib pkgs inputs;};

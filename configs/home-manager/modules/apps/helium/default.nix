@@ -1,6 +1,7 @@
 {inputs, ...}: {
   flake.modules.homeManager.helium = {
     config,
+    hostname,
     lib,
     pkgs,
     ...
@@ -10,7 +11,7 @@
     startpageDir = "${config.xdg.stateHome}/helium/startpage-extension";
 
     extensions = import ./_extensions {
-      inherit config inputs lib pkgs startpageDir startpageOrigin;
+      inherit config hostname inputs lib pkgs startpageDir startpageOrigin;
     };
 
     heliumFlags = [
