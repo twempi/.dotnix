@@ -1,10 +1,9 @@
-{inputs, ...}: {
-  flake.modules.homeManager.artcraft = {...}: {
-    imports = [inputs.artcraft.homeManagerModules.default];
-
-    programs.artcraft = {
-      enable = true;
-      apps = ["photocraft" "vectorcraft"];
-    };
+{
+  flake.modules.homeManager.artcraft = {pkgs, ...}: {
+    home.packages = with pkgs; [
+      photocraft
+      vectorcraft
+      pdfcraft
+    ];
   };
 }

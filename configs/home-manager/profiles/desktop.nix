@@ -84,7 +84,6 @@ in {
       geogebra
       telegram
       blueman
-      pdfarranger
       libreoffice
       ltspice
       minecraft
@@ -100,7 +99,7 @@ in {
       # zen-browser
       upscayl
       syncthing
-      sioyek
+      # sioyek
       sunsetr
       helium
       librewolf

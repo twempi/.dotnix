@@ -119,11 +119,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    artcraft = {
-      url = "github:devitek/artcraft-nixos";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     twempi = {
       url = "github:twempi/nix-inputs";
       inputs.nixpkgs.follows = "nixpkgs";

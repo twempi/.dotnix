@@ -22,7 +22,6 @@
         enable = true;
         volume = 0.05;
       };
-      fixYoutubeEmbeds.enable = true;
       forceOwnerCrown.enable = true;
       gameActivityToggle = {
         enable = true;
@@ -35,7 +34,6 @@
         enable = true;
         noSpotifyAutoPause = true;
       };
-      youtubeAdblock.enable = true;
     };
   };
 }
